@@ -647,8 +647,10 @@ And(/I select three plans to compare/) do
     click_when_present(@browser.a(text: "COMPARE PLANS"))
     @browser.h1(text: /Choose Plan - Compare Selected Plans/).wait_until_present
     expect(@browser.elements(:class => "plan_comparison").size).to eq 3
-    @browser.button(text: 'Close').wait_until_present
-    @browser.button(text: 'Close').click
+    @browser.button(id: 'btnPrint').wait_until_present
+    close_button = @browser.button(text: 'Close')
+    click_when_present(close_button)
+    close_button.wait_while_present
   end
 end
 
