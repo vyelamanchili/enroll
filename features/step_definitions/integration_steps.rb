@@ -135,9 +135,10 @@ def scroll_then_click(element)
   element
 end
 
-def click_when_present(element)
+def click_when_present(element, wait_until_gone = false)
   element.wait_until_present
   scroll_then_click(element)
+  element.wait_while_present if wait_until_gone
 end
 
 def wait_and_confirm_text(text)

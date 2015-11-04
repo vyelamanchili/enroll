@@ -249,7 +249,7 @@ end
 Then(/Second user asks for help$/) do
   @browser.divs(text: /Help me sign up/).last.click
   wait_and_confirm_text /Options/
-  click_when_present(@browser.a(class: /interaction-click-control-help-from-a-customer-service-representative/))
+  click_when_present(@browser.a(class: /interaction-click-control-help-from-a-customer-service-representative/), true)
   @browser.text_field(class: /interaction-field-control-help-first-name/).set("Sherry")
   @browser.text_field(class: /interaction-field-control-help-last-name/).set("Buckner")
   screenshot("help_from_a_csr")
@@ -459,7 +459,7 @@ end
 And(/Aptc user set elected amount and select plan/) do
   @browser.text_field(id: /elected_aptc/).wait_until_present
   @browser.text_field(id: "elected_aptc").set("20")
-  
+
   click_when_present(@browser.a(text: /Select Plan/))
   screenshot("aptc_setamount")
 end
