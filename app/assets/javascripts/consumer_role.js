@@ -4,8 +4,10 @@ $(document).on('change', "#person_no_dc_address, #dependent_no_dc_address, #no_d
     $('#radio_homeless').attr('required', true);
     $('#radio_outside').attr('required', true);
     $(this).parents('#address_info').find('.address_required').removeAttr('required');
+    $(this).val(true);
   } else {
     $(this).parents('#address_info').find('.home-div.no-dc-address-reasons').hide();
     $(this).parents('#address_info').find('.address_required').attr('required', true);
+    $(this).val(false);
   };
 });
