@@ -4908,8 +4908,8 @@ table.table.table-no-sytle td {
   border: none;
 }
 .carousel-inner {
-  overflow-x: hidden;
-  overflow-y: visible;
+  overflow: visible;
+
 }
 
 #qle-header .info-wrapper {
@@ -4931,9 +4931,14 @@ table.table.table-no-sytle td {
 
 }
 
-#carousel-qles a.qle-menu-item {
-  display: block;
+#carousel-qles {
+  overflow: hidden;
+  a.qle-menu-item {
+    display: block;
+  }
 }
+
+
 
 /*#qle-details .panel-heading strong {
   color: #468847`;
