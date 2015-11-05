@@ -6,9 +6,7 @@ class BenefitGroupCongress
 
   field :contribution_pct_as_int, type: Integer, default: 75
   field :employee_max_amt_in_cents, type: Money, default: 0
-
   field :first_dependent_max_amt_in_cents, type: Integer, default: 0
-
   field :over_one_dependents_max_amt_in_cents, type: Integer, default: 0
 
   # Congressional model
