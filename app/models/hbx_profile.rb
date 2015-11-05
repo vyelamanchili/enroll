@@ -103,6 +103,7 @@ class HbxProfile
   CallCenterName = "DC Health Link's Customer Care Center"
   CallCenterPhoneNumber = "1-855-532-5465"
   ShortName = "DC Health Link"
+  TagLine = "DC's Online Health Insurance Marketplace"
 
   # FIXME
   IndividualEnrollmentDueDayOfMonth = 15
