@@ -15,7 +15,7 @@
           <div class="row">
             <div class="col-xs-9" style="padding-right: 0;">
               <div><%= display_carrier_logo(Maybe.new(plan).carrier_profile.legal_name.extract_value, {width: 110}) %></div>
-              <h4>
+              <h4 class="enrollment-name">
                 <%= link_to plan.name, summary_products_plans_path({:standard_component_id => plan.hios_id, hbx_enrollment_id: hbx_enrollment.id, active_year: plan.active_year}), remote: true %>
               </h4>
 
