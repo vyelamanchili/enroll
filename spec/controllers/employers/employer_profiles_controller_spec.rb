@@ -77,6 +77,7 @@ RSpec.describe Employers::EmployerProfilesController do
 
     before(:each) do
       allow(user).to receive(:has_hbx_staff_role?).and_return(false)
+      allow(user).to receive(:has_broker_agency_staff_role?).and_return(true)
       allow(user).to receive(:last_portal_visited=).and_return("true")
       allow(user).to receive(:last_portal_visited).and_return("true")
       allow(user).to receive(:save).and_return(true)
