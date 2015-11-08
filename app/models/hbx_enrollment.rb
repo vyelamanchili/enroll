@@ -248,6 +248,10 @@ class HbxEnrollment
     end
   end
 
+  def is_active?
+    self.is_active
+  end
+
   def should_transmit_update?
     !self.published_to_bus_at.blank?
   end
@@ -257,12 +261,19 @@ class HbxEnrollment
   end
 
   def is_shop?
-    !consumer_role.present?
+    kind == "employer_sponsored"
   end
 
   def is_shop_sep?
-    return false if consumer_role.present?
-    !("open_enrollment" == self.enrollment_kind)
+    is_shop? && is_special_enrollment?
+  end
+
+  def is_open_enrollment?
+    enrollment_kind == "open_enrollment"
+  end
+
+  def is_special_enrollment?
+    enrollment_kind == "special_enrollment"
   end
 
   def transmit_shop_enrollment!
@@ -273,10 +284,6 @@ class HbxEnrollment
         self.save!
       end
     end
-  end
-
-  def is_active?
-    self.is_active
   end
 
   def subscriber
@@ -491,14 +498,6 @@ class HbxEnrollment
     )
     enrollment.save
     enrollment
-  end
-
-  def is_open_enrollment?
-    enrollment_kind == "open_enrollment"
-  end
-
-  def is_special_enrollment?
-    enrollment_kind == "special_enrollment"
   end
 
   def covered_members_first_names
