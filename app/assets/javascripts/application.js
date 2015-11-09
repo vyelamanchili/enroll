@@ -392,6 +392,8 @@ $(document).ready(function () {
     $('.mailing-div').hide();
     $('.mailing-div input').val("");
     $('.mailing-div .label-floatlabel').hide();
+    $('.mailing-div #state_id').prop('selectedIndex', 0).selectric('refresh');
+
   });
 
 
