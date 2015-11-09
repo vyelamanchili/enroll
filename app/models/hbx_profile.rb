@@ -103,6 +103,7 @@ class HbxProfile
   CallCenterName = "DC Health Link's Customer Care Center"
   CallCenterPhoneNumber = "1-855-532-5465"
   ShortName = "DC Health Link"
+  TagLine = "DC's Online Health Insurance Marketplace"
 
   # FIXME
   IndividualEnrollmentDueDayOfMonth = 15
@@ -154,7 +155,9 @@ class HbxProfile
 
   ## SHOP enrollment-related periods in days
   # Minimum number of days for SHOP open enrollment period
-  ShopOpenEnrollmentPeriodMinimum = 5
+  # ShopOpenEnrollmentPeriodMinimum = 5
+  ShopOpenEnrollmentPeriodMinimum = 3
+
 
   # Maximum number of months for SHOP open enrollment period
   ShopOpenEnrollmentPeriodMaximum = 2
@@ -173,7 +176,11 @@ class HbxProfile
   ShopEnrollmentNonOwnerParticipationMinimum = 1
 
   ShopBinderPaymentDueDayOfMonth = 15
-  ShopOpenEnrollmentEndDueDayOfMonth = 10
+  ShopRenewalOpenEnrollmentEndDueDayOfMonth = 13
+  
+  # ShopOpenEnrollmentEndDueDayOfMonth = 10
+  ShopOpenEnrollmentEndDueDayOfMonth = 13
+
   ShopOpenEnrollmentBeginDueDayOfMonth = ShopOpenEnrollmentEndDueDayOfMonth - ShopOpenEnrollmentPeriodMinimum
   ShopPlanYearPublishedDueDayOfMonth = ShopOpenEnrollmentBeginDueDayOfMonth
 

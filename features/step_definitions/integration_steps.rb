@@ -135,9 +135,10 @@ def scroll_then_click(element)
   element
 end
 
-def click_when_present(element)
+def click_when_present(element, wait_until_gone = false)
   element.wait_until_present
   scroll_then_click(element)
+  element.wait_while_present if wait_until_gone
 end
 
 def wait_and_confirm_text(text)
@@ -531,7 +532,16 @@ When(/^Employer publishes a plan year$/) do
   click_when_present(start_on)
   start_on = @browser.li(text: /SELECT START ON/i)
   click_when_present(start_on.parent().lis()[1])
-  click_when_present(@browser.element(class: /interaction-click-control-save-plan-year/))
+  click_when_present(@browser.element(class: /change-plan/))
+  select_plan_option = @browser.ul(class: /nav-tabs/)
+  select_plan_option.li(text: /By carrier/i).click
+  carriers_tab = @browser.div(class: /carriers-tab/)
+  @browser.element(text: /edit your plan offering/i).wait_until_present
+  carriers_tab.as[1].fire_event("onclick")
+  plans_tab = @browser.div(class: /reference-plans/)
+  @browser.element(text: /select your reference plan/i).wait_until_present
+  plans_tab.labels.last.fire_event('onclick')
+  click_when_present(@browser.button(class: /interaction-click-control-save-plan-year/))
   @browser.element(class: /alert-notice/, text: /Plan Year successfully saved./).wait_until_present
   click_when_present(@browser.element(class: /interaction-click-control-benefits/))
   click_when_present(@browser.element(class: /interaction-click-control-publish-plan-year/))
@@ -647,8 +657,10 @@ And(/I select three plans to compare/) do
     click_when_present(@browser.a(text: "COMPARE PLANS"))
     @browser.h1(text: /Choose Plan - Compare Selected Plans/).wait_until_present
     expect(@browser.elements(:class => "plan_comparison").size).to eq 3
-    @browser.button(text: 'Close').wait_until_present
-    @browser.button(text: 'Close').click
+    @browser.button(id: 'btnPrint').wait_until_present
+    close_button = @browser.button(text: 'Close')
+    click_when_present(close_button)
+    close_button.wait_while_present
   end
 end
 

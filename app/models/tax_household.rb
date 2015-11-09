@@ -33,7 +33,9 @@ class TaxHousehold
 
   def current_max_aptc
     eligibility_determination = latest_eligibility_determination
-    if eligibility_determination.present? and eligibility_determination.determined_on.year == TimeKeeper.date_of_record.year
+    #TODO need business rule to decide how to get the max aptc
+    #during open enrollment and determined_at
+    if eligibility_determination.present? #and eligibility_determination.determined_on.year == TimeKeeper.date_of_record.year
       eligibility_determination.max_aptc
     else
       0
@@ -99,7 +101,7 @@ class TaxHousehold
     end
 
     # FIXME should get hbx_enrollments by effective_starting_on
-    household.current_year_hbx_enrollments.select {|hbx| hbx.applied_aptc_amount > 0}.map(&:hbx_enrollment_members).flatten.each do |enrollment_member|
+    household.hbx_enrollments_with_aptc_by_year(effective_starting_on.year).map(&:hbx_enrollment_members).flatten.each do |enrollment_member|
       applicant_id = enrollment_member.applicant_id.to_s
       if aptc_available_amount_hash.has_key?(applicant_id)
         aptc_available_amount_hash[applicant_id] -= (enrollment_member.applied_aptc_amount || 0).try(:to_f)
@@ -115,7 +117,8 @@ class TaxHousehold
     # APTC may be used only for Health, return 0 if plan.coverage_kind == "dental"
     aptc_available_amount_hash_for_enrollment = {}
 
-    elected_pct = elected_aptc.to_f / total_aptc_available_amount_for_enrollment(hbx_enrollment).to_f
+    total_aptc_available_amount = total_aptc_available_amount_for_enrollment(hbx_enrollment)
+    elected_pct = total_aptc_available_amount > 0 ? (elected_aptc.to_f / total_aptc_available_amount.to_f) : 0
     decorated_plan = UnassistedPlanCostDecorator.new(plan, hbx_enrollment)
     hbx_enrollment.hbx_enrollment_members.each do |enrollment_member|
       given_aptc = (aptc_available_amount_by_member[enrollment_member.applicant_id.to_s] || 0) * elected_pct

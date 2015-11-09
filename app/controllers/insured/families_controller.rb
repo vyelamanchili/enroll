@@ -8,7 +8,8 @@ class Insured::FamiliesController < FamiliesController
   def home
     set_bookmark_url
 
-    @hbx_enrollments = @family.enrollments || []
+    @hbx_enrollments = @family.enrollments.order(effective_on: :desc, coverage_kind: :desc) || []
+    @waived_hbx_enrollments = @family.active_household.hbx_enrollments.waived.to_a
     update_changing_hbxs(@hbx_enrollments)
     @waived = @family.coverage_waived?
     @employee_role = @person.employee_roles.try(:first)
@@ -114,10 +115,15 @@ class Insured::FamiliesController < FamiliesController
 
     if @enrollment.present?
       plan = @enrollment.try(:plan)
-      if @enrollment.employee_role.present?
+      if @enrollment.is_shop?
         @benefit_group = @enrollment.benefit_group
         @reference_plan = @benefit_group.reference_plan
-        @plan = PlanCostDecorator.new(plan, @enrollment, @benefit_group, @reference_plan)
+
+        if @benefit_group.is_congress
+          @plan = PlanCostDecoratorCongress.new(plan, @enrollment, @benefit_group)
+        else
+          @plan = PlanCostDecorator.new(plan, @enrollment, @benefit_group, @reference_plan)
+        end
       else
         @plan = UnassistedPlanCostDecorator.new(plan, @enrollment)
       end
@@ -143,10 +149,10 @@ class Insured::FamiliesController < FamiliesController
 
   def init_qualifying_life_events
     @qualifying_life_events = []
-    if @person.employee_roles.present?
-      @qualifying_life_events += QualifyingLifeEventKind.shop_market_events
-    elsif @person.consumer_role.present?
+    if @person.consumer_role.present?
       @qualifying_life_events += QualifyingLifeEventKind.individual_market_events
+    else
+      @qualifying_life_events += QualifyingLifeEventKind.shop_market_events
     end
   end
 
