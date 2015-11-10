@@ -176,9 +176,13 @@ function getCarrierPlans(ep, ci) {
         if ( $(this).val().length > 0 ) {
           validatedbgtitles = true;
           validated = true;
+
         } else {
+          $('.interaction-click-control-create-plan-year, .interaction-click-control-save-plan-year').attr('data-original-title', 'Before you can save, each benefit group must have a unique title.');
           validatedbgtitles = false;
           validated = false;
+
+
 
           return;
         }
@@ -186,30 +190,34 @@ function getCarrierPlans(ep, ci) {
       bgemployeepremiums.each(function() {
 
         if ( parseInt($(this).val() ) >= parseInt(50) ) {
-          validatedbgemployeepremiums = true
+          validatedbgemployeepremiums = true;
           validated = true;
 
+
         } else {
+          $('.interaction-click-control-create-plan-year, .interaction-click-control-save-plan-year').attr('data-original-title', 'Employee premium must be atleast 50%');
           validatedbgemployeepremiums = false;
           validated = false;
-
           return;
         }
       });
 
       if ( referenceplanselections.length != $('.benefit-group-fields').length ) {
-        validatedreferenceplanselections = false
+        validatedreferenceplanselections = false;
         validated = false;
+
 
       } else {
         referenceplanselections.each(function() {
           if ( $(this).length && $(this).val() != 'undefined' ) {
-            validatedreferenceplanselections = true
+            validatedreferenceplanselections = true;
             validated = true;
 
           } else {
+            $('.interaction-click-control-create-plan-year, .interaction-click-control-save-plan-year').attr('data-original-title', 'Each benefit group is required to have a reference plan selection before it can be saved');
             validatedreferenceplanselections = false
             validated = false;
+
 
             return;
           }
@@ -219,6 +227,8 @@ function getCarrierPlans(ep, ci) {
 
       if ( validatedbgtitles == true && validatedbgemployeepremiums == true && validatedreferenceplanselections == true ) {
           $('.interaction-click-control-create-plan-year, .interaction-click-control-save-plan-year').removeClass('disabled');
+          $('.interaction-click-control-create-plan-year, .interaction-click-control-save-plan-year').removeAttr('data-original-title');
+
         } else {
           $('.interaction-click-control-create-plan-year, .interaction-click-control-save-plan-year').addClass('disabled');
         }
@@ -227,7 +237,23 @@ function getCarrierPlans(ep, ci) {
 
 }
 
+// disabled enter key submitting disabeld forms in firefox -- add this to any element in the page onKeyPress="return disableEnterKey(event)"
 
+
+function disableEnterKey(e)
+{
+     var key;
+     if(window.event)
+          key = window.event.keyCode;     //IE
+     else
+          key = e.which;     //firefox
+
+     if(key == 13)
+
+          return false;
+     else
+          return true;
+}
 
 // modal input type file clicks
 $(document).on('click', '#modal-wrapper div label', function(){
