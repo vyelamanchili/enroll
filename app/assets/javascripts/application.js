@@ -238,21 +238,17 @@ function getCarrierPlans(ep, ci) {
 }
 
 // disabled enter key submitting disabeld forms in firefox -- add this to any element in the page onKeyPress="return disableEnterKey(event)"
-
-
 function disableEnterKey(e)
 {
-     var key;
-     if(window.event)
-          key = window.event.keyCode;     //IE
-     else
-          key = e.which;     //firefox
-
-     if(key == 13)
-
-          return false;
-     else
-          return true;
+  var key;
+  if(window.event)
+    key = window.event.keyCode;     //IE
+  else
+    key = e.which;     //firefox
+  if(key == 13)
+    return false;
+  else
+    return true;
 }
 
 // modal input type file clicks
