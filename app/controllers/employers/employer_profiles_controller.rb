@@ -6,6 +6,7 @@ class Employers::EmployerProfilesController < ApplicationController
   before_action :check_show_permissions, only: [:show, :show_profile, :destroy, :inbox, :bulk_employee_upload, :bulk_employee_upload_form]
   before_action :check_index_permissions, only: [:index]
   before_action :check_employer_staff_role, only: [:new]
+  skip_before_action :verify_authenticity_token, only: [:show], if: :check_origin?
 
   layout "two_column", except: [:new]
 
@@ -97,7 +98,7 @@ class Employers::EmployerProfilesController < ApplicationController
         @broker_agency_accounts = @employer_profile.broker_agency_accounts
       when 'inbox'
       else
-        @current_plan_year = @employer_profile.renewing_plan_year || @employer_profile.active_plan_year
+        @current_plan_year = @employer_profile.renewing_plan_year || @employer_profile.active_plan_year || @employer_profile.published_plan_year
 
         if @current_plan_year.present? && @current_plan_year.open_enrollment_contains?(TimeKeeper.date_of_record)
           @additional_required_participants_count = @current_plan_year.additional_required_participants_count
@@ -173,7 +174,11 @@ class Employers::EmployerProfilesController < ApplicationController
       @organization.assign_attributes(:office_locations => [])
       @organization.save(validate: false)
 
-      if @organization.update_attributes(employer_profile_params) and @employer.update_attributes(employer_params)
+      #Fix issue 3770. Make sure DOB is in correct format
+      employer_attributes = employer_params
+      employer_attributes["dob"] = DateTime.strptime(employer_attributes["dob"], '%m/%d/%Y').try(:to_date)
+
+      if @organization.update_attributes(employer_profile_params) and @employer.update_attributes(employer_attributes)
         flash[:notice] = 'Employer successfully Updated.'
         redirect_to edit_employers_employer_profile_path(@organization)
       else
@@ -327,6 +332,10 @@ class Employers::EmployerProfilesController < ApplicationController
     )
   end
 
+
+
+
+
   def employer_profile_params
     params.require(:organization).permit(
       :employer_profile_attributes => [ :entity_kind, :dba, :legal_name],
@@ -363,7 +372,12 @@ class Employers::EmployerProfilesController < ApplicationController
     @organization
   end
 
+
   def employer_params
     params.permit(:first_name, :last_name, :dob)
+  end
+
+  def check_origin?
+    request.referrer.present? and URI.parse(request.referrer).host == "app.dchealthlink.com"
   end
 end

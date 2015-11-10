@@ -103,6 +103,7 @@ class Family
   scope :all_current_households,              ->{ exists(households: true).order_by(:start_on.desc).limit(1).only(:_id, :"households._id") }
   scope :all_tax_households,                  ->{ exists(:"households.tax_households" => true) }
   scope :all_enrollments,                     ->{  where(:"households.hbx_enrollments.aasm_state".in => HbxEnrollment::ENROLLED_STATUSES) }
+  scope :all_enrollments_by_benefit_group_id, ->(benefit_group_id){where(:"households.hbx_enrollments.benefit_group_id" => benefit_group_id) }
 
   scope :all_enrollments_by_writing_agent_id, ->(broker_id){ where(:"households.hbx_enrollments.writing_agent_id" => broker_id) }
   scope :by_writing_agent_id,                 ->(broker_id){ where(:"broker_agency_accounts.writing_agent_id" => broker_id) }
@@ -131,7 +132,7 @@ class Family
   end
 
   def coverage_waived?
-    latest_household.hbx_enrollments.any? and latest_household.hbx_enrollments.last.aasm_state == "inactive"
+    latest_household.hbx_enrollments.any? and latest_household.hbx_enrollments.waived.any?
   end
 
   def remove_family_search_record

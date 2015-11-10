@@ -14,10 +14,15 @@ class Insured::PlanShoppingsController < ApplicationController
     hbx_enrollment.inactive_pre_hbx(session[:pre_hbx_enrollment_id])
     session.delete(:pre_hbx_enrollment_id)
 
-    if hbx_enrollment.employee_role.present?
+    if hbx_enrollment.is_shop?
       benefit_group = hbx_enrollment.benefit_group
       reference_plan = benefit_group.reference_plan
-      decorated_plan = PlanCostDecorator.new(plan, hbx_enrollment, benefit_group, reference_plan)
+
+      if benefit_group.is_congress
+        decorated_plan = PlanCostDecoratorCongress.new(plan, hbx_enrollment, benefit_group)
+      else
+        decorated_plan = PlanCostDecorator.new(plan, hbx_enrollment, benefit_group, reference_plan)
+      end
     else
       get_aptc_info_from_session(hbx_enrollment)
       if @shopping_tax_household.present? and @elected_aptc > 0
@@ -48,10 +53,14 @@ class Insured::PlanShoppingsController < ApplicationController
 
     @enrollment = HbxEnrollment.find(params.require(:id))
     plan = @enrollment.plan
-    if @enrollment.employee_role.present?
+    if @enrollment.is_shop?
       benefit_group = @enrollment.benefit_group
       reference_plan = benefit_group.reference_plan
-      @plan = PlanCostDecorator.new(plan, @enrollment, benefit_group, reference_plan)
+      if benefit_group.is_congress
+        @plan = PlanCostDecoratorCongress.new(plan, @enrollment, benefit_group)
+      else
+        @plan = PlanCostDecorator.new(plan, @enrollment, benefit_group, reference_plan)
+      end
     else
       @shopping_tax_household = get_shopping_tax_household_from_person(@person, @enrollment.effective_on.year)
       @plan = UnassistedPlanCostDecorator.new(plan, @enrollment, @enrollment.applied_aptc_amount, @shopping_tax_household)
@@ -63,24 +72,8 @@ class Insured::PlanShoppingsController < ApplicationController
     if @person.employee_roles.any?
       @employer_profile = @person.employee_roles.first.employer_profile
     end
-    
-    begin
-      send_receipt_emails
-    rescue => err
-      error_message = {
-        :error => {
-          :message => err.message,
-          :inspected => err.inspect,
-          :backtrace => err.backtrace.join("\n")
-        },
-        :person_emails => @person.emails,
-        :consumer_role => @person.consumer_role,
-        :employee_role => @person.employee_roles,
-        :belongs_to_user => @person.user,
-        :user_email => @person.user.email
-      }
-	  log(JSON.dump(error_message), {:severity => 'critical'})
-    end
+
+    send_receipt_emails if @person.emails.first
   end
 
   def thankyou
@@ -89,10 +82,14 @@ class Insured::PlanShoppingsController < ApplicationController
     @plan = Plan.find(params.require(:plan_id))
     @enrollment = HbxEnrollment.find(params.require(:id))
 
-    if @enrollment.employee_role.present?
+    if @enrollment.is_shop?
       @benefit_group = @enrollment.benefit_group
       @reference_plan = @benefit_group.reference_plan
-      @plan = PlanCostDecorator.new(@plan, @enrollment, @benefit_group, @reference_plan)
+      if @benefit_group.is_congress
+        @plan = PlanCostDecoratorCongress.new(@plan, @enrollment, @benefit_group)
+      else
+        @plan = PlanCostDecorator.new(@plan, @enrollment, @benefit_group, @reference_plan)
+      end
     else
       get_aptc_info_from_session(@enrollment)
       if @shopping_tax_household.present? and @elected_aptc > 0
@@ -181,7 +178,7 @@ class Insured::PlanShoppingsController < ApplicationController
     set_plans_by(hbx_enrollment_id: params.require(:id))
     @plans = @plans.sort_by(&:total_employee_cost).sort{|a,b| b.csr_variant_id <=> a.csr_variant_id}
     @plans = @plans.partition{ |a| @enrolled_hbx_enrollment_plan_ids.include?(a[:id]) }.flatten
-    @plan_hsa_status = Products::Qhp.plan_hsa_status_map(plan_ids: @plans.map(&:id))
+    @plan_hsa_status = Products::Qhp.plan_hsa_status_map(@plans)
     @change_plan = params[:change_plan].present? ? params[:change_plan] : ''
     @enrollment_kind = params[:enrollment_kind].present? ? params[:enrollment_kind] : ''
   end
@@ -204,7 +201,12 @@ class Insured::PlanShoppingsController < ApplicationController
   end
 
   def set_plans_by(hbx_enrollment_id:)
-    @enrolled_hbx_enrollment_plan_ids = @person.primary_family.enrolled_hbx_enrollments.map(&:plan).map(&:id)
+    if @person.nil?
+      @enrolled_hbx_enrollment_plan_ids = []
+    else
+      @enrolled_hbx_enrollment_plan_ids = @person.primary_family.enrolled_hbx_enrollments.map(&:plan).map(&:id)
+    end
+
     Caches::MongoidCache.allocate(CarrierProfile)
     @hbx_enrollment = HbxEnrollment.find(hbx_enrollment_id)
     if @hbx_enrollment.blank?
@@ -233,7 +235,7 @@ class Insured::PlanShoppingsController < ApplicationController
   end
 
   def get_aptc_info_from_session(hbx_enrollment)
-    @shopping_tax_household = get_shopping_tax_household_from_person(@person, hbx_enrollment.effective_on.year)
+    @shopping_tax_household = get_shopping_tax_household_from_person(@person, hbx_enrollment.effective_on.year) if @person.present?
     if @shopping_tax_household.present?
       @max_aptc = session[:max_aptc].to_f
       @elected_aptc = session[:elected_aptc].to_f

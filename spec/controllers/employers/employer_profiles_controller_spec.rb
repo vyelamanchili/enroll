@@ -85,7 +85,11 @@ RSpec.describe Employers::EmployerProfilesController do
     let(:plan_year) { FactoryGirl.create(:plan_year) }
     let(:employer_profile) { plan_year.employer_profile}
 
+    let(:policy) {double("policy")}
     before(:each) do
+      allow(::AccessPolicies::EmployerProfile).to receive(:new).and_return(policy)
+      allow(policy).to receive(:is_broker_for_employer?).and_return(false)
+      allow(policy).to receive(:authorize_show).and_return(true)
       allow(user).to receive(:last_portal_visited=).and_return("true")
       employer_profile.plan_years = [plan_year]
       sign_in(user)
@@ -153,6 +157,53 @@ RSpec.describe Employers::EmployerProfilesController do
     #  xhr :get,:show_profile, {employer_profile_id: employer_profile.id.to_s, tab: 'employees'}
     #  expect(assigns(:avaliable_employee_names)).to eq employer_profile.census_employees.sorted.map(&:full_name).uniq
     #end
+  end
+
+
+  describe "GET show" do
+    let(:user){ double("User", last_portal_visited: double("last_portal_visited")) }
+    let(:person){ double("Person") }
+    let(:employer_profile) {double("EmployerProfile", id: double("id"))}
+    let(:hbx_enrollment) {
+      double("HbxEnrollment",
+        total_premium: 345,
+        total_employee_cost: 145,
+        total_employer_contribution: 200
+        )
+    }
+    let(:published_plan_year) {
+      double("PlanYear",
+        additional_required_participants_count: 10
+        )
+    }
+
+    let(:policy) {double("policy")}
+    before(:each) do
+      allow(::AccessPolicies::EmployerProfile).to receive(:new).and_return(policy)
+      allow(policy).to receive(:authorize_show).and_return(true)
+      allow(user).to receive(:last_portal_visited=).and_return("true")
+      allow(user).to receive(:save).and_return(true)
+      allow(EmployerProfile).to receive(:find).and_return(employer_profile)
+      allow(employer_profile).to receive(:published_plan_year).and_return(published_plan_year)
+      allow(published_plan_year).to receive(:open_enrollment_contains?).and_return(true)
+      allow(employer_profile).to receive(:renewing_plan_year).and_return(nil)
+      allow(employer_profile).to receive(:active_plan_year).and_return(nil)
+      allow(published_plan_year).to receive(:hbx_enrollments).and_return([hbx_enrollment])
+      sign_in(user)
+    end
+    context "it should return published plan year " do
+      it "should render the show template" do
+        allow(user).to receive(:person).and_return(person)
+        get :show, id: employer_profile.id, tab: "home"
+        expect(response).to have_http_status(:success)
+        expect(response).to render_template("show")
+        expect(assigns(:current_plan_year)).to eq published_plan_year
+        expect(assigns(:employer_contribution_total)).to eq hbx_enrollment.total_employer_contribution
+        expect(assigns(:premium_amt_total)).to eq hbx_enrollment.total_premium
+        expect(assigns(:employee_cost_total)).to eq hbx_enrollment.total_employee_cost
+        expect(assigns(:additional_required_participants_count)).to eq published_plan_year.additional_required_participants_count
+      end
+    end
   end
 
   describe "GET welcome" do
@@ -434,6 +485,7 @@ RSpec.describe Employers::EmployerProfilesController do
       }
     }
 
+
     before do
       allow(user).to receive(:has_employer_staff_role?).and_return(true)
       allow(user).to receive(:roles).and_return(["employer_staff"])
@@ -444,6 +496,8 @@ RSpec.describe Employers::EmployerProfilesController do
       allow(organization).to receive(:assign_attributes).and_return(true)
       allow(organization).to receive(:save).and_return(true)
       allow(organization).to receive(:update_attributes).and_return(true)
+
+      allow(controller).to receive(:employer_params).and_return({"dob"=>"07/16/1980","first_name"=>"test"})
 
       allow(controller).to receive(:organization_profile_params).and_return({})
       allow(controller).to receive(:employer_profile_params).and_return({})

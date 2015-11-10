@@ -143,11 +143,20 @@ class Products::Qhp
   ]
 
 
-  def self.plan_hsa_status_map(plan_ids:)
+  def self.plan_hsa_status_map(plans)
     plan_hsa_status = {}
-    ::Products::Qhp.in(plan_id: plan_ids).map {|qhp| plan_hsa_status[qhp.plan_id.try(:to_s)] = qhp.hsa_eligibility}
+    @hios_ids = plans.map(&:hios_id)
+    @year = plans.first.present? ? plans.first.active_year : ""
+    qcsvs = get_cost_share_variances
+    qcsvs.map {|qcsv| plan_hsa_status[qcsv.plan.id.to_s] = qcsv.qhp.hsa_eligibility}
 
     plan_hsa_status
+  end
+
+  def self.get_cost_share_variances
+    Rails.cache.fetch("csvs-hios-ids-#{@hios_ids}-year-#{@year}", expires_in: 5.hour) do
+      Products::QhpCostShareVariance.find_qhp_cost_share_variances(@hios_ids, @year, "")
+    end
   end
 
   def self.csv_for(qhps, visit_types)
@@ -171,6 +180,9 @@ class Products::Qhp
             if service_visit
               arry1 << (service_visit.present? ? service_visit.copay_in_network_tier_1 : "N/A")
               arry2 << (service_visit.present? ? service_visit.co_insurance_in_network_tier_1 : "N/A")
+            else
+              arry1 << "N/A"
+              arry2 << "N/A"
             end
           end
           csv_ary << arry1

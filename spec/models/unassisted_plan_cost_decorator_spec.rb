@@ -1,10 +1,11 @@
 require 'rails_helper'
 
 RSpec.describe UnassistedPlanCostDecorator, dbclean: :after_each do
-  let!(:default_plan)            { double("Plan", id: "default_plan_id") }
-  let!(:plan_cost_decorator)     { UnassistedPlanCostDecorator.new(plan, member_provider) }
+  let!(:default_plan)            { double("Plan", id: "default_plan_id", coverage_kind: "health") }
+  let!(:dental_plan)             { double("DentalPlan", id: "dental_plan_id", coverage_kind: "dental") }
+  let(:plan_cost_decorator)     { UnassistedPlanCostDecorator.new(plan, member_provider) }
   context "rating a large family" do
-    let!(:plan)            {default_plan}
+    let(:plan)            {default_plan}
     let!(:member_provider) {double("member_provider", effective_on: 10.days.ago, hbx_enrollment_members: [father, mother, one, two, three, four, five])}
     let!(:father)          {double("father", class: HbxEnrollmentMember, age_on_effective_date: 19, is_subscriber?: true , primary_relationship: "self")}
     let!(:mother)          {double("mother", class: HbxEnrollmentMember, age_on_effective_date: 20, is_subscriber?: false, primary_relationship: "spouse")}
@@ -59,6 +60,21 @@ RSpec.describe UnassistedPlanCostDecorator, dbclean: :after_each do
 
     it "should have the right total premium" do
       expect(plan_cost_decorator.total_premium).to eq [father, mother, one, two, three].collect(&:age_on_effective_date).sum
+    end
+
+    context "with a dental plan" do
+      let(:plan)            {dental_plan}
+      it "should have a premium for four" do
+        expect(plan_cost_decorator.premium_for(four)).to eq 11.0
+      end
+
+      it "should have a premium for five" do
+        expect(plan_cost_decorator.premium_for(five)).to eq 4.0
+      end
+
+      it "should have the right total premium" do
+        expect(plan_cost_decorator.total_premium).to eq [55, 45, 20, 18, 13, 11, 4].sum
+      end
     end
   end
 end

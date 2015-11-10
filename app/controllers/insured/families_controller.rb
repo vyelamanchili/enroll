@@ -8,7 +8,8 @@ class Insured::FamiliesController < FamiliesController
   def home
     set_bookmark_url
 
-    @hbx_enrollments = @family.enrollments || []
+    @hbx_enrollments = @family.enrollments.order(effective_on: :desc, coverage_kind: :desc) || []
+    @waived_hbx_enrollments = @family.active_household.hbx_enrollments.waived.to_a
     update_changing_hbxs(@hbx_enrollments)
     @waived = @family.coverage_waived?
     @employee_role = @person.employee_roles.try(:first)
@@ -72,6 +73,7 @@ class Insured::FamiliesController < FamiliesController
 
     @family_members = @family.active_family_members
     @vlp_doc_subject = get_vlp_doc_subject_by_consumer_role(@person.consumer_role) if @person.has_active_consumer_role?
+    @person.consumer_role.build_nested_models_for_person if @person.has_active_consumer_role?
     respond_to do |format|
       format.html
     end
@@ -114,10 +116,15 @@ class Insured::FamiliesController < FamiliesController
 
     if @enrollment.present?
       plan = @enrollment.try(:plan)
-      if @enrollment.employee_role.present?
+      if @enrollment.is_shop?
         @benefit_group = @enrollment.benefit_group
         @reference_plan = @benefit_group.reference_plan
-        @plan = PlanCostDecorator.new(plan, @enrollment, @benefit_group, @reference_plan)
+
+        if @benefit_group.is_congress
+          @plan = PlanCostDecoratorCongress.new(plan, @enrollment, @benefit_group)
+        else
+          @plan = PlanCostDecorator.new(plan, @enrollment, @benefit_group, @reference_plan)
+        end
       else
         @plan = UnassistedPlanCostDecorator.new(plan, @enrollment)
       end
@@ -142,7 +149,7 @@ class Insured::FamiliesController < FamiliesController
   end
 
   def init_qualifying_life_events
-    @qualifying_life_events = []      
+    @qualifying_life_events = []
     if @person.consumer_role.present?
       @qualifying_life_events += QualifyingLifeEventKind.individual_market_events
     else

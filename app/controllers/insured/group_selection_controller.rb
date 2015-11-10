@@ -28,6 +28,13 @@ class Insured::GroupSelectionController < ApplicationController
       @benefit = benefit_package.first
       @aptc_blocked = @person.primary_family.is_blocked_by_qle_and_assistance?(nil, session["individual_assistance_path"])
     end
+    @new_effective_on = HbxEnrollment.calculate_effective_on_from(
+      market_kind:@market_kind,
+      qle: (@change_plan == 'change_by_qle' or @enrollment_kind == 'sep'),
+      family: @family,
+      employee_role: @employee_role,
+      benefit_group: @employee_role.present? ? @employee_role.benefit_group : nil,
+      benefit_sponsorship: HbxProfile.current_hbx.benefit_sponsorship)
   end
 
   def create
@@ -72,7 +79,9 @@ class Insured::GroupSelectionController < ApplicationController
     end
   rescue Exception => error
     flash[:error] = error.message
-    return redirect_to new_insured_group_selection_path(person_id: @person.id, employee_role_id: @employee_role.try(:id), consumer_role_id: @consumer_role.try(:id), change_plan: @change_plan, market_kind: @market_kind, enrollment_kind: @enrollment_kind)
+    employee_role_id = @employee_role.id if @employee_role
+    consumer_role_id = @consumer_role.id if @consumer_role
+    return redirect_to new_insured_group_selection_path(person_id: @person.id, employee_role_id: employee_role_id, consumer_role_id: consumer_role_id, change_plan: @change_plan, market_kind: @market_kind, enrollment_kind: @enrollment_kind)
   end
 
   def terminate_selection
@@ -105,7 +114,7 @@ class Insured::GroupSelectionController < ApplicationController
       @coverage_household.household.new_hbx_enrollment_from(
         employee_role: @employee_role,
         coverage_household: @coverage_household,
-        benefit_group: @employee_role.benefit_group,
+        benefit_group: @hbx_enrollment.present? ? @hbx_enrollment.benefit_group : @employee_role.benefit_group,
         qle: (@change_plan == 'change_by_qle' or @enrollment_kind == 'sep'))
     when 'individual'
       @coverage_household.household.new_hbx_enrollment_from(
@@ -121,10 +130,12 @@ class Insured::GroupSelectionController < ApplicationController
     @person = Person.find(person_id)
     @family = @person.primary_family
     @coverage_household = @family.active_household.immediate_family_coverage_household
+
     if params[:hbx_enrollment_id].present?
       @hbx_enrollment = HbxEnrollment.find(params[:hbx_enrollment_id])
     end
-    @hbx_enrollment = @family.latest_household.hbx_enrollments.enrolled[0] if @hbx_enrollment.blank?
+
+    @hbx_enrollment = @family.latest_household.hbx_enrollments.enrolled.last if @hbx_enrollment.blank?
     # @hbx_enrollment = (@family.latest_household.try(:hbx_enrollments).active || []).last
     if params[:employee_role_id].present?
       emp_role_id = params.require(:employee_role_id)
@@ -137,5 +148,6 @@ class Insured::GroupSelectionController < ApplicationController
     @change_plan = params[:change_plan].present? ? params[:change_plan] : ''
     @coverage_kind = params[:coverage_kind].present? ? params[:coverage_kind] : 'health'
     @enrollment_kind = params[:enrollment_kind].present? ? params[:enrollment_kind] : ''
+    @shop_for_plans = params[:shop_for_plans].present? ? params{:shop_for_plans} : ''
   end
 end
