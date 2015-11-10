@@ -107,7 +107,7 @@ class HbxEnrollment
   scope :with_aptc,           ->{ gt("applied_aptc_amount.cents": 0) }
   scope :enrolled,            ->{ where(:aasm_state.in => ENROLLED_STATUSES ) }
   scope :renewing,            ->{ where(:aasm_state.in => RENEWAL_STATUSES )}
-  scope :waived,              ->{ where(:aasm_state => "inactive" )}
+  scope :waived,              ->{ where(:aasm_state.in => ["inactive", "renewing_waived"] )}
   scope :changing,            ->{ where(changing: true) }
   scope :with_in,             ->(time_limit){ where(:created_at.gte => time_limit) }
   scope :shop_market,         ->{ where(:kind => "employer_sponsored") }
@@ -433,6 +433,28 @@ class HbxEnrollment
     benefit_group.effective_on_for(employee_role.hired_on)
   end
 
+  def self.calculate_effective_on_from(market_kind: 'shop', qle: false, family: nil, employee_role: nil, benefit_group: nil, benefit_sponsorship: HbxProfile.current_hbx.benefit_sponsorship)
+    return nil if family.blank?
+
+    case market_kind
+    when 'shop'
+      if qle and family.is_under_special_enrollment_period?
+        family.current_sep.effective_on
+      else
+        benefit_group.effective_on_for(employee_role.hired_on)
+      end
+    when 'individual'
+      if qle and family.is_under_special_enrollment_period?
+        family.current_sep.effective_on
+      else
+        benefit_sponsorship.current_benefit_period.earliest_effective_date
+      end
+    end
+  rescue => e
+    log(e.message, {:severity => "error"})
+    nil
+  end
+
   def self.new_from(employee_role: nil, coverage_household:, benefit_group: nil, consumer_role: nil, benefit_package: nil, qle: false, submitted_at: nil)
     enrollment = HbxEnrollment.new
 
@@ -593,6 +615,8 @@ class HbxEnrollment
     state :inactive   # :after_enter inform census_employee
 
     state :auto_renewing
+    state :renewing_passive
+    state :renewing_waived
     state :renewing_coverage_selected
     state :renewing_transmitted_to_carrier
     state :renewing_coverage_enrolled      # effectuated
@@ -606,6 +630,10 @@ class HbxEnrollment
 
     event :renew_enrollment do
       transitions from: :shopping, to: :auto_renewing
+    end
+
+    event :renew_waived do
+      transitions from: :shopping, to: :renewing_waived
     end
 
     event :select_coverage do
