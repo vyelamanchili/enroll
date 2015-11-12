@@ -29,6 +29,7 @@ class Insured::PlanShoppingsController < ApplicationController
         decorated_plan = UnassistedPlanCostDecorator.new(plan, hbx_enrollment, @elected_aptc, @shopping_tax_household)
         hbx_enrollment.update_hbx_enrollment_members_premium(decorated_plan)
         hbx_enrollment.update_current(applied_aptc_amount: decorated_plan.total_aptc_amount, elected_aptc_pct: @elected_aptc/@max_aptc)
+
       else
         decorated_plan = UnassistedPlanCostDecorator.new(plan, hbx_enrollment)
       end
@@ -160,6 +161,9 @@ class Insured::PlanShoppingsController < ApplicationController
       @max_aptc = @tax_household.total_aptc_available_amount_for_enrollment(@hbx_enrollment)
       session[:max_aptc] = @max_aptc
       @elected_aptc = session[:elected_aptc] = @max_aptc * 0.85
+    else
+      session[:max_aptc] = 0
+      session[:elected_aptc] = 0
     end
 
     @carriers = @carrier_names_map.values
@@ -201,7 +205,12 @@ class Insured::PlanShoppingsController < ApplicationController
   end
 
   def set_plans_by(hbx_enrollment_id:)
-    @enrolled_hbx_enrollment_plan_ids = @person.primary_family.enrolled_hbx_enrollments.map(&:plan).map(&:id)
+    if @person.nil?
+      @enrolled_hbx_enrollment_plan_ids = []
+    else
+      @enrolled_hbx_enrollment_plan_ids = @person.primary_family.enrolled_hbx_enrollments.map(&:plan).map(&:id)
+    end
+
     Caches::MongoidCache.allocate(CarrierProfile)
     @hbx_enrollment = HbxEnrollment.find(hbx_enrollment_id)
     if @hbx_enrollment.blank?
@@ -230,7 +239,7 @@ class Insured::PlanShoppingsController < ApplicationController
   end
 
   def get_aptc_info_from_session(hbx_enrollment)
-    @shopping_tax_household = get_shopping_tax_household_from_person(@person, hbx_enrollment.effective_on.year)
+    @shopping_tax_household = get_shopping_tax_household_from_person(@person, hbx_enrollment.effective_on.year) if @person.present?
     if @shopping_tax_household.present?
       @max_aptc = session[:max_aptc].to_f
       @elected_aptc = session[:elected_aptc].to_f
