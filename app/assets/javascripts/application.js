@@ -64,7 +64,8 @@ $(document).on('page:update', function(){
   applySelectric();
 
   $(document).on('change','.plan-title input', function() {
-    $(this).attr('value', $(this).val());
+    var planTitle = $(this).val()
+    $(this).attr("value", "\"planTitle\"");
   });
 
 
@@ -116,15 +117,17 @@ function getCarrierPlans(ep, ci) {
     editselectedplan = $('input.ref-plan');
 
     editbgtitles.each(function() {
-
-      if ( $(this).val().length > 0 ) {
+      editplantitle = $(this).val();
+      if ( $(this).val().length > 0 && $('.plan-title input[value=' + "\"editplantitle\"" + ']').size() < 2 ) {
         editvalidatedbgtitles = true;
         editvalidated = true;
+
       } else {
+        $('.interaction-click-control-save-plan-year').attr('data-original-title', 'Before you can save, each benefit group must have a unique title.');
         editvalidatedbgtitles = false;
         editvalidated = false;
+        return false;
 
-        return;
       }
     });
     editbgemployeepremiums.each(function() {
@@ -134,37 +137,39 @@ function getCarrierPlans(ep, ci) {
         editvalidated = true;
 
       } else {
+        $('.interaction-click-control-save-plan-year').attr('data-original-title', 'Employee premium must be atleast 50%');
         editvalidatedbgemployeepremiums = false;
         editvalidated = false;
+        return false;
 
-        return;
       }
     });
 
-    if ( editreferenceplanselections.length != $('.benefit-group-fields').length ) {
-      editvalidatedreferenceplanselections = true
-      editvalidated = true;
-
-    } else {
-      editselectedplan.each(function() {
-        if ( $(this).val() != 'undefined' ) {
+    $('.reference-steps').each(function() {
+      if ( $(this).is(':visible') && $(this).find('input:checked').length >= 3) {
+        console.log('valid');
+        editvalidatedreferenceplanselections = true
+        editvalidated = true;
+      } else if ( $(this).is(':hidden')) {
           editvalidatedreferenceplanselections = true
           editvalidated = true;
-
-        } else {
+      }
+        else {
+          $('.interaction-click-control-save-plan-year').attr('data-original-title', "Before you can save, you must finish your plan year selection. Click 'Cancel' above to keep your existing selection");
           editvalidatedreferenceplanselections = false
           editvalidated = false;
+          return false;
+      }
 
-          return;
-        }
-      });
-    }
+    });
 
 
     if ( editvalidatedbgtitles == true && editvalidatedbgemployeepremiums == true && editvalidatedreferenceplanselections == true ) {
-        $('.interaction-click-control-create-plan-year, .interaction-click-control-save-plan-year').removeClass('disabled');
+        $('.interaction-click-control-save-plan-year').removeAttr('data-original-title');
+        $('.interaction-click-control-save-plan-year').removeClass('disabled');
+        $('.interaction-click-control-save-plan-year').attr('data-original-title', 'Click here to save your plan year');
       } else {
-        $('.interaction-click-control-create-plan-year, .interaction-click-control-save-plan-year').addClass('disabled');
+        $('.interaction-click-control-save-plan-year').addClass('disabled');
       }
 
 
@@ -180,7 +185,6 @@ function getCarrierPlans(ep, ci) {
 
       bgtitles.each(function() {
       plantitle = $(this).val();
-      console.log(plantitle);
         if ( $(this).val().length > 0 && $('.plan-title input[value='+plantitle+']').size() < 2 ) {
           validatedbgtitles = true;
           validated = true;
@@ -189,26 +193,28 @@ function getCarrierPlans(ep, ci) {
           validated = false;
 
           return;
+          $('.interaction-click-control-create-plan-year').attr('data-original-title', 'Before you can save, each benefit group must have a unique title.');
+          validatedbgtitles = false;
+          validated = false;
+          return false;
         }
       });
       bgemployeepremiums.each(function() {
 
-        if ( parseInt($(this).val() ) >= parseInt(50) ) {
-          validatedbgemployeepremiums = true
+        if ( parseInt($(this).val()) >= parseInt(50) ) {
+          validatedbgemployeepremiums = true;
           validated = true;
-
         } else {
+          $('.interaction-click-control-create-plan-year').attr('data-original-title', 'Employee premium must be atleast 50%');
           validatedbgemployeepremiums = false;
           validated = false;
-
-          return;
+          return false;
         }
       });
 
       if ( referenceplanselections.length != $('.benefit-group-fields').length ) {
         validatedreferenceplanselections = false
         validated = false;
-
       } else {
         referenceplanselections.each(function() {
           if ( $(this).length && $(this).val() != 'undefined' ) {
@@ -216,19 +222,23 @@ function getCarrierPlans(ep, ci) {
             validated = true;
 
           } else {
+            $('.interaction-click-control-create-plan-year').attr('data-original-title', 'Each benefit group is required to have a reference plan selection before it can be saved');
             validatedreferenceplanselections = false
             validated = false;
-
-            return;
+            return false;
           }
         });
       }
 
 
       if ( validatedbgtitles == true && validatedbgemployeepremiums == true && validatedreferenceplanselections == true ) {
-          $('.interaction-click-control-create-plan-year, .interaction-click-control-save-plan-year').removeClass('disabled');
+          $('.interaction-click-control-create-plan-year').removeClass('disabled');
+          $('.interaction-click-control-create-plan-year').removeAttr('data-original-title');
+          $('.interaction-click-control-create-plan-year').attr('data-original-title', 'Click here to create your plan year');
+
+
         } else {
-          $('.interaction-click-control-create-plan-year, .interaction-click-control-save-plan-year').addClass('disabled');
+          $('.interaction-click-control-create-plan-year').addClass('disabled');
         }
 
 
