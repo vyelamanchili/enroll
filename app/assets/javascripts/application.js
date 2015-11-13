@@ -62,6 +62,13 @@ function dchbx_enroll_date_of_record() {
 $(document).on('page:update', function(){
   applyFloatLabels();
   applySelectric();
+
+  $(document).on('change','.plan-title input', function() {
+    $(this).attr('value', $(this).val());
+  });
+
+
+
   //validate plan year create for title, referencce plan, and premium Percentage
   if (window.location.href.indexOf("edit") > -1 && window.location.href.indexOf("plan_years") > -1) {
     $('.interaction-click-control-save-plan-year').removeClass('disabled');
@@ -172,8 +179,9 @@ function getCarrierPlans(ep, ci) {
       referenceplanselections = $('.reference-plan input[type=radio]:checked');
 
       bgtitles.each(function() {
-
-        if ( $(this).val().length > 0 ) {
+      plantitle = $(this).val();
+      console.log(plantitle);
+        if ( $(this).val().length > 0 && $('.plan-title input[value='+plantitle+']').size() < 2 ) {
           validatedbgtitles = true;
           validated = true;
         } else {
