@@ -43,6 +43,13 @@
  .pz {
    padding: 0;
  }
+ .mz {
+   margin: 0;
+   margin-top: 0;
+   margin-right: 0;
+   margin-bottom: 0;
+   margin-left: 0;
+ }
  .btn, button {
    &.btn-trans {
      border: solid 1px #b2b2b2;
@@ -93,7 +100,7 @@
        &.btn-small {
          font-size: 14px;
          padding: 8px 14px;
-         
+
        }
 
      .fa {
@@ -255,4 +262,23 @@
 }
 .fa-question-circle {
     color: #007bc4;
+}
+
+// MOVE THIS TO EMPLOYER.SCSS AFTER DEVELOPMENT IN PROMOTED INTO RELEASE-1.2 (11/13/2015)
+#inbox_form {
+  .inboxes {
+    display: inline-block;
+    float: right;
+  }
+  a {
+    display: inline-block;
+    margin-bottom: 10px;
+    padding: 6px 4px;
+    &.active {
+      font-size: 16px;
+      font-weight: 600;
+      &>span {
+      }
+    }
+  }
 }
