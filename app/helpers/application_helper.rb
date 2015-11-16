@@ -298,7 +298,7 @@ module ApplicationHelper
     when "Person"
       insured_inbox_path(provider, message_id: message.id)
     when "EmployerProfile"
-      employers_inbox_path(provider, message_id: message.id)
+      employers_employer_profile_path(provider, message_id: message.id, tab: 'inbox')
     when "BrokerAgencyProfile"
       broker_agencies_inbox_path(provider, message_id: message.id)
     when "HbxProfile"

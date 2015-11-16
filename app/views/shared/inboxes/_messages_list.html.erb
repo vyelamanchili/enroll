@@ -8,11 +8,11 @@
     <span class="inboxes">
       <% if params[:folder] == 'inbox' %>
     <%= link_to(employers_employer_profile_path(:employer_profile_id=>@employer_profile.id, tab: 'inbox', folder: 'inbox'), class: 'active') do %>
-      Inbox <span class="badge message-badge pull-right"><%= @employer_profile.inbox.unread_messages.size %></span>
+      Inbox &nbsp;<span class="badge message-badge pull-right"><%= @employer_profile.inbox.unread_messages.size %></span>
     <% end %> |
     <% else %>
     <%= link_to(employers_employer_profile_path(:employer_profile_id=>@employer_profile.id, tab: 'inbox', folder: 'inbox')) do %>
-      Inbox <span class="badge message-badge pull-right"><%= @employer_profile.inbox.unread_messages.size %></span>
+      Inbox &nbsp;<span class="badge message-badge pull-right"><%= @employer_profile.inbox.unread_messages.size %></span>
     <% end %> |
       <% end %>
     <% if @sent_box == true %>

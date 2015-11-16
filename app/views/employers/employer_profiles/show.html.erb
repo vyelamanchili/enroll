@@ -14,6 +14,8 @@
 <%= render partial: "employers/employer_profiles/my_account/benefits" %>
 <%- elsif @tab == 'brokers' %>
 <%= render partial: "employers/employer_profiles/my_account/broker_agency" %>
+<%- elsif @tab == 'inbox' && params.has_key?(:message_id) %>
+<%= render :partial => 'shared/inboxes/message' %>
 <%- elsif @tab == 'inbox' %>
 <%= render :partial => 'shared/inboxes/messages_list' %>
 <%- elsif @tab == 'documents' %>

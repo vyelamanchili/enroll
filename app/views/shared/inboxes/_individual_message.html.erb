@@ -1,13 +1,12 @@
-<tr class='<%=message.message_read==true ? "msg-inbox-read" : ""%>'>
-  <td> <%= message.try(:from) if @folder == 'Inbox' %>
-   <%= message.try(:to)   if @folder == 'Sent'%>
- </td>
- <td> <%=message.created_at %>
-  <td> <%= message.try(:subject) %> </td>
-  <td> <%#= link_to "show", polymorphic_path([:insured, :family, provider.inbox, message]), class: "btn btn-primary", remote: true %>
-    <%- if @folder != 'Deleted' %>
-    <%= link_to "Delete", retrieve_show_path(provider, message), class: "btn btn-trans btn-small pull-right btn-right", method: :delete %>
-    <% end %>
-    <%= link_to "show", retrieve_show_path(provider, message), class: "btn btn-primary btn-br show_msg mtz btn-small pull-right" %>
-  </td>
-</tr>
+  <tr class='<%=message.message_read==true ? "msg-inbox-read" : ""%>' onclick="window.location='<%=retrieve_show_path(provider, message) %>'">
+    <td> <%= message.try(:from) if @folder == 'Inbox' %>
+     <%= message.try(:to)   if @folder == 'Sent'%>
+   </td>
+   <td> <%=message.created_at %>
+    <td> <%= message.try(:subject) %> </td>
+    <td> <%#= link_to "show", polymorphic_path([:insured, :family, provider.inbox, message]), class: "btn btn-primary", remote: true %>
+      <%- if @folder != 'Deleted' %>
+      <%= link_to '<i class="fa fa-trash-o fa-2x"></i>'.html_safe, retrieve_show_path(provider, message), class: "pull-right", method: :delete %>
+      <% end %>
+    </td>
+  </tr>
