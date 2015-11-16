@@ -5,9 +5,9 @@
  <td> <%=message.created_at %>
   <td> <%= message.try(:subject) %> </td>
   <td> <%#= link_to "show", polymorphic_path([:insured, :family, provider.inbox, message]), class: "btn btn-primary", remote: true %>
-    <%= link_to "show", retrieve_show_path(provider, message), class: "btn btn-primary show_msg mz" %>
     <%- if @folder != 'Deleted' %>
-    <%= link_to "Delete", retrieve_show_path(provider, message), class: "btn btn-trans", method: :delete %>
+    <%= link_to "Delete", retrieve_show_path(provider, message), class: "btn btn-trans btn-small pull-right btn-right", method: :delete %>
     <% end %>
+    <%= link_to "show", retrieve_show_path(provider, message), class: "btn btn-primary btn-br show_msg mtz btn-small pull-right" %>
   </td>
 </tr>
