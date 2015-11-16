@@ -20,7 +20,7 @@
  *= require open_sans
  *= require selectric
  *= require responsive
- *= require new
+ *= require employer
  *= require text_styles
  *= require brokers
  *= require insured
@@ -28,6 +28,8 @@
  *= require bootstrap-slider
  *= require_self
  */
+
+
 .clear {
   clear: both;
 }
@@ -49,30 +51,56 @@
    margin-right: 0;
    margin-bottom: 0;
    margin-left: 0;
+<<<<<<< HEAD
  }
  .bt-n {
    border-top: none;
+=======
+>>>>>>> development
  }
- .btn, button {
-   &.btn-trans {
-     border: solid 1px #b2b2b2;
-     font-weight: bold;
-     font-size: 16px;
-     color: #007bc4;
-     border-radius: 4px;
-     padding: 10px 20px;
-     &:last-of-type {
-       &.mz {
-         margin-right: 0;
-       }
-     }
+.btn, button {
+ &.btn-trans {
+   border: solid 1px #b2b2b2;
+   font-weight: bold;
+   font-size: 16px;
+   color: #007bc4;
+   border-radius: 4px;
+   padding: 10px 20px;
+   &:last-of-type {
      &.mz {
-       margin: 0;
        margin-right: 0;
      }
-     &:hover {
-       background-color: #ffffff;
-       border: solid 1px #007bc4;
+   }
+   &.mz {
+     margin: 0;
+     margin-right: 0;
+   }
+   &:hover {
+     background-color: #ffffff;
+     border: solid 1px #007bc4;
+   }
+ }
+ &.btn-right {
+   padding-right: 0;
+   margin-left: 5px;
+ }
+ &.btn-primary {
+     text-transform: uppercase;
+     padding: 10px 20px;
+     border-radius: 6px;
+     font-size: 16px;
+     letter-spacing: 1px;
+     border-top: none;
+     border-left: none;
+     border-right: none;
+     margin-top: 5px;
+     margin-right: 5px;
+     font-weight: 600;
+     &.mz {
+       margin: 0;
+     }
+     &.mtz {
+       margin-top: 0;
      }
      &.btn-small {
        font-size: 14px;
@@ -111,13 +139,22 @@
        color: #fff;
      }
 
+   .fa {
+     color: #fff;
    }
-   &.full-width {
-     padding: 10px 0;
-     width: 100%;
-     max-width: 100%;
-   }
+
  }
+ &.full-width {
+   padding: 10px 0;
+   width: 100%;
+   max-width: 100%;
+ }
+}
+// full width flash messenger style
+.container > .col-xs-12 > .row > .alert.alert-notice {
+  margin-top: 2.5%;
+  margin-bottom: 0;
+}
  .panel-border {
    border: solid 1px #d5d5d5;
  }
@@ -146,7 +183,7 @@
    border-right: solid 1px #ddd;
    text-align: right;
    &+.col-xs-7 {
-     padding: 10px 0 0;
+     padding: 11px 0 0;
      .top-menu {
        text-align: right;
        position: relative;

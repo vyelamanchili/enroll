@@ -135,9 +135,10 @@ def scroll_then_click(element)
   element
 end
 
-def click_when_present(element)
+def click_when_present(element, wait_until_gone = false)
   element.wait_until_present
   scroll_then_click(element)
+  element.wait_while_present if wait_until_gone
 end
 
 def wait_and_confirm_text(text)
@@ -658,8 +659,10 @@ And(/I select three plans to compare/) do
     click_when_present(@browser.a(text: "COMPARE PLANS"))
     @browser.h1(text: /Choose Plan - Compare Selected Plans/).wait_until_present
     expect(@browser.elements(:class => "plan_comparison").size).to eq 3
-    @browser.button(text: 'Close').wait_until_present
-    @browser.button(text: 'Close').click
+    @browser.button(id: 'btnPrint').wait_until_present
+    close_button = @browser.button(text: 'Close')
+    click_when_present(close_button)
+    close_button.wait_while_present
   end
 end
 

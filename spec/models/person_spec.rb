@@ -259,7 +259,7 @@ describe Person do
           expect(person.has_active_employee_role?).to eq false
         end
       end
-      
+
       context "with invalid Tribal Id" do
         let(:params) {valid_params.deep_merge({tribal_id: "12124"})}
 
@@ -272,7 +272,7 @@ describe Person do
           expect(person.errors[:base]).to eq ["Tribal id must be 9 digits"]
         end
       end
-      
+
 
       context "has_active_consumer_role?" do
         let(:person) {FactoryGirl.build(:person)}
@@ -488,6 +488,12 @@ describe Person do
   describe '#full_name' do
     it 'returns the concatenated name attributes' do
       expect(Person.new(first_name: "Ginger", last_name: "Baker").full_name).to eq 'Ginger Baker'
+    end
+  end
+
+  describe '#first_name_last_name_and_suffix' do
+    it 'returns the concatenated name attributes first name, last name, and suffix' do
+      expect(Person.new(first_name: "Ginger", last_name: "Baker", name_sfx: 'Ph.D.').first_name_last_name_and_suffix).to eq 'Ginger Baker Ph.D.'
     end
   end
 

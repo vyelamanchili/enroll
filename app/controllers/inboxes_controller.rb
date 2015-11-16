@@ -1,4 +1,5 @@
 class InboxesController < ApplicationController
+  before_action :find_employer
   before_action :find_inbox_provider, except: [:msg_to_portal]
   before_action :find_hbx_profile, only: [:new, :create]
   before_action :find_message, only: [:show, :destroy]
