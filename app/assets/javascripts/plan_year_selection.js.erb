@@ -16,7 +16,6 @@ ready = function() {
       original_ref = $(this).closest('.benefit-group-fields').find('.ref-plan').val();
     });
     $('.cancel-plan-change').on('click', function() {
-      validateEditPlanYear();
       $(this).closest('.benefit-group-fields').find('.nav-tabs li label').css({borderBottom: "solid 3px #003260", borderBottomLeftRadius: "6px", borderBottomRightRadius: "6px" });
       $(this).closest('.benefit-group-fields').find('.edit-offering').show();
       $(this).closest('.benefit-group-fields').find('.reference-steps input').prop('checked', false);
@@ -27,6 +26,8 @@ ready = function() {
       $(this).closest('.benefit-group-fields').find('.select-reference').hide();
       $(this).closest('.benefit-group-fields').find('.reference-plans').hide();
       $(this).closest('.reference-steps').hide();
+      $('.interaction-click-control-save-plan-year').removeClass('disabled');
+      validateEditPlanYear();
 
     });
       start_on = $("#plan_year_start_on").val().substr(0,4);

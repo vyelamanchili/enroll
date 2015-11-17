@@ -76,20 +76,5 @@ RSpec.describe UnassistedPlanCostDecorator, dbclean: :after_each do
         expect(plan_cost_decorator.total_premium).to eq [father, mother, one, two, three, four, five].collect(&:age_on_effective_date).sum
       end
     end
-
-    context "with a dental plan" do
-      let(:plan)            {dental_plan}
-      it "should have a premium for four" do
-        expect(plan_cost_decorator.premium_for(four)).to eq 11.0
-      end
-
-      it "should have a premium for five" do
-        expect(plan_cost_decorator.premium_for(five)).to eq 4.0
-      end
-
-      it "should have the right total premium" do
-        expect(plan_cost_decorator.total_premium).to eq [55, 45, 20, 18, 13, 11, 4].sum
-      end
-    end
   end
 end

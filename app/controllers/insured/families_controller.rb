@@ -1,5 +1,6 @@
 class Insured::FamiliesController < FamiliesController
   include VlpDoc
+  include Acapi::Notifiers
 
   before_action :init_qualifying_life_events, only: [:home, :manage_family, :find_sep]
   before_action :check_for_address_info, only: [:find_sep]
@@ -9,6 +10,7 @@ class Insured::FamiliesController < FamiliesController
     set_bookmark_url
 
     @hbx_enrollments = @family.enrollments.order(effective_on: :desc, coverage_kind: :desc) || []
+    log("#3860 person_id: #{@person.id}", {:severity => "error"}) if @hbx_enrollments.any?{|hbx| hbx.plan.blank?}
     @waived_hbx_enrollments = @family.active_household.hbx_enrollments.waived.to_a
     update_changing_hbxs(@hbx_enrollments)
     @waived = @family.coverage_waived?
@@ -73,6 +75,7 @@ class Insured::FamiliesController < FamiliesController
 
     @family_members = @family.active_family_members
     @vlp_doc_subject = get_vlp_doc_subject_by_consumer_role(@person.consumer_role) if @person.has_active_consumer_role?
+    @person.consumer_role.build_nested_models_for_person if @person.has_active_consumer_role?
     respond_to do |format|
       format.html
     end
@@ -86,8 +89,7 @@ class Insured::FamiliesController < FamiliesController
 
   def documents_index #changed
     @time_to = Time.now + 90.days
-    @family_members = @person.primary_family.family_members
-
+    @family_members = @person.primary_family.family_members.active
   end
 
   def document_upload #changed
@@ -127,6 +129,13 @@ class Insured::FamiliesController < FamiliesController
       else
         @plan = UnassistedPlanCostDecorator.new(plan, @enrollment)
       end
+
+      begin 
+        @plan.name
+      rescue => e
+        log("#{e.message};  #3742 plan: #{@plan}, family_id: #{@family.id}, hbx_enrollment_id: #{@enrollment.id}", {:severity => "error"})
+      end
+
       @enrollable = @family.is_eligible_to_enroll?
 
       @change_plan = params[:change_plan].present? ? params[:change_plan] : ''

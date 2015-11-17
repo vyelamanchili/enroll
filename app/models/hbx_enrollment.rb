@@ -115,6 +115,7 @@ class HbxEnrollment
 
   scope :terminated, -> { where(:aasm_state.in => TERMINATED_STATUSES, :terminated_on.gte => TimeKeeper.date_of_record.beginning_of_day) }
   scope :show_enrollments, -> { any_of([enrolled.selector, renewing.selector, terminated.selector]) }
+  scope :with_plan, -> { where(:plan_id.ne => nil) }
 
   embeds_many :workflow_state_transitions, as: :transitional
 
@@ -433,6 +434,28 @@ class HbxEnrollment
     benefit_group.effective_on_for(employee_role.hired_on)
   end
 
+  def self.calculate_effective_on_from(market_kind: 'shop', qle: false, family: nil, employee_role: nil, benefit_group: nil, benefit_sponsorship: HbxProfile.current_hbx.benefit_sponsorship)
+    return nil if family.blank?
+
+    case market_kind
+    when 'shop'
+      if qle and family.is_under_special_enrollment_period?
+        family.current_sep.effective_on
+      else
+        benefit_group.effective_on_for(employee_role.hired_on)
+      end
+    when 'individual'
+      if qle and family.is_under_special_enrollment_period?
+        family.current_sep.effective_on
+      else
+        benefit_sponsorship.current_benefit_period.earliest_effective_date
+      end
+    end
+  rescue => e
+    log(e.message, {:severity => "error"})
+    nil
+  end
+
   def self.new_from(employee_role: nil, coverage_household:, benefit_group: nil, consumer_role: nil, benefit_package: nil, qle: false, submitted_at: nil)
     enrollment = HbxEnrollment.new
 
@@ -593,7 +616,6 @@ class HbxEnrollment
     state :inactive   # :after_enter inform census_employee
 
     state :auto_renewing
-    state :renewing_passive
     state :renewing_waived
     state :renewing_coverage_selected
     state :renewing_transmitted_to_carrier
@@ -677,6 +699,7 @@ class HbxEnrollment
     elsif plan.present? && consumer_role.present?
       UnassistedPlanCostDecorator.new(plan, self)
     else
+      log("#3835 hbx_enrollment without benefit_group and consumer_role. hbx_enrollment_id: #{self.id}, plan: #{plan}", {:severity => "error"})
       OpenStruct.new(:total_premium => 0.00, :total_employer_contribution => 0.00, :total_employee_cost => 0.00)
     end
   end

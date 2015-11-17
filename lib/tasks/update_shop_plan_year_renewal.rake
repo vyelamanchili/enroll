@@ -4,29 +4,31 @@ namespace :update_shop do
     changed_count = 0
 
     employers = {
-      # "RehabFocus LLC" => "711024079",
-      # "Hooks Solutions LLC" => "331138193",
-      # "Don Ciccio & Figli" => "263057381",
-      # # "Elevate Interval Fitness LLC" => "463256626",
-      # "Garner & Associates LLC" => "2735787
-      # "Set Sports Physical Therapy PLLC" => "010887598",
-      # "ICWA" => "131621044",
-      # "Game Change LLC" => "460937444",
-      # "ADW Capital Management, LLC" => "471516657",
-      # "NSight365 LLC" => "465732698",
-      # "The New LeDroit Park Building Company" => "454467977",
-      # "Hattie Ruttenberg" => "133712482",
-      # "Cap 8 Doors & Hardware" => "455162389",
-      # "District Restaurant Group" => "274667942",
-      # "GWHCC" => "223860377",
-      # "Arab Center Washington DC" => "464736138",
-      # "Morales Public Relations" => "462817580",
-      # "Alter Modus International Corporation" => "260376753",
-      # "Annie's Ace Hardware" => "272665426",
-      # "Arturo Ardila-Gomez" => "451474721"
-      
-      "Member-US House of Rep." => "536002522",
+      "RehabFocus LLC" => "711024079",
+      "Hooks Solutions LLC" => "331138193",
+      "Don Ciccio & Figli" => "263057381",
+      "Elevate Interval Fitness LLC" => "463256626",
+      "Garner & Associates LLC" => "273578793",
+      "Set Sports Physical Therapy PLLC" => "010887598",
+      "ICWA" => "131621044",
+      "Game Change LLC" => "460937444",
+      "NSight365 LLC" => "465732698",
+      "The New LeDroit Park Building Company" => "454467977",
+      "Hattie Ruttenberg" => "133712482",
+      "Cap 8 Doors & Hardware" => "455162389",
+      "District Restaurant Group" => "274667942",
+      "GWHCC" => "223860377",
+      "Annie's Ace Hardware" => "272665426",
+      "Arturo Ardila-Gomez" => "451474721",
+      "Morales Public Relations" => "462817580",
+      "Alter Modus International Corporation" => "260376753",
 
+      # "Arab Center Washington DC" => "464736138",
+      # "ADW Capital Management, LLC" => "471516657",
+
+      # "Member-US House of Rep." => "536002522",
+      # "STAFF US House of Representatives" => "536002523",
+      # "United States Senate" => "536002558",
     }
 
     employers.each do |name, fein|
@@ -53,7 +55,7 @@ namespace :update_shop do
 
         renewal_factory = Factories::PlanYearRenewalFactory.new
         renewal_factory.employer_profile = employer
-        renewal_factory.is_congress = true
+        renewal_factory.is_congress = false
         renewal_factory.renew
         changed_count += 1
       rescue => e
@@ -68,35 +70,34 @@ namespace :update_shop do
   task :family_enrollment_renewal => :environment do
 
     employers = {
-      # "RehabFocus LLC" => "711024079",
-      # "Hooks Solutions LLC" => "331138193",
-      # "Don Ciccio & Figli" => "263057381",
-      # # "Elevate Interval Fitness LLC" => "463256626",
-      # "Garner & Associates LLC" => "273578793",
-      # "Set Sports Physical Therapy PLLC" => "010887598",
-      # "ICWA" => "131621044",
-      # "Game Change LLC" => "460937444",
-      # "ADW Capital Management, LLC" => "471516657",
-      # "NSight365 LLC" => "465732698",
-      # "The New LeDroit Park Building Company" => "454467977",
-      # "Hattie Ruttenberg" => "133712482",
-      # "Cap 8 Doors & Hardware" => "455162389",
-      # "District Restaurant Group" => "274667942",
-      # "GWHCC" => "223860377",
-      # "Arab Center Washington DC" => "464736138",
-      # "Annie's Ace Hardware" => "272665426",
-      # "Arturo Ardila-Gomez" => "451474721",
-      # "Morales Public Relations" => "462817580",
-      # "Alter Modus International Corporation" => "260376753",
+      "RehabFocus LLC" => "711024079",
+      "Hooks Solutions LLC" => "331138193",
+      "Don Ciccio & Figli" => "263057381",
+      "Elevate Interval Fitness LLC" => "463256626",
+      "Garner & Associates LLC" => "273578793",
+      "Set Sports Physical Therapy PLLC" => "010887598",
+      "ICWA" => "131621044",
+      "Game Change LLC" => "460937444",
+      "NSight365 LLC" => "465732698",
+      "The New LeDroit Park Building Company" => "454467977",
+      "Hattie Ruttenberg" => "133712482",
+      "Cap 8 Doors & Hardware" => "455162389",
+      "District Restaurant Group" => "274667942",
+      "GWHCC" => "223860377",
+      "Annie's Ace Hardware" => "272665426",
+      "Arturo Ardila-Gomez" => "451474721",
+      "Morales Public Relations" => "462817580",
+      "Alter Modus International Corporation" => "260376753",
 
-      "Member-US House of Rep." => "536002522",
+      # "Arab Center Washington DC" => "464736138",
+      # "ADW Capital Management, LLC" => "471516657",
+
+      # "Member-US House of Rep." => "536002522",
       # "STAFF US House of Representatives" => "536002523",
       # "United States Senate" => "536002558",
-
     }
 
     employers.each do |name, fein|
-      begin
         puts "Processing employer: #{name}"
         employer = EmployerProfile.find_by_fein(fein)
         if employer.blank?
@@ -107,42 +108,51 @@ namespace :update_shop do
         changed_count = 0
         family_missing = 0
 
+        default_benefit_group = employer.default_benefit_group
+        renewing_group = employer.renewing_plan_year.benefit_groups.first
+
+        employer.census_employees.exists("benefit_group_assignments" => false).each do |ce|
+          ce.add_benefit_group_assignment(default_benefit_group, default_benefit_group.start_on)
+          ce.add_renew_benefit_group_assignment(renewing_group)
+          ce.save!
+        end
+
         employer.census_employees.non_terminated.each do |ce|
-          person = Person.where(encrypted_ssn: Person.encrypt_ssn(ce.ssn)).first
-          if person.blank?
-            employee_role, family = Factories::EnrollmentFactory.add_employee_role(
-                                                                                    first_name: ce.first_name,
-                                                                                    last_name: ce.last_name,
-                                                                                    ssn: ce.ssn, 
-                                                                                    dob: ce.dob,
-                                                                                    employer_profile: employer,
-                                                                                    gender: ce.gender,
-                                                                                    hired_on: ce.hired_on
-                                                                                  )
-            puts "created person record for #{ce.full_name}"
-          end
+          puts "  renewing: #{ce.full_name}"
+          begin
+            person = Person.where(encrypted_ssn: Person.encrypt_ssn(ce.ssn)).first
 
-          family = person.primary_family if family.blank?
+            if person.blank?
+              employee_role, family = Factories::EnrollmentFactory.add_employee_role({
+                first_name: ce.first_name,
+                last_name: ce.last_name,
+                ssn: ce.ssn, 
+                dob: ce.dob,
+                employer_profile: employer,
+                gender: ce.gender,
+                hired_on: ce.hired_on
+              })
+              puts "created person record for #{ce.full_name}"
+            end
 
-        #   if family.blank?
-        #     Factories::EnrollmentFactory.build_employee_role(
-        #        person, false, employer, ce, ce.hired_on
-        # )
-        #   end
+            if family.blank?
+              family = person.primary_family
+            end
 
-          if family.nil?
-            puts "family missing for #{ce.full_name}"
-            family_missing += 1
-          else
-          # if family.enrollments.any?
-            puts "  renewing: #{ce.full_name}"
-            factory = Factories::FamilyEnrollmentRenewalFactory.new
-            factory.family = family
-            factory.census_employee = ce
-            factory.renew
-
-            changed_count += 1
-            puts "  renewed: #{ce.full_name}"
+            if family.present?
+              factory = Factories::FamilyEnrollmentRenewalFactory.new
+              factory.family = family
+              factory.census_employee = ce
+              if factory.renew
+                changed_count += 1
+                puts "  renewed: #{ce.full_name}"
+              end
+            else
+              puts "family missing for #{ce.full_name}"
+              family_missing += 1
+            end
+          rescue => e
+            puts e.to_s
           end
         end
 
@@ -170,11 +180,8 @@ namespace :update_shop do
         #     puts "  no active enrollments for: #{family.primary_family_member.full_name}"
         #   end
         # end
-      rescue => e
-        puts e.to_s
-      end
+
       puts "Processed #{employer.census_employees.non_terminated.count} census employees, renewed #{changed_count} families, missing #{family_missing} families"
     end
-
   end
 end

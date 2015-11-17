@@ -62,6 +62,14 @@ function dchbx_enroll_date_of_record() {
 $(document).on('page:update', function(){
   applyFloatLabels();
   applySelectric();
+
+  $(document).on('change','.plan-title input', function() {
+    var planTitle = $(this).val()
+    $(this).attr("value", "\"planTitle\"");
+  });
+
+
+
   //validate plan year create for title, referencce plan, and premium Percentage
   if (window.location.href.indexOf("edit") > -1 && window.location.href.indexOf("plan_years") > -1) {
     $('.interaction-click-control-save-plan-year').removeClass('disabled');
@@ -109,15 +117,17 @@ function getCarrierPlans(ep, ci) {
     editselectedplan = $('input.ref-plan');
 
     editbgtitles.each(function() {
-
-      if ( $(this).val().length > 0 ) {
+      editplantitle = $(this).val();
+      if ( $(this).val().length > 0 && $('.plan-title input[value=' + "\"editplantitle\"" + ']').size() < 2 ) {
         editvalidatedbgtitles = true;
         editvalidated = true;
+
       } else {
+        $('.interaction-click-control-save-plan-year').attr('data-original-title', 'Before you can save, each benefit group must have a unique title.');
         editvalidatedbgtitles = false;
         editvalidated = false;
+        return false;
 
-        return;
       }
     });
     editbgemployeepremiums.each(function() {
@@ -127,37 +137,39 @@ function getCarrierPlans(ep, ci) {
         editvalidated = true;
 
       } else {
+        $('.interaction-click-control-save-plan-year').attr('data-original-title', 'Employee premium must be atleast 50%');
         editvalidatedbgemployeepremiums = false;
         editvalidated = false;
+        return false;
 
-        return;
       }
     });
 
-    if ( editreferenceplanselections.length != $('.benefit-group-fields').length ) {
-      editvalidatedreferenceplanselections = true
-      editvalidated = true;
-
-    } else {
-      editselectedplan.each(function() {
-        if ( $(this).val() != 'undefined' ) {
+    $('.reference-steps').each(function() {
+      if ( $(this).is(':visible') && $(this).find('input:checked').length >= 3) {
+        console.log('valid');
+        editvalidatedreferenceplanselections = true
+        editvalidated = true;
+      } else if ( $(this).is(':hidden')) {
           editvalidatedreferenceplanselections = true
           editvalidated = true;
-
-        } else {
+      }
+        else {
+          $('.interaction-click-control-save-plan-year').attr('data-original-title', "Before you can save, you must finish your plan year selection. Click 'Cancel' above to keep your existing selection");
           editvalidatedreferenceplanselections = false
           editvalidated = false;
+          return false;
+      }
 
-          return;
-        }
-      });
-    }
+    });
 
 
     if ( editvalidatedbgtitles == true && editvalidatedbgemployeepremiums == true && editvalidatedreferenceplanselections == true ) {
-        $('.interaction-click-control-create-plan-year, .interaction-click-control-save-plan-year').removeClass('disabled');
+        $('.interaction-click-control-save-plan-year').removeAttr('data-original-title');
+        $('.interaction-click-control-save-plan-year').removeClass('disabled');
+        $('.interaction-click-control-save-plan-year').attr('data-original-title', 'Click here to save your plan year');
       } else {
-        $('.interaction-click-control-create-plan-year, .interaction-click-control-save-plan-year').addClass('disabled');
+        $('.interaction-click-control-save-plan-year').addClass('disabled');
       }
 
 
@@ -172,62 +184,77 @@ function getCarrierPlans(ep, ci) {
       referenceplanselections = $('.reference-plan input[type=radio]:checked');
 
       bgtitles.each(function() {
-
-        if ( $(this).val().length > 0 ) {
+      plantitle = $(this).val();
+        if ( $(this).val().length > 0 && $('.plan-title input[value='+plantitle+']').size() < 2 ) {
           validatedbgtitles = true;
           validated = true;
+
         } else {
+          $('.interaction-click-control-create-plan-year').attr('data-original-title', 'Before you can save, each benefit group must have a unique title.');
           validatedbgtitles = false;
           validated = false;
-
-          return;
+          return false;
         }
       });
       bgemployeepremiums.each(function() {
 
-        if ( parseInt($(this).val() ) >= parseInt(50) ) {
-          validatedbgemployeepremiums = true
+        if ( parseInt($(this).val()) >= parseInt(50) ) {
+          validatedbgemployeepremiums = true;
           validated = true;
-
         } else {
+          $('.interaction-click-control-create-plan-year').attr('data-original-title', 'Employee premium must be atleast 50%');
           validatedbgemployeepremiums = false;
           validated = false;
-
-          return;
+          return false;
         }
       });
 
       if ( referenceplanselections.length != $('.benefit-group-fields').length ) {
-        validatedreferenceplanselections = false
+        validatedreferenceplanselections = false;
         validated = false;
-
       } else {
         referenceplanselections.each(function() {
           if ( $(this).length && $(this).val() != 'undefined' ) {
-            validatedreferenceplanselections = true
+            validatedreferenceplanselections = true;
             validated = true;
 
           } else {
+            $('.interaction-click-control-create-plan-year').attr('data-original-title', 'Each benefit group is required to have a reference plan selection before it can be saved');
             validatedreferenceplanselections = false
             validated = false;
-
-            return;
+            return false;
           }
         });
       }
 
 
       if ( validatedbgtitles == true && validatedbgemployeepremiums == true && validatedreferenceplanselections == true ) {
-          $('.interaction-click-control-create-plan-year, .interaction-click-control-save-plan-year').removeClass('disabled');
+          $('.interaction-click-control-create-plan-year').removeClass('disabled');
+          $('.interaction-click-control-create-plan-year').removeAttr('data-original-title');
+          $('.interaction-click-control-create-plan-year').attr('data-original-title', 'Click here to create your plan year');
+
+
         } else {
-          $('.interaction-click-control-create-plan-year, .interaction-click-control-save-plan-year').addClass('disabled');
+          $('.interaction-click-control-create-plan-year').addClass('disabled');
         }
 
 
 
 }
 
-
+// disabled enter key submitting disabeld forms in firefox -- add this to any element in the page onKeyPress="return disableEnterKey(event)"
+function disableEnterKey(e)
+{
+  var key;
+  if(window.event)
+    key = window.event.keyCode;     //IE
+  else
+    key = e.which;     //firefox
+  if(key == 13)
+    return false;
+  else
+    return true;
+}
 
 // modal input type file clicks
 $(document).on('click', '#modal-wrapper div label', function(){
@@ -391,14 +418,18 @@ $(document).ready(function () {
     })
   }
 
-  $('#address_info + span.form-action').toggleClick(function () {
-    $(this).text('Remove Mailing Address');
-    $('.row-form-wrapper.mailing-div').show();
-  }, function () {
-    $(this).text('Add Mailing Address');
-    $('.mailing-div').hide();
-    $('.mailing-div input').val("");
-    $('.mailing-div .label-floatlabel').hide();
+
+  $(document).on('click', '#address_info + span.form-action', function(){
+    if ($(this).text() == "Add Mailing Address"){
+      $(this).text('Remove Mailing Address');
+      $('.row-form-wrapper.mailing-div').show();
+    }else if ($(this).text() == "Remove Mailing Address"){
+      $(this).text('Add Mailing Address');
+      $('.mailing-div').hide();
+      $(".mailing-div input[type='text']").val("");
+      $('.mailing-div .label-floatlabel').hide();
+      $('.mailing-div #state_id').prop('selectedIndex', 0).selectric('refresh');
+    }
   });
 
 
@@ -406,6 +437,16 @@ $(document).ready(function () {
   // $('#plan_year input,select').click(function(){
   //   $('#plan_year .alert-error').fadeOut(2000);
   // });
+
+  // personal form js
+
+  $( "#new_person" ).submit(function( event ) {
+    $('#person_first_name, #person_middle_name, #person_last_name').each(function() {
+      var name = $(this).val();
+      var trimmed_name = $.trim(name)
+      $(this).val(trimmed_name);
+    });
+  });
 
   // personal-info-row focus fields
   $(document).on('focusin', 'input.form-control', function() {
@@ -665,6 +706,18 @@ $(document).ready(function () {
   $(".area_code").mask("999");
   $(".phone_number7").mask("999-9999");
   $("#tribal_id").mask("999999999");
+
+  $(document).on('focusout', "#person_ssn, .mask-ssn", function(){
+    var ssn_val = $(this).val();
+    ssn_patt1=/^000/;
+    ssn_patt2=/^666/;
+    ssn_patt3=/^....00/;
+    ssn_patt4=/000$/;
+    if (ssn_val.match(ssn_patt1) || ssn_val.match(ssn_patt2) || ssn_val.match(ssn_patt3) || ssn_val.match(ssn_patt4) ) {
+      $(this).val("SSN is INVALID");
+    }
+  });
+
 
   $("#person_ssn").focusout(function( event ) {
     if(!$.isNumeric($(this).val())) {
