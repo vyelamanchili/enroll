@@ -39,6 +39,14 @@ class InboxesController < ApplicationController
         flash[:notice] = "Successfully deleted inbox message."
         redirect_to employers_employer_profile_path(employer.id, :tab=>'inbox', :folder=>'inbox')
       end
+    elsif
+      person = Person.find(params[:person_id])
+      message = person.inbox.messages.where(id: params[:message_id]).first
+      message.update_attributes(folder: Message::FOLDER_TYPES[:deleted])
+      if person.inbox.save
+        flash[:notice] = "Successfully deleted inbox message."
+        redirect_to inbox_insured_families_path(person.id, :tab=>'messages', :folder=>'inbox')
+      end
     else
       @message.update_attributes(folder: Message::FOLDER_TYPES[:deleted])
     end

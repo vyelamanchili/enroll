@@ -1,5 +1,5 @@
 <div class="row">
-
+  <% if @person.inbox.messages.size > 0 %>
   <div id="inbox_form" class="col-xs-12">
     <span class="inboxes">
       <% if params[:folder] == 'inbox' %>
@@ -43,6 +43,7 @@
           <th> <%= @folder %>: FROM</th>
           <th> Date  </th>
           <th>Subject</th>
+          <th></th>
         </tr>
       </thead>
 
@@ -54,4 +55,7 @@
     </table>
   </div>
   <div id="show_message_form"></div>
+  <% else %>
+  <h4 class="starter">Your inbox is currently empty.<!-- To view your deleted messages, <%= link_to 'click here',employers_employer_profile_path(:employer_profile_id=>@employer_profile.id, tab: 'inbox', folder: 'deleted') %>.--></h4>
+  <% end %>
 </div>
