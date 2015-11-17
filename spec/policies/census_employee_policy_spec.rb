@@ -10,7 +10,7 @@ describe CensusEmployeePolicy do
 
   permissions :delink? do
     context "already linked" do
-      let(:employee) { FactoryGirl.build(:census_employee, employer_profile_id: employer_profile.id, aasm_state: "employee_role_linked") }
+      let(:employee) { FactoryGirl.build(:census_employee, employer_profile_id: employer_profile.id, aasm_state: "employee_role_confirmed") }
 
       context "with perosn with appropriate roles" do
         it "grants access when hbx_staff" do

@@ -51,7 +51,7 @@ class CensusEmployee < CensusMember
   index({"benefit_group_assignments.aasm_state" => 1})
 
 
-  scope :active,      ->{ any_in(aasm_state: ["eligible", "employee_role_linked"]) }
+  scope :active,      ->{ any_in(aasm_state: ["eligible", "employee_role_confirmed"]) }
   scope :terminated,  ->{ any_in(aasm_state: ["employment_terminated", "rehired"]) }
   scope :non_terminated, -> { where(:aasm_state.nin => ["employment_terminated", "rehired"]) }
 
@@ -81,7 +81,7 @@ class CensusEmployee < CensusMember
   }
 
   scope :unclaimed_matchable, ->(ssn, dob) {
-   linked_matched = unscoped.and(encrypted_ssn: CensusMember.encrypt_ssn(ssn), dob: dob, aasm_state: "employee_role_linked")
+   linked_matched = unscoped.and(encrypted_ssn: CensusMember.encrypt_ssn(ssn), dob: dob, aasm_state: "employee_role_confirmed")
    unclaimed_person = Person.where(encrypted_ssn: CensusMember.encrypt_ssn(ssn), dob: dob).detect{|person| person.employee_roles.length>0 && !person.user }
    unclaimed_person ? linked_matched : unscoped.and(id: {:$exists => false})
   }
@@ -304,7 +304,7 @@ class CensusEmployee < CensusMember
 
   aasm do
     state :eligible, initial: true
-    state :employee_role_linked
+    state :employee_role_confirmed
     state :employment_terminated
     state :rehired
 
@@ -313,15 +313,15 @@ class CensusEmployee < CensusMember
     end
 
     event :link_employee_role do
-      transitions from: :eligible, to: :employee_role_linked, :guard => :has_active_benefit_group_assignment?
+      transitions from: :eligible, to: :employee_role_confirmed, :guard => :has_active_benefit_group_assignment?
     end
 
     event :delink_employee_role, :guard => :has_no_hbx_enrollments? do
-      transitions from: :employee_role_linked, to: :eligible, :after => :clear_employee_role
+      transitions from: :employee_role_confirmed, to: :eligible, :after => :clear_employee_role
     end
 
     event :terminate_employee_role do
-      transitions from: [:eligible, :employee_role_linked], to: :employment_terminated
+      transitions from: [:eligible, :employee_role_confirmed], to: :employment_terminated
     end
   end
 

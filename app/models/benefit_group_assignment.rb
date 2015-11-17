@@ -84,7 +84,7 @@ class BenefitGroupAssignment
       transitions from: [:initialized, :coverage_selected, :coverage_renewing], to: :coverage_waived
     end
 
-    event :renew_coverage do 
+    event :renew_coverage do
       transitions from: :initialized , to: :coverage_renewing
     end
 
@@ -111,7 +111,7 @@ private
 
     if hbx_enrollment.present?
       self.errors.add(:hbx_enrollment, "benefit group missmatch") unless hbx_enrollment.benefit_group_id == benefit_group_id
-      self.errors.add(:hbx_enrollment, "employee_role missmatch") if hbx_enrollment.employee_role_id != census_employee.employee_role_id and census_employee.employee_role_linked?
+      self.errors.add(:hbx_enrollment, "employee_role missmatch") if hbx_enrollment.employee_role_id != census_employee.employee_role_id and census_employee.employee_role_confirmed?
     end
   end
 

@@ -48,7 +48,7 @@
           <% end %>
           </td>
           <% if @employer_profile.renewing_plan_year.present? %>
-          <td>
+          <td style="text-transform: capitalize;">
           <% if census_employee.renewal_benefit_group_assignment.present? %>
             <%= census_employee.renewal_benefit_group_assignment.benefit_group.title.capitalize %>
           <% end %>
@@ -60,7 +60,7 @@
           <% end %>
 
           <td style="text-transform: capitalize;"><%= census_employee.aasm_state.humanize %></td>
-          <td><%= enrollment_state(census_employee) %></td>
+          <td style="text-transform: capitalize;"><%= enrollment_state(census_employee) %></td>
 
           <td class="table-functions">
             <!--<i class="fa fa-times-circle-o fa-2x"></i>-->

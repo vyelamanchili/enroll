@@ -202,7 +202,7 @@ RSpec.describe Factories::EnrollmentFactory, :dbclean => :after_each do
       end
 
       it "should link the employee role" do
-        expect(@employee_role.census_employee.employee_role_linked?).to be_truthy
+        expect(@employee_role.census_employee.employee_role_confirmed?).to be_truthy
       end
     end
 
@@ -254,7 +254,7 @@ RSpec.describe Factories::EnrollmentFactory, :dbclean => :after_each do
       end
 
       it "should link the employee role" do
-        expect(@employee_role.census_employee.employee_role_linked?).to be_truthy
+        expect(@employee_role.census_employee.employee_role_confirmed?).to be_truthy
       end
 
       it "should have a valid census employee on the employee role" do
