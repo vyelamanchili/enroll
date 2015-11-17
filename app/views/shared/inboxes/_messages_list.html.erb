@@ -3,6 +3,7 @@
     <h1 class="darkblue mz">Messages</h1>
   </div>
 
+  <% if @employer_profile.inbox.messages.size > 0 %>
   <div>
   <div id="inbox_form" class="col-xs-12 no-pd">
     <span class="inboxes">
@@ -62,4 +63,7 @@
   </div>
     <div id="show_message_form"></div>
   </div>
+  <% else %>
+  <h4 class="starter">Your inbox is currently empty.<!-- To view your deleted messages, <%= link_to 'click here',employers_employer_profile_path(:employer_profile_id=>@employer_profile.id, tab: 'inbox', folder: 'deleted') %>.--></h4>
+  <% end %>
 </div>

@@ -9,7 +9,7 @@
         <% if @employer_profile.present? %>
           <%= link_to '<i class="fa fa-trash-o fa-2x"></i>'.html_safe, employers_inbox_path(provider, message, message_id: message.id), class: "pull-right", method: :delete %>
           <% else %>
-          <%= link_to '<i class="fa fa-trash-o fa-2x"></i>'.html_safe, retrieve_show_path(provider, message), class: "pull-right", method: :delete %>
+          <%= link_to '<i class="fa fa-trash-o fa-2x"></i>'.html_safe, insured_inbox_path(provider, message), class: "pull-right", method: :delete %>
         <% end %>
       <% end %>
     </td>

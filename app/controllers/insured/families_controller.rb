@@ -84,6 +84,8 @@ class Insured::FamiliesController < FamiliesController
   def inbox
     @tab = params['tab']
     @folder = params[:folder] || 'Inbox'
+    @message = @person.inbox.messages.where(id: params[:message_id]).first if params.has_key?(:message_id)
+
     @sent_box = false
   end
 
@@ -130,7 +132,7 @@ class Insured::FamiliesController < FamiliesController
         @plan = UnassistedPlanCostDecorator.new(plan, @enrollment)
       end
 
-      begin 
+      begin
         @plan.name
       rescue => e
         log("#{e.message};  #3742 plan: #{@plan}, family_id: #{@family.id}, hbx_enrollment_id: #{@enrollment.id}", {:severity => "error"})

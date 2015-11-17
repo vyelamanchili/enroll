@@ -296,7 +296,7 @@ module ApplicationHelper
     return broker_agencies_inbox_path(provider, message_id: message.id) if provider.try(:broker_role)
     case(provider.model_name.name)
     when "Person"
-      insured_inbox_path(provider, message_id: message.id)
+      inbox_insured_families_path(provider, message_id: message.id, tab: 'messages')
     when "EmployerProfile"
       employers_employer_profile_path(provider, message_id: message.id, tab: 'inbox')
     when "BrokerAgencyProfile"
