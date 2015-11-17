@@ -212,7 +212,7 @@ RSpec.describe CensusEmployee, type: :model, dbclean: :after_each do
 
                       it "should raise an error" do
                         initial_census_employee.employee_role = invalid_employee_role
-                        expect(initial_census_employee.employee_role_confirmed?).to be_falsey
+                        expect(initial_census_employee.employee_role_linked?).to be_falsey
                       end
                     end
 
@@ -220,7 +220,7 @@ RSpec.describe CensusEmployee, type: :model, dbclean: :after_each do
                       before { initial_census_employee.employee_role = valid_employee_role }
 
                       it "should link the roster instance and employer role" do
-                        expect(initial_census_employee.employee_role_confirmed?).to be_truthy
+                        expect(initial_census_employee.employee_role_linked?).to be_truthy
                       end
 
                       context "and it is saved" do
@@ -386,8 +386,8 @@ RSpec.describe CensusEmployee, type: :model, dbclean: :after_each do
                 saved_census_employee.save
               end
 
-              it "existing census employee should be employee_role_confirmed status" do
-                expect(CensusEmployee.find(saved_census_employee.id).aasm_state).to eq "employee_role_confirmed"
+              it "existing census employee should be employee_role_linked status" do
+                expect(CensusEmployee.find(saved_census_employee.id).aasm_state).to eq "employee_role_linked"
               end
 
               it "new cenesus employee instance should fail validation" do
@@ -411,15 +411,15 @@ RSpec.describe CensusEmployee, type: :model, dbclean: :after_each do
               end
 
               context "and the roster census employee instance is in any state besides unlinked" do
-                let(:employee_role_confirmed_state)  { saved_census_employee.dup }
+                let(:employee_role_linked_state)  { saved_census_employee.dup }
                 let(:employment_terminated_state)  { saved_census_employee.dup }
                 before do
-                  employee_role_confirmed_state.aasm_state = :employee_role_confirmed
+                  employee_role_linked_state.aasm_state = :employee_role_linked
                   employment_terminated_state.aasm_state = :employment_terminated
                 end
 
                 it "should prevent linking with another employee role" do
-                  expect(employee_role_confirmed_state.may_link_employee_role?).to be_falsey
+                  expect(employee_role_linked_state.may_link_employee_role?).to be_falsey
                   expect(employment_terminated_state.may_link_employee_role?).to be_falsey
                 end
               end
@@ -636,7 +636,7 @@ RSpec.describe CensusEmployee, type: :model, dbclean: :after_each do
   #
   #     context "not linked" do
   #       before do
-  #         allow(employee).to receive(:employee_role_confirmed?).and_return(false)
+  #         allow(employee).to receive(:employee_role_linked?).and_return(false)
   #       end
   #
   #       it "can change dob" do
@@ -652,7 +652,7 @@ RSpec.describe CensusEmployee, type: :model, dbclean: :after_each do
   #
   #     context "has linked" do
   #       before do
-  #         allow(employee).to receive(:employee_role_confirmed?).and_return(true)
+  #         allow(employee).to receive(:employee_role_linked?).and_return(true)
   #       end
   #
   #       it "can not change dob" do

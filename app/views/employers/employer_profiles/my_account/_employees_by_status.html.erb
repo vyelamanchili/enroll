@@ -59,7 +59,13 @@
           </td>
           <% end %>
 
-          <td style="text-transform: capitalize;"><%= census_employee.aasm_state.humanize %></td>
+          <td style="text-transform: capitalize;">
+            <% if census_employee.aasm_state == 'employee_role_linked' %>
+              Employee Role Confirmed
+            <% else %>
+              <%= census_employee.aasm_state.humanize %>
+            <% end %>
+          </td>
           <td style="text-transform: capitalize;"><%= enrollment_state(census_employee) %></td>
 
           <td class="table-functions">
