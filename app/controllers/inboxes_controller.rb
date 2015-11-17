@@ -31,7 +31,17 @@ class InboxesController < ApplicationController
 
   def destroy
     #@message.destroy
-    @message.update_attributes(folder: Message::FOLDER_TYPES[:deleted])
+    if current_user.has_employer_staff_role?
+      employer = EmployerProfile.find(params["id"])
+      message = employer.inbox.messages.where(id: params[:message_id]).first
+      message.update_attributes(folder: Message::FOLDER_TYPES[:deleted])
+      if employer.inbox.save
+        flash[:notice] = "Successfully deleted inbox message."
+        redirect_to employers_employer_profile_path(employer.id, :tab=>'inbox', :folder=>'inbox')
+      end
+    else
+      @message.update_attributes(folder: Message::FOLDER_TYPES[:deleted])
+    end
   end
 
   private
