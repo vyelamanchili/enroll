@@ -118,7 +118,7 @@ function validationForIndianTribeMember() {
       e.preventDefault && e.preventDefault();
       return false;
     };
-    
+
     // for tribal_id
     var tribal_val = $('#tribal_id').val();
     if($("input#indian_tribe_member_yes").is(':checked') && (tribal_val == "undefined" || tribal_val == '')){
@@ -129,7 +129,39 @@ function validationForIndianTribeMember() {
   });
 }
 
+function validationForUsCitizenOrUsNational() {
+  if ( $('input[name="person[us_citizen]"]:checked').length < 1 ) {
+    alert('Please provide an answer for question: Are you a US Citizen or US National?');
+    return false;
+  }
+}
+function validationForNaturalizedCitizen() {
+  if ( $('#naturalized_citizen_container').is(':visible') && $('input[name="person[naturalized_citizen]"]:checked').length < 1 ) {
+    alert('Please provide an answer for question: Are you a naturalized citizen?');
+    return false;
+  }
+}
+function validationForVlpDocuments() {
+  if ( $('#vlp_documents_container').is(':visible') ) {
+    $('.vlp_doc_area input.doc_fields').each(function() {
+      if ( $(this).val().length < 1 ) {
+        alert('Please fill in your information for ' + $(this).attr('placeholder') + '.');
+        return false;
+      }
+    })
+  }
+}
+
+
+
+
 $(document).ready(function(){
   applyListeners();
   validationForIndianTribeMember();
+
+  $('form.edit_person, form.new_dependent, form.edit_dependent').submit(function(e){
+    validationForUsCitizenOrUsNational();
+    validationForNaturalizedCitizen();
+    validationForVlpDocuments();
+  });
 });

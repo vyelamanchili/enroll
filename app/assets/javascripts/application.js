@@ -440,7 +440,7 @@ $(document).ready(function () {
 
   // personal form js
 
-  $( "#new_person" ).submit(function( event ) {
+  $( "#new_person, #edit_person" ).submit(function( event ) {
     $('#person_first_name, #person_middle_name, #person_last_name').each(function() {
       var name = $(this).val();
       var trimmed_name = $.trim(name)
