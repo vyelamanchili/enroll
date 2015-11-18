@@ -157,6 +157,7 @@ class Exchanges::HbxProfilesController < ApplicationController
       end
     end
     session[:person_id] = nil
+    @provider = HbxProfile.all.first
     @unread_messages = @profile.inbox.unread_messages.try(:count) || 0
   end
 
@@ -171,11 +172,11 @@ class Exchanges::HbxProfilesController < ApplicationController
   end
 
   # GET /exchanges/hbx_profiles/1/inbox
-  def inbox
-    @inbox_provider = current_user.person.hbx_staff_role.hbx_profile
-    @folder = params[:folder] || 'inbox'
-    @sent_box = true
-  end
+  # def inbox
+  #   @inbox_provider = current_user.person.hbx_staff_role.hbx_profile
+  #   @folder = params[:folder] || 'inbox'
+  #   @sent_box = true
+  # end
 
   # POST /exchanges/hbx_profiles
   # POST /exchanges/hbx_profiles.json

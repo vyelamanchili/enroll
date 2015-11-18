@@ -12,7 +12,7 @@ class Employers::PlanYearsController < ApplicationController
     @benefit_group = params[:benefit_group]
     @plan_year = PlanYear.find(params[:plan_year_id])
     @location_id = params[:location_id]
-    
+
     @plans = if params[:plan_option_kind] == "single_carrier"
       @carrier_id = params[:carrier_id]
       @carrier_profile = CarrierProfile.find(params[:carrier_id])
@@ -140,7 +140,7 @@ class Employers::PlanYearsController < ApplicationController
         benefit_group.carrier_for_elected_plan = benefit_group.elected_plans.try(:last).try(:carrier_profile_id)
       end
     end
-    
+
     respond_to do |format|
       format.js { render 'edit' }
       format.html { render 'edit' }
