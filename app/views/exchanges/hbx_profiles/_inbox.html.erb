@@ -1,7 +1,5 @@
-<div class="row">
-
   <% if @profile.inbox.messages.size > 0 %>
-  <div id="inbox_form" class="col-xs-12">
+  <div id="inbox_form">
     <span class="inboxes">
       <% if params[:folder] == 'inbox' %>
     <%= link_to(exchanges_hbx_profiles_path(provider, tab: 'inbox', folder: 'inbox'), class: 'active') do %>
@@ -26,11 +24,11 @@
     <% end %>
     <% if params[:folder] == 'deleted' %>
 
-      <%= link_to(inbox_insured_families_path(provider, tab: 'inbox', folder: 'deleted'), class: 'active') do %>
+      <%= link_to(exchanges_hbx_profiles_path(provider, tab: 'inbox', folder: 'deleted'), class: 'active') do %>
         Deleted
       <% end %>
       <% else %>
-      <%= link_to(inbox_insured_families_path(provider, tab: 'inbox', folder: 'deleted')) do %>
+      <%= link_to(exchanges_hbx_profiles_path(provider, tab: 'inbox', folder: 'deleted')) do %>
         Deleted
       <% end %>
     <% end %>
@@ -59,4 +57,3 @@
   <% else %>
   <h4 class="starter">Your inbox is currently empty.<!-- To view your deleted messages, <%= link_to 'click here',employers_employer_profile_path(:employer_profile_id=>@employer_profile.id, tab: 'inbox', folder: 'deleted') %>.--></h4>
   <% end %>
-</div>

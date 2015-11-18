@@ -3,8 +3,10 @@
 
 	<% if params.has_key?(:tab) %>
 	<div class="container">
-		<br/>
+	<div class="col-xs-12">
+
 	<div class="row">
+		<h1 class="darkblue">Messages</h1>
 		<%= render "inbox", :provider => @provider %>
 	</div>
 	</div>
