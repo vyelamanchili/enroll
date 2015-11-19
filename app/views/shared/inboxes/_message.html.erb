@@ -12,10 +12,12 @@
   <br/>
   <% if @employer_profile.present? %>
   <%= link_to '<i class="fa fa-chevron-left"></i> Back'.html_safe, employers_employer_profile_path(@employer_profile.id, :tab=>'inbox', :folder=>'inbox'), class: 'btn btn-trans' %>
-  <% elsif @person.present? && @person.has_insured_role? %>
+  <% elsif @person.present? %>
   <%= link_to '<i class="fa fa-chevron-left"></i> Back'.html_safe, family_account_path(@provider, tab: 'messages', :folder=>'inbox'), class: 'btn btn-trans' %>
   <% elsif @profile.present? %>
   <%= link_to '<i class="fa fa-chevron-left"></i> Back'.html_safe, exchanges_hbx_profiles_path(@provider, tab: 'inbox', :folder=>'inbox'), class: 'btn btn-trans' %>
+  <% elsif @provider.present? %>
+  <%= link_to '<i class="fa fa-chevron-left"></i> Back'.html_safe, broker_agencies_profile_path(@provider, :folder=>'inbox'), class: 'btn btn-trans' %>
   <% end %>
   <% end %>
 </div>

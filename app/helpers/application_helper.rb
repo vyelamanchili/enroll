@@ -300,7 +300,7 @@ module ApplicationHelper
     when "EmployerProfile"
       employers_employer_profile_path(provider, message_id: message.id, tab: 'inbox')
     when "BrokerAgencyProfile"
-      broker_agencies_inbox_path(provider, message_id: message.id)
+      broker_agencies_profile_path(provider, message_id: message.id, folder: 'inbox')
     when "HbxProfile"
       exchanges_hbx_profiles_path(provider, message_id: message.id)
     end

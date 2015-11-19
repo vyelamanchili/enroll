@@ -26,10 +26,16 @@ class BrokerAgencies::ProfilesController < ApplicationController
   end
 
   def show
-    session[:person_id] = nil
-     @provider = current_user.person
+
+     session[:person_id] = nil
      @staff_role = current_user.has_broker_agency_staff_role?
+     @folder = params[:folder]
      @id=params[:id]
+     @broker_agency_profile = BrokerAgencyProfile.find(params[:id])
+     @provider = @broker_agency_profile
+     @message = @broker_agency_profile.inbox.messages.where(id: params[:message_id]).first if params.has_key?(:message_id)
+
+
   end
 
   def edit

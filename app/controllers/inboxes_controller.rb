@@ -30,6 +30,7 @@ class InboxesController < ApplicationController
   end
 
   def destroy
+
     #@message.destroy
     if current_user.has_hbx_staff_role?
       person = HbxProfile.find(params[:person_id])
@@ -48,7 +49,8 @@ class InboxesController < ApplicationController
         flash[:notice] = "Successfully deleted inbox message."
         redirect_to employers_employer_profile_path(employer.id, :tab=>'inbox', :folder=>'inbox')
       end
-    if current_user.has_insured_role?
+    end
+    if current_user.has_consumer_role? || current_user.has_employee_role?
       person = Person.find(params[:person_id])
       message = person.inbox.messages.where(id: params[:message_id]).first
       message.update_attributes(folder: Message::FOLDER_TYPES[:deleted])
@@ -59,7 +61,7 @@ class InboxesController < ApplicationController
     end
       @message.update_attributes(folder: Message::FOLDER_TYPES[:deleted])
     end
-  end
+
 
   private
 

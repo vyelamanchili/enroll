@@ -1,5 +1,14 @@
-<%= render 'menu', :active_tab => "home-tab" %>
+<%= render partial: 'menu', locals: { :active_tab => "home-tab" } %>
+<% if params.has_key?(:message_id) %>
+<%= render partial: 'shared/inboxes/message', locals: { provider: @provider } %>
 
+<% elsif params.has_key?(:folder) %>
+
+<%= render partial: 'messages_list', locals: { provider: @provider } %>
+
+
+
+<% else %>
 <div class="profile-content top-pd">
   <div class="tab-row">
     <div class="tab-content" id="myTabContent">
@@ -7,3 +16,4 @@
     </div>
 </div>
 </div>
+<% end %>

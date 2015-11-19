@@ -30,7 +30,9 @@ class Employers::BrokerAgencyController < ApplicationController
   end
 
   def show
+
   end
+
 
   def active_broker
     @broker_agency_account = @employer_profile.active_broker_agency_account
