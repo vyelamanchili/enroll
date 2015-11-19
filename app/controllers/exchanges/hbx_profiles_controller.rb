@@ -157,8 +157,13 @@ class Exchanges::HbxProfilesController < ApplicationController
       end
     end
     session[:person_id] = nil
+    @folder = params[:folder]
     @provider = HbxProfile.all.first
+    @sent_box = true
     @unread_messages = @profile.inbox.unread_messages.try(:count) || 0
+    if params.has_key?(:message_id)
+      @message = @profile.inbox.messages.where(id: params[:message_id]).first
+    end
   end
 
   # GET /exchanges/hbx_profiles/new

@@ -11,15 +11,15 @@
     <% end %> |
       <% end %>
     <% if @sent_box == true %>
-    <% if params[:folder] == 'inbox' %>
+    <% if params[:folder] == 'sent' %>
 
-      <%= link_to(exchanges_hbx_profiles_path(provider, tab: 'inbox', folder: 'Sent'), class: 'active') do %>
+      <%= link_to(exchanges_hbx_profiles_path(provider, tab: 'inbox', folder: 'sent'), class: 'active') do %>
         Sent
-        <% end %>
+        <% end %> |
       <% else %>
-      <%= link_to(exchanges_hbx_profiles_path(provider, tab: 'inbox', folder: 'Sent')) do %>
+      <%= link_to(exchanges_hbx_profiles_path(provider, tab: 'inbox', folder: 'sent')) do %>
         Sent
-      <% end %>
+      <% end %> |
       <% end %>
     <% end %>
     <% if params[:folder] == 'deleted' %>

@@ -8,8 +8,10 @@
       <%- if @folder != 'Deleted' %>
         <% if @employer_profile.present? %>
           <%= link_to '<i class="fa fa-trash-o fa-2x"></i>'.html_safe, employers_inbox_path(provider, message, message_id: message.id), class: "pull-right", method: :delete %>
-          <% else %>
+          <% elsif @person.present? %>
           <%= link_to '<i class="fa fa-trash-o fa-2x"></i>'.html_safe, insured_inbox_path(provider, message, person_id: provider.id, message_id: message.id), class: "pull-right", method: :delete %>
+          <% elsif @profile.present? %>
+          <%= link_to '<i class="fa fa-trash-o fa-2x"></i>'.html_safe, exchanges_inbox_path(provider, message, person_id: provider.id, message_id: message.id), class: "pull-right", method: :delete %>
         <% end %>
       <% end %>
     </td>
