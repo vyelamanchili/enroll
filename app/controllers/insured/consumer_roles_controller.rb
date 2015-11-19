@@ -1,6 +1,7 @@
 class Insured::ConsumerRolesController < ApplicationController
   include ApplicationHelper
   include VlpDoc
+  include Acapi::Notifiers
 
   before_action :check_consumer_role, only: [:search]
   before_action :find_consumer_role, only: [:edit, :update]
@@ -84,8 +85,13 @@ class Insured::ConsumerRolesController < ApplicationController
       respond_to do |format|
         format.html {
           if is_assisted
-            @person.primary_family.update_attribute(:e_case_id, "curam_landing_for#{@person.id}") if @person.primary_family
-            redirect_to navigate_to_assistance_saml_index_path
+            begin
+              @person.primary_family.update_attribute(:e_case_id, "curam_landing_for#{@person.id}")
+              redirect_to navigate_to_assistance_saml_index_path
+            rescue Exception=>e
+              flash[:error] = "We're sorry, but we encountered an unexpected problem."
+              log("#{e.message};  person: #{@person}", {:severity => "error"})
+            end
           else
             if session[:already_has_consumer_role] == true
               redirect_to family_account_path
