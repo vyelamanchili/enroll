@@ -31,6 +31,15 @@ class InboxesController < ApplicationController
 
   def destroy
     #@message.destroy
+    if current_user.has_hbx_staff_role?
+      person = HbxProfile.find(params[:person_id])
+      message = person.inbox.messages.where(id: params[:message_id]).first
+      message.update_attributes(folder: Message::FOLDER_TYPES[:deleted])
+      if person.inbox.save
+        flash[:notice] = "Successfully deleted inbox message."
+        redirect_to exchanges_hbx_profiles_path(person, :tab=>'inbox', :folder=>'inbox')
+      end
+    end
     if current_user.has_employer_staff_role?
       employer = EmployerProfile.find(params["id"])
       message = employer.inbox.messages.where(id: params[:message_id]).first
@@ -39,7 +48,7 @@ class InboxesController < ApplicationController
         flash[:notice] = "Successfully deleted inbox message."
         redirect_to employers_employer_profile_path(employer.id, :tab=>'inbox', :folder=>'inbox')
       end
-    elsif
+    if current_user.has_insured_role?
       person = Person.find(params[:person_id])
       message = person.inbox.messages.where(id: params[:message_id]).first
       message.update_attributes(folder: Message::FOLDER_TYPES[:deleted])
@@ -47,7 +56,7 @@ class InboxesController < ApplicationController
         flash[:notice] = "Successfully deleted inbox message."
         redirect_to inbox_insured_families_path(person.id, :tab=>'messages', :folder=>'inbox')
       end
-    else
+    end
       @message.update_attributes(folder: Message::FOLDER_TYPES[:deleted])
     end
   end

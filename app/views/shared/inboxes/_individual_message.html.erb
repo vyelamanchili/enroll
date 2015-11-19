@@ -5,7 +5,7 @@
    <td> <%=message.created_at %>
     <td> <%= message.try(:subject) %> </td>
     <td> <%#= link_to "show", polymorphic_path([:insured, :family, provider.inbox, message]), class: "btn btn-primary", remote: true %>
-      <%- if @folder != 'Deleted' %>
+      <%- if @folder != 'Deleted' && @folder != 'Sent' %>
         <% if @employer_profile.present? %>
           <%= link_to '<i class="fa fa-trash-o fa-2x"></i>'.html_safe, employers_inbox_path(provider, message, message_id: message.id), class: "pull-right", method: :delete %>
           <% elsif @person.present? %>

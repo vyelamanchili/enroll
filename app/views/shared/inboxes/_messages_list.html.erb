@@ -3,7 +3,7 @@
     <h1 class="darkblue mz">Messages</h1>
   </div>
 
-  <% if @provider.inbox.messages.size > 0 %>
+  <% if @provider.present? && @provider.inbox.messages.size > 0 || @employer_profile.present? && @employer_profile.inbox.messages.size > 0 %>
   <div>
   <div id="inbox_form" class="col-xs-12 no-pd">
     <span class="inboxes">
