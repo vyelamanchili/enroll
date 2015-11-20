@@ -1,5 +1,5 @@
-<div class="container">
-  <% if provider.inbox.messages.size > 0 %>
+<h1 class="darkblue">Messages</h1>
+<% if provider.inbox.messages.size > 0 %>
   <div id="inbox_form">
     <span class="inboxes">
       <% if params[:folder] == 'inbox' %>
@@ -56,6 +56,12 @@
   </div>
   <div id="show_message_form"></div>
   <% else %>
-  <h4 class="starter">Your inbox is currently empty.<!-- To view your deleted messages, <%= link_to 'click here',employers_employer_profile_path(:employer_profile_id=>@employer_profile.id, tab: 'inbox', folder: 'deleted') %>.--></h4>
+  <h4 class="starter">Your inbox is currently empty.</h4>
   <% end %>
-</div>
+  <div class="col-xs-12">
+    <div class="row">
+      <br/>
+      <%= link_to "Send Secure Message to #{HbxProfile::ShortName}".html_safe, broker_agencies_inbox_msg_to_portal_path(inbox_id: @provider.id,
+           to: 'HBX_Admin', from: @provider.try(:full_name)||@provider.try(:legal_name), remote: true), class: "btn btn-trans" %>
+    </div>
+  </div>

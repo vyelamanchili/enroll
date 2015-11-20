@@ -162,7 +162,7 @@ class Exchanges::HbxProfilesController < ApplicationController
     @sent_box = true
     @unread_messages = @profile.inbox.unread_messages.try(:count) || 0
     if params.has_key?(:message_id)
-      @message = @profile.inbox.messages.where(id: params[:message_id]).first
+      @message = @provider.inbox.messages.where(id: params[:message_id]).first
     end
   end
 

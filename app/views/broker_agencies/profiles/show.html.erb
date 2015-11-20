@@ -1,10 +1,12 @@
 <%= render partial: 'menu', locals: { :active_tab => "home-tab" } %>
+<div class="container">
 <% if params.has_key?(:message_id) %>
-<%= render partial: 'shared/inboxes/message', locals: { provider: @provider } %>
-
-<% elsif params.has_key?(:folder) %>
-
-<%= render partial: 'messages_list', locals: { provider: @provider } %>
+<div class="row">
+  <br/>
+  <%= render partial: 'shared/inboxes/message', locals: { provider: @provider } %>
+</div>
+  <% elsif params.has_key?(:folder) %>
+  <%= render partial: 'messages_list', locals: { provider: @provider } %>
 
 
 
@@ -17,3 +19,4 @@
 </div>
 </div>
 <% end %>
+</div>

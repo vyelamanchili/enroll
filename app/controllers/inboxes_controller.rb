@@ -33,12 +33,20 @@ class InboxesController < ApplicationController
 
     #@message.destroy
     if current_user.has_hbx_staff_role?
-      person = HbxProfile.find(params[:person_id])
+      if params.has_key?(:broker_agency_profile)
+        person = BrokerAgencyProfile.find(params[:person_id])
+      else
+        person = @inbox_provider
+      end
       message = person.inbox.messages.where(id: params[:message_id]).first
       message.update_attributes(folder: Message::FOLDER_TYPES[:deleted])
       if person.inbox.save
         flash[:notice] = "Successfully deleted inbox message."
-        redirect_to exchanges_hbx_profiles_path(person, :tab=>'inbox', :folder=>'inbox')
+        if params.has_key?(:broker_agency_profile)
+          redirect_to broker_agencies_profile_path(person, :tab=>'inbox', :folder=>'inbox')
+        else
+          redirect_to exchanges_hbx_profiles_path(person, :tab=>'inbox', :folder=>'inbox')
+        end
       end
     end
     if current_user.has_employer_staff_role?
