@@ -261,7 +261,8 @@ When(/^I visit the Employer portal$/) do
 end
 
 Then(/^(?:.+) should see a successful sign up message$/) do
-  Watir::Wait.until(30) { @browser.element(text: /Welcome to DC Health Link. Your account has been created./).present? }
+  # Watir::Wait.until(30) { @browser.element(text: /Welcome to DC Health Link. Your account has been created./).present? }
+  wait_and_confirm_text(/Welcome to DC Health Link. Your account has been created./)
   screenshot("employer_sign_up_welcome")
   expect(@browser.element(text: /Welcome to DC Health Link. Your account has been created./).visible?).to be_truthy
 end
