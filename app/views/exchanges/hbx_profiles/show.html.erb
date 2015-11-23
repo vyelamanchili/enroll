@@ -1,7 +1,7 @@
 <div class="content landing">
 	<%= render "exchanges/hbx_profiles/shared/primary_nav", :active_tab => "home-tab" %>
 	<div class="container">
-
+		<div id="hbx_inbox">
 	<% if params.has_key?(:message_id) %>
 		<%= render partial: 'shared/inboxes/message'%>
 	<% elsif params.has_key?(:tab) %>
@@ -13,7 +13,7 @@
 	</div>
 	</div>
 	<% end %>
-
+</div>
 	<div class="home">
 		<%= render 'shared/tab_panel' %>
 	</div>

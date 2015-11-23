@@ -8,9 +8,9 @@ class BrokerAgencies::InboxesController < InboxesController
   end
 
   def msg_to_portal
-    @broker_agency_provider = BrokerAgencyProfile.find(params["inbox_id"])
+    @broker_agency_provider = BrokerAgencyProfile.find(params[:id])
     @inbox_provider = @broker_agency_provider
-    @inbox_provider_name = @inbox_provider.try(:legal_name) 
+    @inbox_provider_name = @inbox_provider.try(:legal_name)
     @inbox_to_name = "HBX Admin"
     @new_message = @inbox_provider.inbox.messages.build
   end
@@ -36,6 +36,7 @@ class BrokerAgencies::InboxesController < InboxesController
 
   def destroy
     @sent_box = true
+
     super
   end
 

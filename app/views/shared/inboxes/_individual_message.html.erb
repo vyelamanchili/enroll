@@ -12,6 +12,11 @@
           <%= link_to '<i class="fa fa-trash-o fa-2x"></i>'.html_safe, insured_inbox_path(provider, message, person_id: provider.id, message_id: message.id), class: "pull-right", method: :delete %>
           <% elsif @profile.present? %>
           <%= link_to '<i class="fa fa-trash-o fa-2x"></i>'.html_safe, exchanges_inbox_path(provider, message, person_id: provider.id, message_id: message.id), class: "pull-right", method: :delete %>
+          <% elsif @broker_agency_profile.present? && params.has_key?(:user)%>
+          <%= link_to '<i class="fa fa-trash-o fa-2x"></i>'.html_safe, broker_agencies_inbox_path(provider, message, person_id: provider.id, message_id: message.id,
+           user: 'admin'), class: "pull-right", method: :delete %>
+           <% elsif @broker_agency_profile.present? && params.has_key?(:mailbox) %>
+           <%= link_to '<i class="fa fa-trash-o fa-2x"></i>'.html_safe, broker_agencies_inbox_path(provider, message, person_id: provider.id, message_id: message.id, broker_agency_profile: @broker_agency_profile, mailbox: 'agency'), class: "pull-right", method: :delete %>
           <% elsif @broker_agency_profile.present? %>
           <%= link_to '<i class="fa fa-trash-o fa-2x"></i>'.html_safe, broker_agencies_inbox_path(provider, message, person_id: provider.id, message_id: message.id, broker_agency_profile: @broker_agency_profile), class: "pull-right", method: :delete %>
         <% end %>

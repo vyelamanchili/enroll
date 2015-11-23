@@ -26,14 +26,32 @@ class BrokerAgencies::ProfilesController < ApplicationController
   end
 
   def show
-
      session[:person_id] = nil
      @staff_role = current_user.has_broker_agency_staff_role?
      @folder = params[:folder]
      @id=params[:id]
-     @broker_agency_profile = BrokerAgencyProfile.find(params[:id])
-     @provider = @broker_agency_profile
-     @message = @broker_agency_profile.inbox.messages.where(id: params[:message_id]).first if params.has_key?(:message_id)
+
+
+     if current_user.has_broker_agency_staff_role?
+       @broker_agency_profile = current_user.person.broker_agency_staff_roles.first.broker_agency_profile
+     end
+     if params.has_key?(:mailbox)
+       @provider = @broker_agency_profile
+
+     else
+       @provider = current_user.person
+     end
+
+     if params.has_key?(:user) && params.has_key?(:folder)
+       @provider = Person.find(@id)
+       @broker_agency_profile_id = @provider.broker_role.broker_agency_profile_id
+       @broker_agency_profile = BrokerAgencyProfile.find(@broker_agency_profile_id)
+     elsif params.has_key?(:user)
+       @broker_agency_profile = BrokerAgencyProfile.find(@id)
+       @provider = @broker_agency_profile.writing_agents.first.person
+     end
+
+     @message = @provider.inbox.messages.where(id: params[:message_id]).first if params.has_key?(:message_id)
 
 
   end

@@ -1,5 +1,6 @@
 <%= render partial: 'menu', locals: { :active_tab => "home-tab" } %>
 <div class="container">
+  <div id="bap_inbox">
 <% if params.has_key?(:message_id) %>
 <div class="row">
   <br/>
@@ -18,5 +19,13 @@
     </div>
 </div>
 </div>
+
 <% end %>
+</div>
+<div class="profile-content top-pd">
+  <div class="tab-row">
+    <div class="tab-content" id="myTabContent">
+    </div>
+</div>
+</div>
 </div>

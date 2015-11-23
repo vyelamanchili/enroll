@@ -20,7 +20,7 @@
         </thead>
         <% @broker_agency_profiles.each do |broker_agency_profile| %>
           <tbody>
-            <td><%= link_to broker_agency_profile.legal_name, broker_agencies_profile_path(broker_agency_profile) %></td>
+            <td><%= link_to broker_agency_profile.legal_name, broker_agencies_profile_path(broker_agency_profile, user: 'admin') %></td>
             <td><%= broker_agency_profile.dba %></td>
             <td><%= broker_agency_profile.fein %></td>
             <td><%= broker_agency_profile.entity_kind %></td>
