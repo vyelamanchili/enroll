@@ -39,12 +39,12 @@ class Household
       immediate_family_coverage_household.coverage_household_members.build(
           family_member: family_member,
           is_subscriber: family_member.is_primary_applicant?
-        )
+        ) unless immediate_family_coverage_household.coverage_household_members.where(family_member_id: family_member.id).present?
     else
       extended_family_coverage_household.coverage_household_members.build(
           family_member: family_member,
           is_subscriber: family_member.is_primary_applicant?
-        )
+        ) unless extended_family_coverage_household.coverage_household_members.where(family_member_id: family_member.id).present?
     end
   end
 
@@ -242,7 +242,7 @@ class Household
       consumer_role: consumer_role,
       benefit_package: benefit_package,
       qle: qle,
-      submitted_at: TimeKeeper.datetime_of_record
+      submitted_at: Time.now
     )
   end
 
@@ -254,7 +254,7 @@ class Household
       benefit_group_assignment: benefit_group_assignment,
       consumer_role: consumer_role,
       benefit_package: benefit_package,
-      submitted_at: TimeKeeper.datetime_of_record
+      submitted_at: Time.now
     )
     enrollment.save
     enrollment

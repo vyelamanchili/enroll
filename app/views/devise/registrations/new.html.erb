@@ -29,12 +29,16 @@
       		<%= f.hidden_field :invitation_id %>
           <br/>
 	        <div class="actions">
-  	          <%= f.submit "Create account", class: "btn btn-primary btn-lg btn-br" %>
-              <br/>
+	          <%= f.submit "Create account", class: "btn btn-primary btn-lg btn-br" %>
+            <br/>
             <span>
-              <%= link_to "Sign In Existing Account", new_user_session_path unless Rails.env.production?%>
-            </span>
-          </div>
+            <%= link_to "Sign In Existing Account", new_user_session_path unless Rails.env.production? %>
+          </span>
+          <span>
+            <%= link_to "Sign In", url_for(SamlInformation.iam_login_url) unless Rails.env.development? %>
+          </span>
+	        </div>
+
 		    <% end %>
       </div>
       <div class="modal fade" id="no-email"role="dialog">
