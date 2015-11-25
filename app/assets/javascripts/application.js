@@ -63,10 +63,6 @@ $(document).on('page:update', function(){
   applyFloatLabels();
   applySelectric();
 
-  $(document).on('change','.plan-title input', function() {
-    var planTitle = $(this).val()
-    $(this).attr("value", "\"planTitle\"");
-  });
 
 
 
@@ -184,8 +180,8 @@ function getCarrierPlans(ep, ci) {
       referenceplanselections = $('.reference-plan input[type=radio]:checked');
 
       bgtitles.each(function() {
-      plantitle = $(this).val();
-        if ( $(this).val().length > 0 && $('.plan-title input[value='+plantitle+']').size() < 2 ) {
+        plantitle = $(this).val();
+        if ( $(this).val().length > 0 && $('.plan-title input[value=' + "\"plantitle\"" + ']').size() < 2 ) {
           validatedbgtitles = true;
           validated = true;
 
@@ -277,7 +273,7 @@ $(document).on('click', '#modal-wrapper .modal-close', function(){
 
 
 $(document).ready(function () {
-  
+
   //warn user before exiting to gmail, ymail, or aol
 
   $('.email-alert').on('click', function() {
