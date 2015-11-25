@@ -29,7 +29,6 @@
       		<%= f.hidden_field :invitation_id %>
           <br/>
 	        <div class="actions">
-<<<<<<< HEAD
 	          <%= f.submit "Create account", class: "btn btn-primary btn-lg btn-br" %>
             <br/>
             <span>
@@ -41,13 +40,6 @@
 	        </div>
 
 		    <% end %>
-=======
-	  <%= f.submit "Create account", class: "btn btn-primary btn-lg btn-br mz" %>
-            <%= link_to "Sign In Existing Account", new_user_session_path , class: "btn btn-default btn-lg" unless Rails.env.production? %>
-            <%= link_to "Sign In", url_for(SamlInformation.iam_login_url) , class: "btn btn-default btn-lg" unless Rails.env.development? %>
-	        </div>
-	  <% end %>
->>>>>>> 93b89a310a379cc23c99994971baf992325147a4
       </div>
       <div class="modal fade" id="no-email"role="dialog">
         <div class="modal-dialog">
