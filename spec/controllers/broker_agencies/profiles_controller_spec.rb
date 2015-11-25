@@ -21,23 +21,28 @@ RSpec.describe BrokerAgencies::ProfilesController do
   end
 
   describe "GET show" do
-    let(:user) { double("user")}
-    let(:person) { double("person")}
 
     before(:each) do
-      allow(user).to receive(:has_broker_role?)
-      allow(user).to receive(:person).and_return(person)
-      allow(user).to receive(:has_broker_agency_staff_role?).and_return(true)
       sign_in(user)
       get :show, id: broker_agency_profile.id
     end
 
-    it "returns http success" do
-      expect(response).to have_http_status(:success)
+    context "user without broker agency staff role" do
+      let(:user) { FactoryGirl.create(:user) }
+
+      it "returns http success" do
+        expect(response).to have_http_status(:success)
+      end
+
+      it "should render the show template" do
+        expect(response).to render_template("show")
+      end
     end
 
-    it "should render the show template" do
-      expect(response).to render_template("show")
+    context "user with broker agency staff role" do
+      let(:user) { FactoryGirl.create(:user, person: person) }
+      let(:person) { FactoryGirl.create(:person, :with_broker_agency_staff_role)}
+
     end
   end
 

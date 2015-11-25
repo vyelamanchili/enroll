@@ -58,6 +58,8 @@
         Agency Mail
        <% end %>
       </li>
+
+
       <% end %>
       <% if params.has_key?(:user) %>
       <li role="presentation" id="inbox-tab" <%= menu_tab_class(active_tab, "inbox-tab") %>>
@@ -66,6 +68,7 @@
         Broker Mail
        <% end %>
       </li>
+
       <% else %>
         <li role="presentation" id="inbox-tab" <%= menu_tab_class(active_tab, "inbox-tab") %>>
          <%= link_to(broker_agencies_profile_path(id: @provider, folder: 'inbox'), "aria-expanded" => "true", "aria-controls" => "inbox", "role" => "tab") do  %>
@@ -73,6 +76,15 @@
           Broker Mail
          <% end %>
         </li>
+
+      <% if current_user.has_hbx_staff_role? %>
+      <% else %>
+      <li role="presentation">
+        <%= link_to url_for(SamlInformation.curam_broker_dashboard), target: '_blank' do %>
+        Individual-Assisted Dashboard
+       <% end %>
+      </li>
+
       <% end %>
     </ul>
   </div>
