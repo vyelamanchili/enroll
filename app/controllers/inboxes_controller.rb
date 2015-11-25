@@ -45,6 +45,7 @@ class InboxesController < ApplicationController
     elsif current_user.has_broker_role?
       person = Person.find(params[:id])
     end
+
     message = person.inbox.messages.where(id: params[:message_id]).first
     message.update_attributes(folder: Message::FOLDER_TYPES[:deleted])
       if person.inbox.save

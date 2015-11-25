@@ -41,7 +41,23 @@ RSpec.describe BrokerAgencies::ProfilesController do
 
     context "user with broker agency staff role" do
       let(:user) { FactoryGirl.create(:user, person: person) }
-      let(:person) { FactoryGirl.create(:person, :with_broker_agency_staff_role)}
+      let(:person) { FactoryGirl.create(:person) }
+      let(:broker_agency_staff_role) { double(BrokerAgencyStaffRole, broker_agency_profile: broker_agency_profile) }
+
+      before do
+        sign_in(user)
+        allow(user).to receive(:has_broker_agency_staff_role?).and_return(true)
+        allow(person).to receive(:broker_agency_staff_roles).and_return([broker_agency_staff_role])
+        get :show, id: broker_agency_profile.id
+      end
+
+      it "returns http success" do
+        expect(response).to have_http_status(:success)
+      end
+
+      it "should render the show template" do
+        expect(response).to render_template("show")
+      end
 
     end
   end
