@@ -3,15 +3,16 @@ $("#<%= @location_id %> .selected-plan h2.employer-monthly-cost").html("<%= numb
 $("#<%= @location_id %> .selected-plan .employee-monthly-cost-min").html("<%= number_to_currency(@min_employee_cost.to_f) %>");
 $("#<%= @location_id %> .selected-plan .employee-monthly-cost-max").html("<%= number_to_currency(@max_employee_cost.to_f) %>");
 
-$(function() {
 
-   $("#employer_cost_info_btn .btn").click(function(){
-    var location_id = $(this).parents('.benefit-group-fields').attr('id');
-    var reference_plan_id = $("#plan_year_benefit_groups_attributes_0_reference_plan_id").val();
-    if (reference_plan_id == "" || reference_plan_id == undefined) {
-      return
-    }
-    calcEmployerContributions($('a#employee_costs_link').attr('href'), location_id);
+  $(function() {
+     $("#employer_cost_info_btn .btn").click(function(){
+      var location_id = $(this).parents('.benefit-group-fields').attr('id');
+      var reference_plan_id = $("#plan_year_benefit_groups_attributes_0_reference_plan_id").val();
+      if (reference_plan_id == "" || reference_plan_id == undefined) {
+        return
+      }
+      console.log(location_id+", "+reference_plan_id);
+      calcEmployerContributions($('a#employee_costs_link').attr('href'), location_id);
+    })
+
   })
-
-})
