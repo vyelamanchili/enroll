@@ -7,6 +7,17 @@ ready = function() {
     //$('.add_fields').remove();
     $('.reference-steps').hide();
     $('.planyear-add-tab .controls:last').show();
+       $("#edit_employer_cost_info_btn .btn, #employer_cost_info_btn .btn").click(function(){
+        var location_id = $(this).parents('.benefit-group-fields').attr('id');
+        var reference_plan_id = $(this).parents('.benefit-group-fields').find('.ref-plan').val();
+        if (reference_plan_id == "" || reference_plan_id == undefined) {
+          return
+        }
+        console.log(location_id + "," + reference_plan_id);
+        calcEmployerContributions($('a#edit_employee_costs_link, a#employee_costs_link').attr('href'), location_id);
+      })
+
+
 
     $('.change-plan').on('click', function() {
       $('.interaction-click-control-save-plan-year').addClass('disabled');
@@ -290,9 +301,14 @@ $(document).on("click", ".reference_plan_info h4 span", function() {
 
 function calcEmployerContributions(url, location) {
 
+  var plan_option_kind = $("#"+location+" .nav-tabs input[type=radio]:checked").val();
+  var location_id = location;
+
+  if (window.location.href.indexOf("edit") > -1 && window.location.href.indexOf("plan_years") > -1 && $("#"+location+" .edit-offering").is(':visible') ) {
+    var reference_plan_id = $('#'+location+' .ref-plan').val();
+  } else {
     var reference_plan_id = $('#'+location+' .reference-plan input[type=radio]:checked').val();
-    var plan_option_kind = $("#"+location+" .nav-tabs input[type=radio]:checked").val();
-    var location_id = location;
+  }
 
     if (reference_plan_id == "" || reference_plan_id == undefined) {
       return
