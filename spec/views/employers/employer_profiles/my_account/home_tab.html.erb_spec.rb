@@ -106,6 +106,7 @@ RSpec.describe "employers/employer_profiles/my_account/_home_tab.html.erb" do
         monthly_employer_contribution_amount: "monthly_employer_contribution_amount_1",
         monthly_min_employee_cost: "monthly_min_employee_cost_1",
         monthly_max_employee_cost: "monthly_max_employee_cost_1",
+        start_on: start_on
         )
     end
 
@@ -122,6 +123,7 @@ RSpec.describe "employers/employer_profiles/my_account/_home_tab.html.erb" do
         monthly_employer_contribution_amount: "monthly_employer_contribution_amount_2",
         monthly_min_employee_cost: "monthly_min_employee_cost_2",
         monthly_max_employee_cost: "monthly_max_employee_cost_2",
+        start_on: start_on
         )
     end
 
