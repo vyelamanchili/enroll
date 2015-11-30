@@ -36,10 +36,12 @@ Feature: Create Employer
         Then Employer should see a plan year successfully saved message
         And Employer clicks on Edit family button for a census family
         Then Employer should see a form to update the contents of the census employee
-          And Employer should see employer census family updated success message
+        And Employer should see employer census family updated success message
         When Employer goes to the benefits tab I should see plan year information
         Then Employer clicks on publish plan year
         Then Employer should see a published success message
+        When Employer clicks on employer my account link
+        Then Employer should see employee cost modal for current plan year
         When Employer logs out
 
       Given Employee has not signed up as an HBX user
