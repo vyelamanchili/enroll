@@ -34,6 +34,7 @@
             <span>
             <%= link_to "Sign In Existing Account", new_user_session_path unless Rails.env.production? %>
           </span>
+          <br/>
           <span>
             <%= link_to "Sign In", url_for(SamlInformation.iam_login_url) unless Rails.env.development? %>
           </span>

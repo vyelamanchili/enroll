@@ -553,7 +553,6 @@ end
 When(/^.+ should see a published success message$/) do
   @browser.element(text: /plan year successfully published/i).wait_until_present
   expect(@browser.element(text: /Plan Year successfully published/).visible?).to be_truthy
-  binding.pry
 end
 
 When(/^.+ goes to to home tab$/) do
