@@ -466,5 +466,5 @@ end
 Then(/^.+ should see employee cost modal for current plan year$/) do
   @browser.a(class: /interaction-click-control-employee-detail-costs/).fire_event("onclick")
   @browser.h4(class: /modal-title/).wait_until_present
-  @browser.button(class: /interaction-click-control-×/).fire_event("onclick")
+  @browser.button(class: /close/).fire_event("onclick")
 end
