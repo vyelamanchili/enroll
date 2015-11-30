@@ -13,6 +13,7 @@
           <th>SSN</th>
           <th>DOB</th>
           <th>Hire Date</th>
+          <th>Date Added to Roster</th>
           <th>Benefit Package</th>
           <% if @employer_profile.renewing_plan_year.present? %>
           <th>Renewal Benefit Package</th>
@@ -38,10 +39,9 @@
             <%= link_to name_to_listing(census_employee), employers_employer_profile_census_employee_path(@employer_profile.id, census_employee.id) %>
           </td>
           <td><%= number_to_obscured_ssn census_employee.ssn %></td>
-          <td><%= format_date census_employee.dob %>
-          </td>
-          <td><%= format_date census_employee.hired_on %>
-          </td>
+          <td><%= format_date census_employee.dob %></td>
+          <td><%= format_date census_employee.hired_on %></td>
+          <td><%= format_date census_employee.created_at %></td>
           <td>
           <% if census_employee.active_benefit_group_assignment.present? %>
             <%= census_employee.active_benefit_group_assignment.benefit_group.title.capitalize %>
@@ -107,7 +107,7 @@
 
               <div class="pull-right">
               <!--<h5>Enter termination date to remove this employee:</h5>-->
-              <i class="fa fa-calendar fa-lg"></i> <input class="text-center date-picker" data-date-min="<%= (census_employee.hired_on - TimeKeeper.date_of_record).to_i + 1 %>d" placeholder="MM/DD/YYYY" type="text">
+              <i class="fa fa-calendar fa-lg"></i> <input class="text-center date-picker" data-date-min="<%= (census_employee.hired_on - TimeKeeper.date_of_record).to_i + 1 > -60 ? (census_employee.hired_on - TimeKeeper.date_of_record).to_i + 1 : -60 %>d" placeholder="MM/DD/YYYY" type="text">
               <a class="delete_confirm terminate" data-link="<%= employers_employer_profile_census_employee_terminate_path(@employer_profile.id, census_employee.id) %>" href="javascript:;" id="remove_<%= census_employee.id %>">
               Terminate Employee
               </a>

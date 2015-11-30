@@ -48,7 +48,7 @@ class BenefitGroup
   # accepts_nested_attributes_for :plan_year
 
   delegate :employer_profile, to: :plan_year, allow_nil: true
-  
+
   embeds_many :relationship_benefits, cascade_callbacks: true
   accepts_nested_attributes_for :relationship_benefits, reject_if: :all_blank, allow_destroy: true
 
@@ -242,13 +242,9 @@ class BenefitGroup
 
   def self.find(id)
     organizations = Organization.where({"employer_profile.plan_years.benefit_groups._id" => id })
-    benefit_groups = organizations.flat_map() do |organization|
-      organization.employer_profile.plan_years.flat_map() do |plan_year|
-        plan_year.benefit_groups.detect { |bg| bg.id == id }
-      end
-    end
-    # raise Mongoid::Errors::DocumentNotFound.new(self, id) unless benefit_groups.present?
-    benefit_groups.first
+    benefit_groups = organizations.map(&:employer_profile).lazy.flat_map(&:plan_years).flat_map(&:benefit_groups).select do |bg|
+      bg.id == id
+    end.first
   end
 
   def monthly_employer_contribution_amount(plan = reference_plan)
@@ -287,6 +283,10 @@ class BenefitGroup
 
   def single_plan_type?
     plan_option_kind == "single_plan"
+  end
+
+  def is_default?
+    default
   end
 
   def elected_plans_by_option_kind

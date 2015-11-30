@@ -8,6 +8,7 @@ class PlanYear
 
   PUBLISHED = %w(published enrolling enrolled active suspended)
   RENEWING  = %w(renewing_draft renewing_published renewing_enrolling renewing_enrolled)
+  RENEWING_PUBLISHED_STATE = %w(renewing_published renewing_enrolling renewing_enrolled)
 
   # Plan Year time period
   field :start_on, type: Date
@@ -16,7 +17,7 @@ class PlanYear
   field :open_enrollment_start_on, type: Date
   field :open_enrollment_end_on, type: Date
 
-  field :imported_plan_year, type: Boolean, default: false 
+  field :imported_plan_year, type: Boolean, default: false
   # Number of full-time employees
   field :fte_count, type: Integer, default: 0
 
@@ -39,8 +40,9 @@ class PlanYear
   validate :open_enrollment_date_checks
 
   # scope :not_yet_active, ->{ any_in(aasm_state: %w(published enrolling enrolled)) }
-  scope :published,      ->{ any_in(aasm_state: PUBLISHED) }
-  scope :renewing,       ->{ any_in(aasm_state: RENEWING) }
+  scope :published,         ->{ any_in(aasm_state: PUBLISHED) }
+  scope :renewing_published_state, ->{ any_in(aasm_state: RENEWING_PUBLISHED_STATE) }
+  scope :renewing,          ->{ any_in(aasm_state: RENEWING) }
 
   def parent
     raise "undefined parent employer_profile" unless employer_profile?
@@ -303,7 +305,7 @@ class PlanYear
   end
 
   def employees_are_matchable?
-    %w(published enrolling enrolled active).include? aasm_state
+    %w(renewing_published renewing_enrolling renewing_enrolled published enrolling enrolled active).include? aasm_state
   end
 
   class << self
@@ -459,7 +461,7 @@ class PlanYear
 
     state :active         # Published plan year is in-force
 
-    state :renewing_draft   
+    state :renewing_draft
     state :renewing_published
     state :renewing_enrolling
     state :renewing_enrolled
@@ -480,10 +482,12 @@ class PlanYear
       transitions from: :active, to: :terminated, :guard => :is_event_date_valid?
       transitions from: [:draft, :ineligible, :publish_pending, :published_invalid, :eligibility_review], to: :expired, :guard => :is_plan_year_end?
 
-      transitions from: :draft,  to: :renewing_draft,                 :guard  => :is_event_date_valid?
+      transitions from: :draft,  to: :renewing_draft,                 :guard  => :is_renewing_event_date_valid?
       transitions from: :renewing_enrolled,  to: :active,             :guard  => :is_event_date_valid?
       transitions from: :renewing_published, to: :renewing_enrolling, :guard  => :is_event_date_valid?
       transitions from: :renewing_enrolling, to: :renewing_enrolled,  :guards => [:is_open_enrollment_closed?, :is_enrollment_valid?]
+
+      transitions from: :enrolling, to: :enrolling # prevents error when plan year is already enrolling
     end
 
     ## Application eligibility determination process
@@ -546,11 +550,11 @@ class PlanYear
     end
 
     # Admin ability to reset plan year application
-    event :revert_application, :after => :record_transition do
-      transitions from: [:enrolled, :active, :ineligible, :published_invalid, :eligibility_review, :published], to: :draft, :guard => :is_employer_application_reverted?
+    event :revert_application, :after => :revert_employer_profile_application do
+      transitions from: [:enrolled, :enrolling, :active, :ineligible, :published_invalid, :eligibility_review, :published], to: :draft
     end
 
-    # Admin ability to accept application and successfully complete enrollment 
+    # Admin ability to accept application and successfully complete enrollment
     event :enroll, :after => :record_transition do
       transitions from: [:published, :enrolling], to: :enrolled
     end
@@ -561,8 +565,9 @@ class PlanYear
     end
   end
 
-  def is_employer_application_reverted?
+  def revert_employer_profile_application
     employer_profile.revert_application!
+    record_transition
   end
 
   def accept_application
@@ -607,12 +612,22 @@ class PlanYear
   end
 
 private
-  def is_event_date_valid?
+  def is_renewing_event_date_valid?
     today = TimeKeeper.date_of_record
     valid = case aasm_state
     when "draft"
       today >= (end_on + 1.day) - HbxProfile::ShopMaximumRenewalPeriodBeforeStartOn
-    when "published", "renewing_published"
+    else
+      false
+    end
+
+    valid
+  end
+
+  def is_event_date_valid?
+    today = TimeKeeper.date_of_record
+    valid = case aasm_state
+    when "published", "draft", "renewing_published"
       today >= open_enrollment_start_on
     when "enrolling", "renewing_enrolling"
       today.end_of_day >= open_enrollment_end_on

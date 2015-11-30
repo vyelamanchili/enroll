@@ -87,7 +87,6 @@
       </table>
     </div>
     <% @current_plan_year.benefit_groups.each do |bg| %>
-
     <div class="panel benefitgroup col-xs-12">
       <section class="col-xs-6">
         <header class="row">
@@ -105,7 +104,13 @@
             <header>Eligibility</header>
           </td>
           <td>
-            <p><%= "#{bg.effective_on_kind.humanize} after #{bg.effective_on_offset} days from date of hire" %></p>
+            <p>
+              <% if bg.effective_on_offset == 0 %>
+                First of the month following or coinciding with date of hire
+              <% else %>
+                <%= "#{bg.effective_on_kind.humanize} following #{bg.effective_on_offset} days" %>
+              <% end %>
+            </p>
           </td>
         </tr>
         <tr>
@@ -221,6 +226,15 @@
       </div>
     </div>
     </div>
+    <div class="col-xs-12 row">
+      <br/>
+
+        <%= link_to "Employee Detail Costs", employee_costs_employers_employer_profile_plan_years_path(@employer_profile, reference_plan_id: bg.reference_plan_id, plan_option_kind: bg.plan_option_kind, start_on: bg.start_on, location_id: 'home', tab: 'home'), remote: 'true', class: "btn btn-trans" %>
+        <br/>
+        <br/>
+        <br/>
+    </div>
+    <%= render "employers/plan_years/employee_costs_modal" %>
 
     <% end %>
     <% else %>

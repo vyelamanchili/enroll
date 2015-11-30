@@ -383,7 +383,7 @@ When(/^.+ enters? combined filter in plan selection page$/) do
   # Platinum
   @browser.execute_script(
     'arguments[0].scrollIntoView();',
-    @browser.element(:text => /Choose Healthcare/i)
+    @browser.element(:text => /Choose Plan/i)
   )
   @browser.checkbox(class: /interaction-choice-control-value-plan-metal-level-silver/).set(true)
   @browser.checkboxes(class: /plan-type-selection-filter/).first.set(false)
@@ -428,7 +428,6 @@ end
 Then(/^.+ should see Publish Plan Year Modal with warnings$/) do
 
   @browser.element(class: /modal-body/).wait_until_present
-
   modal = @browser.div(class: /modal-dialog/)
   warnings= modal.ul(class: /application-warnings/)
   # TODO:  Add visible? to the next line.  This test is not valid.
@@ -457,4 +456,15 @@ Then(/^.+ should see a plan year successfully saved message$/) do
   @browser.element( text: /coverage - benefits you offer/i).wait_until_present
   # TODO:  Add visible? to the next line.  This test is not valid.
   expect(@browser.element(text: /Plan Year successfully saved/)).to be_truthy
+end
+
+When(/^.+ clicks? on employer my account link$/) do
+  @browser.a(text: /My DC Health Link/).fire_event("onclick")
+  @browser.h1(text: /My Health Benefits Program/i).wait_until_present
+end
+
+Then(/^.+ should see employee cost modal for current plan year$/) do
+  @browser.a(class: /interaction-click-control-employee-detail-costs/).fire_event("onclick")
+  @browser.h4(class: /modal-title/).wait_until_present
+  @browser.button(class: /close/).fire_event("onclick")
 end

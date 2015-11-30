@@ -122,15 +122,6 @@ class Organization
   end
 
   def primary_office_location
-    if employer_profile.present?
-      unless office_locations.size == 1
-        office_locations.each do |office_location|
-          if office_location.present? && office_location.address.present?
-            office_location.is_primary = false unless office_location.address.kind == "primary"
-          end
-        end
-      end
-    end
     office_locations.detect(&:is_primary?)
   end
 
@@ -151,6 +142,15 @@ class Organization
     Rails.cache.fetch("carrier-names-at-#{TimeKeeper.date_of_record.year}", expires_in: 2.hour) do
       Organization.exists(carrier_profile: true).inject({}) do |carrier_names, org|
         carrier_names[org.carrier_profile.id.to_s] = org.carrier_profile.legal_name if Plan.valid_shop_health_plans("carrier", org.carrier_profile.id).present?
+        carrier_names
+      end
+    end
+  end
+
+  def self.valid_carrier_names_filters
+    Rails.cache.fetch("carrier-names-at-#{TimeKeeper.date_of_record.year}", expires_in: 2.hour) do
+      Organization.exists(carrier_profile: true).inject({}) do |carrier_names, org|
+        carrier_names[org.carrier_profile.id.to_s] = org.carrier_profile.legal_name
         carrier_names
       end
     end

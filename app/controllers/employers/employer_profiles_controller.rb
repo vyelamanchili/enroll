@@ -144,7 +144,13 @@ class Employers::EmployerProfilesController < ApplicationController
     @employer_profile = @organization.employer_profile
     @employer = @employer_profile.match_employer(current_user)
     @employer_contact = @employer_profile.staff_roles.first
-    @employer_contact.emails.any? ? @employer_contact_email = @employer_contact.emails.first : @employer_contact_email = @employer_contact.user.email
+
+    if @employer_contact.try(:emails)
+      @employer_contact.emails.any? ? @employer_contact_email = @employer_contact.emails.first : @employer_contact_email = @employer_contact.user.email
+    else
+      @employer_contact_email = @employer_contact.user.email
+    end
+
     @current_user_is_hbx_staff = current_user.has_hbx_staff_role?
     @current_user_is_broker = current_user.has_broker_agency_staff_role?
   end
@@ -345,9 +351,10 @@ class Employers::EmployerProfilesController < ApplicationController
     params.require(:organization).permit(
       :employer_profile_attributes => [ :entity_kind, :dba, :legal_name],
       :office_locations_attributes => [
-        :address_attributes => [:kind, :address_1, :address_2, :city, :state, :zip],
-        :phone_attributes => [:kind, :area_code, :number, :extension],
-        :email_attributes => [:kind, :address]
+        {:address_attributes => [:kind, :address_1, :address_2, :city, :state, :zip]},
+        {:phone_attributes => [:kind, :area_code, :number, :extension]},
+        {:email_attributes => [:kind, :address]},
+        :is_primary
       ]
     )
   end
@@ -356,6 +363,10 @@ class Employers::EmployerProfilesController < ApplicationController
     params[:organization][:office_locations_attributes].each do |key, location|
       params[:organization][:office_locations_attributes].delete(key) unless location['address_attributes']
       location.delete('phone_attributes') if (location['phone_attributes'].present? and location['phone_attributes']['number'].blank?)
+      office_locations = params[:organization][:office_locations_attributes]
+      if office_locations and office_locations[key]
+        params[:organization][:office_locations_attributes][key][:is_primary] = (office_locations[key][:address_attributes][:kind] == 'primary')
+      end
     end
   end
 

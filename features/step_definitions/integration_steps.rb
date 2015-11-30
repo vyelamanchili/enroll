@@ -261,7 +261,8 @@ When(/^I visit the Employer portal$/) do
 end
 
 Then(/^(?:.+) should see a successful sign up message$/) do
-  Watir::Wait.until(30) { @browser.element(text: /Welcome to DC Health Link. Your account has been created./).present? }
+  # Watir::Wait.until(30) { @browser.element(text: /Welcome to DC Health Link. Your account has been created./).present? }
+  wait_and_confirm_text(/Welcome to DC Health Link. Your account has been created./)
   screenshot("employer_sign_up_welcome")
   expect(@browser.element(text: /Welcome to DC Health Link. Your account has been created./).visible?).to be_truthy
 end
@@ -447,7 +448,7 @@ Then(/^.+ should see the plan shopping welcome page$/) do
   @browser.element(text: /Filter Results/i).wait_until_present
   # @browser.h3(text: /Select a Plan/).wait_until_present
   screenshot("plan_shopping_welcome")
-  expect(@browser.element(text: /Choose Healthcare/i).visible?).to be_truthy
+  expect(@browser.element(text: /Choose Plan/i).visible?).to be_truthy
   # expect(@browser.h3(text: /Select a Plan/).visible?).to be_truthy
 end
 
@@ -464,9 +465,9 @@ end
 When(/^.+ selects? a plan on the plan shopping page$/) do
   @browser.execute_script(
     'arguments[0].scrollIntoView();',
-    @browser.element(:text => /Choose Healthcare/)
+    @browser.element(:text => /Choose Plan/)
   )
-  @browser.element(text: /Choose Healthcare/).wait_until_present
+  @browser.element(text: /Choose Plan/).wait_until_present
   click_when_present(@browser.a(text: /Select Plan/))
 end
 
@@ -552,6 +553,7 @@ end
 When(/^.+ should see a published success message$/) do
   @browser.element(text: /plan year successfully published/i).wait_until_present
   expect(@browser.element(text: /Plan Year successfully published/).visible?).to be_truthy
+  binding.pry
 end
 
 When(/^.+ goes to to home tab$/) do
@@ -640,8 +642,8 @@ Then(/^I should see the dependents and group selection page$/) do
   @browser.element(text: /Choose Benefits: Covered Family Members/i).wait_until_present
   expect(@browser.element(text: /Choose Benefits: Covered Family Members/i).visible?).to be_truthy
   scroll_then_click(@browser.button(class: /interaction-click-control-shop-for-new-plan/))
-  @browser.element(text: /Choose Healthcare/i).wait_until_present
-  expect(@browser.element(text: /Choose Healthcare/i).visible?).to be_truthy
+  @browser.element(text: /Choose Plan/i).wait_until_present
+  expect(@browser.element(text: /Choose Plan/i).visible?).to be_truthy
   @browser.execute_script("$('.interaction-click-control-select-plan')[1].click()")
   @browser.element(text: /Confirm Your Plan Selection/i).wait_until_present
   expect(@browser.element(text: /Confirm Your Plan Selection/i).visible?).to be_truthy

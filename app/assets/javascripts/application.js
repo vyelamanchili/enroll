@@ -63,10 +63,6 @@ $(document).on('page:update', function(){
   applyFloatLabels();
   applySelectric();
 
-  $(document).on('change','.plan-title input', function() {
-    var planTitle = $(this).val()
-    $(this).attr("value", "\"planTitle\"");
-  });
 
 
 
@@ -184,8 +180,8 @@ function getCarrierPlans(ep, ci) {
       referenceplanselections = $('.reference-plan input[type=radio]:checked');
 
       bgtitles.each(function() {
-      plantitle = $(this).val();
-        if ( $(this).val().length > 0 && $('.plan-title input[value='+plantitle+']').size() < 2 ) {
+        plantitle = $(this).val();
+        if ( $(this).val().length > 0 && $('.plan-title input[value=' + "\"plantitle\"" + ']').size() < 2 ) {
           validatedbgtitles = true;
           validated = true;
 
@@ -284,10 +280,10 @@ $(document).ready(function () {
     window.confirm("You are leaving the DC Health Link web site and entering a privately owned web site created, operated and maintained by a private business. The information that this private business collects and maintains as a result of your visit to its web site is different from the information that the DC Health Link collects and maintains. DC Health Link does not share information with this private company. DC Health Link cannot help you with any information regarding this website, including your username or password, or other technical issues. By linking to this private business, the DC Health Link is not endorsing its products, services, or privacy or security policies. We recommend you review the business's information collection policy or terms and conditions to fully understand what information is collected by this private business.");
   })
 
-  // reveal published plan years benefit groups
-  if ( $('.plan-year').find('.fa-star.enrolling').length ) {
-    $('.plan-year').find('.fa-star.enrolling').closest('.plan-year').find('a.benefit-details').trigger('click');
+  if ( $('.plan-year').find('.fa-star.enrolling, .fa-star.published').length )  {
+    $('.plan-year').find('.fa-star.enrolling, .fa-star.published').closest('.plan-year').find('a.benefit-details').trigger('click');
   }
+
   // check that dob entered is not a future date
   $(document).on('blur', '#jq_datepicker_ignore_person_dob, #family_member_dob_, #jq_datepicker_ignore_organization_dob, #jq_datepicker_ignore_census_employee_dob, [name="jq_datepicker_ignore_dependent[dob]"]', function() {
     var entered_dob = $(this).val();
@@ -713,9 +709,11 @@ $(document).ready(function () {
     ssn_patt2=/^666/;
     ssn_patt3=/^....00/;
     ssn_patt4=/000$/;
-    if (ssn_val.match(ssn_patt1) || ssn_val.match(ssn_patt2) || ssn_val.match(ssn_patt3) || ssn_val.match(ssn_patt4) ) {
-      $(this).val("SSN is INVALID");
-    }
+
+    // Fix for #4041
+    // if (ssn_val.match(ssn_patt1) || ssn_val.match(ssn_patt2) || ssn_val.match(ssn_patt3) || ssn_val.match(ssn_patt4) ) {
+    //   $(this).val("SSN is INVALID");
+    // }
   });
 
 
