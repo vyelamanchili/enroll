@@ -57,7 +57,7 @@ RSpec.describe Employers::InboxesController, :type => :controller do
       # allow(message).to receive(:update_attributes).and_return(true)
     end
 
-    context "user with hbx staff role" do
+    context "user with employer staff role" do
       let(:user) { FactoryGirl.create(:user, person: person) }
       let(:person) { FactoryGirl.create(:person) }
       let(:inbox) { FactoryGirl.create(:inbox, recipient: employer_profile) }

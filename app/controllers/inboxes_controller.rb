@@ -72,7 +72,6 @@ class InboxesController < ApplicationController
       person = Person.find(params[:id])
       message = person.inbox.messages.where(id: params[:message_id]).first
       message.update_attributes(folder: Message::FOLDER_TYPES[:deleted])
-
       if person.inbox.save
         flash[:notice] = "Successfully deleted inbox message."
         redirect_to broker_agencies_profile_path(person, :tab=>'inbox', :folder=>'inbox')
