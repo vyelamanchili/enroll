@@ -30,54 +30,34 @@ class InboxesController < ApplicationController
   end
 
   def destroy
+
     if current_user.has_hbx_staff_role?
+
       if params.has_key?(:user)
         person = Person.find(params[:id])
         message = person.inbox.messages.where(id: params[:message_id]).first
         message.update_attributes(folder: Message::FOLDER_TYPES[:deleted])
         if person.inbox.save
           flash[:notice] = "Successfully deleted inbox message."
-
-          if params.has_key?(:user)
-            redirect_to broker_agencies_profile_path(person, :user=>'admin', :folder=>'inbox')
-
-          elsif params.has_key?(:broker_agency_profile)
-            redirect_to broker_agencies_profile_path(person, :tab=>'inbox', :folder=>'inbox')
-          else
-            redirect_to exchanges_hbx_profiles_path(person, :tab=>'inbox', :folder=>'inbox')
-          end
+          redirect_to broker_agencies_profile_path(person, :user=>'admin', :folder=>'inbox')
         end
+
       elsif params.has_key?(:broker_agency_profile)
         person = BrokerAgencyProfile.find(params[:person_id])
         message = person.inbox.messages.where(id: params[:message_id]).first
         message.update_attributes(folder: Message::FOLDER_TYPES[:deleted])
         if person.inbox.save
           flash[:notice] = "Successfully deleted inbox message."
-
-          if params.has_key?(:user)
-            redirect_to broker_agencies_profile_path(person, :user=>'admin', :folder=>'inbox')
-
-          elsif params.has_key?(:broker_agency_profile)
-            redirect_to broker_agencies_profile_path(person, :tab=>'inbox', :folder=>'inbox')
-          else
-            redirect_to exchanges_hbx_profiles_path(person, :tab=>'inbox', :folder=>'inbox')
-          end
+          redirect_to broker_agencies_profile_path(person, :tab=>'inbox', :folder=>'inbox')
         end
+
       else
         person = HbxProfile.find(params[:id])
         message = person.inbox.messages.where(id: params[:message_id]).first
         message.update_attributes(folder: Message::FOLDER_TYPES[:deleted])
         if person.inbox.save
           flash[:notice] = "Successfully deleted inbox message."
-
-          if params.has_key?(:user)
-            redirect_to broker_agencies_profile_path(person, :user=>'admin', :folder=>'inbox')
-
-          elsif params.has_key?(:broker_agency_profile)
-            redirect_to broker_agencies_profile_path(person, :tab=>'inbox', :folder=>'inbox')
-          else
-            redirect_to exchanges_hbx_profiles_path(person, :tab=>'inbox', :folder=>'inbox')
-          end
+          redirect_to exchanges_hbx_profiles_path(person, :tab=>'inbox', :folder=>'inbox')
         end
       end
     elsif params.has_key?(:mailbox)
@@ -86,35 +66,18 @@ class InboxesController < ApplicationController
       message.update_attributes(folder: Message::FOLDER_TYPES[:deleted])
       if person.inbox.save
         flash[:notice] = "Successfully deleted inbox message."
-
-        if params.has_key?(:user)
-          redirect_to broker_agencies_profile_path(person, :user=>'admin', :folder=>'inbox')
-
-        elsif params.has_key?(:broker_agency_profile)
-          redirect_to broker_agencies_profile_path(person, :tab=>'inbox', :folder=>'inbox')
-        else
-          redirect_to exchanges_hbx_profiles_path(person, :tab=>'inbox', :folder=>'inbox')
-        end
+        redirect_to broker_agencies_profile_path(person, :tab=>'inbox', :folder=>'inbox')
       end
     elsif current_user.has_broker_role?
       person = Person.find(params[:id])
       message = person.inbox.messages.where(id: params[:message_id]).first
       message.update_attributes(folder: Message::FOLDER_TYPES[:deleted])
+
       if person.inbox.save
         flash[:notice] = "Successfully deleted inbox message."
-
-        if params.has_key?(:user)
-          redirect_to broker_agencies_profile_path(person, :user=>'admin', :folder=>'inbox')
-
-        elsif params.has_key?(:broker_agency_profile)
-          redirect_to broker_agencies_profile_path(person, :tab=>'inbox', :folder=>'inbox')
-        else
-          redirect_to exchanges_hbx_profiles_path(person, :tab=>'inbox', :folder=>'inbox')
-        end
+        redirect_to broker_agencies_profile_path(person, :tab=>'inbox', :folder=>'inbox')
       end
     end
-
-
 
     if current_user.has_employer_staff_role?
       employer = EmployerProfile.find(params["id"])
@@ -135,9 +98,8 @@ class InboxesController < ApplicationController
         redirect_to inbox_insured_families_path(person.id, :tab=>'messages', :folder=>'inbox')
       end
     end
-      @message.update_attributes(folder: Message::FOLDER_TYPES[:deleted])
-
-    end
+    @message.update_attributes(folder: Message::FOLDER_TYPES[:deleted])
+  end
 
 
   private
