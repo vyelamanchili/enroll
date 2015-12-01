@@ -96,6 +96,7 @@ RSpec.describe BrokerAgencies::InboxesController, :type => :controller do
       let(:inbox) { FactoryGirl.create(:inbox, recipient: person) }
       let(:message){ FactoryGirl.create(:message, inbox: inbox) }
 
+
       before :each do
         sign_in(user)
         allow(user).to receive(:has_hbx_staff_role?).and_return(true)
@@ -111,81 +112,8 @@ RSpec.describe BrokerAgencies::InboxesController, :type => :controller do
         expect(response).to redirect_to(broker_agencies_profile_path({user: "admin", folder: "inbox"}))
       end
 
-    end
-
-    # context "user with hbx staff role in broker mail" do
-    #   let(:user_one) { FactoryGirl.create(:user, person: person_one) }
-    #   let(:user_two) { FactoryGirl.create(:user, person: person_two) }
-    #   let(:person_one) { FactoryGirl.create(:person) }
-    #   let(:person_two) { FactoryGirl.create(:person) }
-    #   let(:inbox) { FactoryGirl.create(:inbox, recipient: person_two) }
-    #   let(:message){ FactoryGirl.create(:message, inbox: inbox) }
-    #
-    #   before :each do
-    #     sign_in(user_one)
-    #     sign_in(user_two)
-    #     allow(user_one).to receive(:has_hbx_staff_role?).and_return(true)
-    #   end
-    #
-    #   it "show action" do
-    #     get :show, id: 1
-    #     expect(response).to have_http_status(:success)
-    #   end
-    #
-    #   it "delete action" do
-    #     xhr :delete, :destroy, id: person_two.id, user: 'admin', message_id: message.id
-    #     expect(response).to redirect_to broker_agencies_profile_path(person, :user=>'admin', :folder=>'inbox')
-    #   end
-    #
-    # end
-
-    context "user with broker role" do
-      let(:user) { FactoryGirl.create(:user, person: person) }
-      let(:person) { FactoryGirl.create(:person) }
-      let(:inbox) { FactoryGirl.create(:inbox, recipient: person) }
-      let(:message){ FactoryGirl.create(:message, inbox: inbox) }
-
-      before :each do
-        sign_in(user)
-        allow(user).to receive(:has_broker_role?).and_return(true)
-      end
-
-      it "show action" do
-        get :show, id: 1
-        expect(response).to have_http_status(:success)
-      end
-
-      it "delete action" do
-        xhr :delete, :destroy, id: person.id, message_id: message.id
-        expect(response).to redirect_to(broker_agencies_profile_path({folder: "inbox", tab: "inbox"}))
-      end
 
     end
-
-    # context "inbox as broker agency profile" do
-    #
-    #   let(:user) { FactoryGirl.create(:user, person: person) }
-    #   let(:person) { FactoryGirl.create(:person) }
-    #   let(:inbox) { FactoryGirl.create(:inbox, recipient: broker_agency_profile) }
-    #   let(:message){ FactoryGirl.create(:message, inbox: inbox) }
-    #   let(:broker_agency_profile){ FactoryGirl.create(:broker_agency_profile) }
-    #
-    #   before :each do
-    #     sign_in(user)
-    #     allow(user).to receive(:has_employer_staff_role?).and_return(true)
-    #   end
-    #
-    #   it "show action" do
-    #     get :show, id: 1
-    #     expect(response).to have_http_status(:success)
-    #   end
-    #
-    #   it "delete action" do
-    #     xhr :delete, :destroy, id: broker_agency_profile.id, person_id: broker_agency_profile.id, message_id: message.id, mailbox: 'agency'
-    #     expect(response).to redirect_to(broker_agencies_profile_path({folder: "inbox", tab: "inbox"}))
-    #   end
-    #
-    # end
 
 
 
