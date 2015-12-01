@@ -38,7 +38,16 @@ class User
     # self.password = new_password
     # self.password_confirmation = new_password
     self.idp_verified = true
-    self.save!
+    begin
+      self.save!
+    rescue => e
+      message = "#{e.message}; "
+      message = message + "user: #{self}, "
+      message = message + "errors.full_messages: #{self.errors.full_messages}, "
+      message = message + "stacktrace: #{e.backtrace}"
+      log(message, {:severity => "error"})
+      raise e
+    end
   end
 
   # for i18L
@@ -203,6 +212,14 @@ class User
 
   def has_csr_role?
     has_role?(:csr)
+  end
+
+  def has_csr_subrole?
+    person && person.csr_role && !person.csr_role.cac
+  end
+
+  def has_cac_subrole?
+    person && person.csr_role && person.csr_role.cac
   end
 
   def has_assister_role?
