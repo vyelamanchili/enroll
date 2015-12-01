@@ -85,16 +85,38 @@ RSpec.describe BrokerAgencies::InboxesController, :type => :controller do
       controller.instance_variable_set(:@message, message)
       allow(message).to receive(:update_attributes).and_return(true)
       allow(person).to receive(:_id).and_return('xxx')
+
+
     end
 
-    it "show action" do
-      get :show, id: 1
-      expect(response).to have_http_status(:success)
+
+    context "user with hbx staff role" do
+      let(:user) { FactoryGirl.create(:user, person: person) }
+      let(:person) { FactoryGirl.create(:person) }
+      let(:inbox) { FactoryGirl.create(:inbox, recipient: person) }
+      let(:message){ FactoryGirl.create(:message, inbox: inbox) }
+
+
+      before :each do
+        sign_in(user)
+        allow(user).to receive(:has_hbx_staff_role?).and_return(true)
+      end
+
+      it "show action" do
+        get :show, id: 1
+        expect(response).to have_http_status(:success)
+      end
+
+      it "delete action" do
+        xhr :delete, :destroy, id: person.id, user: 'admin', message_id: message.id
+        expect(response).to redirect_to(broker_agencies_profile_path({user: "admin", folder: "inbox"}))
+      end
+
+
     end
 
-    it "delete action" do
-      xhr :delete, :destroy, id: 1
-      expect(response).to have_http_status(:success)
-    end
+
+
+
   end
 end

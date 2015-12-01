@@ -97,6 +97,10 @@ class Employers::EmployerProfilesController < ApplicationController
       when 'brokers'
         @broker_agency_accounts = @employer_profile.broker_agency_accounts
       when 'inbox'
+        @folder = params[:folder] || 'Inbox'
+        if params.has_key?(:message_id)
+          @message = @employer_profile.inbox.messages.where(id: params[:message_id]).first
+        end
 
       else
         @current_plan_year = @employer_profile.show_plan_year

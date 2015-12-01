@@ -143,6 +143,7 @@
 <% end %>
 <br/>
 <%= link_to 'Browse Brokers'.html_safe, "/employers/employer_profiles/#{@employer_profile.id}/broker_agency", remote: true, class: "btn btn-primary btn-br", id: 'browse_brokers_link',
+
   onclick: '$("#brokers-empty").hide(); $("#active_broker_tab").hide(); $("#browse_brokers_link").hide()' %>
 
 <div class="row no-buffer">

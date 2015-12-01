@@ -53,7 +53,9 @@
    margin-bottom: 0;
    margin-left: 0;
  }
-
+ .bt-n {
+   border-top: none;
+ }
  .btn, button {
    &.btn-trans {
      border: solid 1px #b2b2b2;
@@ -72,7 +74,7 @@
          margin-right: 0;
        }
      }
-   
+
    &.mz {
      margin: 0;
      margin-right: 0;
@@ -88,7 +90,6 @@
    }
  }
  &.btn-right {
-   padding-right: 0;
    margin-left: 5px;
  }
  &.btn-primary {
@@ -109,9 +110,12 @@
      &.mtz {
        margin-top: 0;
      }
+     &.btn-small {
+       font-size: 14px;
+       padding: 8px 14px;
+     }
    }
    &.btn-right {
-     padding-right: 0;
      margin-left: 5px;
    }
    &.btn-primary {
@@ -124,7 +128,6 @@
        border-left: none;
        border-right: none;
        margin-top: 5px;
-       margin-right: 5px;
        font-weight: 600;
        &.mz {
          margin: 0;
@@ -138,7 +141,6 @@
        &.btn-small {
          font-size: 14px;
          padding: 8px 14px;
-
        }
 
      .fa {
@@ -148,7 +150,6 @@
    .fa {
      color: #fff;
    }
-
  }
  &.full-width {
    padding: 10px 0;
@@ -329,4 +330,22 @@
 }
 .fa-question-circle {
     color: #007bc4;
+}
+
+// MOVE THIS TO EMPLOYER.SCSS AFTER DEVELOPMENT IN PROMOTED INTO RELEASE-1.2 (11/13/2015)
+#inbox_form {
+  .inboxes {
+    display: inline-block;
+    float: right;
+  }
+  a {
+    display: inline-block;
+    margin-bottom: 10px;
+    padding: 6px 4px;
+    &.active {
+      font-weight: 600;
+      &>span {
+      }
+    }
+  }
 }

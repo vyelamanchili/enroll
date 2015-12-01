@@ -1,0 +1,13 @@
+function removeHbxInbox() {
+
+  if (window.location.href.indexOf("exchanges") > -1 && window.location.href.indexOf("hbx_profiles") > -1 && ( window.location.href.indexOf("folder")  > -1 || window.location.href.indexOf("message_id")  > -1 )) {
+    if ( $('h3').hasClass('title-inline') || $('div').hasClass('documents-table') || $('#users_orphans_accounts').length ) {
+      $('#hbx_inbox').remove();
+    }
+  } else if (window.location.href.indexOf("broker_agencies") > -1 && window.location.href.indexOf("profiles") > -1 && ( window.location.href.indexOf("folder")  > -1 || window.location.href.indexOf("message_id")  > -1 )) {
+    if ( $('h3').hasClass('title-inline') || $('h2:contains("Office Locations")').length ) {
+      $('#bap_inbox').remove();
+    }
+  }
+
+}

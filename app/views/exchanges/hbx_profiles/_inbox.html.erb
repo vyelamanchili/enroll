@@ -1,35 +1,34 @@
-<div class="row">
-  <% if @person.inbox.messages.size > 0 %>
-  <div id="inbox_form" class="col-xs-12">
+  <% if @profile.inbox.messages.size > 0 %>
+  <div id="inbox_form">
     <span class="inboxes">
       <% if params[:folder] == 'inbox' %>
-    <%= link_to(inbox_insured_families_path(provider, tab: 'inbox', folder: 'inbox'), class: 'active') do %>
+    <%= link_to(exchanges_hbx_profiles_path(provider, tab: 'inbox', folder: 'inbox'), class: 'active') do %>
       Inbox &nbsp;<span class="badge message-badge pull-right"><%= provider.inbox.unread_messages.size %></span>
     <% end %> |
     <% else %>
-    <%= link_to(inbox_insured_families_path(provider, tab: 'inbox', folder: 'inbox')) do %>
+    <%= link_to(exchanges_hbx_profiles_path(provider, tab: 'inbox', folder: 'inbox')) do %>
       Inbox &nbsp;<span class="badge message-badge pull-right"><%= provider.inbox.unread_messages.size %></span>
     <% end %> |
       <% end %>
     <% if @sent_box == true %>
-    <% if params[:folder] == 'inbox' %>
+    <% if params[:folder] == 'sent' %>
 
-      <%= link_to(inbox_insured_families_path(provider, tab: 'inbox', folder: 'Sent'), class: 'active') do %>
+      <%= link_to(exchanges_hbx_profiles_path(provider, tab: 'inbox', folder: 'sent'), class: 'active') do %>
         Sent
-        <% end %>
+        <% end %> |
       <% else %>
-      <%= link_to(inbox_insured_families_path(provider, tab: 'inbox', folder: 'Sent')) do %>
+      <%= link_to(exchanges_hbx_profiles_path(provider, tab: 'inbox', folder: 'sent')) do %>
         Sent
-      <% end %>
+      <% end %> |
       <% end %>
     <% end %>
     <% if params[:folder] == 'deleted' %>
 
-      <%= link_to(inbox_insured_families_path(provider, tab: 'inbox', folder: 'deleted'), class: 'active') do %>
+      <%= link_to(exchanges_hbx_profiles_path(provider, tab: 'inbox', folder: 'deleted'), class: 'active') do %>
         Deleted
       <% end %>
       <% else %>
-      <%= link_to(inbox_insured_families_path(provider, tab: 'inbox', folder: 'deleted')) do %>
+      <%= link_to(exchanges_hbx_profiles_path(provider, tab: 'inbox', folder: 'deleted')) do %>
         Deleted
       <% end %>
     <% end %>
@@ -58,4 +57,3 @@
   <% else %>
   <h4 class="starter">Your inbox is currently empty.<!-- To view your deleted messages, <%= link_to 'click here',employers_employer_profile_path(:employer_profile_id=>@employer_profile.id, tab: 'inbox', folder: 'deleted') %>.--></h4>
   <% end %>
-</div>

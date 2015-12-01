@@ -16,7 +16,7 @@ function show_broker(broker_id) {
 
 $('.broker_select_button').click(function(){
   show_broker(this.getAttribute('data-broker'))
-  $('#help_index_status').html('') 
+  $('#help_index_status').html('')
 })
 $('.close_broker_select').click(function(){
   $("#broker_index_view").removeClass('hide')
