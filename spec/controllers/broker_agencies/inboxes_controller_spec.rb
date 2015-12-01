@@ -4,7 +4,6 @@ RSpec.describe BrokerAgencies::InboxesController, :type => :controller do
   let(:hbx_profile) { double(id: double("hbx_profile_id"))}
   let(:user) { double("user") }
   let(:person) { double(:employer_staff_roles => [double("person", :employer_profile_id => double)])}
-  binding.pry
 
   describe "Get new" do
     let(:inbox_provider){double(id: double("id"),legal_name: double("inbox_provider"), inbox: double(messages: double(build: double("inbox"))))}
@@ -93,16 +92,14 @@ RSpec.describe BrokerAgencies::InboxesController, :type => :controller do
 
     context "user with hbx staff role" do
       let(:user) { FactoryGirl.create(:user, person: person) }
-      let(:person) { FactoryGirl.create(:person, inbox: inbox) }
-      let(:inbox) { Inbox.new }
+      let(:person) { FactoryGirl.create(:person) }
+      let(:inbox) { FactoryGirl.create(:inbox, recipient: person) }
+      let(:message){ FactoryGirl.create(:message, inbox: inbox) }
+
 
       before :each do
         sign_in(user)
         allow(user).to receive(:has_hbx_staff_role?).and_return(true)
-        allow(person).to receive(:inbox).and_return(inbox)
-        allow(inbox).to receive(:messages).and_return([message])
-        allow(message).to receive(:update_attributes).and_return(true)
-
       end
 
       it "show action" do
@@ -111,8 +108,8 @@ RSpec.describe BrokerAgencies::InboxesController, :type => :controller do
       end
 
       it "delete action" do
-        xhr :delete, :destroy, id: person.id, user: 'admin'
-        expect(response).to have_http_status(:success)
+        xhr :delete, :destroy, id: person.id, user: 'admin', message_id: message.id
+        expect(response).to redirect_to(broker_agencies_profile_path({user: "admin", folder: "inbox"}))
       end
 
 

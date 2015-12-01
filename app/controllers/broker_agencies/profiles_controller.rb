@@ -26,11 +26,11 @@ class BrokerAgencies::ProfilesController < ApplicationController
   end
 
   def show
+
      session[:person_id] = nil
      @staff_role = current_user.has_broker_agency_staff_role?
      @folder = params[:folder]
      @id=params[:id]
-
 
      if current_user.has_broker_agency_staff_role?
        @broker_agency_profile = current_user.person.broker_agency_staff_roles.first.broker_agency_profile
@@ -57,7 +57,9 @@ class BrokerAgencies::ProfilesController < ApplicationController
   end
 
   def edit
+    @provider = @broker_agency_profile
     @organization = Forms::BrokerAgencyProfile.find(@broker_agency_profile.id)
+
   end
 
   def update
