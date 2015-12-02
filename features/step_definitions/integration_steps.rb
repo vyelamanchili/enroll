@@ -579,6 +579,7 @@ When(/^.+ clicks? on the add employee button$/) do
 end
 
 When(/^.+ clicks? on the (.+) tab$/) do |tab_name|
+  sleep 2
   @browser.a(text: /#{tab_name}/).wait_until_present
   scroll_then_click(@browser.a(text: /#{tab_name}/))
 end

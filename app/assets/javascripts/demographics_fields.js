@@ -243,11 +243,12 @@ function validationForVlpDocuments(e) {
 $(document).ready(function(){
   applyListeners();
   validationForIndianTribeMember();
-
-  $('form.edit_person, form.new_dependent, form.edit_dependent').submit(function(e){
-    console.log(e);
-    validationForUsCitizenOrUsNational(e);
-    validationForNaturalizedCitizen(e);
-    validationForVlpDocuments(e);
-  });
+  if (window.location.href.indexOf("insured") > -1 && window.location.href.indexOf("consumer_role") > -1 && window.location.href.indexOf("edit") > -1) {
+    $('form.edit_person, form.new_dependent, form.edit_dependent').submit(function(e){
+      console.log(e);
+      validationForUsCitizenOrUsNational(e);
+      validationForNaturalizedCitizen(e);
+      validationForVlpDocuments(e);
+    });
+  }
 });
