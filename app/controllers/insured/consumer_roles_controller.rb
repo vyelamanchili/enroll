@@ -88,8 +88,8 @@ class Insured::ConsumerRolesController < ApplicationController
           return
         end
       rescue Exception => e
-        flash[:error] = e.message
-        redirect_to :back
+        flash[:error] = set_error_message(e.message)
+        redirect_to search_insured_consumer_role_index_path
         return
       end
     else
@@ -233,6 +233,14 @@ class Insured::ConsumerRolesController < ApplicationController
       current_user.last_portal_visited = search_insured_consumer_role_index_path
       current_user.save!
       # render 'privacy'
+    end
+  end
+
+  def set_error_message(message)
+    if message.include? "year too big to marshal"
+      return "Date of birth cannot be more than 110 years ago"
+    else
+      return message
     end
   end
 end
