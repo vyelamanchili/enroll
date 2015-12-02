@@ -31,6 +31,8 @@ class BrokerAgencies::ProfilesController < ApplicationController
      @staff_role = current_user.has_broker_agency_staff_role?
      @folder = params[:folder]
      @id=params[:id]
+     @sent_box = true
+
 
      if current_user.has_broker_agency_staff_role?
        @broker_agency_profile = current_user.person.broker_agency_staff_roles.first.broker_agency_profile
