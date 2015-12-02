@@ -10,6 +10,10 @@
     <h1 class="darkblue mz">
       Messages
     </h1>
+      <% if current_user.has_hbx_staff_role? %>
+      <%= render 'inbox', provider: @person %>
+      <% else %>
       <%= render 'inbox', provider: current_user.person %>
+      <% end %>
     <% end %>
 </div>

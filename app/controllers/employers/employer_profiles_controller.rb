@@ -100,6 +100,7 @@ class Employers::EmployerProfilesController < ApplicationController
         @folder = params[:folder] || 'Inbox'
         if params.has_key?(:message_id)
           @message = @employer_profile.inbox.messages.where(id: params[:message_id]).first
+          @message.update_attributes(message_read: true)
         end
 
       else
@@ -213,6 +214,7 @@ class Employers::EmployerProfilesController < ApplicationController
   end
 
   def inbox
+
     @folder = params[:folder] || 'Inbox'
     @sent_box = false
     respond_to do |format|

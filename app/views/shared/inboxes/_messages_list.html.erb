@@ -7,7 +7,7 @@
   <div>
   <div id="inbox_form" class="col-xs-12 no-pd">
     <span class="inboxes">
-      <% if params[:folder] == 'inbox' %>
+    <% if params[:folder] == 'inbox' %>
     <%= link_to(employers_employer_profile_path(:employer_profile_id=>@employer_profile.id, tab: 'inbox', folder: 'inbox'), class: 'active') do %>
       Inbox &nbsp;<span class="badge message-badge pull-right"><%= @employer_profile.inbox.unread_messages.size %></span>
     <% end %> |

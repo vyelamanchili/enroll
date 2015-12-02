@@ -42,7 +42,26 @@ class InboxesController < ApplicationController
           redirect_to broker_agencies_profile_path(person, :user=>'admin', :folder=>'inbox')
         end
 
-      elsif params.has_key?(:broker_agency_profile)
+      elsif params.has_key?(:insured)
+          person = Person.find(params[:person_id])
+          message = person.inbox.messages.where(id: params[:message_id]).first
+          message.update_attributes(folder: Message::FOLDER_TYPES[:deleted])
+          if person.inbox.save
+            flash[:notice] = "Successfully deleted inbox message."
+            redirect_to inbox_insured_families_path(person.id, :tab=>'messages', :folder=>'inbox')
+          end
+      
+
+      elsif params.has_key?(:employer_profile)
+        employer = EmployerProfile.find(params["id"])
+        message = employer.inbox.messages.where(id: params[:message_id]).first
+        message.update_attributes(folder: Message::FOLDER_TYPES[:deleted])
+      if employer.inbox.save
+        flash[:notice] = "Successfully deleted inbox message."
+        redirect_to employers_employer_profile_path(employer.id, :tab=>'inbox', :folder=>'inbox')
+      end
+
+        elsif params.has_key?(:broker_agency_profile)
         person = BrokerAgencyProfile.find(params[:person_id])
         message = person.inbox.messages.where(id: params[:message_id]).first
         message.update_attributes(folder: Message::FOLDER_TYPES[:deleted])
@@ -97,6 +116,7 @@ class InboxesController < ApplicationController
         redirect_to inbox_insured_families_path(person.id, :tab=>'messages', :folder=>'inbox')
       end
     end
+
     @message.update_attributes(folder: Message::FOLDER_TYPES[:deleted])
   end
 
