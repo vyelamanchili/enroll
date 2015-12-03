@@ -169,7 +169,6 @@ class Exchanges::HbxProfilesController < ApplicationController
       @message.update_attributes(message_read: true)
 
     end
-    @unread_messages = @profile.inbox.unread_messages.try(:count) || 0
 
   end
 

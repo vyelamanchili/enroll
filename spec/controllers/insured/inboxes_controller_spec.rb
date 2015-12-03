@@ -53,16 +53,15 @@ RSpec.describe Insured::InboxesController, :type => :controller do
       # allow(message).to receive(:update_attributes).and_return(true)
     end
 
-    context "user with employee role" do
-      let(:user) { FactoryGirl.create(:user, person: person) }
-      let(:person) { FactoryGirl.create(:person) }
+    context "employee inbox" do
+      let(:user) { FactoryGirl.create(:user, person: person, roles: ["employee"]) }
+      let(:person) { FactoryGirl.create(:person, :with_employee_role) }
       let(:inbox) { FactoryGirl.create(:inbox, recipient: person) }
       let(:message){ FactoryGirl.create(:message, inbox: inbox) }
 
 
       before :each do
         sign_in(user)
-        allow(user).to receive(:has_employee_role?).and_return(true)
       end
 
 
@@ -73,16 +72,15 @@ RSpec.describe Insured::InboxesController, :type => :controller do
 
     end
 
-    context "user with consumer role" do
-      let(:user) { FactoryGirl.create(:user, person: person) }
-      let(:person) { FactoryGirl.create(:person) }
+    context "consumer inbox" do
+      let(:user) { FactoryGirl.create(:user, person: person, roles: ["consumer"]) }
+      let(:person) { FactoryGirl.create(:person, :with_employee_role) }
       let(:inbox) { FactoryGirl.create(:inbox, recipient: person) }
       let(:message){ FactoryGirl.create(:message, inbox: inbox) }
 
 
       before :each do
         sign_in(user)
-        allow(user).to receive(:has_consumer_role?).and_return(true)
       end
 
 
