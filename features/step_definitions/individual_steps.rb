@@ -11,6 +11,8 @@ And(/Individual asks how to make an email account$/) do
   @browser.a(text: /Don't have an email account?/).fire_event("onclick")
   @browser.element(class: /modal/).wait_until_present
   @browser.element(class: /interaction-click-control-×/).fire_event("onclick")
+  sleep 2
+  @browser.element(class: /modal/).wait_while_present
 end
 
 Then(/Individual creates HBX account$/) do
