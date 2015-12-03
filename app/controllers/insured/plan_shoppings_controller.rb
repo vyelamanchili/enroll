@@ -7,12 +7,15 @@ class Insured::PlanShoppingsController < ApplicationController
   before_action :set_kind_for_market_and_coverage, only: [:thankyou, :show, :plans, :checkout, :receipt]
 
   def checkout
+
+
     plan = Plan.find(params.require(:plan_id))
     hbx_enrollment = HbxEnrollment.find(params.require(:id))
     hbx_enrollment.update_current(plan_id: plan.id)
     hbx_enrollment.inactive_related_hbxs
     hbx_enrollment.inactive_pre_hbx(session[:pre_hbx_enrollment_id])
     session.delete(:pre_hbx_enrollment_id)
+
 
     if hbx_enrollment.is_shop?
       benefit_group = hbx_enrollment.benefit_group
@@ -42,6 +45,11 @@ class Insured::PlanShoppingsController < ApplicationController
     elsif hbx_enrollment.may_select_coverage?
       hbx_enrollment.update_current(aasm_state: "coverage_selected")
       hbx_enrollment.propogate_selection
+
+
+      if hbx_enrollment.is_shop?
+        hbx_enrollment.terminate_previous_shop_enrollments(hbx_enrollment.plan.active_year,hbx_enrollment.coverage_kind)
+      end
       #UserMailer.plan_shopping_completed(current_user, hbx_enrollment, decorated_plan).deliver_now if hbx_enrollment.employee_role.present?
       redirect_to receipt_insured_plan_shopping_path(change_plan: params[:change_plan], enrollment_kind: params[:enrollment_kind])
     else
@@ -82,6 +90,8 @@ class Insured::PlanShoppingsController < ApplicationController
     set_consumer_bookmark_url(family_account_path)
     @plan = Plan.find(params.require(:plan_id))
     @enrollment = HbxEnrollment.find(params.require(:id))
+
+    #binding.pry
 
     if @enrollment.is_shop?
       @benefit_group = @enrollment.benefit_group

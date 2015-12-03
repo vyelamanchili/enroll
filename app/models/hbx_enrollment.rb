@@ -104,6 +104,7 @@ class HbxEnrollment
   scope :my_enrolled_plans,   ->{ where(:aasm_state.ne => "shopping", :plan_id.ne => nil ) } # a dummy plan has no plan id
   scope :current_year,        ->{ where(:effective_on.gte => TimeKeeper.date_of_record.beginning_of_year, :effective_on.lte => TimeKeeper.date_of_record.end_of_year) }
   scope :by_year,             ->(year) { where(effective_on: (Date.new(year)..Date.new(year).end_of_year)) }
+  scope :by_coverage_kind,    ->(coverage_kind) { where(coverage_kind: coverage_kind) }
   scope :with_aptc,           ->{ gt("applied_aptc_amount.cents": 0) }
   scope :enrolled,            ->{ where(:aasm_state.in => ENROLLED_STATUSES ) }
   scope :renewing,            ->{ where(:aasm_state.in => RENEWAL_STATUSES )}
@@ -374,6 +375,18 @@ class HbxEnrollment
     self
   end
 
+  def terminate_previous_shop_enrollments(year, cov_kind)
+    household.hbx_enrollments.ne(id: id).by_coverage_kind(cov_kind).by_year(year).shop_market.each do |p|
+      if p.may_terminate_coverage?
+        puts "terminating ---------------->>>>>>"
+        #p.terminate_coverage
+        p.update_current(aasm_state: "coverage_terminated", terminated_on: TimeKeeper.date_of_record.end_of_month)
+        #p.propogate_terminate
+      end
+
+    end
+  end
+
   def update_current(updates)
     household.hbx_enrollments.where(id: id).update_all(updates)
   end
@@ -478,7 +491,7 @@ class HbxEnrollment
     end
 
     census_employee = employee_role.census_employee
-    benefit_group_assignment = plan_year.is_renewing? ? 
+    benefit_group_assignment = plan_year.is_renewing? ?
         census_employee.renewal_benefit_group_assignment : census_employee.active_benefit_group_assignment
 
     if benefit_group_assignment.blank? || benefit_group_assignment.plan_year != plan_year
@@ -510,7 +523,7 @@ class HbxEnrollment
         enrollment.effective_on = calculate_start_date_from(employee_role, coverage_household, benefit_group)
         enrollment.enrollment_kind = "open_enrollment"
       end
-  
+
       enrollment.benefit_group_id = benefit_group.id
       enrollment.benefit_group_assignment_id = benefit_group_assignment.id
     when consumer_role.present?

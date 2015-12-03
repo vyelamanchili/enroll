@@ -67,6 +67,7 @@ class BenefitGroupAssignment
   def end_benefit(end_on)
     unless coverage_waived?
       self.coverage_end_on = end_on
+
       terminate_coverage
     end
   end
