@@ -375,15 +375,14 @@ class HbxEnrollment
     self
   end
 
+  # Refs #4045
   def terminate_previous_shop_enrollments(year, cov_kind)
+    #only query SHOP enrollments for the same coverage_kind and plan year; and that are not equal to the current enrollment
+    #don't need to call propogate_terminate as benefit_group_assignment will be updated by the new coverage selected
     household.hbx_enrollments.ne(id: id).by_coverage_kind(cov_kind).by_year(year).shop_market.each do |p|
       if p.may_terminate_coverage?
-        puts "terminating ---------------->>>>>>"
-        #p.terminate_coverage
         p.update_current(aasm_state: "coverage_terminated", terminated_on: TimeKeeper.date_of_record.end_of_month)
-        #p.propogate_terminate
       end
-
     end
   end
 

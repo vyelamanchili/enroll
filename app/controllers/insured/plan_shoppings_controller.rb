@@ -43,13 +43,14 @@ class Insured::PlanShoppingsController < ApplicationController
       flash[:error] = "You are attempting to purchase coverage prior to your date of hire on record. Please contact your Employer for assistance"
       redirect_to family_account_path
     elsif hbx_enrollment.may_select_coverage?
+
+      # Refs #4045
+      hbx_enrollment.terminate_previous_shop_enrollments(hbx_enrollment.plan.active_year,hbx_enrollment.coverage_kind) if hbx_enrollment.is_shop?
+
       hbx_enrollment.update_current(aasm_state: "coverage_selected")
       hbx_enrollment.propogate_selection
 
 
-      if hbx_enrollment.is_shop?
-        hbx_enrollment.terminate_previous_shop_enrollments(hbx_enrollment.plan.active_year,hbx_enrollment.coverage_kind)
-      end
       #UserMailer.plan_shopping_completed(current_user, hbx_enrollment, decorated_plan).deliver_now if hbx_enrollment.employee_role.present?
       redirect_to receipt_insured_plan_shopping_path(change_plan: params[:change_plan], enrollment_kind: params[:enrollment_kind])
     else
