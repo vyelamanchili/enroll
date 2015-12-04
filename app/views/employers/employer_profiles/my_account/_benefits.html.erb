@@ -15,7 +15,7 @@
 
   <% @plan_years.each do |plan_year| %>
   <div class="row no-buffer plan-year">
-    <h3>
+    <h3 style="font-weight: 400;">
       <% if plan_year.aasm_state == 'draft' %>
       <i class="fa fa-file"></i>
       <% elsif plan_year.aasm_state == 'enrolling' %>
@@ -23,12 +23,12 @@
       <% elsif plan_year.aasm_state == 'published' %>
       <i class="fa fa-star published"></i>
       <% end %>
-      <strong><%= plan_year.aasm_state.to_s.humanize.upcase %> Plan Year for <%= plan_year.start_on.to_date.year%></strong>
+      Plan Year for <%= plan_year.start_on.to_date.year%> (<%= plan_year.aasm_state.to_s.humanize %>)
     </h3>
 
     <% if plan_year.aasm_state == 'draft' %>
     <h4>Carefully review the plan information and pricing below. If you haven't added employees to your plan yet, select 'Employees' in the blue menu bar to the left and edit each of your employees to add them to your benefit package. If you want to create more than one benefit package and offer different benefits to different employees, select 'Add Plan Year'. When you're satisfied with your benefit package(s), select 'Publish Plan Year'.</h4>
-    <h4><strong>IMPORTANT</strong> – Once you select 'Publish Plan Year', your employees will receive a notification and open enrollment will begin according to the timeline you selected for your plan year.</h4>
+    <h4><strong>Important</strong> – Once you select 'Publish Plan Year', your employees will receive a notification and open enrollment will begin according to the timeline you selected for your plan year.</h4>
     <% end %>
     <br/>
     <% plan_year.benefit_groups.each do |bg| %>
@@ -61,6 +61,16 @@
             </section>
 
           <table>
+            <tr>
+              <td>
+                <header>Coverage Year</header>
+              </td>
+              <td>
+                <p>
+                  <%= plan_year.start_on.to_date.year%>
+                </p>
+              </td>
+            </tr>
             <tr>
               <td>
                 <header>Eligibility</header>

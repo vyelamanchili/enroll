@@ -135,9 +135,10 @@ def scroll_then_click(element)
   element
 end
 
-def click_when_present(element)
+def click_when_present(element, wait_until_gone = false)
   element.wait_until_present
   scroll_then_click(element)
+  element.wait_while_present if wait_until_gone
 end
 
 def wait_and_confirm_text(text)
@@ -260,7 +261,9 @@ When(/^I visit the Employer portal$/) do
 end
 
 Then(/^(?:.+) should see a successful sign up message$/) do
-  Watir::Wait.until(30) { @browser.element(text: /Welcome to DC Health Link. Your account has been created./).present? }
+  # Watir::Wait.until(30) { @browser.element(text: /Welcome to DC Health Link. Your account has been created./).present? }
+  screenshot("debug_signon_error")
+  wait_and_confirm_text(/Welcome to DC Health Link. Your account has been created./)
   screenshot("employer_sign_up_welcome")
   expect(@browser.element(text: /Welcome to DC Health Link. Your account has been created./).visible?).to be_truthy
 end
@@ -446,7 +449,7 @@ Then(/^.+ should see the plan shopping welcome page$/) do
   @browser.element(text: /Filter Results/i).wait_until_present
   # @browser.h3(text: /Select a Plan/).wait_until_present
   screenshot("plan_shopping_welcome")
-  expect(@browser.element(text: /Choose Healthcare/i).visible?).to be_truthy
+  expect(@browser.element(text: /Choose Plan/i).visible?).to be_truthy
   # expect(@browser.h3(text: /Select a Plan/).visible?).to be_truthy
 end
 
@@ -463,9 +466,9 @@ end
 When(/^.+ selects? a plan on the plan shopping page$/) do
   @browser.execute_script(
     'arguments[0].scrollIntoView();',
-    @browser.element(:text => /Choose Healthcare/)
+    @browser.element(:text => /Choose Plan/)
   )
-  @browser.element(text: /Choose Healthcare/).wait_until_present
+  @browser.element(text: /Choose Plan/).wait_until_present
   click_when_present(@browser.a(text: /Select Plan/))
 end
 
@@ -577,6 +580,7 @@ When(/^.+ clicks? on the add employee button$/) do
 end
 
 When(/^.+ clicks? on the (.+) tab$/) do |tab_name|
+  sleep 2
   @browser.a(text: /#{tab_name}/).wait_until_present
   scroll_then_click(@browser.a(text: /#{tab_name}/))
 end
@@ -639,8 +643,8 @@ Then(/^I should see the dependents and group selection page$/) do
   @browser.element(text: /Choose Benefits: Covered Family Members/i).wait_until_present
   expect(@browser.element(text: /Choose Benefits: Covered Family Members/i).visible?).to be_truthy
   scroll_then_click(@browser.button(class: /interaction-click-control-shop-for-new-plan/))
-  @browser.element(text: /Choose Healthcare/i).wait_until_present
-  expect(@browser.element(text: /Choose Healthcare/i).visible?).to be_truthy
+  @browser.element(text: /Choose Plan/i).wait_until_present
+  expect(@browser.element(text: /Choose Plan/i).visible?).to be_truthy
   @browser.execute_script("$('.interaction-click-control-select-plan')[1].click()")
   @browser.element(text: /Confirm Your Plan Selection/i).wait_until_present
   expect(@browser.element(text: /Confirm Your Plan Selection/i).visible?).to be_truthy
@@ -658,8 +662,10 @@ And(/I select three plans to compare/) do
     click_when_present(@browser.a(text: "COMPARE PLANS"))
     @browser.h1(text: /Choose Plan - Compare Selected Plans/).wait_until_present
     expect(@browser.elements(:class => "plan_comparison").size).to eq 3
-    @browser.button(text: 'Close').wait_until_present
-    @browser.button(text: 'Close').click
+    @browser.button(id: 'btnPrint').wait_until_present
+    close_button = @browser.button(text: 'Close')
+    click_when_present(close_button)
+    close_button.wait_while_present
   end
 end
 

@@ -26,14 +26,45 @@ class BrokerAgencies::ProfilesController < ApplicationController
   end
 
   def show
-    session[:person_id] = nil
-     @provider = current_user.person
+
+     session[:person_id] = nil
      @staff_role = current_user.has_broker_agency_staff_role?
+     @folder = params[:folder]
      @id=params[:id]
+     @sent_box = true
+
+
+     if current_user.has_broker_agency_staff_role?
+       @broker_agency_profile = current_user.person.broker_agency_staff_roles.first.broker_agency_profile
+     end
+     if params.has_key?(:mailbox)
+       @provider = @broker_agency_profile
+       @broker = current_user.person
+     else
+       @provider = current_user.person
+     end
+
+     if params.has_key?(:user) && params.has_key?(:folder)
+       @provider = Person.find(@id)
+       @broker_agency_profile_id = @provider.broker_role.broker_agency_profile_id
+       @broker_agency_profile = BrokerAgencyProfile.find(@broker_agency_profile_id)
+     elsif params.has_key?(:user)
+       @broker_agency_profile = BrokerAgencyProfile.find(@id)
+       @provider = @broker_agency_profile.writing_agents.first.person
+     end
+
+     if params.has_key?(:message_id)
+       @message = @provider.inbox.messages.where(id: params[:message_id]).first
+       @message.update_attributes(message_read: true)
+
+     end
+
   end
 
   def edit
+    @provider = @broker_agency_profile
     @organization = Forms::BrokerAgencyProfile.find(@broker_agency_profile.id)
+
   end
 
   def update
@@ -110,7 +141,7 @@ class BrokerAgencies::ProfilesController < ApplicationController
       bap = BrokerAgencyProfile.find(BSON::ObjectId.from_string(id))
       broker_agent_id = bap.try(:writing_agents).try(:first).try(:id) || bap.primary_broker_role_id
     end
-    total_families = Family.by_writing_agent_id(broker_agent_id) 
+    total_families = Family.by_writing_agent_id(broker_agent_id)
     @total = total_families.count
     @families = total_families.page page_no
     @family_count = 0

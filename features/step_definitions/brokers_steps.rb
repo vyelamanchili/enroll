@@ -172,8 +172,8 @@ Then(/^.+ confirms? broker selection$/) do
 end
 
 Then(/^.+ should see broker selected successful message$/) do
-  @browser.element(text: /Your broker has been notified of your selection and should contact you shortly. You can always call or email him or her directly. If this is not the broker you want to use, select 'Change Broker'./).wait_until_present
-  expect(@browser.element(text: /Your broker has been notified of your selection and should contact you shortly. You can always call or email him or her directly. If this is not the broker you want to use, select 'Change Broker'./).visible?).to be_truthy
+  @browser.element(text: /Your broker has been notified of your selection and should contact you shortly. You can always call or email them directly, but if this is not the broker you want to use, select 'Change Broker'./).wait_until_present
+  expect(@browser.element(text: /Your broker has been notified of your selection and should contact you shortly. You can always call or email them directly, but if this is not the broker you want to use, select 'Change Broker'./).visible?).to be_truthy
 end
 
 And (/^.+ should see broker active for the employer$/) do
@@ -286,7 +286,7 @@ Then(/^.+ sees covered family members$/) do
 end
 
 Then(/^.+ choses a healthcare plan$/) do
-  wait_and_confirm_text(/Choose Healthcare/i)
+  wait_and_confirm_text(/Choose Plan/i)
   wait_and_confirm_text(/Apply/)
   plan = @browser.a(class: 'interaction-click-control-select-plan')
   plan.click

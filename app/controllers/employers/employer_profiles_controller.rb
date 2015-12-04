@@ -97,6 +97,11 @@ class Employers::EmployerProfilesController < ApplicationController
       when 'brokers'
         @broker_agency_accounts = @employer_profile.broker_agency_accounts
       when 'inbox'
+        @folder = params[:folder] || 'Inbox'
+        if params.has_key?(:message_id)
+          @message = @employer_profile.inbox.messages.where(id: params[:message_id]).first
+          @message.update_attributes(message_read: true)
+        end
 
       else
         @current_plan_year = @employer_profile.show_plan_year
@@ -158,7 +163,16 @@ class Employers::EmployerProfilesController < ApplicationController
   def create
     params.permit!
     @organization = Forms::EmployerProfile.new(params[:organization])
-    if @organization.save(current_user)
+    organization_saved = false
+    begin
+      organization_saved = @organization.save(current_user)
+    rescue Exception => e
+      flash[:error] = e.message
+      render action: "new"
+      return
+    end
+
+    if organization_saved
       @person = current_user.person
       create_sso_account(current_user, current_user.person, 15, "employer") do
         redirect_to employers_employer_profile_path(@organization.employer_profile, tab: 'home')
@@ -209,6 +223,7 @@ class Employers::EmployerProfilesController < ApplicationController
   end
 
   def inbox
+
     @folder = params[:folder] || 'Inbox'
     @sent_box = false
     respond_to do |format|

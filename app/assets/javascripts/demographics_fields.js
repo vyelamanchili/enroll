@@ -118,7 +118,7 @@ function validationForIndianTribeMember() {
       e.preventDefault && e.preventDefault();
       return false;
     };
-    
+
     // for tribal_id
     var tribal_val = $('#tribal_id').val();
     if($("input#indian_tribe_member_yes").is(':checked') && (tribal_val == "undefined" || tribal_val == '')){
@@ -129,7 +129,126 @@ function validationForIndianTribeMember() {
   });
 }
 
+function validationForUsCitizenOrUsNational(e) {
+  if ( $('input[name="person[us_citizen]"]:checked').length < 1 ) {
+    alert('Please provide an answer for question: Are you a US Citizen or US National?');
+  }
+}
+function validationForNaturalizedCitizen(e) {
+  if ( $('#naturalized_citizen_container').is(':visible') && $('input[name="person[naturalized_citizen]"]:checked').length < 1 ) {
+    alert('Please provide an answer for question: Are you a naturalized citizen?');
+  }
+}
+function validationForVlpDocuments(e) {
+  if ( $('#vlp_documents_container').is(':visible') ) {
+    $('.vlp_doc_area input.doc_fields').each(function() {
+      if ( $(this).attr('placeholder') == 'Citizenship Number' ) {
+        if ( $(this).val().length < 1 ) {
+          alert('Please fill in your information for ' + $(this).attr('placeholder') + '.');
+          e.preventDefault && e.preventDefault();
+        } else {
+
+        }
+      }
+      if ( $(this).attr('placeholder') == 'Alien Number' ) {
+        if ( $(this).val().length < 1 ) {
+          alert('Please fill in your information for ' + $(this).attr('placeholder') + '.');
+          e.preventDefault && e.preventDefault();
+
+        } else {
+        }
+      }
+      if ( $(this).attr('placeholder') == 'Card Number' ) {
+        if ( $(this).val().length < 1 ) {
+          alert('Please fill in your information for ' + $(this).attr('placeholder') + '.');
+          e.preventDefault && e.preventDefault();
+
+        } else {
+        }
+      }
+      if ( $(this).attr('placeholder') == 'Naturalization Number' ) {
+        if ( $(this).val().length < 1 ) {
+          alert('Please fill in your information for ' + $(this).attr('placeholder') + '.');
+          e.preventDefault && e.preventDefault();
+
+        } else {
+        }
+      }
+      if ( $('#immigration_doc_type').val() == 'I-20 (Certificate of Eligibility for Nonimmigrant (F-1) Student Status)' || $('#immigration_doc_type').val() == 'DS2019 (Certificate of Eligibility for Exchange Visitor (J-1) Status)' ) {
+
+      } else {
+        if ( $(this).attr('placeholder') == 'Passport Number' ) {
+          if ( $(this).val().length < 1 ) {
+            alert('Please fill in your information for ' + $(this).attr('placeholder') + '.');
+            e.preventDefault && e.preventDefault();
+
+          } else {
+          }
+        }
+      }
+      if ( $(this).attr('placeholder') == 'I-766 Expiration Date' ) {
+        if ( $(this).val().length != 10 ) {
+          alert('Please fill in your information for ' + $(this).attr('placeholder') + ' with a MM/DD/YYYY format.');
+          e.preventDefault && e.preventDefault();
+
+        } else {
+        }
+      }
+      if ( $(this).attr('placeholder') == 'I-94 Expiration Date' ) {
+        if ( $(this).val().length != 10 ) {
+          alert('Please fill in your information for ' + $(this).attr('placeholder') + ' with a MM/DD/YYYY format.');
+          e.preventDefault && e.preventDefault();
+
+        } else {
+        }
+      }
+      if ( $('#immigration_doc_type').val() == 'Unexpired Foreign Passport' || $('#immigration_doc_type').val() == 'I-20 (Certificate of Eligibility for Nonimmigrant (F-1) Student Status)'  || $('#immigration_doc_type').val() == 'DS2019 (Certificate of Eligibility for Exchange Visitor (J-1) Status)' ) {
+
+      } else {
+        if ( $(this).attr('placeholder') == 'I 94 Number' ) {
+          if ( $(this).val().length < 1 ) {
+            alert('Please fill in your information for ' + $(this).attr('placeholder') + '.');
+            e.preventDefault && e.preventDefault();
+
+          } else {
+          }
+        }
+      }
+
+      if ( $('#immigration_doc_type').val() == 'I-20 (Certificate of Eligibility for Nonimmigrant (F-1) Student Status)' || $('#immigration_doc_type').val() == 'DS2019 (Certificate of Eligibility for Exchange Visitor (J-1) Status)' ) {
+        if ( $(this).attr('placeholder') == 'SEVIS ID' ) {
+          if ( $(this).val().length < 1 ) {
+            alert('Please fill in your information for ' + $(this).attr('placeholder') + '.');
+            e.preventDefault && e.preventDefault();
+
+          } else {
+          }
+        }
+      } else {
+
+      }
+
+
+    });
+  }
+  // if (result) {
+  //   e.preventDefault && e.preventDefault();
+  //   return false;
+  // }
+}
+
+
+
+
 $(document).ready(function(){
   applyListeners();
   validationForIndianTribeMember();
+  if (window.location.href.indexOf("insured") > -1 && window.location.href.indexOf("consumer_role") > -1 && window.location.href.indexOf("edit") > -1) {
+    $('form.edit_person, form.new_dependent, form.edit_dependent').submit(function(e){
+      console.log(e);
+      validationForUsCitizenOrUsNational(e);
+      validationForNaturalizedCitizen(e);
+      validationForVlpDocuments(e);
+    });
+  }
 });

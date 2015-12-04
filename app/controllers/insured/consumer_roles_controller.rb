@@ -1,6 +1,7 @@
 class Insured::ConsumerRolesController < ApplicationController
   include ApplicationHelper
   include VlpDoc
+  include Acapi::Notifiers
 
   before_action :check_consumer_role, only: [:search]
   before_action :find_consumer_role, only: [:edit, :update]
@@ -45,7 +46,7 @@ class Insured::ConsumerRolesController < ApplicationController
           format.html { redirect_to SamlInformation.account_conflict_url }
         when :existing_account
           format.html { redirect_to SamlInformation.account_recovery_url }
-        else 
+        else
           unless params[:persisted] == "true"
             @employee_candidate = Forms::EmployeeCandidate.new(@person_params)
 
@@ -76,19 +77,32 @@ class Insured::ConsumerRolesController < ApplicationController
   end
 
   def create
+
     if !session[:already_has_consumer_role] == true
-      @consumer_role = Factories::EnrollmentFactory.construct_consumer_role(params.permit!, actual_user)
-      if @consumer_role.present?
-        @person = @consumer_role.person
-      else
+      begin
+        @consumer_role = Factories::EnrollmentFactory.construct_consumer_role(params.permit!, actual_user)
+        if @consumer_role.present?
+          @person = @consumer_role.person
+        else
         # not logging error because error was logged in construct_consumer_role
-        render file: 'public/500.html', status: 500
+          render file: 'public/500.html', status: 500
+          return
+        end
+      rescue Exception => e
+        flash[:error] = set_error_message(e.message)
+        redirect_to search_insured_consumer_role_index_path
         return
       end
     else
+
       @person= Person.find(session[:person_id])
       @person.user = current_user
       @person.save
+
+      # 3717 - Person has consumer role but no family document as a result of previously consumer role added as dependent
+      # Attempt to create new family
+      family = Factories::EnrollmentFactory.build_family(@person, [])
+
     end
     is_assisted = session["individual_assistance_path"]
     role_for_user = (is_assisted) ? "assisted_individual" : "individual"
@@ -96,8 +110,13 @@ class Insured::ConsumerRolesController < ApplicationController
       respond_to do |format|
         format.html {
           if is_assisted
-            @person.primary_family.update_attribute(:e_case_id, "curam_landing_for#{@person.id}") if @person.primary_family
-            redirect_to navigate_to_assistance_saml_index_path
+            begin
+              @person.primary_family.update_attribute(:e_case_id, "curam_landing_for#{@person.id}")
+              redirect_to navigate_to_assistance_saml_index_path
+            rescue Exception=>e
+              flash[:error] = "We're sorry, but we encountered an unexpected problem."
+              log("#{e.message};  person: #{@person}", {:severity => "error"})
+            end
           else
             if session[:already_has_consumer_role] == true
               redirect_to family_account_path
@@ -212,6 +231,14 @@ class Insured::ConsumerRolesController < ApplicationController
       current_user.last_portal_visited = search_insured_consumer_role_index_path
       current_user.save!
       # render 'privacy'
+    end
+  end
+
+  def set_error_message(message)
+    if message.include? "year too big to marshal"
+      return "Date of birth cannot be more than 110 years ago"
+    else
+      return message
     end
   end
 end

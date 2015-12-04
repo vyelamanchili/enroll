@@ -8,7 +8,7 @@ class Insured::FamiliesController < FamiliesController
 
   def home
     set_bookmark_url
-
+    log("#3717 person_id: #{@person.id}, params: #{params.to_s}, request: #{request.env.inspect}", {:severity => "error"}) if @family.blank?
     @hbx_enrollments = @family.enrollments.order(effective_on: :desc, coverage_kind: :desc) || []
     log("#3860 person_id: #{@person.id}", {:severity => "error"}) if @hbx_enrollments.any?{|hbx| hbx.plan.blank?}
     @waived_hbx_enrollments = @family.active_household.hbx_enrollments.waived.to_a
@@ -85,6 +85,11 @@ class Insured::FamiliesController < FamiliesController
   def inbox
     @tab = params['tab']
     @folder = params[:folder] || 'Inbox'
+    if params.has_key?(:message_id)
+      @message = @person.inbox.messages.where(id: params[:message_id]).first
+      @message.update_attributes(message_read: true)
+
+    end
     @sent_box = false
   end
 

@@ -2570,13 +2570,20 @@ ul.list-qle li a:hover {
     text-transform: uppercase;
 }
 
-#qle-details a.close-popup {
-    color: #aaaaaa;
-    font-size: 17px;
-    position: absolute;
-    right: 30px;
-    z-index: 3000;
+#qle-details {
+  a.close-popup {
+      color: #aaaaaa;
+      font-size: 17px;
+      position: absolute;
+      right: 30px;
+      top: 5px;
+      z-index: 2;
+  }
+  h5 {
+    display: inline;
+  }
 }
+
 
 .qle-form-wrapper center h4 {
     color: #dddddd;
@@ -3892,7 +3899,6 @@ ul.list-right-section li a img {
 .family-plan-selection ul.progress-wrapper li.complete .vertical-line-progress {
     background-color: #468847;
 }
-
 .family-plan-selection .status{
     text-align: right;
     padding-right: 11px;
@@ -3900,7 +3906,10 @@ ul.list-right-section li a img {
 
     }
 }
-
+.family-plan-selection {
+  position: relative;
+  top: -6px;
+}
 .family-plan-selection .status label{
     text-transform: none;
     padding-right: 0;
@@ -3908,6 +3917,7 @@ ul.list-right-section li a img {
 }
 .hbx-enrollment-panel .panel-body .family-plan-selection .status h4{
     margin-bottom: 0;
+    margin-top: 0;
     color: #69A30D;
     font-size: 22px;
     font-weight: 600 !important;
@@ -4750,8 +4760,10 @@ span.text_style {color: #616161 !important;}
     line-height: 25px;
 }
 .ct-1 .checkbox label {padding: 0;}
-.msg-inbox-read {
-  background-color: #ccc;
+#home #inbox-messages tr.msg-inbox-read td, #home #message_list_form tr.msg-inbox-read td, #hbx_inbox tr.msg-inbox-read td, #bap_inbox tr.msg-inbox-read td {
+
+    font-weight: 400;
+
 }
 
 .benefit-group-offset label.title{
@@ -4916,8 +4928,8 @@ table.table.table-no-sytle td {
   border: none;
 }
 .carousel-inner {
-  overflow-x: hidden;
-  overflow-y: visible;
+  overflow: visible;
+
 }
 
 #qle-header .info-wrapper {
@@ -4939,9 +4951,14 @@ table.table.table-no-sytle td {
 
 }
 
-#carousel-qles a.qle-menu-item {
-  display: block;
+#carousel-qles {
+  overflow: hidden;
+  a.qle-menu-item {
+    display: block;
+  }
 }
+
+
 
 /*#qle-details .panel-heading strong {
   color: #468847`;
@@ -4966,7 +4983,7 @@ table.table.table-no-sytle td {
 
 #qle-details .success-info, #qle-details .error-info {
   width: 90%;
-  margin: 30px auto 0 auto;
+  margin: 0 auto;
   text-align: center;
 }
 

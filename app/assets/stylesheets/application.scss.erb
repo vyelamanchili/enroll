@@ -20,7 +20,7 @@
  *= require open_sans
  *= require selectric
  *= require responsive
- *= require new
+ *= require employer
  *= require text_styles
  *= require brokers
  *= require insured
@@ -28,6 +28,9 @@
  *= require bootstrap-slider
  *= require_self
  */
+
+
+
 .clear {
   clear: both;
 }
@@ -42,6 +45,13 @@
  }
  .pz {
    padding: 0;
+ }
+ .mz {
+   margin: 0;
+   margin-top: 0;
+   margin-right: 0;
+   margin-bottom: 0;
+   margin-left: 0;
  }
  .bt-n {
    border-top: none;
@@ -64,17 +74,48 @@
          margin-right: 0;
        }
      }
+
+   &.mz {
+     margin: 0;
+     margin-right: 0;
+   }
+   &:hover {
+     background-color: #ffffff;
+     border: solid 1px #007bc4;
+   }
+   &.btn-small {
+     font-size: 14px;
+     padding: 8px 14px;
+
+   }
+ }
+ &.btn-right {
+   margin-left: 5px;
+ }
+ &.btn-primary {
+     text-transform: uppercase;
+     padding: 10px 20px;
+     border-radius: 6px;
+     font-size: 16px;
+     letter-spacing: 1px;
+     border-top: none;
+     border-left: none;
+     border-right: none;
+     margin-top: 5px;
+     margin-right: 5px;
+     font-weight: 600;
      &.mz {
        margin: 0;
-       margin-right: 0;
      }
-     &:hover {
-       background-color: #ffffff;
-       border: solid 1px #007bc4;
+     &.mtz {
+       margin-top: 0;
+     }
+     &.btn-small {
+       font-size: 14px;
+       padding: 8px 14px;
      }
    }
    &.btn-right {
-     padding-right: 0;
      margin-left: 5px;
    }
    &.btn-primary {
@@ -87,7 +128,6 @@
        border-left: none;
        border-right: none;
        margin-top: 5px;
-       margin-right: 5px;
        font-weight: 600;
        &.mz {
          margin: 0;
@@ -101,20 +141,47 @@
        &.btn-small {
          font-size: 14px;
          padding: 8px 14px;
-
        }
 
      .fa {
        color: #fff;
      }
 
-   }
-   &.full-width {
-     padding: 10px 0;
-     width: 100%;
-     max-width: 100%;
+   .fa {
+     color: #fff;
    }
  }
+ &.full-width {
+   padding: 10px 0;
+   width: 100%;
+   max-width: 100%;
+ }
+}
+
+// registration styles
+.registrations {
+  .actions {
+    text-align: center;
+      .btn {
+        margin: 0 auto;
+        margin-bottom: 5px;
+        display: inline-block;
+      }
+      span {
+        display: inline-block;
+        padding-top: 15px;
+      }
+  }
+  .email-help {
+    font-size: 14px;
+  }
+}
+
+// full width flash messenger style
+.container > .col-xs-12 > .row > .alert.alert-notice {
+  margin-top: 2.5%;
+  margin-bottom: 0;
+}
  .panel-border {
    border: solid 1px #d5d5d5;
  }
@@ -143,7 +210,7 @@
    border-right: solid 1px #ddd;
    text-align: right;
    &+.col-xs-7 {
-     padding: 10px 0 0;
+     padding: 11px 0 0;
      .top-menu {
        text-align: right;
        position: relative;
@@ -263,4 +330,30 @@
 }
 .fa-question-circle {
     color: #007bc4;
+}
+
+// MOVE THIS TO EMPLOYER.SCSS AFTER DEVELOPMENT IN PROMOTED INTO RELEASE-1.2 (11/13/2015)
+#inbox_form {
+  .inboxes {
+    display: inline-block;
+    float: right;
+  }
+  a {
+    display: inline-block;
+    margin-bottom: 10px;
+    padding: 6px 4px;
+    &.active {
+      font-weight: 600;
+      &>span {
+      }
+    }
+  }
+}
+#inbox-messages, #message_list_form, #hbx_inbox {
+  tr {
+    cursor: pointer;
+    td {
+      font-weight: 600;
+    }
+  }
 }

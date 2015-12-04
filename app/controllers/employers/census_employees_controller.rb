@@ -111,7 +111,7 @@ class Employers::CensusEmployeesController < ApplicationController
     last_day_of_work = termination_date
     if termination_date.present?
       @census_employee.terminate_employment(last_day_of_work)
-      if termination_date >= (Date.today-60.days)
+      if termination_date >= (TimeKeeper.date_of_record - 60.days)
         @fa = @census_employee.save
       else
       end

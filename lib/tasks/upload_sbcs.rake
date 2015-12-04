@@ -42,7 +42,7 @@ namespace :sbc do
     file_path = Rails.root.join("db", "seedfiles", "plans-sbcs.csv").to_s
     aws_env = ENV['AWS_ENV'] || 'local'
     CSV.foreach(file_path) do |row|
-      plan_find_regex = Regexp.compile("^" + row[1].to_s.split("-").first)
+      plan_find_regex = Regexp.compile("^" + row[1].to_s)
       Plan.where(hios_id: plan_find_regex, active_year: row[2]).each do |plan|
         bucket_name = "dchbx-enroll-sbc-#{aws_env}"
         uri = "urn:openhbx:terms:v1:file_storage:s3:bucket:#{bucket_name}##{row[3]}"

@@ -12,8 +12,8 @@
           <th>Employee Name<!-- <i class="fa fa-caret-down"></i>--></th>
           <th>SSN</th>
           <th>DOB</th>
-          <th>Hire Date</th>
-          <th>Date Added to Roster</th>
+          <th>Hired On</th>
+          <th>Added to Roster</th>
           <th>Benefit Package</th>
           <% if @employer_profile.renewing_plan_year.present? %>
           <th>Renewal Benefit Package</th>
@@ -48,7 +48,7 @@
           <% end %>
           </td>
           <% if @employer_profile.renewing_plan_year.present? %>
-          <td>
+          <td style="text-transform: capitalize;">
           <% if census_employee.renewal_benefit_group_assignment.present? %>
             <%= census_employee.renewal_benefit_group_assignment.benefit_group.title.capitalize %>
           <% end %>
@@ -59,8 +59,14 @@
           </td>
           <% end %>
 
-          <td style="text-transform: capitalize;"><%= census_employee.aasm_state.humanize %></td>
-          <td><%= enrollment_state(census_employee) %></td>
+          <td style="text-transform: capitalize;">
+            <% if census_employee.aasm_state == 'employee_role_linked' %>
+              Employee Role Confirmed
+            <% else %>
+              <%= census_employee.aasm_state.humanize %>
+            <% end %>
+          </td>
+          <td style="text-transform: capitalize;"><%= enrollment_state(census_employee) %></td>
 
           <td class="table-functions">
             <!--<i class="fa fa-times-circle-o fa-2x"></i>-->

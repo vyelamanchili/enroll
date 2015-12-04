@@ -5,6 +5,16 @@ When(/^\w+ visits? the Insured portal$/) do
   screenshot("individual_start")
 end
 
+And(/Individual asks how to make an email account$/) do
+
+  @browser.button(class: /interaction-click-control-create-account/).wait_until_present
+  @browser.a(text: /Don't have an email account?/).fire_event("onclick")
+  @browser.element(class: /modal/).wait_until_present
+  @browser.element(class: /interaction-click-control-×/).fire_event("onclick")
+  sleep 2
+  @browser.element(class: /modal/).wait_while_present
+end
+
 Then(/Individual creates HBX account$/) do
   @browser.button(class: /interaction-click-control-create-account/).wait_until_present
   @browser.text_field(class: /interaction-field-control-user-email/).set(@u.email :email1)
@@ -251,7 +261,7 @@ end
 Then(/Second user asks for help$/) do
   @browser.divs(text: /Help me sign up/).last.click
   wait_and_confirm_text /Options/
-  click_when_present(@browser.a(class: /interaction-click-control-help-from-a-customer-service-representative/))
+  click_when_present(@browser.a(class: /interaction-click-control-help-from-a-customer-service-representative/), true)
   @browser.text_field(class: /interaction-field-control-help-first-name/).set("Sherry")
   @browser.text_field(class: /interaction-field-control-help-last-name/).set("Buckner")
   screenshot("help_from_a_csr")

@@ -8,6 +8,8 @@ class Person
   include UnsetableSparseFields
 
   extend Mongorder
+  validates_with Validations::DateRangeValidator
+
 
   GENDER_KINDS = %W(male female)
   IDENTIFYING_INFO_ATTRIBUTES = %w(first_name last_name ssn dob)
@@ -31,6 +33,7 @@ class Person
   field :dob, type: Date
   field :gender, type: String
   field :date_of_death, type: Date
+  field :dob_check, type: Boolean
 
   field :is_incarcerated, type: Boolean
 
@@ -294,6 +297,10 @@ class Person
 
   def full_name
     @full_name = [name_pfx, first_name, middle_name, last_name, name_sfx].compact.join(" ")
+  end
+
+  def first_name_last_name_and_suffix
+    @full_name = [first_name, last_name, name_sfx].compact.join(" ")
   end
 
   def age_on(date)

@@ -88,12 +88,13 @@ class BenefitGroupAssignment
       transitions from: [:initialized, :coverage_selected, :coverage_renewing], to: :coverage_waived
     end
 
-    event :renew_coverage do 
+    event :renew_coverage do
       transitions from: :initialized , to: :coverage_renewing
     end
 
     event :terminate_coverage do
       transitions from: :coverage_selected, to: :coverage_terminated
+      transitions from: :coverage_renewing, to: :coverage_terminated
     end
 
     event :delink_coverage do
