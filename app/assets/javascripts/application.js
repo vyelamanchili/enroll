@@ -461,7 +461,7 @@ $(document).ready(function () {
     // prevent users from entering mr., mr, mrs., mrs, miss, ms., or mrs
 
       var sfx = $('#person_name_sfx').val()
-      if ( sfx.match(new RegExp('mr', "i")) || sfx.match(new RegExp('mrs', "i")) || sfx.match(new RegExp('miss', "i")) || sfx.match(new RegExp('ms', "i")) || sfx.match(new RegExp('mr.', "i")) || sfx.match(new RegExp('mrs.', "i")) || sfx.match(new RegExp('ms.', "i")) ) {
+      if ( sfx.match(new RegExp('mr', "i")) || sfx.match(new RegExp('mrs', "i")) || sfx.match(new RegExp('mister', "i")) || sfx.match(new RegExp('miss', "i")) || sfx.match(new RegExp('ms', "i")) || sfx.match(new RegExp('mr.', "i")) || sfx.match(new RegExp('mrs.', "i")) || sfx.match(new RegExp('ms.', "i")) || sfx.match(new RegExp('miss.', "i")) ) {
         alert("You are not allowed to enter \"" + sfx + "\" as a suffix." )
         e.preventDefault();
       }
