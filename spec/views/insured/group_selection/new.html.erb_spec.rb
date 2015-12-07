@@ -90,9 +90,7 @@ RSpec.describe "insured/group_selection/new.html.erb" do
     let(:family_member2) { instance_double("FamilyMember",id: "family_member", primary_relationship: "child", dob: Date.new(2010,11,18), full_name: "cgukd", is_primary_applicant: false, person: person2) }
     let(:family_member3) { instance_double("FamilyMember",id: "family_member", primary_relationship: "spouse", dob: Date.new(1991,9,21), full_name: "spouse", is_primary_applicant: false, person: person3) }
     let(:family_member4) { instance_double("FamilyMember",id: "family_member", primary_relationship: "self", dob: Date.new(1990,10,28), full_name: "inmsr", is_primary_applicant: true, person: jail_person) }
-
     let(:coverage_household_members) {[double(family_member: family_member2), double(family_member: family_member3), double(family_member: family_member4)]}
-
     let(:coverage_household_jail) { instance_double("CoverageHousehold", coverage_household_members: coverage_household_members) }
     let(:hbx_enrollment) {HbxEnrollment.new}
 
@@ -264,8 +262,7 @@ RSpec.describe "insured/group_selection/new.html.erb" do
     let(:coverage_household_members) {[double(family_member: new_family_member), double(family_member: new_family_member_1)]}
     let(:coverage_household) { double(coverage_household_members: coverage_household_members) }
     let(:employee_role) { instance_double("EmployeeRole", id: "EmployeeRole.id", benefit_group: nil) }
-    let(:hbx_enrollment) {HbxEnrollment.new}
-
+    let(:hbx_enrollment) {double(id: "hbx_id", effective_on: (TimeKeeper.date_of_record.end_of_month + 1.day), employee_role: employee_role)}
 
     before :each do
       assign :person, person
@@ -290,8 +287,8 @@ RSpec.describe "insured/group_selection/new.html.erb" do
     let(:employee_role) { FactoryGirl.create(:employee_role) }
     let(:benefit_group) { FactoryGirl.create(:benefit_group) }
 
-    let(:coverage_household) { double(coverage_household_members: []) }
     let(:hbx_enrollment) {HbxEnrollment.new}
+    let(:coverage_household) { double(coverage_household_members: []) }
 
     before :each do
       allow(employee_role).to receive(:benefit_group).and_return(benefit_group)
