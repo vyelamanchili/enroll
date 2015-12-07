@@ -417,12 +417,25 @@ $(document).ready(function () {
 
   // personal form js
 
-  $( "#new_person" ).submit(function( event ) {
+  $( "#new_person, #edit_person" ).submit(function( event ) {
+
+    // trim extra trailing spaces from name fields
     $('#person_first_name, #person_middle_name, #person_last_name').each(function() {
       var name = $(this).val();
       var trimmed_name = $.trim(name)
       $(this).val(trimmed_name);
     });
+
+    // prevent users from entering mr., mr, mrs., mrs, miss, ms., or mrs
+
+      var sfx = $('#person_name_sfx').val()
+      if ( sfx.match(new RegExp('mr', "i")) || sfx.match(new RegExp('mrs', "i")) || sfx.match(new RegExp('miss', "i")) || sfx.match(new RegExp('ms', "i")) || sfx.match(new RegExp('mr.', "i")) || sfx.match(new RegExp('mrs.', "i")) || sfx.match(new RegExp('ms.', "i")) ) {
+        alert("You are not allowed to enter \"" + sfx + "\" as a suffix." )
+        e.preventDefault();
+      }
+
+
+
   });
 
   // personal-info-row focus fields
