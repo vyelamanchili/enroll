@@ -24,7 +24,7 @@ module Forms
               numericality: true
     validate :dob_not_in_future
     validate :ssn_or_checkbox
-    validate :uniq_ssn
+    validate :uniq_ssn, if: :not_my_ssn?
     validate :age_less_than_18
     attr_reader :dob
 
@@ -61,6 +61,16 @@ module Forms
                    }).first
       return potential_person if potential_person.present? && potential_person.employer_staff_roles?
       nil
+    end
+
+    def not_my_ssn?
+      return true if ssn.blank?
+      current_user = User.current_user
+      if current_user and current_user.person and current_user.person.ssn.present?
+        current_user.person.ssn != ssn
+      else
+        true
+      end
     end
 
     def uniq_ssn

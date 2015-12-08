@@ -1,6 +1,5 @@
 require 'rails_helper'
 describe Forms::ConsumerCandidate, "asked to match a person" do
-
   subject {
     Forms::ConsumerCandidate.new({
                                      :dob => "2012-10-12",
@@ -12,6 +11,7 @@ describe Forms::ConsumerCandidate, "asked to match a person" do
                                  })
   }
   let(:person) {FactoryGirl.create(:person)}
+
   context "uniq ssn" do
     it "return true when ssn is blank" do
       allow(subject).to receive(:ssn).and_return(nil)
@@ -33,10 +33,44 @@ describe Forms::ConsumerCandidate, "asked to match a person" do
       subject.uniq_ssn
       expect(subject.errors[:base]).to eq []
     end
+  end
 
+  context "not_my_ssn?" do
+    let(:user) {FactoryGirl.create(:user)}
+
+    it "should return true without ssn" do
+      subject.ssn = nil
+      expect(subject.not_my_ssn?).to eq true
+    end
+
+    context "with ssn" do
+      before :each do
+        User.current_user = user
+      end
+
+      it "should return true when user has no person" do
+        user.person = nil
+        expect(subject.not_my_ssn?).to eq true
+      end
+
+      context "when user has person" do
+        before :each do
+          user.person = person
+        end
+
+        it "should return true when ssn is not equal to person's ssn" do
+          person.ssn = "123456780"
+          expect(subject.not_my_ssn?).to eq true
+        end
+
+        it "should return false when ssn is equal to person's ssn" do
+          person.ssn = "123456789"
+          expect(subject.not_my_ssn?).to eq false
+        end
+      end
+    end
   end
 end
-
 
 describe "match a person in db" do
   let(:subject) {
