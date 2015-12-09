@@ -1,0 +1,23 @@
+<div class="modal" id="referencePlanSummaryModal" tabindex="-1" role="dialog" role="document">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Reference Plan Summary</h4>
+      </div>
+      <div class="modal-body">
+        <table class="table bordered compare-table", border = "1", style="font-size:11px;" >
+          <tr>
+            <th>PLAN BENEFITS</th>
+            <th>CO-PAY</th>
+            <th>COINSURANCE</th>
+          </tr>
+          <%= render partial: "shared/plan_shoppings/plan_visit_types" %>
+        </table>
+      </div>
+      <div class="modal-footer">
+        <span class="btn btn-trans btn-small" data-dismiss="modal">Close</span>
+      </div>
+    </div>
+  </div>
+</div>

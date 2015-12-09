@@ -170,8 +170,15 @@ ready = function() {
       var url = $(this).attr('href');
       $(this).attr('href', url+"&start_on="+start_on);
     });
+    $('.view-summary').each(function() {
+      var url = $(this).attr('href');
+      $(this).attr('href', url+"&start_on="+start_on);
+    });
 
   });
+
+  //add start on date to end of summary link in reference plan options
+  $('')
 
     $('.plan-options > * input, .reference-plans > * input').prop('checked', false);
 

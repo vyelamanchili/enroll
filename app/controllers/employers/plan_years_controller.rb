@@ -34,6 +34,15 @@ class Employers::PlanYearsController < ApplicationController
     end
   end
 
+  def reference_plan_summary
+    hios_id = [] << params[:hios_id]
+    @qhps = Products::QhpCostShareVariance.find_qhp_cost_share_variances(hios_id.to_a, params[:start_on], params[:coverage_kind])
+    @visit_types = params[:coverage_kind] == "health" ? Products::Qhp::VISIT_TYPES : Products::Qhp::DENTAL_VISIT_TYPES
+    respond_to do |format|
+      format.js
+    end
+  end
+
   def plan_details
     @plan = Plan.find(params[:reference_plan_id])
     respond_to do |format|
