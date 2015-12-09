@@ -80,7 +80,7 @@ $(document).on('page:update', function(){
 
 
   } else if (window.location.href.indexOf("new") > -1 && window.location.href.indexOf("plan_years") > -1) {
-    validatePlanYear()
+    validatePlanYear();
 
     $(document).on('change','.plan-title input, .offerings input.hidden-param.premium-storage-input', function() {
       validatePlanYear();
@@ -126,20 +126,25 @@ function getCarrierPlans(ep, ci) {
 
       }
     });
-    editbgemployeepremiums.each(function() {
+    if ( $('#plan_year_start_on').val().substring($('#plan_year_start_on').val().length - 5) == "01-01" ) {
+      editvalidatedbgemployeepremiums = true;
+      editvalidated = true;
+    } else {
+      editbgemployeepremiums.each(function() {
 
-      if ( parseInt($(this).val() ) >= parseInt(50) ) {
-        editvalidatedbgemployeepremiums = true
-        editvalidated = true;
+        if ( parseInt($(this).val() ) >= parseInt(50) ) {
+          editvalidatedbgemployeepremiums = true
+          editvalidated = true;
 
-      } else {
-        $('.interaction-click-control-save-plan-year').attr('data-original-title', 'Employee premium must be atleast 50%');
-        editvalidatedbgemployeepremiums = false;
-        editvalidated = false;
-        return false;
+        } else {
+          $('.interaction-click-control-save-plan-year').attr('data-original-title', 'Employee premium must be atleast 50%');
+          editvalidatedbgemployeepremiums = false;
+          editvalidated = false;
+          return false;
 
-      }
-    });
+        }
+      });
+    }
 
     $('.reference-steps').each(function() {
       if ( $(this).is(':visible') && $(this).find('input:checked').length >= 3) {
@@ -192,18 +197,23 @@ function getCarrierPlans(ep, ci) {
           return false;
         }
       });
-      bgemployeepremiums.each(function() {
+      if ( $('#plan_year_start_on').val().substring($('#plan_year_start_on').val().length - 5) == "01-01" ) {
+        validatedbgemployeepremiums = true;
+        validated = true;
+      } else {
+        bgemployeepremiums.each(function() {
 
-        if ( parseInt($(this).val()) >= parseInt(50) ) {
-          validatedbgemployeepremiums = true;
-          validated = true;
-        } else {
-          $('.interaction-click-control-create-plan-year').attr('data-original-title', 'Employee premium must be atleast 50%');
-          validatedbgemployeepremiums = false;
-          validated = false;
-          return false;
-        }
-      });
+          if ( parseInt($(this).val()) >= parseInt(50) ) {
+            validatedbgemployeepremiums = true;
+            validated = true;
+          } else {
+            $('.interaction-click-control-create-plan-year').attr('data-original-title', 'Employee premium must be atleast 50%');
+            validatedbgemployeepremiums = false;
+            validated = false;
+            return false;
+          }
+        });
+      }
 
       if ( referenceplanselections.length != $('.benefit-group-fields').length ) {
         validatedreferenceplanselections = false;
