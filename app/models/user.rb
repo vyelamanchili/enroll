@@ -298,6 +298,15 @@ class User
   # def valid_password?(plaintext_password)
   #   Rypt::Sha512.compare(self.encrypted_password, plaintext_password)
   # end
+  def verify_identity_via_curam!(at_time)
+    self.update_attributes!({
+      :identity_final_decision_code => INTERACTIVE_IDENTITY_VERIFICATION_SUCCESS_CODE,
+      :identity_response_code => INTERACTIVE_IDENTITY_VERIFICATION_SUCCESS_CODE,
+      :identity_verified_date => at_time,
+      :identity_response_description_text => "verified via Curam"
+    })
+  end
+
   def identity_verified?
     return false if identity_final_decision_code.blank?
     identity_final_decision_code.to_s.downcase == INTERACTIVE_IDENTITY_VERIFICATION_SUCCESS_CODE

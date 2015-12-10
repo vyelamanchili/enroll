@@ -61,6 +61,13 @@ module Factories
         return nil
       end
       role = build_consumer_role(person, person_new)
+      ensure_curam_ridp_propagation(role)
+      return role
+    end
+
+    def self.ensure_curam_ridp_propagation(role)
+      return nil if role.person.nil?
+      role.person.determine_ridp_status_from_curam!
     end
 
     def self.build_consumer_role(person, person_new)

@@ -157,3 +157,12 @@ describe User do
     end
   end
 end
+
+describe User, "instructed to be verified because of curam data", :dbclean => :after_all do
+  subject { FactoryGirl.create(:user) }
+
+  it "should be considered identity verified" do
+    subject.verify_identity_via_curam!(Time.now)
+    expect(subject.identity_verified?).to eq true
+  end
+end

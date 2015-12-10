@@ -731,3 +731,30 @@ describe Person do
     end
   end
 end
+
+describe Person, "trying to determine if RIDP should be bypassed when linking" do
+  describe "given a user and a lawful presence determination that were already approved by curam", :dbclean => :around_each do
+    let(:verification_time) { Time.now }
+    let(:lawful_presence_determination) {
+      LawfulPresenceDetermination.new({
+        :vlp_verified_at => verification_time,
+        :vlp_authority => "curam",
+        :aasm_state => "verification_successful"
+      })
+    }
+    let(:consumer_role) {
+      ConsumerRole.new(:lawful_presence_determination => lawful_presence_determination)
+    }
+    let(:user) { FactoryGirl.create(:user) }
+    subject {
+      Person.new(
+        :consumer_role => consumer_role,
+        :user => user
+      )
+    }
+    it "should update the user to have already passed RIDP" do
+      expect(user).to receive(:verify_identity_via_curam!).with(verification_time)
+      subject.determine_ridp_status_from_curam!
+    end
+  end
+end

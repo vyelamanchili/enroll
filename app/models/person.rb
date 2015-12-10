@@ -573,6 +573,17 @@ class Person
     !!agent
   end
 
+  def determine_ridp_status_from_curam!
+    return nil unless self.user
+    return nil unless self.consumer_role
+    return nil unless self.consumer_role.lawful_presence_determination
+    user_record = self.user
+    lpd = self.consumer_role.lawful_presence_determination
+    if (lpd.vlp_authority == "curam") && (lpd.verification_successful?)
+      user_record.verify_identity_via_curam!(lpd.vlp_verified_at)
+    end
+  end
+
   private
   def is_ssn_composition_correct?
     # Invalid compositions:
