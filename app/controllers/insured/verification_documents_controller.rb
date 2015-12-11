@@ -66,10 +66,21 @@ class Insured::VerificationDocumentsController < ApplicationController
   end
 
   def update_vlp_documents(doc_params, title, file_uri)
+    vlp_docs_clean
     document = @docs_owner.consumer_role.find_document_to_download(doc_params[:subject])
     success = document.update_attributes(doc_params.merge({:identifier=>file_uri, :title=>title, :status=>"downloaded"}))
     @doc_errors = document.errors.full_messages unless success
     @docs_owner.save
+  end
+
+  def vlp_docs_clean
+    existing_documents = @docs_owner.consumer_role.vlp_documents
+    person_consumer_role=Person.find(@docs_owner.id).consumer_role
+    person_consumer_role.vlp_documents =[]
+    person_consumer_role.save
+    person_consumer_role=Person.find(@docs_owner.id).consumer_role
+    person_consumer_role.vlp_documents = existing_documents.uniq
+    person_consumer_role.save
   end
 
   def get_document(key)
