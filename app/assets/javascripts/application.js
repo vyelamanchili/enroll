@@ -117,17 +117,34 @@ function getCarrierPlans(ep, ci) {
       if ( $(this).val().length > 0 && $('.plan-title input[value=' + "\"editplantitle\"" + ']').size() < 2 ) {
         editvalidatedbgtitles = true;
         editvalidated = true;
-
       } else {
-        $('.interaction-click-control-save-plan-year').attr('data-original-title', 'Before you can save, each benefit group must have a unique title.');
         editvalidatedbgtitles = false;
         editvalidated = false;
-        return false;
 
+        return;
       }
     });
     if ( $('#plan_year_start_on').val().substring($('#plan_year_start_on').val().length - 5) == "01-01" ) {
       editvalidatedbgemployeepremiums = true;
+      editvalidated = true;
+    } else {
+      editbgemployeepremiums.each(function() {
+
+        if ( parseInt($(this).val() ) >= parseInt(50) ) {
+          editvalidatedbgemployeepremiums = true
+          editvalidated = true;
+        } else {
+          $('.interaction-click-control-save-plan-year').attr('data-original-title', 'Employee premium must be atleast 50%');
+          editvalidatedbgemployeepremiums = false;
+          editvalidated = false;
+          return false;
+
+        }
+      });
+    }
+
+    if ( editreferenceplanselections.length != $('.benefit-group-fields').length ) {
+      editvalidatedreferenceplanselections = true
       editvalidated = true;
     } else {
       editbgemployeepremiums.each(function() {
@@ -202,7 +219,6 @@ function getCarrierPlans(ep, ci) {
         validated = true;
       } else {
         bgemployeepremiums.each(function() {
-
           if ( parseInt($(this).val()) >= parseInt(50) ) {
             validatedbgemployeepremiums = true;
             validated = true;

@@ -11,6 +11,11 @@ RSpec.describe "_employee_brokers_widget.html.erb" do
         FactoryGirl.build(:broker_agency_account, employer_profile: ep)
       ]
       ep.save
+      epp = ep.broker_agency_accounts.first.writing_agent.person
+      epp.phones = [
+        FactoryGirl.build(:phone, kind: "work")
+      ]
+      epp.save
       ep
     end
 
