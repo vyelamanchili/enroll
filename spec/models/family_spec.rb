@@ -448,14 +448,14 @@ describe Family, ".find_or_build_from_employee_role:", type: :model, dbclean: :a
       end
 
       it "and create a coverage_household with one family_member" do
-        expect(single_family.households.first.coverage_households.size).to eq 1
+        expect(single_family.households.first.coverage_households.size).to eq 2
         expect(single_family.households.first.coverage_households.first.coverage_household_members.first.family_member).to eq single_family.family_members.first
       end
     end
 
     context "and employee has spouse and child" do
-      it "creates one coverage_household with all family members" do
-        expect(married_family.households.first.coverage_households.size).to eq 1
+      it "creates two coverage_households and one will have all family members" do
+        expect(married_family.households.first.coverage_households.size).to eq 2
       end
 
       it "and all family_members are members of this coverage_household" do
@@ -1097,5 +1097,45 @@ describe Family, 'coverage_waived?' do
   it "return true" do
     allow(hbx_enrollments).to receive(:waived).and_return([hbx_enrollment]) 
     expect(family.coverage_waived?).to eq true
+  end
+end
+
+describe Family, "with 2 households a person and 2 extended family members", :dbclean => :after_each do
+  let(:family) { FactoryGirl.build(:family) }
+  let(:primary) { FactoryGirl.create(:person) }
+  let(:family_member_person_1) { FactoryGirl.create(:person) }
+  let(:family_member_person_2) { FactoryGirl.create(:person) }
+
+  before(:each) do
+    f_id = family.id
+    family.add_family_member(primary, is_primary_applicant: true)
+    family.relate_new_member(family_member_person_1, "unknown")
+    family.relate_new_member(family_member_person_2, "unknown")
+    family.save!
+  end
+
+  it "should have the extended family member in the extended coverage household" do
+    immediate_coverage_members = family.active_household.immediate_family_coverage_household.coverage_household_members
+    extended_coverage_members = family.active_household.extended_family_coverage_household.coverage_household_members
+    expect(immediate_coverage_members.count).to eq 1
+    expect(extended_coverage_members.count).to eq 2
+  end
+
+  describe "when the one extended family member is moved to spouse" do
+
+    before :each do
+      family.relate_new_member(family_member_person_1, "child")
+      family.save!
+    end
+
+    it "should have the extended family member in the primary coverage household" do
+      immediate_coverage_members = family.active_household.immediate_family_coverage_household.coverage_household_members
+      expect(immediate_coverage_members.length).to eq 2
+    end
+
+    it "should not have the extended family member in the extended coverage household" do
+      extended_coverage_members = family.active_household.extended_family_coverage_household.coverage_household_members
+      expect(extended_coverage_members.length).to eq 1
+    end
   end
 end
