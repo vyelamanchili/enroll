@@ -5,15 +5,13 @@ end
 
 people.each do |person|
   begin
-    documents = person.consumer_role.vlp_documents.clone
-    puts "BEFORE Person id #{person.id}. Number of documents #{documents.length}"
-    documents.uniq!
-    person.consumer_role.vlp_documents = documents
+    puts "BEFORE Person id #{person.id}. Number of documents #{person.consumer_role.vlp_documents.length}"
+    person.consumer_role.vlp_documents = person.consumer_role.vlp_documents.uniq
     person.save!
     person.reload
     puts "AFTER  Person id #{person.id}. Number of documents #{person.consumer_role.vlp_documents.length}"
   rescue Exception => e
-    puts "Error: person id #{person.id}" + e.message
+    puts "Error Person id #{person.id}" + e.message
   end
 end
 
