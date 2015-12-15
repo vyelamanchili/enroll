@@ -19,6 +19,10 @@ module Queries
       Family.collection.raw_aggregate(@pipeline)
     end
 
+    def count
+      list_of_hbx_ids.count
+    end
+
     def denormalize
       add({
         "$project" => {
@@ -72,6 +76,7 @@ module Queries
           "households.hbx_enrollments.effective_on" => criteria
         }
       })
+      self
     end
 
     def filter_to_shop
@@ -88,6 +93,16 @@ module Queries
         }
       })
       self
+    end
+
+    def list_of_hbx_ids
+      add({
+        "$group" => {"_id" => {"id" => "$households.hbx_enrollments._id"}}
+      })
+      results = evaluate
+      results.inject([]) do |acc, h|
+        acc + [h["_id"]]
+      end
     end
 
     def hbx_id_with_purchase_date_and_time
