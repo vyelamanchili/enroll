@@ -35,6 +35,7 @@ class BenefitGroup
   field :reference_plan_id, type: BSON::ObjectId
   field :lowest_cost_plan_id, type: BSON::ObjectId
   field :highest_cost_plan_id, type: BSON::ObjectId
+  field :_type, type: String
 
 
   # Employer contribution amount as percentage of reference plan premium
