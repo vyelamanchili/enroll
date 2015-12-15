@@ -1,5 +1,6 @@
 qi = Queries::PolicyAggregationPipeline.new
 qs = Queries::PolicyAggregationPipeline.new
+qs_binned = Queries::PolicyAggregationPipeline.new
 
 qi.filter_to_individual.with_effective_date({"$gt" => Date.new(2015,12,31), "$lt" => Date.new(2016,1,2)})
 qs.filter_to_shop.with_effective_date({"$gt" => Date.new(2015,12,31), "$lt" => Date.new(2016,1,2)})
@@ -21,3 +22,16 @@ qs.add({
 
 puts "Congress 1/1:"
 puts qs.count
+
+qs_binned = Queries::PolicyAggregationPipeline.new
+qs_binned.filter_to_shop.with_effective_date({"$gt" => Date.new(2015,12,31), "$lt" => Date.new(2016,1,2)})
+qs_binned.add({
+  "$match" => {
+    "households.hbx_enrollments.benefit_group_id" => { "$in" => benefit_group_ids }
+  }
+})
+
+puts "Congress 1/1 enrollment by day:"
+qs_binned.group_by_purchase_date.each do |rec|
+  puts rec.join(" - ")
+end
