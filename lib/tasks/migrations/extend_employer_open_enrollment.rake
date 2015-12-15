@@ -18,7 +18,7 @@ namespace :migrations do
         puts "Updating #{employer_profile.legal_name}"
         employer_profile.renewing_plan_year.open_enrollment_end_on = Date.new(2015, 12, 28)
         employer_profile.renewing_plan_year.imported_plan_year = true
-        organization.save!
+        employer_profile.renewing_plan_year.save!
         count += 1
       end
     end
