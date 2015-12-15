@@ -39,7 +39,7 @@ class Insured::FamiliesController < FamiliesController
     valid_display_enrollments = Array.new
     @enrollment_filter.each  { |e| valid_display_enrollments.push e['hbx_enrollment']['_id'] }
 
-    # Build array of valid display waivers 
+    # Build array of valid display waivers
     valid_display_waived_enrollments = Array.new
     @waived_enrollment_filter.each  { |e| valid_display_waived_enrollments.push e['hbx_enrollment']['_id'] }
 
@@ -54,7 +54,7 @@ class Insured::FamiliesController < FamiliesController
     unique_display_years = @hbx_enrollments.map{ |t| t.effective_on.year if t.aasm_state == 'coverage_selected'}.compact
 
     # Added && !@waived_hbx_enrollments.any? {|i| unique_display_years.include? i.effective_on.year}
-    # so if coverage was selected after previously waiving coverage, do not show waived coverage was it's no longer valid.
+    # so if coverage was selected after previously waiving coverage, do not show waived coverage as it's no longer valid.
     @waived = @family.coverage_waived? && !@waived_hbx_enrollments.any? {|i| unique_display_years.include? i.effective_on.year}
 
     @employee_role = @person.employee_roles.active.first

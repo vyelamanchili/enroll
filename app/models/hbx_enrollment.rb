@@ -231,7 +231,7 @@ class HbxEnrollment
 
   def propogate_waiver
     if benefit_group_assignment.may_waive_coverage?
-      cancel_previous(self.effective_on.year)
+      cancel_previous(self.effective_on.year) #Attempt to cancel any enrollments in Coverage Selected state
       benefit_group_assignment.try(:waive_coverage!) if benefit_group_assignment
     else
       return false
@@ -240,7 +240,7 @@ class HbxEnrollment
   end
 
   def cancel_previous(year)
-    # Indivial market - Perform cancel only if from same carrier
+    # Indivial market - Perform cancel of previous enrollments for the same plan year only if from same carrier
     self.household.hbx_enrollments.ne(id: id).by_coverage_kind(self.coverage_kind).by_year(year).cancel_eligible.individual_market.each do |p|
       if p.plan.carrier_profile_id == self.plan.carrier_profile_id and p.may_cancel_coverage?
         p.cancel_coverage!
@@ -248,7 +248,7 @@ class HbxEnrollment
       end
     end
 
-    # Shop market - Perform Cancels
+    # Shop market - Perform Cancels of previous enrollments for the same coverage kind and plan year
     self.household.hbx_enrollments.ne(id: id).by_coverage_kind(self.coverage_kind).by_year(year).cancel_eligible.shop_market.each do |p|
       if p.may_cancel_coverage?
         p.cancel_coverage!
@@ -259,7 +259,7 @@ class HbxEnrollment
 
   def propogate_selection
 
-    cancel_previous(self.plan.active_year)
+    cancel_previous(self.plan.active_year) #Attempt to cancel any enrollments in Coverage Selected state
 
     if benefit_group_assignment
       benefit_group_assignment.select_coverage if benefit_group_assignment.may_select_coverage?
