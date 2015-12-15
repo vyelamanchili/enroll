@@ -376,7 +376,11 @@ class HbxEnrollment
 
   def coverage_year
     year = if self.is_shop?
-      benefit_group.plan_year.start_on.year
+      if benefit_group
+        benefit_group.plan_year.start_on.year
+      else
+        ""
+      end
     else
       plan.active_year
     end
