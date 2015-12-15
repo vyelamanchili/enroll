@@ -45,12 +45,32 @@ module Queries
       self
     end
 
+    def open_enrollment
+      add({
+          "$match" => {
+                "households.hbx_enrollments.enrollment_kind" => "open_enrollment"
+          }
+      })
+      self
+    end
+
     def filter_to_employers_hbx_ids(hbx_id_list)
       orgs = Organization.where(:hbx_id => {"$in" => hbx_id_list})
       benefit_group_ids = orgs.map(&:employer_profile).flat_map(&:plan_years).flat_map(&:benefit_groups).map(&:id)
       add({
           "$match" => {
                 "households.hbx_enrollments.benefit_group_id" => { "$in" => benefit_group_ids }
+                  }
+      })
+      self
+    end
+
+    def exclude_employers_by_hbx_ids(hbx_id_list)
+      orgs = Organization.where(:hbx_id => {"$in" => hbx_id_list})
+      benefit_group_ids = orgs.map(&:employer_profile).flat_map(&:plan_years).flat_map(&:benefit_groups).map(&:id)
+      add({
+          "$match" => {
+                "households.hbx_enrollments.benefit_group_id" => { "$nin" => benefit_group_ids }
                   }
       })
       self
@@ -145,6 +165,112 @@ module Queries
       end
     end
 
+    def remove_duplicates_by_family_as_renewals
+      add({
+        "$project" => {
+          "policy_purchased_at" => { "$ifNull" => ["$households.hbx_enrollments.created_at", "$households.hbx_enrollments.submitted_at"] },
+          "policy_purchased_on" => {
+            "$dateToString" => {"format" => "%Y-%m-%d",
+                                "date" => { "$ifNull" => ["$households.hbx_enrollments.created_at", "$households.hbx_enrollments.submitted_at"] }
+          }},
+          "family_id" => "$_id",
+          "aasm_state" => "$households.hbx_enrollments.aasm_state"
+        }})
+      add({
+        "$sort" => {"policy_purchased_at" => 1}
+      })
+      add({
+        "$group" => {"_id" => "$family_id", "policy_purchased_at" => {"$last" => "$policy_purchased_at"}, "policy_purchased_on" => {"$last" => "$policy_purchased_on"}, "aasm_state" => {"$last" => "$aasm_state"}} 
+      })
+      add({
+        "$match" => {"aasm_state" => "auto_renewing"}
+      })
+      purchased_on_grouping
+    end
+
+    def remove_duplicates_by_family_as_sep
+      add({
+        "$project" => {
+          "policy_purchased_at" => { "$ifNull" => ["$households.hbx_enrollments.created_at", "$households.hbx_enrollments.submitted_at"] },
+          "policy_purchased_on" => {
+            "$dateToString" => {"format" => "%Y-%m-%d",
+                                "date" => { "$ifNull" => ["$households.hbx_enrollments.created_at", "$households.hbx_enrollments.submitted_at"] }
+          }},
+          "family_id" => "$_id",
+          "enrollment_kind" => "$households.hbx_enrollments.enrollment_kind",
+          "coverage_kind" => "$households.hbx_enrollments.coverage_kind"
+        }})
+      add({
+        "$sort" => {"policy_purchased_at" => 1}
+      })
+      add({
+        "$group" => {"_id" => {"family_id" => "$family_id", "coverage_kind" => "$coverage_kind"}, "policy_purchased_at" => {"$last" => "$policy_purchased_at"}, "policy_purchased_on" => {"$last" => "$policy_purchased_on"}, "enrollment_kind" => {"$last" => "$enrollment_kind"}}
+      })
+      add({
+        "$match" => {"enrollment_kind" => {"$ne" => "open_enrollment"}}
+      })
+      purchased_on_grouping
+    end
+
+
+    def remove_duplicates_by_family_as_open_enrollment
+      add({
+        "$project" => {
+          "policy_purchased_at" => { "$ifNull" => ["$households.hbx_enrollments.created_at", "$households.hbx_enrollments.submitted_at"] },
+          "policy_purchased_on" => {
+            "$dateToString" => {"format" => "%Y-%m-%d",
+                                "date" => { "$ifNull" => ["$households.hbx_enrollments.created_at", "$households.hbx_enrollments.submitted_at"] }
+          }},
+          "family_id" => "$_id",
+          "enrollment_kind" => "$households.hbx_enrollments.enrollment_kind",
+          "coverage_kind" => "$households.hbx_enrollments.coverage_kind"
+        }})
+      add({
+        "$sort" => {"policy_purchased_at" => 1}
+      })
+      add({
+        "$group" => {"_id" => {"family_id" => "$family_id", "coverage_kind" => "$coverage_kind"}, "policy_purchased_at" => {"$last" => "$policy_purchased_at"}, "policy_purchased_on" => {"$last" => "$policy_purchased_on"}, "enrollment_kind" => {"$last" => "$enrollment_kind"}}
+      })
+      add({
+        "$match" => {"enrollment_kind" => "open_enrollment"}
+      })
+      purchased_on_grouping
+    end
+
+    def dental
+      add({
+        "$match" => {"households.hbx_enrollments.coverage_kind" => "dental"}
+      })
+      self
+    end
+
+    def health
+      add({
+        "$match" => {"households.hbx_enrollments.coverage_kind" => "health"}
+      })
+      self
+    end
+
+    def remove_duplicates_by_family
+      add({
+        "$project" => {
+          "policy_purchased_at" => { "$ifNull" => ["$households.hbx_enrollments.created_at", "$households.hbx_enrollments.submitted_at"] },
+          "policy_purchased_on" => {
+            "$dateToString" => {"format" => "%Y-%m-%d",
+                                "date" => { "$ifNull" => ["$households.hbx_enrollments.created_at", "$households.hbx_enrollments.submitted_at"] }
+          }},
+          "family_id" => "$_id",
+          "coverage_kind" => "$households.hbx_enrollments.coverage_kind"
+        }})
+      add({
+        "$sort" => {"policy_purchased_at" => 1}
+      })
+      add({
+        "$group" => {"_id" => {"family_id" => "$family_id", "coverage_kind" => "$coverage_kind"}, "policy_purchased_at" => {"$last" => "$policy_purchased_at"}, "policy_purchased_on" => {"$last" => "$policy_purchased_on"}}
+      })
+      purchased_on_grouping
+    end
+
     def group_by_purchase_date
       add({
         "$project" => {
@@ -156,6 +282,10 @@ module Queries
           }
         }})
       yield self if block_given?
+      purchased_on_grouping
+    end
+
+    def purchased_on_grouping
       add({
         "$group" => {"_id" => {"purchased_on" => "$policy_purchased_on"}, "count" => {"$sum" => 1}}
       })
@@ -175,7 +305,8 @@ module Queries
       total = result.inject(0) do |acc, i|
         acc + i.last
       end
-      result << ["Total     ", total] 
+      result << ["Total     ", total]
+
     end
   end
 end
