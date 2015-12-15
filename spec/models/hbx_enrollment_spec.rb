@@ -609,6 +609,16 @@ describe HbxProfile, "class methods", type: :model do
       expect(hbx_enrollment.coverage_year).to eq date.year
     end
 
+    context "no benefit group in ivl" do
+      before do
+        hbx_enrollment.benefit_group = nil
+      end
+
+      it "should return empty string" do
+        expect(hbx_enrollment.coverage_year).to eq ""
+      end
+    end
+
     it "should return plan year when ivl" do
       allow(hbx_enrollment).to receive(:kind).and_return("")
       expect(hbx_enrollment.coverage_year).to eq hbx_enrollment.plan.active_year
