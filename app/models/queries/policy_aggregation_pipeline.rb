@@ -97,11 +97,11 @@ module Queries
 
     def list_of_hbx_ids
       add({
-        "$group" => {"_id" => {"id" => "$households.hbx_enrollments._id"}}
+        "$group" => {"_id" => "$households.hbx_enrollments.hbx_id"}
       })
       results = evaluate
-      results.inject([]) do |acc, h|
-        acc + [h["_id"]]
+      results.map do |h|
+        h["_id"]
       end
     end
 
