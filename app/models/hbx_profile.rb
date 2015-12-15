@@ -105,8 +105,11 @@ class HbxProfile
   ShortName = "DC Health Link"
   TagLine = "DC's Online Health Insurance Marketplace"
 
-  # FIXME
-  IndividualEnrollmentDueDayOfMonth = 15
+  # IndividualEnrollmentDueDayOfMonth = 15
+  # Temporary change for Dec 2015 extension
+  IndividualEnrollmentDueDayOfMonth = 18
+  IndividualEnrollmentTerminationMinimum = 14.days
+
 
   ## Carriers
   # hbx_id, hbx_carrier_id, name, abbrev,
