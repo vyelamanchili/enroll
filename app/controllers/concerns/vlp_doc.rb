@@ -27,7 +27,6 @@ module VlpDoc
       doc_params = params.require(source).permit(*vlp_doc_params_list)
       vlp_doc_attribute = doc_params[:consumer_role][:vlp_documents_attributes]["0"]
       document = consumer_role.find_document(vlp_doc_attribute[:subject])
-      vlp_docs_clean
       document.update_attributes(vlp_doc_attribute)
       if source == 'person'
         add_document_errors_to_consumer_role(consumer_role, document)
@@ -38,6 +37,7 @@ module VlpDoc
     else
       return true
     end
+    vlp_docs_clean
   end
 
   def get_vlp_doc_subject_by_consumer_role(consumer_role)
