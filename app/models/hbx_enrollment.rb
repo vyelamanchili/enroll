@@ -108,6 +108,7 @@ class HbxEnrollment
   scope :current_year,        ->{ where(:effective_on.gte => TimeKeeper.date_of_record.beginning_of_year, :effective_on.lte => TimeKeeper.date_of_record.end_of_year) }
   scope :by_year,             ->(year) { where(effective_on: (Date.new(year)..Date.new(year).end_of_year)) }
   scope :by_coverage_kind,    ->(kind) { where(coverage_kind: kind)}
+  scope :by_kind,             ->(kind) { where(kind: kind)}
   scope :with_aptc,           ->{ gt("applied_aptc_amount.cents": 0) }
   scope :enrolled,            ->{ where(:aasm_state.in => ENROLLED_STATUSES ) }
   scope :renewing,            ->{ where(:aasm_state.in => RENEWAL_STATUSES )}
@@ -247,8 +248,9 @@ class HbxEnrollment
   end
 
   def cancel_previous(year)
+
     # Indivial market - Perform cancel of previous enrollments for the same plan year only if from same carrier
-    self.household.hbx_enrollments.ne(id: id).by_coverage_kind(self.coverage_kind).by_year(year).cancel_eligible.individual_market.each do |p|
+    self.household.hbx_enrollments.ne(id: id).by_coverage_kind(self.coverage_kind).by_year(year).cancel_eligible.by_kind(self.kind).individual_market.each do |p|
       if p.plan.carrier_profile_id == self.plan.carrier_profile_id and p.may_cancel_coverage?
         p.cancel_coverage!
         p.update_current(terminated_on: self.effective_on)
@@ -256,7 +258,7 @@ class HbxEnrollment
     end
 
     # Shop market - Perform Cancels of previous enrollments for the same coverage kind and plan year
-    self.household.hbx_enrollments.ne(id: id).by_coverage_kind(self.coverage_kind).by_year(year).cancel_eligible.shop_market.each do |p|
+    self.household.hbx_enrollments.ne(id: id).by_coverage_kind(self.coverage_kind).by_year(year).cancel_eligible.by_kind(self.kind).shop_market.each do |p|
       if p.may_cancel_coverage?
         p.cancel_coverage!
         p.update_current(terminated_on: self.effective_on)
@@ -316,7 +318,7 @@ class HbxEnrollment
       self.terminated_on = benefit_group.termination_effective_on_for(submitted_on)
     else
       bcp = BenefitCoveragePeriod.find_by_date(effective_on)
-      self.terminated_on = bcp.termination_effective_on_for(submitted_on)      
+      self.terminated_on = bcp.termination_effective_on_for(submitted_on)
     end
     terminate_coverage!
   end
@@ -430,8 +432,8 @@ class HbxEnrollment
   end
 
   def coverage_period_date_range
-    is_shop? ? 
-      benefit_group.plan_year.start_on..benefit_group.plan_year.start_on : 
+    is_shop? ?
+      benefit_group.plan_year.start_on..benefit_group.plan_year.start_on :
       benefit_coverage_period.start_on..benefit_coverage_period.end_on
   end
 
