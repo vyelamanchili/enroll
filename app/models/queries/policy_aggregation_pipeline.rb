@@ -166,22 +166,7 @@ module Queries
     end
 
     def remove_duplicates_by_family_as_renewals
-      add({
-        "$project" => {
-          "policy_purchased_at" => { "$ifNull" => ["$households.hbx_enrollments.created_at", "$households.hbx_enrollments.submitted_at"] },
-          "policy_purchased_on" => {
-            "$dateToString" => {"format" => "%Y-%m-%d",
-                                "date" => { "$ifNull" => ["$households.hbx_enrollments.created_at", "$households.hbx_enrollments.submitted_at"] }
-          }},
-          "family_id" => "$_id",
-          "aasm_state" => "$households.hbx_enrollments.aasm_state"
-        }})
-      add({
-        "$sort" => {"policy_purchased_at" => 1}
-      })
-      add({
-        "$group" => {"_id" => "$family_id", "policy_purchased_at" => {"$last" => "$policy_purchased_at"}, "policy_purchased_on" => {"$last" => "$policy_purchased_on"}, "aasm_state" => {"$last" => "$aasm_state"}} 
-      })
+      eliminate_family_duplicates
       add({
         "$match" => {"aasm_state" => "auto_renewing"}
       })
@@ -189,23 +174,7 @@ module Queries
     end
 
     def remove_duplicates_by_family_as_sep
-      add({
-        "$project" => {
-          "policy_purchased_at" => { "$ifNull" => ["$households.hbx_enrollments.created_at", "$households.hbx_enrollments.submitted_at"] },
-          "policy_purchased_on" => {
-            "$dateToString" => {"format" => "%Y-%m-%d",
-                                "date" => { "$ifNull" => ["$households.hbx_enrollments.created_at", "$households.hbx_enrollments.submitted_at"] }
-          }},
-          "family_id" => "$_id",
-          "enrollment_kind" => "$households.hbx_enrollments.enrollment_kind",
-          "coverage_kind" => "$households.hbx_enrollments.coverage_kind"
-        }})
-      add({
-        "$sort" => {"policy_purchased_at" => 1}
-      })
-      add({
-        "$group" => {"_id" => {"family_id" => "$family_id", "coverage_kind" => "$coverage_kind"}, "policy_purchased_at" => {"$last" => "$policy_purchased_at"}, "policy_purchased_on" => {"$last" => "$policy_purchased_on"}, "enrollment_kind" => {"$last" => "$enrollment_kind"}}
-      })
+      eliminate_family_duplicates
       add({
         "$match" => {"enrollment_kind" => {"$ne" => "open_enrollment"}}
       })
@@ -214,23 +183,7 @@ module Queries
 
 
     def remove_duplicates_by_family_as_open_enrollment
-      add({
-        "$project" => {
-          "policy_purchased_at" => { "$ifNull" => ["$households.hbx_enrollments.created_at", "$households.hbx_enrollments.submitted_at"] },
-          "policy_purchased_on" => {
-            "$dateToString" => {"format" => "%Y-%m-%d",
-                                "date" => { "$ifNull" => ["$households.hbx_enrollments.created_at", "$households.hbx_enrollments.submitted_at"] }
-          }},
-          "family_id" => "$_id",
-          "enrollment_kind" => "$households.hbx_enrollments.enrollment_kind",
-          "coverage_kind" => "$households.hbx_enrollments.coverage_kind"
-        }})
-      add({
-        "$sort" => {"policy_purchased_at" => 1}
-      })
-      add({
-        "$group" => {"_id" => {"family_id" => "$family_id", "coverage_kind" => "$coverage_kind"}, "policy_purchased_at" => {"$last" => "$policy_purchased_at"}, "policy_purchased_on" => {"$last" => "$policy_purchased_on"}, "enrollment_kind" => {"$last" => "$enrollment_kind"}}
-      })
+      eliminate_family_duplicates
       add({
         "$match" => {"enrollment_kind" => "open_enrollment"}
       })
@@ -251,7 +204,7 @@ module Queries
       self
     end
 
-    def remove_duplicates_by_family
+    def eliminate_family_duplicates
       add({
         "$project" => {
           "policy_purchased_at" => { "$ifNull" => ["$households.hbx_enrollments.created_at", "$households.hbx_enrollments.submitted_at"] },
@@ -260,14 +213,29 @@ module Queries
                                 "date" => { "$ifNull" => ["$households.hbx_enrollments.created_at", "$households.hbx_enrollments.submitted_at"] }
           }},
           "family_id" => "$_id",
-          "coverage_kind" => "$households.hbx_enrollments.coverage_kind"
+          "coverage_kind" => "$households.hbx_enrollments.coverage_kind",
+          "hbx_id" => "$households.hbx_enrollments.hbx_id",
+          "aasm_state" => "$households.hbx_enrollments.aasm_state",
+          "enrollment_kind" => "$households.hbx_enrollments.enrollment_kind"
         }})
       add({
         "$sort" => {"policy_purchased_at" => 1}
       })
       add({
-        "$group" => {"_id" => {"family_id" => "$family_id", "coverage_kind" => "$coverage_kind"}, "policy_purchased_at" => {"$last" => "$policy_purchased_at"}, "policy_purchased_on" => {"$last" => "$policy_purchased_on"}}
+        "$group" => {
+          "_id" => {"family_id" => "$family_id", "coverage_kind" => "$coverage_kind"},
+          "policy_purchased_at" => {"$last" => "$policy_purchased_at"},
+          "policy_purchased_on" => {"$last" => "$policy_purchased_on"},
+          "hbx_id" => {"$last" => "$hbx_id"},
+          "aasm_state" => {"$last" => "$aasm_state"},
+          "enrollment_kind" => {"$last" => "$enrollment_kind"}
+        }
       })
+
+    end
+
+    def remove_duplicates_by_family
+      eliminate_family_duplicates
       purchased_on_grouping
     end
 
@@ -306,7 +274,6 @@ module Queries
         acc + i.last
       end
       result << ["Total     ", total]
-
     end
   end
 end
