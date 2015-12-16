@@ -195,10 +195,10 @@ class Insured::FamiliesController < FamiliesController
     begin
       raise if @person.nil?
     rescue => e
-      message = "no person in init_qualifying_life_events"
-      message = message + "stacktrace: #{e.backtrace}"
+      message = "redmine4302 no person in init_qualifying_life_events"
+      message = message + "; params: #{params.to_s}; " + "request: #{request.to_s}"
       log(message, {:severity => "error"})
-      raise e
+      #raise e
     end
 
     @qualifying_life_events = []
