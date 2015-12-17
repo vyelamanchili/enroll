@@ -1,15 +1,26 @@
 cong_hbx_ids = ["100101","100102","118510"]
 
-qi = Queries::PolicyAggregationPipeline.new
-qi.filter_to_individual.with_effective_date({"$gt" => Date.new(2015,12,31), "$lt" => Date.new(2016,1,2)}).dental
+qs = Queries::PolicyAggregationPipeline.new
+
+qs.filter_to_shop.exclude_employers_by_hbx_ids(cong_hbx_ids).with_effective_date({"$gt" => Date.new(2015,10,1), "$lt" => Date.new(2016,1,1)}).eliminate_family_duplicates
+
+#qs.add({
+#  "$match" => {
+#    "policy_purchased_at" => {"$gte" => Time.new(2015,11,29,11,55,00,"-05:00") }
+#  }
+#})
+
+qs.evaluate.each do |r|
+  puts r['hbx_id']
+end
 
 # puts "Individual 1/1:"
 # puts qi.count
 
-puts "IVL 1/1 dental OE by day:"
-qi.remove_duplicates_by_family_as_sep.each do |rec|
-  puts rec.join(" - ")
-end
+# puts "IVL 1/1 dental OE by day:"
+# qi.remove_duplicates_by_family_as_sep.each do |rec|
+#  puts rec.join(" - ")
+# end
 
 # puts "Congress 1/1:"
 # puts qs.count
