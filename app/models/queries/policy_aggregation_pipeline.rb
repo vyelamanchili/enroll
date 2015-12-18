@@ -1,5 +1,7 @@
 module Queries
   class PolicyAggregationPipeline
+    include QueryHelpers
+
     def initialize
       @pipeline = base_pipeline
     end
@@ -12,7 +14,7 @@ module Queries
     end
 
     def add(step)
-      @pipeline << step
+      @pipeline << step.to_hash
     end
 
     def evaluate
@@ -205,33 +207,33 @@ module Queries
     end
 
     def eliminate_family_duplicates
-      add({
-        "$project" => {
+      project_expr = project({
           "policy_purchased_at" => { "$ifNull" => ["$households.hbx_enrollments.created_at", "$households.hbx_enrollments.submitted_at"] },
           "policy_purchased_on" => {
             "$dateToString" => {"format" => "%Y-%m-%d",
                                 "date" => { "$ifNull" => ["$households.hbx_enrollments.created_at", "$households.hbx_enrollments.submitted_at"] }
-          }},
-          "family_id" => "$_id",
-          "coverage_kind" => "$households.hbx_enrollments.coverage_kind",
-          "hbx_id" => "$households.hbx_enrollments.hbx_id",
-          "aasm_state" => "$households.hbx_enrollments.aasm_state",
-          "enrollment_kind" => "$households.hbx_enrollments.enrollment_kind"
-        }})
+          }}
+        })
+      add(project_expr & 
+        project_property("enrollment_kind", "$households.hbx_enrollments.enrollment_kind") &
+        project_property("aasm_state", "$households.hbx_enrollments.aasm_state") &
+        project_property("hbx_id", "$households.hbx_enrollments.hbx_id") &
+        project_property("coverage_kind", "$households.hbx_enrollments.coverage_kind") &
+        project_property("family_id", "$_id")
+      )
       add({
         "$sort" => {"policy_purchased_at" => 1}
       })
-      add({
-        "$group" => {
-          "_id" => {"family_id" => "$family_id", "coverage_kind" => "$coverage_kind"},
-          "policy_purchased_at" => {"$last" => "$policy_purchased_at"},
-          "policy_purchased_on" => {"$last" => "$policy_purchased_on"},
-          "hbx_id" => {"$last" => "$hbx_id"},
-          "aasm_state" => {"$last" => "$aasm_state"},
-          "enrollment_kind" => {"$last" => "$enrollment_kind"}
-        }
-      })
 
+      group_statement = group_by(
+          {"family_id" => "$family_id", "coverage_kind" => "$coverage_kind"},
+          last("policy_purchased_at") &
+          last("policy_purchased_on") &
+          last("hbx_id") &
+          last("aasm_state") &
+          last("enrollment_kind")
+      )
+      add(group_statement)
     end
 
     def remove_duplicates_by_family
@@ -254,10 +256,12 @@ module Queries
     end
 
     def purchased_on_grouping
-      add({
-        "$group" => {"_id" => {"purchased_on" => "$policy_purchased_on"}, "count" => {"$sum" => 1}}
-      })
-      results = self.evaluate
+      add(
+        group_by(
+          {"purchased_on" => "$policy_purchased_on"},
+          {"count" => {"$sum" => 1}}
+        )
+      )
       h = results.inject({}) do |acc,r|
         k = r["_id"]["purchased_on"]
         if acc.has_key?(k)
