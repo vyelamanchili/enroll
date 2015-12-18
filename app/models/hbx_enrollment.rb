@@ -250,20 +250,14 @@ class HbxEnrollment
   def cancel_previous(year)
 
     # Indivial market - Perform cancel of previous enrollments for the same plan year only if from same carrier
-    self.household.hbx_enrollments.ne(id: id).by_coverage_kind(self.coverage_kind).by_year(year).cancel_eligible.by_kind(self.kind).individual_market.each do |p|
-      if p.plan.carrier_profile_id == self.plan.carrier_profile_id and p.may_cancel_coverage?
-        p.cancel_coverage!
+    self.household.hbx_enrollments.ne(id: id).by_coverage_kind(self.coverage_kind).by_year(year).cancel_eligible.by_kind(self.kind).each do |p|
+
+      if (p.plan.carrier_profile_id == self.plan.carrier_profile_id && p.kind != "employer_sponsored") || p.kind == "employer_sponsored"
+        p.cancel_coverage! if p.may_cancel_coverage?
         p.update_current(terminated_on: self.effective_on)
       end
     end
 
-    # Shop market - Perform Cancels of previous enrollments for the same coverage kind and plan year
-    self.household.hbx_enrollments.ne(id: id).by_coverage_kind(self.coverage_kind).by_year(year).cancel_eligible.by_kind(self.kind).shop_market.each do |p|
-      if p.may_cancel_coverage?
-        p.cancel_coverage!
-        p.update_current(terminated_on: self.effective_on)
-      end
-    end
   end
 
   def propogate_selection
@@ -558,13 +552,12 @@ class HbxEnrollment
     elsif employee_role.is_eligible_to_enroll_as_new_hire_on?(TimeKeeper.date_of_record)
       new_hire_effective_date = employee_role.coverage_effective_on
     else
-      if employee_role.is_under_open_enrollment?
-        open_enrollment_effective_date = employee_role.employer_profile.show_plan_year.start_on
-        if open_enrollment_effective_date < employee_role.coverage_effective_on
-          new_hire_enrollment_period = employee_role.benefit_group.new_hire_enrollment_period(employee_role.new_census_employee.hired_on)
-          raise "You're not yet eligible under your employer-sponsored benefits. Please return on #{new_hire_enrollment_period.first} to enroll for coverage."
-        end
-      else
+      open_enrollment_effective_date = employee_role.employer_profile.show_plan_year.start_on
+      
+      if open_enrollment_effective_date < employee_role.coverage_effective_on
+        new_hire_enrollment_period = employee_role.benefit_group.new_hire_enrollment_period(employee_role.new_census_employee.hired_on)
+        raise "You're not yet eligible under your employer-sponsored benefits. Please return on #{new_hire_enrollment_period.first} to enroll for coverage."
+      elsif !employee_role.is_under_open_enrollment?
         raise "You may not enroll until you're eligible under an enrollment period"
       end
     end
