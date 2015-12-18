@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe Insured::FamiliesController do
   context "with no person" do
-    let(:user) { double("User", last_portal_visited: "test.com") }
+    let(:user) { double("User", last_portal_visited: "test.com", email: "test@user.com") }
     let(:person) {nil}
 
     before :each do
