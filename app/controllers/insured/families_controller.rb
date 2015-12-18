@@ -162,9 +162,9 @@ class Insured::FamiliesController < FamiliesController
       raise if @person.nil?
     rescue => e
       message = "redmine4302 no person in init_qualifying_life_events"
-      message = message + "; params: #{params.to_s}; " + "request: #{request.to_s}"
+      message = message + " ;current_user: #{current_user.email}, params: #{params.to_s}; request: #{request.inspect}"
       log(message, {:severity => "error"})
-      #raise e
+      raise e
     end
 
     @qualifying_life_events = []
