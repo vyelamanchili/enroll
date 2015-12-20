@@ -9,7 +9,8 @@ class Insured::FamiliesController < FamiliesController
   def home
     set_bookmark_url
 
-    @hbx_enrollments = @family.enrollments.order(submitted_at: :desc, effective_on: :desc, coverage_kind: :desc) || []
+
+    @hbx_enrollments = @family.enrollments.order(effective_on: :desc, submitted_at: :desc, coverage_kind: :desc) || []
 
     @enrollment_filter = @family.enrollments_for_display
 
