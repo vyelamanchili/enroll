@@ -517,6 +517,36 @@ class Family
     Family.where("special_enrollment_periods._id" => special_enrollment_period_id)
   end
 
+  def enrollments_for_display
+    self.collection.aggregate([
+      {"$match" => {'_id' => self._id}},
+      {"$unwind" => '$households'},
+      {"$unwind" => '$households.hbx_enrollments'},
+      {"$match" => {"aasm_state" => {"$ne" => 'inactive'}}},
+      {"$sort" => {"households.hbx_enrollments.submitted_at" => -1 }},
+      {"$group" => {'_id' => {
+                  'year' => { "$year" => '$households.hbx_enrollments.effective_on'},
+                  'month' => { "$month" => '$households.hbx_enrollments.effective_on'},
+                  'day' => { "$dayOfMonth" => '$households.hbx_enrollments.effective_on'},
+                  'provider_id' => '$households.hbx_enrollments.carrier_profile_id', 'state' => '$households.hbx_enrollments.aasm_state', 'market' => '$households.hbx_enrollments.kind', 'coverage_kind' => '$households.hbx_enrollments.coverage_kind'}, "hbx_enrollment" => { "$first" => '$households.hbx_enrollments'}}},
+      {"$project" => {'hbx_enrollment._id' => 1, '_id' => 1}}
+      ],
+      {allowDiskUse: true})
+  end
+
+  def waivers_for_display
+    self.collection.aggregate([
+      {"$match" => {'_id' => self._id}},
+      {"$unwind" => '$households'},
+      {"$unwind" => '$households.hbx_enrollments'},
+      {"$match" => {'households.hbx_enrollments.aasm_state' => 'inactive'}},
+      {"$sort" => {"households.hbx_enrollments.submitted_at" => -1 }},
+      {"$group" => {'_id' => {'year' => { "$year" => '$households.hbx_enrollments.effective_on'},'state' => '$households.hbx_enrollments.aasm_state', 'kind' => '$households.hbx_enrollments.kind', 'coverage_kind' => '$households.hbx_enrollments.coverage_kind'}, "hbx_enrollment" => { "$first" => '$households.hbx_enrollments'}}},
+      {"$project" => {'hbx_enrollment._id' => 1, '_id' => 0}}
+      ],
+      {allowDiskUse: true})
+  end
+
 private
   def build_household
     if households.size == 0
@@ -621,4 +651,6 @@ private
       return false
     end
   end
+
+
 end
