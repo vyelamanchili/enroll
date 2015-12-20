@@ -34,7 +34,8 @@ class HbxEnrollment
       "unverified"
     ]
 
-  TERMINATED_STATUSES = ["coverage_terminated", "coverage_canceled", "unverified"]
+  TERMINATED_STATUSES = ["coverage_terminated", "unverified"]
+  CANCELED_STATUSES = ["coverage_canceled"]
   RENEWAL_STATUSES = %w(auto_renewing renewing_coverage_selected renewing_transmitted_to_carrier renewing_coverage_enrolled)
 
   ENROLLMENT_KINDS = ["open_enrollment", "special_enrollment"]
@@ -119,8 +120,9 @@ class HbxEnrollment
   scope :shop_market,         ->{ where(:kind => "employer_sponsored") }
   scope :individual_market,   ->{ where(:kind.ne => "employer_sponsored") }
 
+  scope :canceled, -> { where(:aasm_state.in => CANCELED_STATUSES) }
   scope :terminated, -> { where(:aasm_state.in => TERMINATED_STATUSES, :terminated_on.gte => TimeKeeper.date_of_record.beginning_of_day) }
-  scope :show_enrollments, -> { any_of([enrolled.selector, renewing.selector, terminated.selector]) }
+  scope :show_enrollments, -> { any_of([enrolled.selector, renewing.selector, terminated.selector, canceled.selector]) }
   scope :with_plan, -> { where(:plan_id.ne => nil) }
 
   embeds_many :workflow_state_transitions, as: :transitional
