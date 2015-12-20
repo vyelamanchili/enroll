@@ -13,35 +13,11 @@ class Insured::FamiliesController < FamiliesController
 
     @hbx_enrollments = @family.enrollments.order(submitted_at: :desc, effective_on: :desc, coverage_kind: :desc) || []
 
-    #Mongo Aggregation for filter. Grab the latest of year, provider, assm_state, enrollment_kind and coverage_kind
-    @enrollment_filter = Family.collection.aggregate([
-      {"$match" => {'_id' => @family._id}},
-      {"$unwind" => '$households'},
-      {"$unwind" => '$households.hbx_enrollments'},
-      {"$match" => {"aasm_state" => {"$ne" => 'inactive'}}},
-      {"$sort" => {"households.hbx_enrollments.submitted_at" => -1 }},
-      {"$group" => {'_id' => {
-                  'year' => { "$year" => '$households.hbx_enrollments.effective_on'},
-                  'month' => { "$month" => '$households.hbx_enrollments.effective_on'},
-                  'day' => { "$dayOfMonth" => '$households.hbx_enrollments.effective_on'},
-                  'provider_id' => '$households.hbx_enrollments.carrier_profile_id', 'state' => '$households.hbx_enrollments.aasm_state', 'market' => '$households.hbx_enrollments.kind', 'coverage_kind' => '$households.hbx_enrollments.coverage_kind'}, "hbx_enrollment" => { "$first" => '$households.hbx_enrollments'}}},
-      {"$project" => {'hbx_enrollment._id' => 1, '_id' => 1}}
-      ],
-      {allowDiskUse: true})
+    @enrollment_filter = @family.enrollments_for_display
 
-    #Mongo Aggregation on inactive/waived. Grab the latest of year, assm_state, enrollment_kind and coverage_kind
-    @waived_enrollment_filter = Family.collection.aggregate([
-      {"$match" => {'_id' => @family._id}},
-      {"$unwind" => '$households'},
-      {"$unwind" => '$households.hbx_enrollments'},
-      {"$match" => {'households.hbx_enrollments.aasm_state' => 'inactive'}},
-      {"$sort" => {"households.hbx_enrollments.submitted_at" => -1 }},
-      {"$group" => {'_id' => {'year' => { "$year" => '$households.hbx_enrollments.effective_on'},'state' => '$households.hbx_enrollments.aasm_state', 'kind' => '$households.hbx_enrollments.kind', 'coverage_kind' => '$households.hbx_enrollments.coverage_kind'}, "hbx_enrollment" => { "$first" => '$households.hbx_enrollments'}}},
-      {"$project" => {'hbx_enrollment._id' => 1, '_id' => 0}}
-      ],
-      {allowDiskUse: true})
+    @waived_enrollment_filter = @family.waivers_for_display
 
-    # Build array of valid display enrollments
+
     valid_display_enrollments = Array.new
     @enrollment_filter.each  { |e| valid_display_enrollments.push e['hbx_enrollment']['_id'] }
 
