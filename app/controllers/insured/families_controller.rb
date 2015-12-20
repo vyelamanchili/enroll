@@ -20,9 +20,14 @@ class Insured::FamiliesController < FamiliesController
       {"$unwind" => '$households.hbx_enrollments'},
       {"$match" => {"aasm_state" => {"$ne" => 'inactive'}}},
       {"$sort" => {"households.hbx_enrollments.submitted_at" => -1 }},
-      {"$group" => {'_id' => {'year' => { "$year" => '$households.hbx_enrollments.effective_on'}, 'provider_id' => '$households.hbx_enrollments.carrier_profile_id', 'state' => '$households.hbx_enrollments.aasm_state', 'market' => '$households.hbx_enrollments.kind', 'coverage_kind' => '$households.hbx_enrollments.coverage_kind'}, "hbx_enrollment" => { "$first" => '$households.hbx_enrollments'}}},
+      {"$group" => {'_id' => {
+                  'year' => { "$year" => '$households.hbx_enrollments.effective_on'},
+                  'month' => { "$month" => '$households.hbx_enrollments.effective_on'},
+                  'day' => { "$dayOfMonth" => '$households.hbx_enrollments.effective_on'},
+                  'provider_id' => '$households.hbx_enrollments.carrier_profile_id', 'state' => '$households.hbx_enrollments.aasm_state', 'market' => '$households.hbx_enrollments.kind', 'coverage_kind' => '$households.hbx_enrollments.coverage_kind'}, "hbx_enrollment" => { "$first" => '$households.hbx_enrollments'}}},
       {"$project" => {'hbx_enrollment._id' => 1, '_id' => 1}}
-      ])
+      ],
+      {allowDiskUse: true})
 
     #Mongo Aggregation on inactive/waived. Grab the latest of year, assm_state, enrollment_kind and coverage_kind
     @waived_enrollment_filter = Family.collection.aggregate([
@@ -33,7 +38,10 @@ class Insured::FamiliesController < FamiliesController
       {"$sort" => {"households.hbx_enrollments.submitted_at" => -1 }},
       {"$group" => {'_id' => {'year' => { "$year" => '$households.hbx_enrollments.effective_on'},'state' => '$households.hbx_enrollments.aasm_state', 'kind' => '$households.hbx_enrollments.kind', 'coverage_kind' => '$households.hbx_enrollments.coverage_kind'}, "hbx_enrollment" => { "$first" => '$households.hbx_enrollments'}}},
       {"$project" => {'hbx_enrollment._id' => 1, '_id' => 0}}
-      ])
+      ],
+      {allowDiskUse: true})
+
+      binding.pry
 
     # Build array of valid display enrollments
     valid_display_enrollments = Array.new
@@ -56,6 +64,7 @@ class Insured::FamiliesController < FamiliesController
     # Added && !@waived_hbx_enrollments.any? {|i| unique_display_years.include? i.effective_on.year}
     # so if coverage was selected after previously waiving coverage, do not show waived coverage as it's no longer valid.
     @waived = @family.coverage_waived? && !@waived_hbx_enrollments.any? {|i| unique_display_years.include? i.effective_on.year}
+
 
     @employee_role = @person.employee_roles.active.first
     @tab = params['tab']

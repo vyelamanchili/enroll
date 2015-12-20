@@ -249,10 +249,9 @@ class HbxEnrollment
 
   def cancel_previous(year)
 
-    # Indivial market - Perform cancel of previous enrollments for the same plan year only if from same carrier
+    #Perform cancel of previous enrollments for the same plan year
     self.household.hbx_enrollments.ne(id: id).by_coverage_kind(self.coverage_kind).by_year(year).cancel_eligible.by_kind(self.kind).each do |p|
-
-      if (p.plan.carrier_profile_id == self.plan.carrier_profile_id && p.kind != "employer_sponsored") || p.kind == "employer_sponsored"
+      if (p.plan.carrier_profile_id == self.plan.carrier_profile_id && p.kind != "employer_sponsored" && self.effective_on == p.effective_on) || p.kind == "employer_sponsored"
         p.cancel_coverage! if p.may_cancel_coverage?
         p.update_current(terminated_on: self.effective_on)
       end
@@ -262,7 +261,8 @@ class HbxEnrollment
 
   def propogate_selection
 
-    cancel_previous(self.plan.active_year) #Attempt to cancel any enrollments in Coverage Selected state
+
+    cancel_previous(self.plan.active_year)
 
     if benefit_group_assignment
       benefit_group_assignment.select_coverage if benefit_group_assignment.may_select_coverage?
@@ -553,7 +553,7 @@ class HbxEnrollment
       new_hire_effective_date = employee_role.coverage_effective_on
     else
       open_enrollment_effective_date = employee_role.employer_profile.show_plan_year.start_on
-      
+
       if open_enrollment_effective_date < employee_role.coverage_effective_on
         new_hire_enrollment_period = employee_role.benefit_group.new_hire_enrollment_period(employee_role.new_census_employee.hired_on)
         raise "You're not yet eligible under your employer-sponsored benefits. Please return on #{new_hire_enrollment_period.first} to enroll for coverage."
