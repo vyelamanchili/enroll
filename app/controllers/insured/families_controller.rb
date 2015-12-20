@@ -41,8 +41,6 @@ class Insured::FamiliesController < FamiliesController
       ],
       {allowDiskUse: true})
 
-      binding.pry
-
     # Build array of valid display enrollments
     valid_display_enrollments = Array.new
     @enrollment_filter.each  { |e| valid_display_enrollments.push e['hbx_enrollment']['_id'] }
