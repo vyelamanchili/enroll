@@ -159,7 +159,7 @@ class HbxEnrollment
   after_save  :generate_hbx_signature
 
   def generate_hbx_signature
-    enrollment_signature =  Digest::MD5.hexdigest(applicant_ids.sort.map(&:to_s).join)
+    self.enrollment_signature =  Digest::MD5.hexdigest(applicant_ids.sort.map(&:to_s).join)
   end
 
 
@@ -263,7 +263,7 @@ class HbxEnrollment
     self.household.hbx_enrollments.ne(id: id).by_coverage_kind(self.coverage_kind).by_year(year).cancel_eligible.by_kind(self.kind).each do |p|
 
       p.generate_hbx_signature if !p.enrollment_signature.present?
-      
+
       if (p.enrollment_signature == self.enrollment_signature && p.plan.carrier_profile_id == self.plan.carrier_profile_id && p.kind != "employer_sponsored" && self.effective_on == p.effective_on) || p.kind == "employer_sponsored"
         p.cancel_coverage! if p.may_cancel_coverage?
         p.update_current(terminated_on: self.effective_on)
