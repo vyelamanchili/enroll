@@ -404,7 +404,7 @@ class Family
 
   def current_broker_agency
     broker_agency_accounts.detect { |account| account.is_active? }
-  end
+  end 
 
   class << self
     # Manage: SEPs, FamilyMemberAgeOff

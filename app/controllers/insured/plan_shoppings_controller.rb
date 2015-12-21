@@ -58,7 +58,7 @@ class Insured::PlanShoppingsController < ApplicationController
       benefit_group = @enrollment.benefit_group
       reference_plan = benefit_group.reference_plan
       if benefit_group.is_congress
-        @plan = PlanCostDecoratorCongress.new(plan, @enrollment, benefit_group)
+        @plan = PlanCostDecoratorCongress.new(plan, @enrollment, benefit_group) 
       else
         @plan = PlanCostDecorator.new(plan, @enrollment, benefit_group, reference_plan)
       end

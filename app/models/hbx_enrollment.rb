@@ -115,7 +115,11 @@ class HbxEnrollment
   scope :individual_market,   ->{ where(:kind.ne => "employer_sponsored") }
 
   scope :terminated, -> { where(:aasm_state.in => TERMINATED_STATUSES, :terminated_on.gte => TimeKeeper.date_of_record.beginning_of_day) }
+<<<<<<< Updated upstream
   scope :show_enrollments, -> { any_of([enrolled.selector, renewing.selector, terminated.selector]) }
+=======
+  scope :show_enrollments, -> { any_of([enrolled.selector, renewing.selector, terminated.selector, canceled.selector]) } 
+>>>>>>> Stashed changes
   scope :with_plan, -> { where(:plan_id.ne => nil) }
 
   embeds_many :workflow_state_transitions, as: :transitional
