@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe Insured::FamiliesController do
   context "with no person" do
-    let(:user) { double("User", last_portal_visited: "test.com") } 
+    let(:user) { double("User", last_portal_visited: "test.com") }
     let(:person) {nil}
 
     before :each do
@@ -54,6 +54,9 @@ RSpec.describe Insured::FamiliesController do
   describe "GET home" do
     before :each do
       allow(family).to receive(:enrollments).and_return(hbx_enrollments)
+
+      allow(family).to receive(:enrollments_for_display).and_return(hbx_enrollments)
+      allow(family).to receive(:waivers_for_display).and_return(hbx_enrollments)
       allow(family).to receive(:coverage_waived?).and_return(false)
       allow(hbx_enrollments).to receive(:active).and_return(hbx_enrollments)
       allow(hbx_enrollments).to receive(:changing).and_return([])
