@@ -9,7 +9,19 @@ class Insured::FamiliesController < FamiliesController
   def home
     set_bookmark_url
 
-    @hbx_enrollments = @family.enrollments.order(effective_on: :desc, coverage_kind: :desc) || []
+    @hbx_enrollments = @family.enrollments.order(effective_on: :desc, submitted_at: :desc, coverage_kind: :desc) || []
+
+    @enrollment_filter = @family.enrollments_for_display
+
+    @waived_enrollment_filter = @family.waivers_for_display
+
+
+    valid_display_enrollments = Array.new
+    @enrollment_filter.each  { |e| valid_display_enrollments.push e['hbx_enrollment']['_id'] }
+
+    valid_display_waived_enrollments = Array.new
+    @waived_enrollment_filter.each  { |e| valid_display_waived_enrollments.push e['hbx_enrollment']['_id'] }
+
     log("#3860 person_id: #{@person.id}", {:severity => "error"}) if @hbx_enrollments.any?{|hbx| hbx.plan.blank?}
     @waived_hbx_enrollments = @family.active_household.hbx_enrollments.waived.to_a
     update_changing_hbxs(@hbx_enrollments)
