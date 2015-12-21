@@ -106,6 +106,9 @@ class HbxEnrollment
   scope :my_enrolled_plans,   ->{ where(:aasm_state.ne => "shopping", :plan_id.ne => nil ) } # a dummy plan has no plan id
   scope :current_year,        ->{ where(:effective_on.gte => TimeKeeper.date_of_record.beginning_of_year, :effective_on.lte => TimeKeeper.date_of_record.end_of_year) }
   scope :by_year,             ->(year) { where(effective_on: (Date.new(year)..Date.new(year).end_of_year)) }
+  scope :by_coverage_kind,    ->(kind) { where(coverage_kind: kind)}
+  scope :by_kind,             ->(kind) { where(kind: kind)}
+  scope :cancel_eligible,     ->{ where(:aasm_state.in => ["coverage_selected","renewing_coverage_selected"] )}
   scope :with_aptc,           ->{ gt("applied_aptc_amount.cents": 0) }
   scope :enrolled,            ->{ where(:aasm_state.in => ENROLLED_STATUSES ) }
   scope :renewing,            ->{ where(:aasm_state.in => RENEWAL_STATUSES )}
@@ -306,7 +309,7 @@ class HbxEnrollment
       self.terminated_on = benefit_group.termination_effective_on_for(submitted_on)
     else
       bcp = BenefitCoveragePeriod.find_by_date(effective_on)
-      self.terminated_on = bcp.termination_effective_on_for(submitted_on)      
+      self.terminated_on = bcp.termination_effective_on_for(submitted_on)
     end
     terminate_coverage!
   end
@@ -417,8 +420,8 @@ class HbxEnrollment
   end
 
   def coverage_period_date_range
-    is_shop? ? 
-      benefit_group.plan_year.start_on..benefit_group.plan_year.start_on : 
+    is_shop? ?
+      benefit_group.plan_year.start_on..benefit_group.plan_year.start_on :
       benefit_coverage_period.start_on..benefit_coverage_period.end_on
   end
 
