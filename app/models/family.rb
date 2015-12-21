@@ -518,20 +518,22 @@ class Family
   end
 
   def enrollments_for_display
-    self.collection.aggregate([
+    Family.collection.aggregate([
       {"$match" => {'_id' => self._id}},
       {"$unwind" => '$households'},
       {"$unwind" => '$households.hbx_enrollments'},
-      {"$match" => {"aasm_state" => {"$ne" => 'inactive'}}},
+      {"$unwind" => '$households.hbx_enrollments.hbx_enrollment_members'},
+      {"$match" => {"aasm_state" => {"$ne" => 'inactive'}, "households.hbx_enrollments.hbx_enrollment_members.is_subscriber" => true}},
       {"$sort" => {"households.hbx_enrollments.submitted_at" => -1 }},
       {"$group" => {'_id' => {
                   'year' => { "$year" => '$households.hbx_enrollments.effective_on'},
                   'month' => { "$month" => '$households.hbx_enrollments.effective_on'},
                   'day' => { "$dayOfMonth" => '$households.hbx_enrollments.effective_on'},
+                  'subscriber_id' => '$households.hbx_enrollments.hbx_enrollment_members.applicant_id',
                   'provider_id' => '$households.hbx_enrollments.carrier_profile_id', 'state' => '$households.hbx_enrollments.aasm_state', 'market' => '$households.hbx_enrollments.kind', 'coverage_kind' => '$households.hbx_enrollments.coverage_kind'}, "hbx_enrollment" => { "$first" => '$households.hbx_enrollments'}}},
       {"$project" => {'hbx_enrollment._id' => 1, '_id' => 1}}
       ],
-      {allowDiskUse: true})
+      :allow_disk_use => true)
   end
 
   def waivers_for_display
@@ -544,7 +546,7 @@ class Family
       {"$group" => {'_id' => {'year' => { "$year" => '$households.hbx_enrollments.effective_on'},'state' => '$households.hbx_enrollments.aasm_state', 'kind' => '$households.hbx_enrollments.kind', 'coverage_kind' => '$households.hbx_enrollments.coverage_kind'}, "hbx_enrollment" => { "$first" => '$households.hbx_enrollments'}}},
       {"$project" => {'hbx_enrollment._id' => 1, '_id' => 0}}
       ],
-      {allowDiskUse: true})
+      :allow_disk_use => true)
   end
 
 private
