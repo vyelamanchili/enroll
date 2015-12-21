@@ -54,6 +54,10 @@ RSpec.describe Insured::FamiliesController do
   describe "GET home" do
     before :each do
       allow(family).to receive(:enrollments).and_return(hbx_enrollments)
+<<<<<<< HEAD
+=======
+
+>>>>>>> hotfix-4045-r1
       allow(family).to receive(:enrollments_for_display).and_return(hbx_enrollments)
       allow(family).to receive(:waivers_for_display).and_return(hbx_enrollments)
       allow(family).to receive(:coverage_waived?).and_return(false)

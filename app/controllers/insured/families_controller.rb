@@ -11,6 +11,7 @@ class Insured::FamiliesController < FamiliesController
 
     log("#3717 person_id: #{@person.id}, params: #{params.to_s}, request: #{request.env.inspect}", {:severity => "error"}) if @family.blank?
 
+
     @hbx_enrollments = @family.enrollments.order(effective_on: :desc, submitted_at: :desc, coverage_kind: :desc) || []
 
     @enrollment_filter = @family.enrollments_for_display
@@ -25,11 +26,12 @@ class Insured::FamiliesController < FamiliesController
     valid_display_waived_enrollments = Array.new
     @waived_enrollment_filter.each  { |e| valid_display_waived_enrollments.push e['hbx_enrollment']['_id'] }
 
+
     log("#3860 person_id: #{@person.id}", {:severity => "error"}) if @hbx_enrollments.any?{|hbx| hbx.plan.blank?}
-    @waived_hbx_enrollments = @family.active_household.hbx_enrollments.waived
+    @waived_hbx_enrollments = @family.active_household.hbx_enrollments.waived.to_a
     update_changing_hbxs(@hbx_enrollments)
 
-    # Filter out enrollments for display ONLY. Don't want to change the current logic, like the line above "update_changing_hbxs(@hbx_enrollments)"
+
     @hbx_enrollments = @hbx_enrollments.reject { |r| !valid_display_enrollments.include? r._id }
     @waived_hbx_enrollments = @waived_hbx_enrollments.reject { |r| !valid_display_waived_enrollments.include? r._id }
 

@@ -522,14 +522,13 @@ class Family
       {"$match" => {'_id' => self._id}},
       {"$unwind" => '$households'},
       {"$unwind" => '$households.hbx_enrollments'},
-      {"$unwind" => '$households.hbx_enrollments.hbx_enrollment_members'},
-      {"$match" => {"aasm_state" => {"$ne" => 'inactive'}, "households.hbx_enrollments.hbx_enrollment_members.is_subscriber" => true}},
+      {"$match" => {"aasm_state" => {"$ne" => 'inactive'} }},
       {"$sort" => {"households.hbx_enrollments.submitted_at" => -1 }},
       {"$group" => {'_id' => {
                   'year' => { "$year" => '$households.hbx_enrollments.effective_on'},
                   'month' => { "$month" => '$households.hbx_enrollments.effective_on'},
                   'day' => { "$dayOfMonth" => '$households.hbx_enrollments.effective_on'},
-                  'subscriber_id' => '$households.hbx_enrollments.hbx_enrollment_members.applicant_id',
+                  'subscriber_id' => '$households.hbx_enrollments.enrollment_signature',
                   'provider_id' => '$households.hbx_enrollments.carrier_profile_id', 'state' => '$households.hbx_enrollments.aasm_state', 'market' => '$households.hbx_enrollments.kind', 'coverage_kind' => '$households.hbx_enrollments.coverage_kind'}, "hbx_enrollment" => { "$first" => '$households.hbx_enrollments'}}},
       {"$project" => {'hbx_enrollment._id' => 1, '_id' => 1}}
       ],
