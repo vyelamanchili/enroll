@@ -34,7 +34,8 @@ class HbxEnrollment
       "unverified"
     ]
 
-  TERMINATED_STATUSES = ["coverage_terminated", "coverage_canceled", "unverified"]
+  TERMINATED_STATUSES = ["coverage_terminated", "unverified"]
+  CANCELED_STATUSES = ["coverage_canceled"]
   RENEWAL_STATUSES = %w(auto_renewing renewing_coverage_selected renewing_transmitted_to_carrier renewing_coverage_enrolled)
 
   ENROLLMENT_KINDS = ["open_enrollment", "special_enrollment"]
@@ -68,6 +69,7 @@ class HbxEnrollment
   field :terminated_on, type: Date
 
   field :plan_id, type: BSON::ObjectId
+  field :carrier_profile_id, type: BSON::ObjectId
   field :broker_agency_profile_id, type: BSON::ObjectId
   field :writing_agent_id, type: BSON::ObjectId
   field :employee_role_id, type: BSON::ObjectId
@@ -75,6 +77,8 @@ class HbxEnrollment
   field :benefit_group_assignment_id, type: BSON::ObjectId
   field :hbx_id, type: String
   field :special_enrollment_period_id, type: BSON::ObjectId
+
+  field :enrollment_signature, type: String
 
   field :consumer_role_id, type: BSON::ObjectId
   field :benefit_package_id, type: BSON::ObjectId
@@ -96,6 +100,7 @@ class HbxEnrollment
   associated_with_one :employee_role, :employee_role_id, "EmployeeRole"
   associated_with_one :consumer_role, :consumer_role_id, "ConsumerRole"
 
+
   delegate :total_premium, :total_employer_contribution, :total_employee_cost, to: :decorated_hbx_enrollment, allow_nil: true
   delegate :premium_for, to: :decorated_hbx_enrollment, allow_nil: true
 
@@ -105,17 +110,21 @@ class HbxEnrollment
   scope :my_enrolled_plans,   ->{ where(:aasm_state.ne => "shopping", :plan_id.ne => nil ) } # a dummy plan has no plan id
   scope :current_year,        ->{ where(:effective_on.gte => TimeKeeper.date_of_record.beginning_of_year, :effective_on.lte => TimeKeeper.date_of_record.end_of_year) }
   scope :by_year,             ->(year) { where(effective_on: (Date.new(year)..Date.new(year).end_of_year)) }
+  scope :by_coverage_kind,    ->(kind) { where(coverage_kind: kind)}
+  scope :by_kind,             ->(kind) { where(kind: kind)}
   scope :with_aptc,           ->{ gt("applied_aptc_amount.cents": 0) }
   scope :enrolled,            ->{ where(:aasm_state.in => ENROLLED_STATUSES ) }
   scope :renewing,            ->{ where(:aasm_state.in => RENEWAL_STATUSES )}
   scope :waived,              ->{ where(:aasm_state.in => ["inactive", "renewing_waived"] )}
+  scope :cancel_eligible,     ->{ where(:aasm_state.in => ["coverage_selected","renewing_coverage_selected"] )}
   scope :changing,            ->{ where(changing: true) }
   scope :with_in,             ->(time_limit){ where(:created_at.gte => time_limit) }
   scope :shop_market,         ->{ where(:kind => "employer_sponsored") }
   scope :individual_market,   ->{ where(:kind.ne => "employer_sponsored") }
 
+  scope :canceled, -> { where(:aasm_state.in => CANCELED_STATUSES) }
   scope :terminated, -> { where(:aasm_state.in => TERMINATED_STATUSES, :terminated_on.gte => TimeKeeper.date_of_record.beginning_of_day) }
-  scope :show_enrollments, -> { any_of([enrolled.selector, renewing.selector, terminated.selector]) }
+  scope :show_enrollments, -> { any_of([enrolled.selector, renewing.selector, terminated.selector, canceled.selector]) }
   scope :with_plan, -> { where(:plan_id.ne => nil) }
 
   embeds_many :workflow_state_transitions, as: :transitional
@@ -147,6 +156,12 @@ class HbxEnrollment
     }
 
   before_save :generate_hbx_id
+  after_save  :generate_hbx_signature
+
+  def generate_hbx_signature
+    enrollment_signature =  Digest::MD5.hexdigest(applicant_ids.sort.map(&:to_s).join)
+  end
+
 
   def record_transition
     self.workflow_state_transitions << WorkflowStateTransition.new(
@@ -233,10 +248,34 @@ class HbxEnrollment
   end
 
   def propogate_waiver
-    benefit_group_assignment.try(:waive_coverage!) if benefit_group_assignment
+    if benefit_group_assignment.may_waive_coverage?
+      cancel_previous(self.effective_on.year)
+      benefit_group_assignment.try(:waive_coverage!) if benefit_group_assignment
+    else
+      return false
+    end
+
+  end
+
+  def cancel_previous(year)
+
+    #Perform cancel of previous enrollments for the same plan year
+    self.household.hbx_enrollments.ne(id: id).by_coverage_kind(self.coverage_kind).by_year(year).cancel_eligible.by_kind(self.kind).each do |p|
+
+      p.generate_hbx_signature if !p.enrollment_signature.present?
+      
+      if (p.enrollment_signature == self.enrollment_signature && p.plan.carrier_profile_id == self.plan.carrier_profile_id && p.kind != "employer_sponsored" && self.effective_on == p.effective_on) || p.kind == "employer_sponsored"
+        p.cancel_coverage! if p.may_cancel_coverage?
+        p.update_current(terminated_on: self.effective_on)
+      end
+    end
+
   end
 
   def propogate_selection
+
+    cancel_previous(self.plan.active_year)
+
     if benefit_group_assignment
       benefit_group_assignment.select_coverage if benefit_group_assignment.may_select_coverage?
       benefit_group_assignment.hbx_enrollment = self
@@ -285,7 +324,7 @@ class HbxEnrollment
       self.terminated_on = benefit_group.termination_effective_on_for(submitted_on)
     else
       bcp = BenefitCoveragePeriod.find_by_date(effective_on)
-      self.terminated_on = bcp.termination_effective_on_for(submitted_on)      
+      self.terminated_on = bcp.termination_effective_on_for(submitted_on)
     end
     terminate_coverage!
   end
@@ -343,6 +382,7 @@ class HbxEnrollment
   def plan=(new_plan)
     raise ArgumentError.new("expected Plan") unless new_plan.is_a? Plan
     self.plan_id = new_plan._id
+    self.carrier_profile_id = new_plan.carrier_profile_id #new_plan.carrier_profile_id
     @plan = new_plan
   end
 
@@ -396,8 +436,8 @@ class HbxEnrollment
   end
 
   def coverage_period_date_range
-    is_shop? ? 
-      benefit_group.plan_year.start_on..benefit_group.plan_year.start_on : 
+    is_shop? ?
+      benefit_group.plan_year.start_on..benefit_group.plan_year.start_on :
       benefit_coverage_period.start_on..benefit_coverage_period.end_on
   end
 
@@ -744,6 +784,10 @@ class HbxEnrollment
 
     event :waive_coverage do
       transitions from: [:shopping, :coverage_selected, :auto_renewing, :renewing_coverage_selected], to: :inactive, after: :propogate_waiver
+    end
+
+    event :cancel_coverage do
+      transitions from: [:coverage_selected, :renewing_coverage_selected], to: :coverage_canceled
     end
 
     event :terminate_coverage do
