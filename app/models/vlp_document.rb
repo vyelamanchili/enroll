@@ -105,7 +105,6 @@ class VlpDocument < Document
 
 
 
-
   # hash of doc type and necessary fields
   def required_fields
     {
