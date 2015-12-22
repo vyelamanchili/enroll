@@ -9,7 +9,7 @@ class Insured::PlanShoppingsController < ApplicationController
   def checkout
     plan = Plan.find(params.require(:plan_id))
     hbx_enrollment = HbxEnrollment.find(params.require(:id))
-    hbx_enrollment.update_current(plan_id: plan.id)
+    hbx_enrollment.update_current(plan_id: plan.id, carrier_profile_id: plan.carrier_profile_id)
     hbx_enrollment.inactive_related_hbxs
     hbx_enrollment.inactive_pre_hbx(session[:pre_hbx_enrollment_id])
     session.delete(:pre_hbx_enrollment_id)
@@ -58,7 +58,7 @@ class Insured::PlanShoppingsController < ApplicationController
       benefit_group = @enrollment.benefit_group
       reference_plan = benefit_group.reference_plan
       if benefit_group.is_congress
-        @plan = PlanCostDecoratorCongress.new(plan, @enrollment, benefit_group) 
+        @plan = PlanCostDecoratorCongress.new(plan, @enrollment, benefit_group)
       else
         @plan = PlanCostDecorator.new(plan, @enrollment, benefit_group, reference_plan)
       end
