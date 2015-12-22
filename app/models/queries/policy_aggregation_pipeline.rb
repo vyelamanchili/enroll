@@ -104,12 +104,8 @@ module Queries
     def filter_to_individual
       add({
         "$match" => {
-          "households.hbx_enrollments.plan_id" => { "$ne" => nil},
           "households.hbx_enrollments.consumer_role_id" => {"$ne" => nil},
-          "households.hbx_enrollments.aasm_state" => { "$nin" => [
-            "shopping", "inactive", "coverage_canceled", "coverage_terminated"
-          ]}
-        }
+          "households.hbx_enrollments.aasm_state" => { "$ne" => "shopping" } }
       })
       self
     end
@@ -126,14 +122,11 @@ module Queries
     def filter_to_shop
       add({
         "$match" => {
-          "households.hbx_enrollments.plan_id" => { "$ne" => nil},
+          "households.hbx_enrollments.aasm_state" => { "$ne" => "shopping" },
           "$or" => [
             {"households.hbx_enrollments.consumer_role_id" => {"$exists" => false}},
             {"households.hbx_enrollments.consumer_role_id" => nil}
-          ],
-          "households.hbx_enrollments.aasm_state" => { "$nin" => [
-            "shopping", "inactive", "coverage_canceled", "coverage_terminated"
-          ]}
+          ]
         }
       })
       self
@@ -165,6 +158,14 @@ module Queries
       results.map do |r|
         r['hbx_id']
       end
+    end
+
+    def remove_duplicates_by_family_as_non_renewals
+      eliminate_family_duplicates
+      add({
+        "$match" => {"aasm_state" => {"$ne" => "auto_renewing"}}
+      })
+      purchased_on_grouping
     end
 
     def remove_duplicates_by_family_as_renewals
@@ -208,11 +209,13 @@ module Queries
 
     def eliminate_family_duplicates
       flow = ((
+        project_property("family_created_at", "$created_at") +
         project_property("policy_purchased_at", { "$ifNull" => ["$households.hbx_enrollments.created_at", "$households.hbx_enrollments.submitted_at"] }) +
         project_property("policy_purchased_on", {
           "$dateToString" => {"format" => "%Y-%m-%d",
                               "date" => { "$ifNull" => ["$households.hbx_enrollments.created_at", "$households.hbx_enrollments.submitted_at"] }
         }}) +
+        project_property("plan_id", "$households.hbx_enrollments.plan_id") +
         project_property("enrollment_kind", "$households.hbx_enrollments.enrollment_kind") +
         project_property("aasm_state", "$households.hbx_enrollments.aasm_state") +
         project_property("hbx_id", "$households.hbx_enrollments.hbx_id") +
@@ -225,8 +228,10 @@ module Queries
         last("policy_purchased_at") +
         last("policy_purchased_on") +
         last("hbx_id") +
+        last("plan_id") +
         last("aasm_state") +
-        last("enrollment_kind")
+        last("enrollment_kind") +
+        last("family_created_at")
       ))
       @pipeline = @pipeline + flow.to_pipeline
       self
