@@ -529,7 +529,8 @@ class Family
                   'month' => { "$month" => '$households.hbx_enrollments.effective_on'},
                   'day' => { "$dayOfMonth" => '$households.hbx_enrollments.effective_on'},
                   'subscriber_id' => '$households.hbx_enrollments.enrollment_signature',
-                  'provider_id' => '$households.hbx_enrollments.carrier_profile_id', 'state' => '$households.hbx_enrollments.aasm_state', 'market' => '$households.hbx_enrollments.kind', 'coverage_kind' => '$households.hbx_enrollments.coverage_kind'}, "hbx_enrollment" => { "$first" => '$households.hbx_enrollments'}}},
+                  'provider_id'   => '$households.hbx_enrollments.carrier_profile_id',
+                  'state' => '$households.hbx_enrollments.aasm_state', 'market' => '$households.hbx_enrollments.kind', 'coverage_kind' => '$households.hbx_enrollments.coverage_kind'}, "hbx_enrollment" => { "$first" => '$households.hbx_enrollments'}}},
       {"$project" => {'hbx_enrollment._id' => 1, '_id' => 1}}
       ],
       :allow_disk_use => true)

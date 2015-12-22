@@ -16,7 +16,6 @@ class Insured::FamiliesController < FamiliesController
 
     @waived_enrollment_filter = @family.waivers_for_display
 
-
     valid_display_enrollments = Array.new
     @enrollment_filter.each  { |e| valid_display_enrollments.push e['hbx_enrollment']['_id'] }
 
