@@ -107,6 +107,7 @@ class BrokerAgencies::ProfilesController < ApplicationController
     if current_user.has_broker_role?
       broker_agent_id = current_user.person.try(:broker_role).try(:id)
     else
+      log("#4173 params: #{params.to_s}, url: #{request.original_url}", {:severity => "error"}) if id.blank?
       bap = BrokerAgencyProfile.find(BSON::ObjectId.from_string(id))
       broker_agent_id = bap.try(:writing_agents).try(:first).try(:id) || bap.primary_broker_role_id
     end
