@@ -16,4 +16,13 @@ namespace :update_ivl do
       puts "update ivl qle effective_on_kinds successful."
     end
   end
+
+  desc "change title for exceptional_circumstances_system_outage qle"
+  task :change_title_for_outage_event => :environment do
+    qles = QualifyingLifeEventKind.where(market_kind: 'individual', reason: 'exceptional_circumstances_system_outage')
+    if qles.present?
+      qles.update_all(title: "Data source outage prevented enrollment")
+      puts "update the title of ivl exceptional_circumstances_system_outage qle successful"
+    end
+  end
 end

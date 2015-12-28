@@ -344,7 +344,7 @@ QualifyingLifeEventKind.create!(
   )
 
 QualifyingLifeEventKind.create!(
-  title: "System outage prevented enrollment",
+  title: "Data source outage prevented enrollment",
   tool_tip: "A DC Health Link outage or outage in federal or local data sources close to an open enrollment or special enrollment deadline prevented enrollment",
   action_kind: "add_member",
   market_kind: "individual",

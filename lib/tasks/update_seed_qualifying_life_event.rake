@@ -158,7 +158,7 @@ namespace :update_seed do
 
       { criteria: { title: "I was unable to enroll because of a system outage", market_kind: "individual" }, 
          attribs: { reason: "exceptional_circumstances_system_outage", 
-                    title: "System outage prevented enrollment", 
+                    title: "Data source outage prevented enrollment", 
                     tool_tip: "A DC Health Link outage or outage in federal or local data sources close to an open enrollment or special enrollment deadline prevented enrollment" 
                   } 
         },
