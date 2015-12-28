@@ -470,6 +470,20 @@ RSpec.describe Employers::EmployerProfilesController do
     end
   end
 
+  describe "GET edit" do
+    let(:user) {FactoryGirl.build(:user)}
+    let(:employer_profile) {FactoryGirl.build(:employer_profile)}
+    let(:organization) {FactoryGirl.create(:organization, employer_profile: employer_profile)}
+
+    it "should get employer_contact_email with empty" do
+      sign_in(user)
+      get :edit, id: organization.id
+      expect(assigns(:employer_contact_email)).to eq ''
+      expect(response).to have_http_status(:success)
+      expect(response).to render_template("edit")
+    end
+  end
+
   describe "PUT update" do
     let(:user) { double("user")}
     let(:employer_profile) { double("EmployerProfile") }
