@@ -227,7 +227,19 @@ function getCarrierPlans(ep, ci) {
 
 }
 
-
+// disabled enter key submitting disabeld forms in firefox -- add this to any element in the page onKeyPress="return disableEnterKey(event)"
+function disableEnterKey(e)
+{
+  var key;
+  if(window.event)
+    key = window.event.keyCode;     //IE
+  else
+    key = e.which;     //firefox
+  if(key == 13)
+    return false;
+  else
+    return true;
+}
 
 // modal input type file clicks
 $(document).on('click', '#modal-wrapper div label', function(){
@@ -249,8 +261,15 @@ $(document).on('click', '#modal-wrapper .modal-close', function(){
 });
 
 
-// reveal published plan years benefit groups
 $(document).ready(function () {
+
+  //warn user before exiting to gmail, ymail, or aol
+
+    $('.email-alert').on('click', function() {
+      if ( !confirm("You are leaving the DC Health Link web site and entering a privately owned web site created, operated and maintained by a private business. The information that this private business collects and maintains as a result of your visit to its web site is different from the information that the DC Health Link collects and maintains. DC Health Link does not share information with this private company. DC Health Link cannot help you with any information regarding this website, including your username or password, or other technical issues. By linking to this private business, the DC Health Link is not endorsing its products, services, or privacy or security policies. We recommend you review the business's information collection policy or terms and conditions to fully understand what information is collected by this private business.") )
+      { return false; }
+    })
+
   if ( $('.plan-year').find('.fa-star.enrolling, .fa-star.published').length )  {
     $('.plan-year').find('.fa-star.enrolling, .fa-star.published').closest('.plan-year').find('a.benefit-details').trigger('click');
   }
