@@ -54,8 +54,8 @@ module Subscribers
       family.e_case_id = verified_family.integrated_case_id if family.e_case_id.blank? || (family.e_case_id.include? "curam_landing")
       begin
         active_household.build_or_update_tax_household_from_primary(verified_primary_family_member, primary_person, active_verified_household)
-      rescue
-        throw(:processing_issue, "Failure to update tax household")
+      rescue Exception => e
+        throw(:processing_issue, "Failure to update tax household " + e.message)
       end
       update_vlp_for_consumer_role(primary_person.consumer_role, verified_primary_family_member)
       begin
