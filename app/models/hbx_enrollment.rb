@@ -263,7 +263,7 @@ class HbxEnrollment
 
       p.update_attributes(enrollment_signature: p.generate_hbx_signature) if !p.enrollment_signature.present?
 
-      if (p.enrollment_signature == self.enrollment_signature && p.plan.carrier_profile_id == self.plan.carrier_profile_id && p.kind != "employer_sponsored" && self.effective_on == p.effective_on) || p.kind == "employer_sponsored"
+      if (p.enrollment_signature == self.enrollment_signature && p.plan.carrier_profile_id == self.plan.carrier_profile_id && p.kind != "employer_sponsored") || p.kind == "employer_sponsored"
         p.cancel_coverage! if p.may_cancel_coverage?
         p.update_current(terminated_on: self.effective_on)
       end
