@@ -153,6 +153,8 @@ class Employers::EmployerProfilesController < ApplicationController
 
     @current_user_is_hbx_staff = current_user.has_hbx_staff_role?
     @current_user_is_broker = current_user.has_broker_agency_staff_role?
+  rescue => e
+    log("#{e.message}; #3672 params: #{params.to_s}, url: #{request.original_url}, method: #{request.method}, stacktrace: #{e.backtrace}", {:severity => 'error'})
   end
 
   def create
@@ -213,7 +215,7 @@ class Employers::EmployerProfilesController < ApplicationController
       end
     else
       flash[:error] = 'You do not have permissions to update the details'
-      redirect_to edit_employers_employer_profile_path(@employer_profile)
+      redirect_to edit_employers_employer_profile_path(@organization)
     end
   end
 
