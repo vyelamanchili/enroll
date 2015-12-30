@@ -179,6 +179,8 @@ class Person
   scope :broker_role_denied,        -> { where("broker_role.aasm_state" => { "$eq" => :denied })}
   scope :by_ssn,                    ->(ssn) { where(encrypted_ssn: Person.encrypt_ssn(ssn)) }
   scope :matchable,                 ->(ssn, dob, last_name) { where(encrypted_ssn: Person.encrypt_ssn(ssn), dob: dob, last_name: last_name) }
+  scope :unverified_persons,        -> {Person.in(:'consumer_role.aasm_state'=>['verifications_outstanding', 'verifications_pending'])}
+
 
 #  ViewFunctions::Person.install_queries
 
@@ -193,6 +195,11 @@ class Person
 
   def notify_updated
     notify(PERSON_UPDATED_EVENT_NAME, {:individual_id => self.hbx_id } )
+  end
+
+  def is_aqhp?
+    family_id = self.primary_family ? self.primary_family.id : 1
+    Family.all_assistance_applying.only(:_id).map(&:_id).include? family_id
   end
 
   def completed_identity_verification?
