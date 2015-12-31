@@ -62,4 +62,18 @@ RSpec.describe ApplicationController do
       expect(flash[:notice]).to eq "Signed in Successfully."
     end
   end
+  context "security_exception" do
+    let(:user) { FactoryGirl.create(:user) }
+    before do
+      sign_in user
+    end
+    it "should get signed in flash notice" do
+      expect(subject).to receive(:log) do |msg, severity|
+        expect(severity[:severity]).to eq('error')
+        expect(msg[:user_id]).to match(user.id)
+        expect(msg[:email]).to match(user.email)
+      end
+      expect{subject.instance_eval{security_exception}}.to raise_error(ActionController::RoutingError)
+    end
+  end
 end

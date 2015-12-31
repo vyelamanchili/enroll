@@ -65,6 +65,16 @@ class ApplicationController < ActionController::Base
     yield
   end
 
+  def security_exception
+    message = {}
+    message[:message] = 'Security Exception'
+    message[:user_id] = current_user.id
+    message[:email] = current_user.email
+    message[:url] = request.original_url
+    log(message,:severity=>'error')
+    raise ActionController::RoutingError.new('Forbidden')
+  end
+
   private
     def secure_message(from_provider, to_provider, subject, body)
       message_params = {
@@ -251,4 +261,5 @@ class ApplicationController < ActionController::Base
     def authorize_for
       authorize(controller_name.classify.constantize, "#{action_name}?".to_sym)
     end
+
 end

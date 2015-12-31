@@ -206,4 +206,19 @@ RSpec.describe BrokerAgencyProfile, dbclean: :after_each do
       expect(broker_agency_profile.families.count).to eq(1)
     end
   end
+  describe '#can_access_person_id' do
+    let(:broker_agency_profile) { FactoryGirl.build(:broker_agency_profile) }
+    let(:writing_agent)         { FactoryGirl.create(:broker_role, broker_agency_profile_id: broker_agency_profile.id) }
+    let(:person) { FactoryGirl.create(:person)}
+    let(:family1) {FactoryGirl.create(:family,:with_primary_family_member, e_case_id: rand(10000), person:person)}
+    it 'cannot access a person without hiriing a broker' do
+      person_id = family1.primary_applicant.person.id.to_s
+      expect(broker_agency_profile.can_access_person_id person_id).to be_falsey
+    end
+    it 'can access a family if the family has hired the broker' do
+      family1.hire_broker_agency(writing_agent.id)
+      person_id = family1.primary_applicant.person.id.to_s
+      expect(broker_agency_profile.can_access_person_id person_id).to be_truthy
+    end
+  end
 end

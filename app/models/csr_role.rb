@@ -11,9 +11,19 @@ class CsrRole
   field :organization, type: String
   field :shift, type: String
   field :cac, type: Boolean, default: false
+  field :asked_for_help, type: Array, default: []
 
   def parent
     person
+  end
+
+  def ask_for_help person_id
+    asked_for_help.append(person_id) unless asked_for_help.include?(person_id)
+    self.save
+  end
+
+  def allowed_to_access person_id
+    asked_for_help.include?(person_id)
   end
 
   class << self
