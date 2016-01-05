@@ -1728,6 +1728,7 @@ describe PlanYear, :type => :model, :dbclean => :after_each do
     let!(:white_collar_employees) { [white_collar_large_family_employee, white_collar_small_family_employee, white_collar_no_family_employee]}
 
     before do
+
       blue_collar_employees.each do |ce|
         FactoryGirl.create(:benefit_group_assignment, census_employee: ce, benefit_group: blue_collar_benefit_group)
       end
@@ -1738,7 +1739,7 @@ describe PlanYear, :type => :model, :dbclean => :after_each do
 
     it "should have an estimated monthly max cost" do
       Caches::PlanDetails.load_record_cache!
-      expect(p(blue_collar_benefit_group).monthly_employer_contribution_amount).to be_within(0.01).of(2154.152)
+      expect(p(blue_collar_benefit_group).monthly_employer_contribution_amount).to be_within(0.01).of(2154.18)
     end
 
     it "should have an estimated min employee cost" do
@@ -1748,7 +1749,7 @@ describe PlanYear, :type => :model, :dbclean => :after_each do
 
     it "should have an estimated max employee cost" do
       Caches::PlanDetails.load_record_cache!
-      expect(p(blue_collar_benefit_group).monthly_max_employee_cost).to be_within(0.01).of(1121.12)
+      expect(p(blue_collar_benefit_group).monthly_max_employee_cost).to be_within(0.01).of(1121.10)
     end
   end
 end
