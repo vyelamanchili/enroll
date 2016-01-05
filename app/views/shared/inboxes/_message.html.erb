@@ -1,13 +1,14 @@
+<% message ||= @message if @message %>
 <div class="col-xs-12 content-bottom">
   <h1 class="darkblue mz">
     Message Details
   </h1>
   <br>
-<%- if @message.present? %>
+<%- if message.present? %>
   <ul class="list-group">
     <li class="list-group-item"> Sent By:  <%= "System Admin" %> <br></li>
-    <li class="list-group-item"> Subject:  <%= @message.subject.to_s.html_safe %> <br></li>
-    <li class="list-group-item"> <%= @message.body.to_s.html_safe %> <br></li>
+    <li class="list-group-item"> Subject:  <%= message.subject.to_s.html_safe %> <br></li>
+    <li class="list-group-item"> <%= message.body.to_s.html_safe %> <br></li>
   </ul>
   <br/>
   <% if @employer_profile.present? %>
