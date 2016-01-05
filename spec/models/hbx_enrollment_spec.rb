@@ -128,6 +128,15 @@ describe HbxEnrollment do
       end
 
       context "scope" do
+
+        before do
+          TimeKeeper.set_date_of_record_unprotected!(Date.new(2015,12,15))
+        end
+
+        after do
+          TimeKeeper.set_date_of_record_unprotected!(Date.today)
+        end
+
         it "with current year" do
           family = blue_collar_families.first
           employee_role = family.primary_family_member.person.employee_roles.first
@@ -142,6 +151,7 @@ describe HbxEnrollment do
           enrollments = family.households.first.coverage_households.first.household.hbx_enrollments
           expect(enrollments.current_year).to eq [enrollment]
         end
+
       end
 
       context "and families either select plan or waive coverage" do
