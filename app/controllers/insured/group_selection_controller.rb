@@ -157,8 +157,6 @@ class Insured::GroupSelectionController < ApplicationController
     @coverage_kind = params[:coverage_kind].present? ? params[:coverage_kind] : 'health'
     @enrollment_kind = params[:enrollment_kind].present? ? params[:enrollment_kind] : ''
     @shop_for_plans = params[:shop_for_plans].present? ? params{:shop_for_plans} : ''
-  rescue => e
-    log("#{e.message}; #3672 params: #{params.to_s}, url: #{request.original_url}, method: #{request.method}, stacktrace: #{e.backtrace}", {:severity => 'error'})
   end
 
   private

@@ -148,13 +148,15 @@ class Employers::EmployerProfilesController < ApplicationController
     if @employer_contact.try(:emails)
       @employer_contact.emails.any? ? @employer_contact_email = @employer_contact.emails.first : @employer_contact_email = @employer_contact.user.email
     else
-      @employer_contact_email = @employer_contact.user.email
+      @employer_contact_email = @employer_contact && @employer_contact.user && @employer_contact.user.email
     end
-
     @current_user_is_hbx_staff = current_user.has_hbx_staff_role?
     @current_user_is_broker = current_user.has_broker_agency_staff_role?
   rescue => e
-    log("#{e.message}; #3672 params: #{params.to_s}, url: #{request.original_url}, method: #{request.method}, stacktrace: #{e.backtrace}", {:severity => 'error'})
+    @mail = current_user.email
+    log("#{e.message}; #3672 params: #{params.to_s}, url: #{request.original_url}, method: #{request.method}, stacktrace: #{e.backtrace}, user: #{@mail}", {:severity => 'error'})
+    redirect_to welcome_employers_employer_profiles_path
+    return
   end
 
   def create
@@ -183,7 +185,6 @@ class Employers::EmployerProfilesController < ApplicationController
     sanitize_employer_profile_params
     params.permit!
     @organization = Organization.find(params[:id])
-
     #save duplicate office locations as json in case we need to refresh
     @organization_dup = @organization.office_locations.as_json
 
@@ -353,10 +354,6 @@ class Employers::EmployerProfilesController < ApplicationController
       :employer_profile_attributes => [:legal_name, :entity_kind, :dba]
     )
   end
-
-
-
-
 
   def employer_profile_params
     params.require(:organization).permit(
