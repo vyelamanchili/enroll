@@ -188,7 +188,18 @@ class ApplicationController < ActionController::Base
 
     def set_current_person
       if current_user.try(:person).try(:agent?)
-        @person = session[:person_id].present? ? Person.find(session[:person_id]) : nil
+        if session[:person_id].present?
+          @person = Person.find(session[:person_id])
+        else
+          message = {}
+          message[:message] = 'Security Exception'
+          message[:user_id] = current_user.id
+          message[:email] = current_user.email
+          message[:url] = request.original_url
+          log(message, :severity=>'error')
+          redirect_to logout_saml_index_path
+          return
+        end
       else
         @person = current_user.person
       end
