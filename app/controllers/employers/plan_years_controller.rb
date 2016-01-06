@@ -1,18 +1,31 @@
 class Employers::PlanYearsController < ApplicationController
   before_action :find_employer, except: [:recommend_dates]
-  before_action :generate_carriers_and_plans, except: [:recommend_dates]
+  before_action :generate_carriers_and_plans, except: [:recommend_dates, :generate_dental_carriers_and_plans]
 
   layout "two_column"
 
   def new
     @plan_year = build_plan_year
+    @carriers_cache = CarrierProfile.all.inject({}){|carrier_hash, carrier_profile| carrier_hash[carrier_profile.id] = carrier_profile.legal_name; carrier_hash;}
+    @dental_plans = Plan.by_active_year(2016).shop_market.dental_coverage.all
+  end
+
+  def dental_reference_plans
+    @plan_year_id = PlanYear.find(params[:plan_year_id])
+    @location_id = params[:location_id]
+    @carrier_profile = params[:carrier_id]
+    if @carrier_profile == 'all_plans'
+      @dental_plans = Plan.by_active_year(params[:start_on]).shop_market.dental_coverage
+    else
+      @dental_plans = Plan.by_active_year(params[:start_on]).shop_market.dental_coverage.by_carrier_profile(@carrier_profile)
+    end
   end
 
   def reference_plans
     @benefit_group = params[:benefit_group]
     @plan_year = PlanYear.find(params[:plan_year_id])
     @location_id = params[:location_id]
-
+    @dental_plans = Plan.by_active_year(params[:start_on]).shop_market.dental_coverage.all
     @plans = if params[:plan_option_kind] == "single_carrier"
       @carrier_id = params[:carrier_id]
       @carrier_profile = CarrierProfile.find(params[:carrier_id])
@@ -28,7 +41,15 @@ class Employers::PlanYearsController < ApplicationController
     end
 
     @carriers_cache = CarrierProfile.all.inject({}){|carrier_hash, carrier_profile| carrier_hash[carrier_profile.id] = carrier_profile.legal_name; carrier_hash;}
+    respond_to do |format|
+      format.js
+    end
+  end
 
+  def reference_plan_summary
+    hios_id = [] << params[:hios_id]
+    @qhps = Products::QhpCostShareVariance.find_qhp_cost_share_variances(hios_id.to_a, params[:start_on], params[:coverage_kind])
+    @visit_types = params[:coverage_kind] == "health" ? Products::Qhp::VISIT_TYPES : Products::Qhp::DENTAL_VISIT_TYPES
     respond_to do |format|
       format.js
     end
@@ -68,8 +89,10 @@ class Employers::PlanYearsController < ApplicationController
 
   def create
     @plan_year = ::Forms::PlanYearForm.build(@employer_profile, plan_year_params)
+
     @plan_year.benefit_groups.each do |benefit_group|
       benefit_group.elected_plans = benefit_group.elected_plans_by_option_kind
+      benefit_group.elected_dental_plans = benefit_group.elected_dental_plans_by_option_kind
     end
 
     if @employer_profile.default_benefit_group.blank?
@@ -106,9 +129,10 @@ class Employers::PlanYearsController < ApplicationController
   end
 
   def calc_employer_contributions
+
     @location_id = params[:location_id]
     params.merge!({ plan_year: { start_on: params[:start_on] }.merge(relationship_benefits) })
-
+    @coverage_type = params[:coverage_type]
     @plan = Plan.find(params[:reference_plan_id])
     @plan_year = ::Forms::PlanYearForm.build(@employer_profile, plan_year_params)
     @plan_year.benefit_groups[0].reference_plan = @plan
@@ -120,6 +144,7 @@ class Employers::PlanYearsController < ApplicationController
 
   def calc_offered_plan_contributions
     @location_id = params[:location_id]
+    @coverage_type = params[:coverage_type]
     params.merge!({ plan_year: { start_on: params[:start_on] }.merge(relationship_benefits) })
 
     @plan = Plan.find(params[:reference_plan_id])
@@ -133,6 +158,7 @@ class Employers::PlanYearsController < ApplicationController
 
   def edit
     plan_year = @employer_profile.find_plan_year(params[:id])
+    @dental_plans = Plan.by_active_year(2016).shop_market.dental_coverage.all
     @just_a_warning = false
     if plan_year.publish_pending?
       plan_year.withdraw_pending!
@@ -244,8 +270,8 @@ class Employers::PlanYearsController < ApplicationController
   end
 
   def employee_costs
-    @location_id = params[:location_id]
     params.merge!({ plan_year: { start_on: params[:start_on] }.merge(relationship_benefits) })
+    @coverage_type = params[:coverage_type]
 
     @plan = Plan.find(params[:reference_plan_id])
     @plan_year = ::Forms::PlanYearForm.build(@employer_profile, plan_year_params)
@@ -256,6 +282,17 @@ class Employers::PlanYearsController < ApplicationController
     @benefit_group.set_bounding_cost_plans
 
     @benefit_group_costs = build_employee_costs_for_benefit_group
+  end
+
+  def generate_dental_carriers_and_plans
+
+    @location_id = params[:location_id]
+    @plan_year_id = params[:plan_year_id]
+    @dental_carrier_names = Plan.valid_for_carrier(params.permit(:active_year)[:active_year])
+    @dental_carriers_array = Organization.valid_dental_carrier_names_for_options
+    respond_to do |format|
+      format.js
+    end
   end
 
   private
@@ -282,9 +319,10 @@ class Employers::PlanYearsController < ApplicationController
   end
 
   def find_employer
-    id_params = params.permit(:id, :employer_profile_id)
+    id_params = params.permit(:id, :employer_profile_id, :active_year, :plan_year_id)
     id = id_params[:employer_profile_id] || id_params[:id]
     @employer_profile = EmployerProfile.find(id)
+
   end
 
   def generate_carriers_and_plans
@@ -303,10 +341,13 @@ class Employers::PlanYearsController < ApplicationController
     plan_year_params = params.require(:plan_year).permit(
       :start_on, :end_on, :fte_count, :pte_count, :msp_count,
       :open_enrollment_start_on, :open_enrollment_end_on,
-      :benefit_groups_attributes => [ :id, :title, :reference_plan_id, :effective_on_offset,
-                                      :carrier_for_elected_plan, :metal_level_for_elected_plan,
-                                      :plan_option_kind, :employer_max_amt_in_cents, :_destroy,
+      :benefit_groups_attributes => [ :id, :title, :reference_plan_id, :dental_reference_plan_id, :effective_on_offset,
+                                      :carrier_for_elected_plan, :carrier_for_elected_dental_plan, :metal_level_for_elected_plan,
+                                      :plan_option_kind, :dental_plan_option_kind, :employer_max_amt_in_cents, :_destroy,
                                       :relationship_benefits_attributes => [
+                                        :id, :relationship, :premium_pct, :employer_max_amt, :offered, :_destroy
+                                      ],
+                                      :dental_relationship_benefits_attributes => [
                                         :id, :relationship, :premium_pct, :employer_max_amt, :offered, :_destroy
                                       ]
     ]

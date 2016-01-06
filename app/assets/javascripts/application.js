@@ -205,8 +205,9 @@ function getCarrierPlans(ep, ci) {
         });
       }
 
-      if ( referenceplanselections.length != $('.benefit-group-fields').length ) {
-        validatedreferenceplanselections = false
+      if ( referenceplanselections.length != $('.benefit-group-fields').length * 2) {
+        $('.interaction-click-control-create-plan-year').attr('data-original-title', 'Each benefit group is required to have a reference plan selection before it can be saved');
+        validatedreferenceplanselections = false;
         validated = false;
 
       } else {
@@ -847,6 +848,25 @@ $(document).on('change', "#plan_year_start_on", function() {
       url: target_url
     });
   };
+
+  // get dental plan carrier names
+  var dental_target_url = $('a#generate-dental-carriers-and-plans').attr('href');
+  var plan_year_id = $('a#generate-dental-carriers-and-plans').data('planYearId');
+  // assign fake location_id that will be overridden by js
+  var location_id = $('.benefit-group-fields:last').attr('id');
+  var active_year = $(this).val().substr(0,4);
+  $.ajax({
+    type: "GET",
+    data:{
+      active_year: active_year,
+      plan_year_id: plan_year_id,
+      location_id: location_id
+    },
+    url: dental_target_url
+
+  });
+
+
 });
 
 $(document).on('change', "input#jq_datepicker_ignore_plan_year_open_enrollment_start_on", function() {
