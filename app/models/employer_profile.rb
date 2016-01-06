@@ -368,7 +368,7 @@ class EmployerProfile
 
     # Admin capability to reset an Employer to applicant state
     event :revert_application, :after => :record_transition do
-      transitions from: [:registered, :eligible, :ineligible, :suspended, :binder_paid, :enrolled], to: :applicant
+      transitions from: [:registered, :eligible, :ineligible, :suspended, :binder_paid, :enrolled, :applicant], to: :applicant
     end
 
   end
