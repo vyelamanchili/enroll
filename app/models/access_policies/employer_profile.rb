@@ -10,7 +10,7 @@ module AccessPolicies
 
     def authorize_show(employer, controller)
       person = user.person
-      unless person = user.person
+      unless person
         log("AccessPolicies #3736 user:#{user.email}", {:severity => "error"})
         controller.redirect_to_new
         return
