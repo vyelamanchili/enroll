@@ -2,6 +2,8 @@ module Queries
   class PolicyAggregationPipeline
     include QueryHelpers
 
+    attr_reader :pipeline
+
     def initialize
       @pipeline = base_pipeline
     end
@@ -9,7 +11,9 @@ module Queries
     def base_pipeline
       [
         { "$unwind" => "$households"},
-        { "$unwind" => "$households.hbx_enrollments"}
+        { "$unwind" => "$households.hbx_enrollments"},
+        { "$match" => {"households.hbx_enrollments" => {"$ne" => nil}}},
+        { "$match" => {"households.hbx_enrollments.hbx_enrollment_members" => {"$ne" => nil}}}
       ]
     end
 
@@ -18,33 +22,11 @@ module Queries
     end
 
     def evaluate
-      Family.collection.raw_aggregate(@pipeline)
+      Family.collection.aggregate(@pipeline)
     end
 
     def count
       list_of_hbx_ids.count
-    end
-
-    def denormalize
-      add({
-        "$project" => {
-          "_id" => "$households.hbx_enrollments.hbx_id",
-          "policy_purchased_at" => { 
-            "$dateToString" => {"format" => "%Y-%m-%d %H:%M:S",
-              "date" => {"$ifNull" => ["$households.hbx_enrollments.created_at", "$households.hbx_enrollments.submitted_at"] }}},
-          "policy_purchased_on" => {
-            "$dateToString" => {"format" => "%Y-%m-%d",
-                                "date" => { "$ifNull" => ["$households.hbx_enrollments.created_at", "$households.hbx_enrollments.submitted_at"] }
-          }
-          },
-          "policy_effective_on" => {
-            "$dateToString" => {"format" => "%Y-%m-%d",
-            "date" => "$households.hbx_enrollments.effective_on"}},
-          "enrollee_count" => {"$size" => {"$ifNull" => ["$households.hbx_enrollments.hbx_enrollment_members", []]}},
-          "market" => {"$cond" => ["$households.hbx_enrollments.consumer_role_id","SHOP","IVL"]},
-          "plan_id" => "$households.hbx_enrollments.plan_id"
-        }})
-      self
     end
 
     def open_enrollment
@@ -207,8 +189,8 @@ module Queries
       self
     end
 
-    def eliminate_family_duplicates
-      flow = ((
+    def filter_criteria_expression
+        project_property("policy_start_on", "$households.hbx_enrollments.effective_on") +
         project_property("family_created_at", "$created_at") +
         project_property("policy_purchased_at", { "$ifNull" => ["$households.hbx_enrollments.created_at", "$households.hbx_enrollments.submitted_at"] }) +
         project_property("policy_purchased_on", {
@@ -220,19 +202,63 @@ module Queries
         project_property("aasm_state", "$households.hbx_enrollments.aasm_state") +
         project_property("hbx_id", "$households.hbx_enrollments.hbx_id") +
         project_property("coverage_kind", "$households.hbx_enrollments.coverage_kind") +
-        project_property("family_id", "$_id")
-      ) >>
-      sort_on({"policy_purchased_at" => 1}) >>
-      group_by(
-        {"family_id" => "$family_id", "coverage_kind" => "$coverage_kind"},
-        last("policy_purchased_at") +
-        last("policy_purchased_on") +
-        last("hbx_id") +
-        last("plan_id") +
-        last("aasm_state") +
-        last("enrollment_kind") +
-        last("family_created_at")
-      ))
+        project_property("family_id", "$_id") +
+        rp_ids_expression
+    end
+
+    def rp_ids_expression
+      project_property(
+        "rp_ids",
+        { "$cond" =>
+          [          
+              {"$anyElementTrue" => {"$map" => {
+                 "input" => "$households.hbx_enrollments.hbx_enrollment_members",
+                 "as" => "en_member",
+                 "in" => {"$eq" => ["$$en_member.is_subscriber", true]}
+               }}},
+               nil,
+               {"$map" => {
+                 "input" => "$households.hbx_enrollments.hbx_enrollment_members",
+                 "as" => "en_member",
+                 "in" => "$$en_member.applicant_id"
+               }}
+          ]
+      }
+      )
+
+    end
+
+    def denormalize
+      add(denormalized_properties)
+      add({"$out" => "policy_statistics"})
+    end
+
+    def denormalized_properties
+      filter_criteria_expression + 
+        project_property("_id", "$households.hbx_enrollments.hbx_id")  +
+        project_property("consumer_role_id", "$households.hbx_enrollments.consumer_role_id") +
+        project_property("benefit_group_id", "$households.hbx_enrollments.benefit_group_id") +
+        project_property("benefit_group_assignment_id", "$households.hbx_enrollments.benefit_group_assignment_id")
+    end
+
+    def expand_filter_criteria
+      add(filter_criteria_expression)
+    end
+
+    def eliminate_family_duplicates
+      flow = (
+        filter_criteria_expression >>
+        sort_on({"policy_purchased_at" => 1}) >>
+        group_by(
+          {"family_id" => "$family_id", "coverage_kind" => "$coverage_kind", "rp_ids" => "$rp_ids", "policy_start_on" => "$policy_start_on"},
+          last("policy_purchased_at") +
+          last("policy_purchased_on") +
+          last("hbx_id") +
+          last("plan_id") +
+          last("aasm_state") +
+          last("enrollment_kind") +
+          last("family_created_at")
+        ))
       @pipeline = @pipeline + flow.to_pipeline
       self
     end

@@ -29,5 +29,9 @@ module Queries
     def expr(expr)
       ::Queries::PipelineExpression.new(expr)
     end
+
+    def unwind(expr)
+      ::Queries::UnwindExpression.new(expr)
+    end
   end
 end
