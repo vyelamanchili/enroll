@@ -116,14 +116,15 @@ class HbxEnrollment
   scope :enrolled,            ->{ where(:aasm_state.in => ENROLLED_STATUSES ) }
   scope :renewing,            ->{ where(:aasm_state.in => RENEWAL_STATUSES )}
   scope :waived,              ->{ where(:aasm_state.in => ["inactive", "renewing_waived"] )}
-  scope :cancel_eligible,     ->{ where(:aasm_state.in => ["coverage_selected","renewing_coverage_selected"] )}
+  scope :cancel_eligible,     ->{ where(:aasm_state.in => ["coverage_selected","renewing_coverage_selected","coverage_enrolled"] )}
   scope :changing,            ->{ where(changing: true) }
   scope :with_in,             ->(time_limit){ where(:created_at.gte => time_limit) }
   scope :shop_market,         ->{ where(:kind => "employer_sponsored") }
   scope :individual_market,   ->{ where(:kind.ne => "employer_sponsored") }
 
   scope :canceled, -> { where(:aasm_state.in => CANCELED_STATUSES) }
-  scope :terminated, -> { where(:aasm_state.in => TERMINATED_STATUSES, :terminated_on.gte => TimeKeeper.date_of_record.beginning_of_day) }
+  #scope :terminated, -> { where(:aasm_state.in => TERMINATED_STATUSES, :terminated_on.gte => TimeKeeper.date_of_record.beginning_of_day) }
+  scope :terminated, -> { where(:aasm_state.in => TERMINATED_STATUSES) }
   scope :show_enrollments, -> { any_of([enrolled.selector, renewing.selector, terminated.selector, canceled.selector]) }
   scope :with_plan, -> { where(:plan_id.ne => nil) }
 
@@ -158,7 +159,11 @@ class HbxEnrollment
   before_save :generate_hbx_id
 
   def generate_hbx_signature
-    self.enrollment_signature =  Digest::MD5.hexdigest(applicant_ids.sort.map(&:to_s).join)
+    if self.subscriber
+      self.enrollment_signature = Digest::MD5.hexdigest(self.subscriber.applicant_id.to_s)
+    elsif self.subscriber.nil?
+      self.enrollment_signature =  Digest::MD5.hexdigest(applicant_ids.sort.map(&:to_s).join)
+    end
   end
 
 
@@ -263,12 +268,21 @@ class HbxEnrollment
 
       p.update_attributes(enrollment_signature: p.generate_hbx_signature) if !p.enrollment_signature.present?
 
-      if (p.enrollment_signature == self.enrollment_signature && p.plan.carrier_profile_id == self.plan.carrier_profile_id && p.kind != "employer_sponsored" && self.effective_on == p.effective_on) || p.kind == "employer_sponsored"
-        p.cancel_coverage! if p.may_cancel_coverage?
-        p.update_current(terminated_on: self.effective_on)
+      if (p.enrollment_signature == self.enrollment_signature && p.plan.carrier_profile_id == self.plan.carrier_profile_id && p.kind != "employer_sponsored" && TimeKeeper.date_of_record < p.effective_on) || p.kind == "employer_sponsored"
+        if p.may_cancel_coverage?
+          p.cancel_coverage!
+          p.update_current(terminated_on: p.effective_on)
+        end
+      elsif p.enrollment_signature == self.enrollment_signature && p.plan.carrier_profile_id == self.plan.carrier_profile_id && p.kind != "employer_sponsored" && TimeKeeper.date_of_record >= p.effective_on
+        if p.may_terminate_coverage?
+          term_date = self.effective_on - 1
+          term_date = TimeKeeper.date_of_record + 14 if (TimeKeeper.date_of_record + 14) > term_date
+
+          p.terminate_coverage
+          p.update_current(terminated_on: term_date)
+        end
       end
     end
-
   end
 
   def propogate_selection
