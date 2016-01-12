@@ -60,21 +60,6 @@
           </div>
 
           <br>
-
-          <div id="coverage_kinds" class='row no-buffer'>
-            <div class="col-md-3 col-lg-3 col-sm-6">
-              <strong>Coverage Type: </strong>
-            </div>
-            <div class="col-md-3 col-lg-3 col-sm-6">
-              <%= radio_button_tag 'coverage_kind', 'health', true, id: 'coverage_kind_health' %>
-              <label for="coverage_kind_health">Health</label>
-            </div>
-
-            <div class="col-md-3 col-lg-3 col-sm-6">
-              <%= radio_button_tag 'coverage_kind', 'dental', false, id: 'coverage_kind_dental' %>
-              <label for="coverage_kind_dental">Dental</label>
-            </div>
-            
           </div>
           <% if can_shop_both_markets?(@person) %>
             <div id="market_kinds" class='row no-buffer'>
