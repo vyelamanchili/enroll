@@ -161,7 +161,9 @@ class Insured::FamiliesController < FamiliesController
     begin
       raise if @person.nil?
     rescue => e
-      message = "no person in init_qualifying_life_events"
+      message = "#4379 no person in init_qualifying_life_events "
+      message += " currentuser: #{current_user.try(:email)}; params: #{params.to_s}; "
+      message += "url: #{request.original_url}; "
       message = message + "stacktrace: #{e.backtrace}"
       log(message, {:severity => "error"})
       raise e
