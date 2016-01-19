@@ -4,7 +4,7 @@ module ApplicationHelper
     (a_tab == current_tab) ? raw(" class=\"active\"") : ""
   end
 
-  def current_cost(plan_cost, ehb=0, hbx_enrollment=nil, source=nil)
+  def current_cost(plan_cost, ehb=0, hbx_enrollment=nil, source=nil, can_use_aptc=true)
     # source is account or shopping
     if source == 'account' and hbx_enrollment.present? and hbx_enrollment.try(:applied_aptc_amount).to_f > 0
       if hbx_enrollment.coverage_kind == 'health'
@@ -14,7 +14,7 @@ module ApplicationHelper
       end
     end
 
-    if session['elected_aptc'].present? and session['max_aptc'].present?
+    if session['elected_aptc'].present? and session['max_aptc'].present? and can_use_aptc
       aptc_amount = session['elected_aptc'].to_f
       ehb_premium = plan_cost * ehb
       cost = plan_cost - [ehb_premium, aptc_amount].min
@@ -499,5 +499,17 @@ module ApplicationHelper
     direction = filter_param == sort_filter && sort_direction == 'asc' ? 'desc' : 'asc'
     style = direction if style == 'admin_docs'
     link_to title, consumer_role_status_documents_path(:sort => filter_param, :direction => direction), remote: true, class: style
+  end
+
+  def docs_waiting_for_review
+    Person.unverified_persons.in('consumer_role.vlp_documents.status':['downloaded', 'in review']).count
+  end
+
+  def missing_docs
+    Person.unverified_persons.where('consumer_role.vlp_documents.status': 'not submitted').count
+  end
+
+  def all_unverified
+    number_with_delimiter(@unverified_persons.count)
   end
 end
