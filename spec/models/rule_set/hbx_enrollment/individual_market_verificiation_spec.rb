@@ -2,7 +2,8 @@ require "rails_helper"
 
 describe RuleSet::HbxEnrollment::IndividualMarketVerification do
   subject { RuleSet::HbxEnrollment::IndividualMarketVerification.new(enrollment) }
-  let(:enrollment) { instance_double(HbxEnrollment, :affected_by_verifications_made_today? => is_currently_active, :benefit_sponsored? => is_shop_enrollment) }
+  let(:enrollment) { instance_double(HbxEnrollment, :affected_by_verifications_made_today? => is_currently_active,
+                                     :benefit_sponsored? => is_shop_enrollment, :coverage_terminated? => false) }
   let(:is_currently_active) { true }
   let(:is_shop_enrollment) { false }
 
@@ -19,6 +20,15 @@ describe RuleSet::HbxEnrollment::IndividualMarketVerification do
     it "should not be applicable" do
       expect(subject.applicable?).to eq false
     end
+
+    context "enrollment.coverage_terminated is true" do
+      before do
+        allow(enrollment).to receive(:coverage_terminated?).and_return(true)
+      end
+      it "should not be applicable" do
+        expect(subject.applicable?).to eq false
+      end
+    end
   end
 
   describe "for an active individual policy" do
@@ -29,6 +39,5 @@ describe RuleSet::HbxEnrollment::IndividualMarketVerification do
     it "should be applicable" do
       expect(subject.applicable?).to eq true
     end
-
   end
 end
