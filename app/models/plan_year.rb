@@ -61,6 +61,8 @@ class PlanYear
     self.employer_profile.plan_years.published_plan_years_within_date_range(self.start_on, self.end_on)
   end
 
+  scope :by_date_range,     ->(from, to) { where(:"start_on".gte => from, :"start_on".lte => to) }
+
   def parent
     raise "undefined parent employer_profile" unless employer_profile?
     self.employer_profile
@@ -488,6 +490,13 @@ class PlanYear
     state :ineligible     # Application is non-compliant for enrollment
     state :expired        # Non-published plans are expired following their end on date
 
+    event :activate, :after => :record_transition do
+      transitions from: [:published, :enrolling, :enrolled, :renewing_published, :renewing_enrolling, :renewing_enrolled],  to: :active,  :guard  => :can_be_activated?
+    end
+
+    event :expire, :after => :record_transition do
+      transitions from: [:published, :enrolling, :enrolled, :active],  to: :expired,  :guard  => :can_be_expired?
+    end
 
     # Time-based transitions: Change enrollment state, in-force plan year and clean house on any plan year applications from prior year
     event :advance_date, :after => :record_transition do
@@ -573,7 +582,7 @@ class PlanYear
 
     # Admin ability to accept application and successfully complete enrollment
     event :enroll, :after => :record_transition do
-      transitions from: [:published, :enrolling], to: :enrolled
+      transitions from: [:published, :enrolling, :renewing_published], to: :enrolled
     end
 
     # Admin ability to reset renewing plan year application
@@ -639,6 +648,22 @@ private
     end
 
     valid
+  end
+
+  def can_be_expired?
+    if PUBLISHED.include?(aasm_state) && TimeKeeper.date_of_record >= end_on
+      true
+    else
+      false
+    end
+  end
+
+  def can_be_activated?
+    if (PUBLISHED + RENEWING_PUBLISHED_STATE).include?(aasm_state) && TimeKeeper.date_of_record >= start_on
+      true
+    else
+      false
+    end
   end
 
   def is_event_date_valid?
