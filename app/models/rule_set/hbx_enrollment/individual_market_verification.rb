@@ -8,6 +8,7 @@ module RuleSet
       end
 
       def applicable?
+        return false if hbx_enrollment.coverage_terminated?
         hbx_enrollment.affected_by_verifications_made_today? && (!hbx_enrollment.benefit_sponsored?)
       end
 
