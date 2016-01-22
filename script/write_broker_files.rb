@@ -20,7 +20,7 @@ ConnectionSlug = Struct.new(:broker_npn) do
   end
 end
 
-npn_list = Person.where("broker_role" => {"$exists" => true}).map do |pers|
+npn_list = Person.where("broker_role.aasm_state" => "active").map do |pers|
   pers.broker_role.npn
 end
 
