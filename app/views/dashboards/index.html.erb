@@ -1,13 +1,66 @@
     <h1 class="page-header">Dashboard</h1>
 
+<script type="text/javascript">
+  $(function () { 
+      $('#dashboard_chart_1').highcharts({
+          chart: {
+              type: 'bar'
+          },
+          title: {
+              text: 'Fruit Consumption'
+          },
+          xAxis: {
+              categories: ['Apples', 'Bananas', 'Oranges']
+          },
+          yAxis: {
+              title: {
+                  text: 'Fruit eaten'
+              }
+          },
+          series: [{
+              name: 'Jane',
+              data: [1, 0, 4]
+          }, {
+              name: 'John',
+              data: [5, 7, 3]
+          }]
+      });
+  });
+  $(function () { 
+      $('#dashboard_chart_2').highcharts({
+          chart: {
+              type: 'bar'
+          },
+          title: {
+              text: 'Fruit Consumption'
+          },
+          xAxis: {
+              categories: ['Apples', 'Bananas', 'Oranges']
+          },
+          yAxis: {
+              title: {
+                  text: 'Fruit eaten'
+              }
+          },
+          series: [{
+              name: 'Jane',
+              data: [1, 0, 4]
+          }, {
+              name: 'John',
+              data: [5, 7, 3]
+          }]
+      });
+  });
+</script>
+
     <div class="row ">
-      <div class="col-xs-6 col-sm-3 col-md-6 ">
-        <img src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" width="100%" class="img-responsive" alt="Generic placeholder thumbnail">
+      <div class="col-xs-6 col-sm-3 col-md-6">
+        <div id="dashboard_chart_1" style: "height:400px"> </div>
         <h4>Enrollments</h4>
         <span class="text-muted">1D | 1W | 1M | 1Y </span>
       </div>
-      <div class="col-xs-6 col-sm-3 col-md-6 ">
-        <img src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" width="100%" class="img-responsive" alt="Generic placeholder thumbnail">
+      <div class="col-xs-6 col-sm-3 col-md-6">
+        <div id="dashboard_chart_2" style: "height:400px"> </div>
         <h4>System</h4>
         <span class="text-muted">1D | 1W | 1M | 1Y </span>
       </div>

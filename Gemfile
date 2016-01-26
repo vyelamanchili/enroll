@@ -27,7 +27,7 @@ gem 'turbolinks'
 gem 'jbuilder', '~> 2.0'
 
 # JS graph API
-# gem 'highcharts-rails', '~> 4.1', '>= 4.1.9'
+gem 'highcharts-rails', '~> 4.1', '>= 4.1.9'
 
 # bundle exec rake doc:rails generates the API under doc/api.
 gem 'sdoc', '~> 0.4.0', group: :doc
