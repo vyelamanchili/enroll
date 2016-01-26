@@ -12,6 +12,14 @@ module Analytics
       rand(0.0..1.0) < probability
     end
 
+    ## Highchart DSL
+    # chart: {type: "bar"},
+    # title: {text: "taxonomy"},
+    # xAxis: {categories: ['kingdom', 'phylum', 'class', 'order', 'genus', 'species']},
+    # yAxis: {title: {text: 'Biology'}},
+    # series: [{name: "foo", data: [0, 1, 2]}, {name: "bar", data: [7, 8, 9]}]
+
+
     def self.topic_count_daily(topic: nil, start_on: DCHBX_EPOCH, end_on: TimeKeeper.date_of_record.end_of_day, site: "dchbx")
       Analytics::Dimensions::Daily.where(
                                             site:  site,
