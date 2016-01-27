@@ -5,14 +5,15 @@
                 type: 'bar'
             },
             title: {
-              text: "Report for <%= @type %>"
+              text: "<%= @title %>"
             },
             xAxis: {
                 categories: ['Event']
             },
             yAxis: {
+               minTickInterval: 1,
                 title: {
-                    text: 'Amount'
+                    text: 'Count'
                 }
             },
             series: <%= raw @reports_for_chart.to_json %>
@@ -83,7 +84,7 @@
           <tr>
             <td><%= report.date %></td>
             <td><%= report.site %></td>
-            <td><%= report.topic %></td>
+            <td><%= report.topic.humanize %></td>
             <td><%= report.title %></td>
             <td><%= report.amount %></td>
           </tr>
