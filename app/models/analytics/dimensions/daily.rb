@@ -30,6 +30,12 @@ module Analytics
         self
       end
 
+      def amount
+        (0..23).reduce(0) do |sum, k|
+          sum + hours_of_day.public_send("h#{k}")
+        end
+      end
+
     private
       def pre_allocate_document
         self.build_hours_of_day unless hours_of_day.present?

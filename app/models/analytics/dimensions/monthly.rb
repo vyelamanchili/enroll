@@ -62,6 +62,12 @@ module Analytics
         (1..31).map { |i| eval("d" + i.to_s) }
       end
 
+      def amount
+        (1..31).reduce(0) do |sum, k|
+          sum + self.public_send("d#{k}")
+        end
+      end
+
     private
       def pre_allocate_document
         self.month = date.month

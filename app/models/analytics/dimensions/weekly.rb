@@ -31,6 +31,12 @@ module Analytics
         self
       end
 
+      def amount
+        (1..7).reduce(0) do |sum, k|
+          sum + self.public_send("d#{k}")
+        end
+      end
+
     private
       def pre_allocate_document
         if week.blank?
