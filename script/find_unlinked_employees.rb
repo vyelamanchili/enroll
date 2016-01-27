@@ -33,7 +33,7 @@ CSV.open("unlinked_employees.csv", "w") do |csv|
 			csv << [email, first_name, last_name, hbx_id, employer_name, current_state]
 		end
 		rescue Exception=>e
-			error_log.puts("#{employee_person} - #{e.message}")
+			error_log.puts("#{employee_person.inspect} - #{e.message}")
 		end
 	end
 end
