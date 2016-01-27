@@ -44,13 +44,14 @@ class PlanYear
   scope :renewing_published_state, ->{ any_in(aasm_state: RENEWING_PUBLISHED_STATE) }
   scope :renewing,          ->{ any_in(aasm_state: RENEWING) }
 
-  scope :published_plan_years_within_date_range, ->(start_on_date, end_on_date) {
+  scope :by_date_range,     ->(begin_on, end_on) { where(:"start_on".gte => begin_on, :"start_on".lte => end_on) }
+  scope :published_plan_years_within_date_range, ->(begin_on, end_on) {
     where(
       "$and" => [
         {:aasm_state.in => PUBLISHED },
         {"$or" => [
-          { :start_on => {"$gte" => start_on_date, "$lte" => end_on_date }},
-          { :end_on => {"$gte" => start_on_date, "$lte" => end_on_date }}
+          { :start_on => {"$gte" => begin_on, "$lte" => end_on }},
+          { :end_on => {"$gte" => begin_on, "$lte" => end_on }}
         ]
       }
     ]
@@ -60,8 +61,6 @@ class PlanYear
   def overlapping_published_plan_years
     self.employer_profile.plan_years.published_plan_years_within_date_range(self.start_on, self.end_on)
   end
-
-  scope :by_date_range,     ->(from, to) { where(:"start_on".gte => from, :"start_on".lte => to) }
 
   def parent
     raise "undefined parent employer_profile" unless employer_profile?
