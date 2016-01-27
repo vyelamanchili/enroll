@@ -622,4 +622,31 @@ describe '.search_person' do
       expect(subject.search_person(verified_family_member)).to eq nil
     end
   end
+
+  describe "build_or_update_tax_household_from_primary" do
+    context "Failure to update tax household" do
+
+      let(:active_household) { double() }
+      let(:primary_person) {double()}
+      let(:verified_primary_family_member) {double()}
+      let(:active_verified_household) {double()}
+
+      before do
+        allow(active_household).to receive(:build_or_update_tax_household_from_primary).with(verified_primary_family_member,
+                                           primary_person, active_verified_household).and_raise("Failure to update tax household")
+      end
+
+      it "should log a message" do
+        expect(subject).to receive(:log) do |msg, severity|
+          expect(severity[:severity]).to eq('error')
+          expect(msg[:message]).to match('Failure to update tax household')
+        end
+        expect { subject.instance_eval{build_or_update_tax_household_from_primary("active_household", "verified_primary_family_member", "primary_person", "active_verified_household")} }.to raise_exception
+      end
+
+      it "should raise 'Failure to update tax household'" do
+        expect { build_or_update_tax_household_from_primary(active_household, verified_primary_family_member, primary_person, active_verified_household) }.to raise_exception
+      end
+    end
+  end
 end

@@ -52,11 +52,9 @@ module Subscribers
       family.save!
       throw(:processing_issue, "ERROR: Integrated case id does not match existing family for xml") unless ecase_id_valid?(family, verified_family)
       family.e_case_id = verified_family.integrated_case_id if family.e_case_id.blank? || (family.e_case_id.include? "curam_landing")
-      begin
-        active_household.build_or_update_tax_household_from_primary(verified_primary_family_member, primary_person, active_verified_household)
-      rescue
-        throw(:processing_issue, "Failure to update tax household")
-      end
+
+      build_or_update_tax_household_from_primary(active_household, verified_primary_family_member, primary_person, active_verified_household)
+
       update_vlp_for_consumer_role(primary_person.consumer_role, verified_primary_family_member)
       begin
         new_dependents.each do |p|
@@ -191,6 +189,19 @@ module Subscribers
           :last_name => last_name_regex,
           :first_name => first_name_regex
         }).first
+      end
+    end
+
+    def build_or_update_tax_household_from_primary(active_household, verified_primary_family_member, primary_person, active_verified_household)
+      begin
+        active_household.build_or_update_tax_household_from_primary(verified_primary_family_member, primary_person, active_verified_household)
+      rescue Exception => e
+        message = {}
+        message[:message] = 'Failure to update tax household'
+        message[:error_message] = e.message
+        message[:error_backtrace] = e.backtrace
+        log(message, :severity=>'error')
+        raise('Failure to update tax household')
       end
     end
   end
