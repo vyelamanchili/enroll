@@ -55,6 +55,31 @@ RSpec.describe Employers::EmployerProfilesController do
     end
   end
 
+  describe "GET edit" do
+    let(:user) { double(has_employer_staff_role?: true, has_broker_agency_staff_role?: false, has_hbx_staff_role?: false, email: 'x@y.com')}
+    let(:employer_profile1) { FactoryGirl.create(:employer_profile)}
+    let(:current_user) {FactoryGirl.create(:user)}
+    let(:person) {FactoryGirl.create(:person)}
+    it "returns success if organization is correct" do
+      allow(user).to receive(:person).and_return(person)
+      sign_in(user)
+      get :edit, id: employer_profile1.organization.id
+      expect(response).to have_http_status(:success)
+    end
+
+    it "redirects and logs if organization id is wrong" do
+      allow(user).to receive(:person).and_return(person)
+      sign_in(user)
+      expect(subject).to receive(:log)  do |msg, severity|
+        expect(msg).to match /3672/
+        expect(severity[:severity]).to eq('error')
+      end
+      get :edit, id: person.id
+      expect(response).to have_http_status(:redirect)
+    end
+
+  end
+
   describe "REDIRECT to my account if employer staff role present" do
     let(:user) { double("user")}
     let(:person) { double(:employer_staff_roles => [double("person", :employer_profile_id => double)])}
@@ -553,7 +578,7 @@ RSpec.describe Employers::EmployerProfilesController do
       end
     end
 
-     context "given the company have managing staff" do
+    context "given the company have managing staff" do
       it "should render edit template" do
         allow(user).to receive(:save).and_return(true)
         sign_in(user)
@@ -568,6 +593,18 @@ RSpec.describe Employers::EmployerProfilesController do
       put :update, id: organization.id, first_name: "test", organization: organization_params
       expect(person.first_name).to eq "test"
       expect(response).to be_redirect
+    end
+    context "given the company does not have managing staff" do
+      let(:non_employer_user) { double("user", :has_hbx_staff_role? => false, :has_employer_staff_role? => false)}
+      it "should not update person info unless employer_staff_role" do
+        allow(user).to receive(:save).and_return(true)
+        sign_in(non_employer_user)
+        expect(Organization).to receive(:find)
+        put :update, id: organization.id, first_name: "test", organization: organization_params
+        expect(person.first_name).not_to eq "test"
+        expect(response).to be_redirect
+        expect(flash[:error]).to match 'You do not have permissions to update the details'
+      end
     end
   end
 
