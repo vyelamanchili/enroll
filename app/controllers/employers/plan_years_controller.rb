@@ -54,6 +54,11 @@ class Employers::PlanYearsController < ApplicationController
   end
 
   def reference_plan_summary
+    @details = params[:details]
+    @reference_plan_id = params[:ref_plan_id]
+    @start_on = params[:start_on]
+    @coverage_kind = params[:coverage_kind]
+    @hios_id = params[:hios_id]
     hios_id = [] << params[:hios_id]
     @qhps = Products::QhpCostShareVariance.find_qhp_cost_share_variances(hios_id.to_a, params[:start_on], params[:coverage_kind])
     @visit_types = params[:coverage_kind] == "health" ? Products::Qhp::VISIT_TYPES : Products::Qhp::DENTAL_VISIT_TYPES
@@ -161,11 +166,13 @@ class Employers::PlanYearsController < ApplicationController
   end
 
   def calc_offered_plan_contributions
+    @is_edit = params[:is_edit]
     @location_id = params[:location_id]
     @coverage_type = params[:coverage_type]
     params.merge!({ plan_year: { start_on: params[:start_on] }.merge(relationship_benefits) })
 
     @plan = Plan.find(params[:reference_plan_id])
+    @hios_id = @plan.hios_id
     @plan_year = ::Forms::PlanYearForm.build(@employer_profile, plan_year_params)
     @plan_year.benefit_groups[0].reference_plan = @plan
 
