@@ -1,5 +1,35 @@
 <h1 class="page-header">Dashboard</h1>
 
+<%= text_field_tag "date_range" %>
+
 <div id="report">
   <%= render 'report' %>
 </div>
+
+<script type="text/javascript">
+  $(document).ready(function(){
+    $('input[name="date_range"]').daterangepicker({
+      "startDate": moment().startOf('week').add(1, 'days'),
+      "endDate": moment().endOf('week').add(1, 'days'),
+      ranges: {
+        'Today': [moment(), moment()],
+        'This Week': [moment().startOf('week').add(1, 'days'), moment().endOf('week').add(1, 'days')],
+        'This Month': [moment().startOf('month'), moment().endOf('month')],
+        'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+      }
+    });
+
+    $('input[name="date_range"]').on('apply.daterangepicker', function(ev, picker){
+      if(picker == undefined) {
+        send_data = {}
+      } else {
+        send_data = {start_on: picker.startDate.format('MM/DD/YYYY'), end_on: picker.endDate.format('MM/DD/YYYY')}
+      }
+      $.ajax({
+        type: 'GET',
+        url: '<%= report_dashboards_path %>',
+        data: send_data,
+      })
+    });
+  })
+</script>

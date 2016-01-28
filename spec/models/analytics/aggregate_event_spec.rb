@@ -113,7 +113,7 @@ describe Analytics::AggregateEvent, type: :model, dbclean: :after_each do
     end
 
     it "should find all events" do
-      expect(Analytics::AggregateEvent.topic_count_monthly(topic: event_topic)).to eq []
+      expect(Analytics::AggregateEvent.topic_count_monthly(topic: event_topic).count).to eq Analytics::Dimensions::Monthly.count
     end
   end
 

@@ -31,6 +31,12 @@ module Analytics
         self
       end
 
+      def amount_for_drilldown
+        (1..7).map do |k|
+          ["d#{k}", self.public_send("d#{k}")]
+        end
+      end
+
       def amount
         (1..7).reduce(0) do |sum, k|
           sum + self.public_send("d#{k}")

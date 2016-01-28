@@ -7,6 +7,8 @@ Rails.application.routes.draw do
 
   resources :dashboards do
     get :report, on: :collection
+    get :live, on: :collection
+    get :data_for_live, on: :collection
   end
 
   namespace :users do

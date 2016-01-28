@@ -29,5 +29,8 @@ module Analytics
     field :h22, type: Integer, default: 0
     field :h23, type: Integer, default: 0
 
+    def sum
+      (0..23).map { |i| eval("h" + i.to_s) }
+    end
   end
 end

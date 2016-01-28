@@ -8,7 +8,7 @@
               text: "<%= @title %>"
             },
             xAxis: {
-                categories: ['Event']
+                type: 'category'
             },
             yAxis: {
                minTickInterval: 1,
@@ -16,33 +16,45 @@
                     text: 'Count'
                 }
             },
-            series: <%= raw @reports_for_chart.to_json %>
+            legend: {
+              enabled: false
+            },
+            series: [{
+              name: 'Date',
+              colorByPoint: true,
+              data: <%= raw @reports_for_chart.to_json %>
+            }],
         });
     });
     $(function () { 
-        $('#dashboard_chart_2').highcharts({
-            chart: {
-                type: 'bar'
-            },
-            title: {
-                text: 'Fruit Consumption'
-            },
-            xAxis: {
-                categories: ['Apples', 'Bananas', 'Oranges']
-            },
-            yAxis: {
-                title: {
-                    text: 'Fruit eaten'
-                }
-            },
-            series: [{
-                name: 'Jane',
-                data: [1, 0, 4]
-            }, {
-                name: 'John',
-                data: [5, 7, 3]
-            }]
-        });
+      $('#dashboard_chart_2').highcharts({
+        chart: {
+          type: 'bar'
+        },
+        title: {
+          text: "<%= @title %>"
+        },
+        xAxis: {
+          type: 'category'
+        },
+        yAxis: {
+          minTickInterval: 1,
+          title: {
+            text: 'Count'
+          }
+        },
+        legend: {
+          enabled: false
+        },
+        series: [{
+          name: 'Date',
+          colorByPoint: true,
+          data: <%= raw @reports_for_chart.to_json %>
+        }],
+        drilldown: {
+          series: <%= raw @reports_for_drilldown.to_json %>
+        }
+      });
     });
   </script>
   

@@ -1,0 +1,57 @@
+<h1 class="page-header">Live Report</h1>
+
+<div id="container" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+
+<script type="text/javascript">
+  $(document).ready(function() {
+    chart = new Highcharts.Chart({
+      chart: {
+        renderTo: 'container',
+        defaultSeriesType: 'spline',
+        events: {
+          load: requestData
+        }
+      },
+      title: {
+        text: 'Live data'
+      },
+      xAxis: {
+        type: 'datetime',
+        tickPixelInterval: 150,
+        maxZoom: 20 * 1000
+      },
+      yAxis: {
+        minTickInterval: 1,
+        title: {
+          text: 'Count',
+          margin: 80
+        }
+      },
+      series: [{
+        name: 'Data',
+        data: []
+      }]
+    });        
+  });
+
+  function requestData() {
+    $.ajax({
+      url: '<%= data_for_live_dashboards_path %>',
+      success: function(point) {
+        console.log(point);
+        var series = chart.series[0],
+        shift = series.data.length > 20; // shift if the series is 
+        // longer than 20
+        data = [(new Date()).getTime(), point[1]];
+        console.log(data);
+
+        // add the point
+        chart.series[0].addPoint(point, true, shift);
+
+        // call it again after one second
+        setTimeout(requestData, 2000);
+      },
+      cache: false
+    });
+  }
+</script>

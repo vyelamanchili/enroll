@@ -31,8 +31,8 @@
 //= require consumer_role
 //= require plan_year_selection
 //= require bootstrap-slider
-//= require highcharts
-//= require highcharts/highcharts-more
+//= require moment.min
+//= require daterangepicker
 //= require_tree .
 
 

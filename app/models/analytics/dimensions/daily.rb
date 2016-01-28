@@ -36,6 +36,12 @@ module Analytics
         end
       end
 
+      def amount_for_drilldown
+        (0..23).map do |k|
+          ["h#{k}", hours_of_day.public_send("h#{k}")]
+        end
+      end
+
     private
       def pre_allocate_document
         self.build_hours_of_day unless hours_of_day.present?
