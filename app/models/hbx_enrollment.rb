@@ -352,6 +352,21 @@ class HbxEnrollment
     @plan = Plan.find(self.plan_id) unless plan_id.blank?
   end
 
+  def broker_agency_account
+    return nil if is_shop?
+    return nil if family.broker_agency_accounts.empty?
+    family.broker_agency_accounts.select do |baa|
+      (baa.start_on < self.time_of_purchase) &&
+        ((baa.end_on.blank?) || (baa.end_on >= self.time_of_purchase))
+    end.first
+  end
+
+  def time_of_purchase
+    return submitted_at unless submitted_at.blank?
+    updated_at
+  end
+
+=begin
   def broker_agency_profile=(new_broker_agency_profile)
     raise ArgumentError.new("expected BrokerAgencyProfile") unless new_broker_agency_profile.is_a? BrokerAgencyProfile
     self.broker_agency_profile_id = new_broker_agency_profile._id
@@ -362,7 +377,7 @@ class HbxEnrollment
     return @broker_agency_profile if defined? @broker_agency_profile
     @broker_agency_profile = BrokerAgencyProfile.find(self.broker_agency_profile_id) unless broker_agency_profile_id.blank?
   end
-
+=end
   def has_broker_agency_profile?
     broker_agency_profile_id.present?
   end
@@ -803,7 +818,7 @@ class HbxEnrollment
     if is_shop?
       coverage_effective_date = nil
       if special_enrollment_period.present? && special_enrollment_period.contains?(TimeKeeper.date_of_record)
-        coverage_effective_date = hbx_enrollment.special_enrollment_period.effective_on
+        coverage_effective_date = special_enrollment_period.effective_on
       elsif employee_role.is_eligible_to_enroll_as_new_hire_on?(TimeKeeper.date_of_record)
         coverage_effective_date = employee_role.coverage_effective_on
       elsif benefit_group.is_open_enrollment?
