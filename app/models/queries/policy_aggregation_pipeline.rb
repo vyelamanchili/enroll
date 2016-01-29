@@ -203,7 +203,25 @@ module Queries
         project_property("hbx_id", "$households.hbx_enrollments.hbx_id") +
         project_property("coverage_kind", "$households.hbx_enrollments.coverage_kind") +
         project_property("family_id", "$_id") +
-        rp_ids_expression
+        rp_ids_expression +
+        state_transitions_expression
+    end
+
+    def state_transitions_expression
+      project_property(
+        "state_transitions",
+          { "$cond" =>
+            [
+              "$households.hbx_enrollment.workflow_state_transitions",
+              {"$map" => {
+                 "input" => "$households.hbx_enrollments.workflow_state_transitions",
+                 "as" => "state_trans",
+                 "in" => "$$state_trans.from_state"
+              }},
+              []
+            ]
+          } 
+      )
     end
 
     def rp_ids_expression
@@ -230,7 +248,7 @@ module Queries
 
     def denormalize
       add(denormalized_properties)
-      add({"$out" => "policy_statistics"})
+      add({"$out" => "report_sources_hbx_enrollment_statistics"})
     end
 
     def denormalized_properties
