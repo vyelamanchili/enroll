@@ -193,10 +193,13 @@ module Queries
         project_property("policy_start_on", "$households.hbx_enrollments.effective_on") +
         project_property("family_created_at", "$created_at") +
         project_property("policy_purchased_at", { "$ifNull" => ["$households.hbx_enrollments.created_at", "$households.hbx_enrollments.submitted_at"] }) +
+=begin
+        Not supported by mongo < 3.0!
         project_property("policy_purchased_on", {
           "$dateToString" => {"format" => "%Y-%m-%d",
                               "date" => { "$ifNull" => ["$households.hbx_enrollments.created_at", "$households.hbx_enrollments.submitted_at"] }
         }}) +
+=end
         project_property("plan_id", "$households.hbx_enrollments.plan_id") +
         project_property("enrollment_kind", "$households.hbx_enrollments.enrollment_kind") +
         project_property("aasm_state", "$households.hbx_enrollments.aasm_state") +

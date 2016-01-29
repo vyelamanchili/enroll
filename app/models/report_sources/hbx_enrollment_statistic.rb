@@ -5,7 +5,6 @@ module ReportSources
     field :policy_start_on, type: DateTime
     field :family_created_at, type: DateTime
     field :policy_purchased_at, type: DateTime
-    field :policy_purchased_on, type: String
     field :plan_id, type: BSON::ObjectId
     field :hbx_id, type: String
     field :enrollment_kind, type: String
