@@ -503,7 +503,7 @@ RSpec.describe Employers::EmployerProfilesController do
     it "should get employer_contact_email with empty" do
       sign_in(user)
       get :edit, id: organization.id
-      expect(assigns(:employer_contact_email)).to eq ''
+      expect(assigns(:employer_contact_email)).to eq nil
       expect(response).to have_http_status(:success)
       expect(response).to render_template("edit")
     end
