@@ -1,0 +1,48 @@
+<%= hidden_field_tag 'start_on', @start_on.to_s %>
+<div id="dashboard_chart_2" style: "height:400px"> </div>
+<h4>System</h4>
+<span class="text-muted">1D | 1W | 1M | 1Y </span>
+<script type="text/javascript">
+  $(function () { 
+    $('#dashboard_chart_2').highcharts({
+      chart: {
+        type: 'bar'
+      },
+      title: {
+        text: "<%= @title %>"
+      },
+      xAxis: {
+        categories: <%= raw @reports_for_drilldown_options.to_json %>
+    },
+    yAxis: {
+      minTickInterval: 1,
+      title: {
+        text: 'Count'
+      }
+    },
+    legend: {
+      enabled: false
+    },
+    series: <%= raw @reports_for_drilldown.to_json %>,
+    plotOptions: {
+      series: {
+        cursor: 'pointer',
+        point: {
+          events: {
+            click: function () {
+              console.log('Category: ' + this.category + ', value: ' + this.y + ', name: ' + this.series.name);
+              var send_data = {date: this.category, current: $("input#start_on").val()};
+              console.log(send_data);
+              $.ajax({
+                type: 'GET',
+                url: '<%= drilldown_dashboards_path %>',
+                data: send_data,
+              })
+            }
+          }
+        }
+      }
+    },
+    });
+  });
+</script>

@@ -58,6 +58,12 @@ module Analytics
         self
       end
 
+      def self.options
+        (1..31).map do |k|
+          "d#{k}"
+        end
+      end
+
       def sum
         (1..31).map { |i| eval("d" + i.to_s) }
       end

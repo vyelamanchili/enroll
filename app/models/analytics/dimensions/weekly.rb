@@ -31,6 +31,16 @@ module Analytics
         self
       end
 
+      def sum
+        (1..7).map { |i| eval("d" + i.to_s) }
+      end
+
+      def self.options
+        (1..7).map do |k|
+          "d#{k}"
+        end
+      end
+
       def amount_for_drilldown
         (1..7).map do |k|
           ["d#{k}", self.public_send("d#{k}")]

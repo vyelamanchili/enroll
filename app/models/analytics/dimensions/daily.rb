@@ -30,6 +30,18 @@ module Analytics
         self
       end
 
+      def self.options
+        (0..23).map do |k|
+          "h#{k}"
+        end
+      end
+
+      def sum
+        (0..23).map do |k|
+          hours_of_day.public_send("h#{k}")
+        end
+      end
+
       def amount
         (0..23).reduce(0) do |sum, k|
           sum + hours_of_day.public_send("h#{k}")

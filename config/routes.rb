@@ -9,6 +9,7 @@ Rails.application.routes.draw do
     get :report, on: :collection
     get :live, on: :collection
     get :data_for_live, on: :collection
+    get :drilldown, on: :collection
   end
 
   namespace :users do
