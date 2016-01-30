@@ -71,6 +71,18 @@ module Queries
       self
     end
 
+    def filter_to_shopping_completed
+      add({
+        "$match" => {
+          "households.hbx_enrollments.plan_id" => { "$ne" => nil},
+          "households.hbx_enrollments.aasm_state" => { "$nin" => [
+            "shopping", "inactive"
+          ]}
+        }
+      })
+      self
+    end
+
     def filter_to_active
       add({
         "$match" => {
