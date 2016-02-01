@@ -33,8 +33,8 @@
 //= require bootstrap-slider
 //= require moment.min
 //= require daterangepicker
-//= require highcharts
-//= require highcharts/highcharts-more
+//= require highstock
+//= require highstock/highcharts-more
 //= require highcharts/modules/exporting
 //= require_tree .
 

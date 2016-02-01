@@ -1,0 +1,28 @@
+<h1 class="page-header">Dashboard</h1>
+
+<div id="report">
+  <div id="container" style="height: 400px"></div>
+</div>
+
+<script type="text/javascript">
+  $(function () {
+    $.getJSON('https://www.highcharts.com/samples/data/jsonp.php?filename=aapl-v.json&callback=?', function (data) {
+      // create the chart
+      $('#container').highcharts('StockChart', {
+        chart: {
+          alignTicks: false
+        },
+
+        rangeSelector: {
+          selected: 1
+        },
+
+        title: {
+          text: '<%= @title %>'
+        },
+
+        series: <%= raw @reports_for_stock.to_json %>
+      });
+    });
+  });
+</script>
