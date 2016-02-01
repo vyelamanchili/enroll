@@ -1,7 +1,7 @@
 require "rails_helper"
 
 RSpec.describe "employers/employer_profiles/my_account/_home_tab.html.erb" do
-  context "employer profile dashboard" do
+  context "employer profile dashboard with current plan year" do
 
     let(:start_on){TimeKeeper.date_of_record.beginning_of_year}
     let(:end_on){TimeKeeper.date_of_record.end_of_year}
@@ -213,5 +213,23 @@ RSpec.describe "employers/employer_profiles/my_account/_home_tab.html.erb" do
         expect(rendered).to match(/.*#{bg.reference_plan.plan_type}.*/mi)
       end
     end
+  end
+
+  context "employer profile without current plan year" do
+    let(:employer_profile){ FactoryGirl.create(:employer_profile) }
+
+    before :each do
+      assign :employer_profile, employer_profile
+      render partial: "employers/employer_profiles/my_account/home_tab"
+    end
+
+    it "should not display employee enrollment information" do
+      expect(rendered).to_not match(/Employee Enrollments and Waivers/i)
+    end
+
+    it "should display a link to download employer guidance pdf" do
+      expect(rendered).to have_selector(".icon-left-download", text: /Download Step-by-Step Instructions/i)
+    end
+
   end
 end
