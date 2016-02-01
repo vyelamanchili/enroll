@@ -71,6 +71,18 @@ module Queries
       self
     end
 
+    def filter_to_shopping_completed
+      add({
+        "$match" => {
+          "households.hbx_enrollments.plan_id" => { "$ne" => nil},
+          "households.hbx_enrollments.aasm_state" => { "$nin" => [
+            "shopping", "inactive"
+          ]}
+        }
+      })
+      self
+    end
+
     def filter_to_active
       add({
         "$match" => {
@@ -193,17 +205,38 @@ module Queries
         project_property("policy_start_on", "$households.hbx_enrollments.effective_on") +
         project_property("family_created_at", "$created_at") +
         project_property("policy_purchased_at", { "$ifNull" => ["$households.hbx_enrollments.created_at", "$households.hbx_enrollments.submitted_at"] }) +
+=begin
+        Not supported by mongo < 3.0!
         project_property("policy_purchased_on", {
           "$dateToString" => {"format" => "%Y-%m-%d",
                               "date" => { "$ifNull" => ["$households.hbx_enrollments.created_at", "$households.hbx_enrollments.submitted_at"] }
         }}) +
+=end
         project_property("plan_id", "$households.hbx_enrollments.plan_id") +
         project_property("enrollment_kind", "$households.hbx_enrollments.enrollment_kind") +
         project_property("aasm_state", "$households.hbx_enrollments.aasm_state") +
         project_property("hbx_id", "$households.hbx_enrollments.hbx_id") +
         project_property("coverage_kind", "$households.hbx_enrollments.coverage_kind") +
         project_property("family_id", "$_id") +
-        rp_ids_expression
+        rp_ids_expression +
+        state_transitions_expression
+    end
+
+    def state_transitions_expression
+      project_property(
+        "state_transitions",
+          { "$cond" =>
+            [
+              "$households.hbx_enrollment.workflow_state_transitions",
+              {"$map" => {
+                 "input" => "$households.hbx_enrollments.workflow_state_transitions",
+                 "as" => "state_trans",
+                 "in" => "$$state_trans.from_state"
+              }},
+              []
+            ]
+          } 
+      )
     end
 
     def rp_ids_expression
@@ -230,7 +263,7 @@ module Queries
 
     def denormalize
       add(denormalized_properties)
-      add({"$out" => "policy_statistics"})
+      add({"$out" => "report_sources_hbx_enrollment_statistics"})
     end
 
     def denormalized_properties

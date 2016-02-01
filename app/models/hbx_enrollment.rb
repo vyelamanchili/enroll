@@ -155,20 +155,44 @@ class HbxEnrollment
     )
   end
 
-  def self.by_hbx_id(policy_hbx_id)
-    families = Family.with_enrollment_hbx_id(policy_hbx_id)
-    households = families.flat_map(&:households)
-    households.flat_map(&:hbx_enrollments).select do |hbxe|
-      hbxe.hbx_id == policy_hbx_id
-    end
-  end
+  class << self
 
-  def self.update_individual_eligibilities_for(consumer_role)
-    found_families = Family.find_all_by_person(consumer_role.person)
-    found_families.each do |ff|
-      ff.households.each do |hh|
-        hh.hbx_enrollments.active.each do |he|
-          he.evaluate_individual_market_eligiblity
+    def by_hbx_id(policy_hbx_id)
+      families = Family.with_enrollment_hbx_id(policy_hbx_id)
+      households = families.flat_map(&:households)
+      households.flat_map(&:hbx_enrollments).select do |hbxe|
+        hbxe.hbx_id == policy_hbx_id
+      end
+    end
+
+    def advance_day(new_date)
+      
+      # #FIXME Families with duplicate renewals
+      families_with_effective_renewals_as_of(new_date).each do |family|
+        family.enrollments.renewing.each do |hbx_enrollment|
+          if hbx_enrollment.effective_on <= new_date
+            if census_employee = hbx_enrollment.census_employee
+              if census_employee.renewal_benefit_group_assignment.may_select_coverage?            
+                census_employee.renewal_benefit_group_assignment.select_coverage!
+              end
+            end
+            hbx_enrollment.begin_coverage!
+          end
+        end
+      end
+    end
+
+    def families_with_effective_renewals_as_of(new_date)
+      Family.by_enrollment_shop_market.by_enrollment_renewing.where({ :"households.hbx_enrollments.effective_on".lte => new_date }).limit(10)
+    end
+
+    def update_individual_eligibilities_for(consumer_role)
+      found_families = Family.find_all_by_person(consumer_role.person)
+      found_families.each do |ff|
+        ff.households.each do |hh|
+          hh.hbx_enrollments.active.each do |he|
+            he.evaluate_individual_market_eligiblity
+          end
         end
       end
     end
@@ -352,22 +376,28 @@ class HbxEnrollment
     @plan = Plan.find(self.plan_id) unless plan_id.blank?
   end
 
+  def select_applicable_broker_account(broker_accounts)
+    last_broker_before_purchase = broker_accounts.select do |baa|
+      (baa.start_on < self.time_of_purchase)# &&
+    end.sort_by(&:start_on).last
+    return nil if last_broker_before_purchase.nil?
+    if  ((last_broker_before_purchase.end_on.blank?) || (last_broker_before_purchase.end_on >= self.time_of_purchase))
+      last_broker_before_purchase
+    else
+      nil
+    end
+  end
+
   def shop_broker_agency_account
     return nil if self.employer_profile.blank?
     return nil if self.employer_profile.broker_agency_accounts.empty?
-    self.employer_profile.broker_agency_accounts.select do |baa|
-      (baa.start_on < self.time_of_purchase) &&
-        ((baa.end_on.blank?) || (baa.end_on >= self.time_of_purchase))
-    end.first
+    select_applicable_broker_account(self.employer_profile.broker_agency_accounts)
   end
 
   def broker_agency_account
     return shop_broker_agency_account if is_shop?
     return nil if family.broker_agency_accounts.empty?
-    family.broker_agency_accounts.select do |baa|
-      (baa.start_on < self.time_of_purchase) &&
-        ((baa.end_on.blank?) || (baa.end_on >= self.time_of_purchase))
-    end.first
+    select_applicable_broker_account(family.broker_agency_accounts)
   end
 
   def time_of_purchase
@@ -732,6 +762,8 @@ class HbxEnrollment
     state :coverage_canceled      # coverage never took effect
     state :coverage_terminated    # coverage ended
 
+    state :coverage_expired
+
     state :inactive   # :after_enter inform census_employee
 
     state :auto_renewing
@@ -805,6 +837,28 @@ class HbxEnrollment
       transitions from: :coverage_selected, to: :unverified
       transitions from: :enrolled_contingent, to: :unverified
       transitions from: :coverage_enrolled, to: :unverified
+    end
+
+    event :begin_coverage, :after => :record_transition do
+      transitions from: [:auto_renewing, :renewing_coverage_selected, :renewing_transmitted_to_carrier, :renewing_coverage_enrolled, :coverage_selected, :transmitted_to_carrier, :coverage_renewed, :enrolled_contingent, :unverified], to: :coverage_enrolled
+      transitions from: :renewing_waived, to: :inactive
+    end
+
+    event :expire_coverage, :after => :record_transition do
+      transitions from: [:coverage_selected, :transmitted_to_carrier, :coverage_enrolled], to: :coverage_expired, :guard  => :can_be_expired?
+    end
+
+    event :cancel_coverage, :after => :record_transition do
+      transitions from: [:auto_renewing, :renewing_coverage_selected, :renewing_transmitted_to_carrier, :renewing_coverage_enrolled, :coverage_selected, :transmitted_to_carrier, :coverage_renewed, :enrolled_contingent, :unverified], to: :coverage_canceled
+      transitions from: :renewing_waived, to: :inactive 
+    end
+  end
+
+  def can_be_expired?
+    if benefit_group.present? && benefit_group.end_on <= TimeKeeper.date_of_record
+      true
+    else
+      false
     end
   end
 

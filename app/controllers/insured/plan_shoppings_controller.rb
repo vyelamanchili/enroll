@@ -25,7 +25,7 @@ class Insured::PlanShoppingsController < ApplicationController
       return
     end
 
-    get_aptc_info_from_session(hbx_enrollment)
+    get_aptc_info_from_session(plan_selection.hbx_enrollment)
     plan_selection.apply_aptc_if_needed(@shopping_tax_household, @elected_aptc, @max_aptc)
     previous_enrollment_id = session[:pre_hbx_enrollment_id]
     plan_selection.select_plan_and_deactivate_other_enrollments(previous_enrollment_id)
@@ -66,6 +66,11 @@ class Insured::PlanShoppingsController < ApplicationController
     set_consumer_bookmark_url(family_account_path)
     @plan = Plan.find(params.require(:plan_id))
     @enrollment = HbxEnrollment.find(params.require(:id))
+    
+    if @enrollment.is_special_enrollment?
+      sep_id = @enrollment.is_shop? ? @enrollment.family.earliest_effective_shop_sep.id : @enrollment.family.earliest_effective_ivl_sep.id
+      @enrollment.update_current(special_enrollment_period_id: sep_id)
+    end
 
     if @enrollment.is_shop?
       @benefit_group = @enrollment.benefit_group

@@ -781,8 +781,8 @@ describe HbxEnrollment, dbclean: :after_each do
       end
     end
      
-    context 'when roster update present' do
-      let(:census_employee) { FactoryGirl.create(:census_employee, first_name: 'John', last_name: 'Smith', dob: '1966-10-10'.to_date, ssn: '123456789', hired_on: middle_of_prev_year, created_at: middle_of_prev_year, updated_at: Date.new(calender_year, 5, 10)) }
+    context 'when roster create present' do
+      let(:census_employee) { FactoryGirl.create(:census_employee, first_name: 'John', last_name: 'Smith', dob: '1966-10-10'.to_date, ssn: '123456789', hired_on: middle_of_prev_year, created_at: Date.new(calender_year, 5, 10), updated_at: Date.new(calender_year, 5, 10)) }
 
       before do
         TimeKeeper.set_date_of_record_unprotected!(Date.new(calender_year, 5, 15))
@@ -1144,3 +1144,54 @@ end
 #     end
 #   end
 # end
+
+describe HbxEnrollment, "given a set of broker accounts" do
+  let(:submitted_at) { Time.mktime(2008, 12, 13, 12, 34, 00) }
+  subject { HbxEnrollment.new(:submitted_at => submitted_at) }
+  let(:broker_agency_account_1) { double(:start_on => start_on_1, :end_on => end_on_1) }
+  let(:broker_agency_account_2) { double(:start_on => start_on_2, :end_on => end_on_2) }
+
+  describe "with both accounts active before the purchase, and the second one unterminated" do
+    let(:start_on_1) { submitted_at - 12.days }
+    let(:start_on_2) { submitted_at - 5.days }
+    let(:end_on_1) { nil }
+    let(:end_on_2) { nil }
+
+    it "should be able to select the applicable broker" do
+      expect(subject.select_applicable_broker_account([broker_agency_account_1,broker_agency_account_2])).to eq broker_agency_account_2
+    end
+  end
+
+  describe "with both accounts active before the purchase, and the later one terminated" do
+    let(:start_on_1) { submitted_at - 12.days }
+    let(:start_on_2) { submitted_at - 5.days }
+    let(:end_on_1) { nil }
+    let(:end_on_2) { submitted_at - 2.days }
+
+    it "should have no applicable broker" do
+      expect(subject.select_applicable_broker_account([broker_agency_account_1,broker_agency_account_2])).to eq nil
+    end
+  end
+
+  describe "with one account active before the purchase, and the other active after" do
+    let(:start_on_1) { submitted_at - 12.days }
+    let(:start_on_2) { submitted_at + 5.days }
+    let(:end_on_1) { nil }
+    let(:end_on_2) { nil }
+
+    it "should be able to select the applicable broker" do
+      expect(subject.select_applicable_broker_account([broker_agency_account_1,broker_agency_account_2])).to eq broker_agency_account_1
+    end
+  end
+
+  describe "with one account active before the purchase and terminated before the purchase, and the other active after" do
+    let(:start_on_1) { submitted_at - 12.days }
+    let(:start_on_2) { submitted_at + 5.days }
+    let(:end_on_1) { submitted_at - 3.days }
+    let(:end_on_2) { nil }
+
+    it "should have no applicable broker" do
+      expect(subject.select_applicable_broker_account([broker_agency_account_1,broker_agency_account_2])).to eq nil
+    end
+  end
+end
