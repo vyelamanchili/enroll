@@ -34,6 +34,7 @@ CSV.open("unlinked_employees.csv", "w") do |csv|
 		end
 		rescue Exception=>e
 			error_log.puts("#{employee_person.inspect} - #{e.message}")
+			binding.pry
 		end
 	end
 end

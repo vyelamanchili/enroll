@@ -15,6 +15,7 @@ CSV.foreach(filename, headers: true) do |row|
       census_employee.save
     end
   rescue Exception=>e
-    puts e.message
+    puts "#{census_employee.inspect} - #{e.message}"
+    binding.pry
   end
 end
