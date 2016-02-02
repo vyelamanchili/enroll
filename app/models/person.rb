@@ -539,6 +539,47 @@ class Person
                          ).selector
                )
     end
+
+    def staff_for_employer(employer_profile)
+      self.where(:employer_staff_roles => {
+        '$elemMatch' => {
+            employer_profile_id: employer_profile.id,
+            is_active: true
+        }
+        })
+    end
+
+    # Adds employer staff role to person
+    # Returns status and message if failed
+    # Returns status and person if successful
+    def add_employer_staff_role(first_name, last_name, dob, email, employer_profile)
+      person = Person.where(first_name: /^#{first_name}$/i, last_name: /^#{last_name}$/i, dob: dob)
+
+      return false, 'Person count too high, please contact HBX Admin' if person.count > 1
+      return false, 'Person does not exist on the HBX Exchange' if person.count == 0
+
+      employer_staff_role = EmployerStaffRole.create(person: person.first, employer_profile_id: employer_profile._id)
+      employer_staff_role.save
+      return true, person.first
+    end
+
+    # Sets employer staff role to inactive
+    # Returns false if person not found
+    # Returns false if employer staff role not matches
+    # Returns true is role was marked inactive
+    def deactivate_employer_staff_role(person_id, employer_profile_id)
+      begin
+        person = Person.find(person_id)
+      rescue
+        return false, 'Person not found'
+      end
+      if role = person.employer_staff_roles.detect{|role| role.is_active && role.employer_profile_id.to_s == employer_profile_id.to_s}
+        role.update_attributes!({is_active: false})
+        return true, 'Employee Staff Role is inactive'
+      else
+        return false, 'No matching employer staff role'
+      end
+    end
   end
 
   # HACK
@@ -619,6 +660,8 @@ class Person
     agent = self.csr_role || self.assister_role || self.broker_role || self.hbx_staff_role
     !!agent
   end
+
+
 
   private
   def is_ssn_composition_correct?
