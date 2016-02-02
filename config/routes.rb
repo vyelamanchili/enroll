@@ -158,6 +158,7 @@ Rails.application.routes.draw do
     root 'employer_profiles#new'
 
     resources :premium_statements, :only => [:show]
+    resources :employer_staff_roles, :only => [:create, :destroy]
 
     #TODO REFACTOR
     resources :people do
