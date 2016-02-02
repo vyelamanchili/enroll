@@ -20,61 +20,95 @@ module Analytics
     # series: [{name: "foo", data: [0, 1, 2]}, {name: "bar", data: [7, 8, 9]}]
 
 
-    def self.topic_count_daily(topic: nil, start_on: DCHBX_EPOCH, end_on: TimeKeeper.date_of_record.end_of_day, site: "dchbx")
-      Analytics::Dimensions::Daily.where(
-                                            site:  site,
-                                            #topic: topic,
-                                            :date.gte => start_on,
-                                            :date.lte => end_on
-                                          ).sort(date: 1).to_a
+    def self.subjects_count_daily(subject: nil, begin_on: nil, end_on: nil)
+
+      # Calling without arguments will return all subjects for entire time period
+      subjects  ||= []
+      begin_on  ||= DCHBX_EPOCH
+      end_on    ||= TimeKeeper.date_of_record.end_of_day
+
+      if subjects.size == 0
+        criteria = Analytics::Dimensions::Daily.where(:date.gte => begin_on).
+                                                  and(:date.lte => end_on).
+                                                  sort(date: 1)
+      else
+        criteria = Analytics::Dimensions::Daily.any_in(:"metadata.subject" => subjects).
+                                                  and(:"metadata.date".gte => begin_on).
+                                                  and(:"metatdata.date".lte => end_on).
+                                                  sort(:"metadata.date" => 1)
+      end
     end
 
-    def self.topic_count_weekly(topic: nil, start_on: DCHBX_EPOCH, end_on: TimeKeeper.date_of_record.end_of_day, site: "dchbx")
-      Analytics::Dimensions::Weekly.where(
-                                              site:  site,
-                                              #topic: topic,
-                                              :date.gte => start_on,
-                                              :date.lte => end_on
-                                            ).sort(date: 1).to_a
+
+    def self.subjects_count_weekly(subjects: nil, begin_on: nil, end_on: nil)
+
+      # Calling without arguments will return all subjects for entire time period
+      subjects  ||= []
+      begin_on  ||= DCHBX_EPOCH
+      end_on    ||= TimeKeeper.date_of_record.end_of_day
+
+      if subjects.size == 0
+        criteria = Analytics::Dimensions::Weekly.where(:date.gte => begin_on).
+                                                  and(:date.lte => end_on).
+                                                  sort(date: 1)
+      else
+        criteria = Analytics::Dimensions::Weekly.any_in(:"metadata.subject" => subjects).
+                                                  and(:"metadata.date".gte => begin_on).
+                                                  and(:"metatdata.date".lte => end_on).
+                                                  sort(:"metadata.date" => 1)
+      end
+
+      criteria.to_a
     end
 
-    def self.topic_count_monthly(topic: nil, start_on: DCHBX_EPOCH, end_on: TimeKeeper.date_of_record.end_of_day, site: "dchbx")
-      Analytics::Dimensions::Monthly.where(
-                                              site:  site, 
-                                              #topic: topic,
-                                              :date.gte => start_on,
-                                              :date.lte => end_on
-                                            ).sort(date: 1).to_a
+    def self.subjects_count_monthly(subject: nil, begin_on: nil, end_on: nil)
+      # Calling without arguments will return all subjects for entire time period
+      subjects  ||= []
+      begin_on  ||= DCHBX_EPOCH
+      end_on    ||= TimeKeeper.date_of_record.end_of_day
+
+      if subjects.size == 0
+        criteria = Analytics::Dimensions::Monthly.where(:date.gte => begin_on).
+                                                  and(:date.lte => end_on).
+                                                  sort(date: 1)
+      else
+        criteria = Analytics::Dimensions::Monthly.any_in(:"metadata.subject" => subjects).
+                                                  and(:"metadata.date".gte => begin_on).
+                                                  and(:"metatdata.date".lte => end_on).
+                                                  sort(:"metadata.date" => 1)
+      end
+
+      criteria.to_a
     end
 
-    def self.increment_time(topic: nil, moment: TimeKeeper.datetime_of_record, site: "dchbx")
+    def self.increment_time(subject: nil, moment: TimeKeeper.datetime_of_record)
       month     = moment.month
       week      = moment.to_date.cweek
       year      = moment.to_date.year
 
-      raise ArgumentError.new("missing value: topic, expected as keyword ") if topic.blank?
+      raise ArgumentError.new("missing value: subject, expected as keyword ") if subject.blank?
 
       # Update daily stats
-      daily_docs = Analytics::Dimensions::Daily.where(site: site, topic: topic, date: moment)
+      daily_docs = Analytics::Dimensions::Daily.where(subject: subject, date: moment)
 
       if daily_docs.size == 0
-        daily_instance = Analytics::Dimensions::Daily.new(site: site, topic: topic, date: moment)
+        daily_instance = Analytics::Dimensions::Daily.new(subject: subject, date: moment)
       else
         daily_instance = daily_docs.first
       end
 
       # Update weekly stats
-      weekly_docs = Analytics::Dimensions::Weekly.where(site: site, topic: topic, week: week, year: year)
+      weekly_docs = Analytics::Dimensions::Weekly.where(subject: subject, week: week, year: year)
       if weekly_docs.size == 0
-        weekly_instance = Analytics::Dimensions::Weekly.new(site: site, topic: topic, week: week, year: year, date: moment)
+        weekly_instance = Analytics::Dimensions::Weekly.new(subject: subject, week: week, year: year, date: moment)
       else
         weekly_instance = weekly_docs.first
       end
 
       # Update monthly stats
-      monthly_docs = Analytics::Dimensions::Monthly.where(site: site, topic: topic, month: month, year: year)
+      monthly_docs = Analytics::Dimensions::Monthly.where(subject: subject, month: month, year: year)
       if monthly_docs.size == 0
-        monthly_instance = Analytics::Dimensions::Monthly.new(site: site, topic: topic, month: month, year: year, date: moment)
+        monthly_instance = Analytics::Dimensions::Monthly.new(subject: subject, month: month, year: year, date: moment)
       else
         monthly_instance = monthly_docs.first
       end
@@ -92,7 +126,7 @@ module Analytics
     end
 
     # TODO
-    def self.increment_geography(topic, site: "dchbx")
+    def self.increment_geography(subject, site: "dchbx")
     end
 
   end

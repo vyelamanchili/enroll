@@ -2,10 +2,11 @@ module Analytics
   class Dimensions::Monthly
     include Mongoid::Document
 
-      field :title, type: String
-      field :site,  type: String, default: "dchbx"
-      field :topic, type: String
-      field :date,  type: Date
+      field :subject,   type: String
+      field :date,      type: Date
+      field :title,     type: String
+      field :format,    type: String
+
       field :month, type: Integer
       field :year,  type: Integer
 
@@ -44,11 +45,27 @@ module Analytics
       field :d30, type: Integer, default: 0
       field :d31, type: Integer, default: 0
 
-      index({site: 1, topic: 1, month: 1, year: 1})
+      index({subject: 1, month: 1, year: 1})
 
-      validates_presence_of :site, :topic, :date, :month, :year
+      validates_presence_of :subject, :date, :month, :year
 
-      after_initialize :pre_allocate_document
+      embeds_one  :metadata, class_name: "Document", as: :documentable
+
+      after_save :update_metadata
+
+      def initialize(options={})
+        super
+        pre_allocate_document
+
+        defaults = {
+                      date:   TimeKeeper.date_of_record,
+                      format: "text/plain; charset=us-ascii"
+                    }
+
+        options = defaults.merge(options)
+        options.each_pair { |k,v| write_attribute(k, v) }
+      end
+
 
       def increment(new_date)
         day_of_month = new_date.day
@@ -82,9 +99,19 @@ module Analytics
 
     private
       def pre_allocate_document
+        self.build_metadata unless metadata.present?
+
         self.month = date.month
         self.year  = date.year
       end
+
+      def update_metadata
+        metadata.subject  = subject
+        metadata.date     = date
+        metadata.title    = title if title.present?
+        metadata.format   = format
+      end
+
 
   end
 end

@@ -2,8 +2,8 @@ require 'rails_helper'
 
 describe Analytics::AggregateEvent, type: :model, dbclean: :after_each do
 # describe Analytics::AggregateEvent, type: :model do
-  let(:event_topic)   { "auto_renewal" }
-  let(:time_stamp)    { DateTime.new(2015,11,11,11,11,0,'-4') }
+  let(:event_subject)   { "auto_renewal" }
+  let(:time_stamp)      { Time.new(2015,11,11,11,11,0, '-04:00') }
 
   context "An event is sent to increment_time method without required topic keyword" do
     it "should raise an error" do
@@ -25,15 +25,15 @@ describe Analytics::AggregateEvent, type: :model, dbclean: :after_each do
     end
 
     context "and an event is sent to increment_time method with a time stamp value" do
-      let(:result) { Analytics::AggregateEvent.increment_time(topic: event_topic, moment: time_stamp) }
+      let(:result) { Analytics::AggregateEvent.increment_time(subject: event_subject, moment: time_stamp) }
       let(:hour_field)      { "h" + time_stamp.hour.to_s }
-      let(:minute_field)    { "m" + time_stamp.minute.to_s }
+      let(:minute_field)    { "m" + time_stamp.min.to_s }
       let(:week_day_field)  { "d" + week_day.to_s }
       let(:month_day_field) { "d" + month_day.to_s }
       let(:week_day)        { time_stamp.wday }
       let(:calendar_month)  { time_stamp.month }
       let(:calendar_year)   { time_stamp.year }
-      let(:calendar_week)   { time_stamp.cweek }
+      let(:calendar_week)   { time_stamp.to_datetime.cweek }
       let(:month_day)       { time_stamp.month }
 
       context "the method should return an array with object for each time dimension" do
@@ -51,12 +51,12 @@ describe Analytics::AggregateEvent, type: :model, dbclean: :after_each do
       end
 
       context "each time dimension should be updated" do
-        let(:daily_dimension)   { Analytics::Dimensions::Daily.where(topic: event_topic, date: time_stamp).first }
-        let(:weekly_dimension)  { Analytics::Dimensions::Weekly.where(topic: event_topic, date: time_stamp).first }
-        let(:monthly_dimension) { Analytics::Dimensions::Monthly.where(topic: event_topic, date: time_stamp).first }
+        let(:daily_dimension)   { Analytics::Dimensions::Daily.where(subject: event_subject, date: time_stamp).first }
+        let(:weekly_dimension)  { Analytics::Dimensions::Weekly.where(subject: event_subject, date: time_stamp).first }
+        let(:monthly_dimension) { Analytics::Dimensions::Monthly.where(subject: event_subject, date: time_stamp).first }
 
         before do
-          Analytics::AggregateEvent.increment_time(topic: event_topic, moment: time_stamp)
+          Analytics::AggregateEvent.increment_time(subject: event_subject, moment: time_stamp)
         end
 
         # Daily values
@@ -99,21 +99,21 @@ describe Analytics::AggregateEvent, type: :model, dbclean: :after_each do
   end
 
   context "A series of events are recorded over a period of time" do
-    let(:event_topic)   { "individual_initial_enrollments" }
+    let(:event_subject)   { "individual_initial_enrollments" }
     let(:event_count)   { 135 }
     let(:min_start_at)  { Time.new(2015, 11, 1, 0, 0, 0).to_i }
     let(:max_end_at)    { Time.new(2016, 1, 31, 23, 59, 59).to_i }
 
     before do
       (1..event_count).each { |i| Analytics::AggregateEvent.increment_time( 
-                                                                              topic: event_topic,
+                                                                              subject: event_subject,
                                                                               moment: Time.at(rand(min_start_at..max_end_at))
                                                                             ) 
                                                                           }
     end
 
     it "should find all events" do
-      expect(Analytics::AggregateEvent.topic_count_monthly(topic: event_topic).count).to eq Analytics::Dimensions::Monthly.count
+      expect(Analytics::AggregateEvent.subjects_count_monthly(subject: [event_subject]).count).to eq Analytics::Dimensions::Monthly.count
     end
   end
 

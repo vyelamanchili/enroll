@@ -3,31 +3,54 @@ module Analytics
     class Daily
       include Mongoid::Document
 
-      field :title,   type: String
-      field :site,    type: String, default: "dchbx"
-      field :topic,   type: String
-      field :date,    type: Date
-      field :week_day, type: Integer
+      # attr_accessor :subject, :title
 
-      index({site: 1, topic: 1, date: 1, :"hours_of_day.hour" => 1})
-      index({site: 1, topic: 1, week_day: 1})
+      field :subject,   type: String
+      field :date,      type: Date
+      field :title,     type: String
+      field :format,    type: String
 
+      field :week_day,  type: Integer
+
+      index({subject: 1, date: 1, :"hours_of_day.hour" => 1})
+      index({subject: 1, week_day: 1})
+
+      embeds_one  :metadata,         class_name: "Document", as: :documentable
       embeds_one  :hours_of_day,     class_name: "Analytics::Dimensions::HoursOfDay"
       embeds_many :minutes_of_hours, class_name: "Analytics::Dimensions::MinutesOfHour"
 
-      accepts_nested_attributes_for :hours_of_day, :minutes_of_hours
+      accepts_nested_attributes_for :metadata, :hours_of_day, :minutes_of_hours
 
-      after_initialize :pre_allocate_document
+      after_save :update_metadata
 
-      validates_presence_of :site, :topic, :date, :week_day
+      validates_presence_of :subject, :date, :week_day
 
-      def increment(time_stamp)
-        hour    = time_stamp.hour
-        minute  = time_stamp.min
+      # def initialize(site: nil, subject: nil, date: nil)
+      def initialize(options={})
+        super
+        pre_allocate_document
+
+        defaults = {
+                      date:   TimeKeeper.date_of_record,
+                      format: "text/plain; charset=us-ascii"
+                    }
+
+        options = defaults.merge(options)
+        options.each_pair { |k,v| write_attribute(k, v) }
+      end
+
+      def increment(new_time)
+        hour    = new_time.hour
+        minute  = new_time.min
 
         hours_of_day.inc(("h" + hour.to_s).to_sym => 1)
         minutes_of_hours.where("hour" => hour.to_s).first.inc(("m" + minute.to_s).to_sym => 1)
         self
+      end
+
+      def date=(new_date)
+        write_attribute(:date, new_date)
+        write_attribute(:week_day, new_date.wday)
       end
 
       def self.options
@@ -56,15 +79,19 @@ module Analytics
 
     private
       def pre_allocate_document
+        self.build_metadata unless metadata.present?
         self.build_hours_of_day unless hours_of_day.present?
-
-        if week_day.blank?
-          self.week_day = date.wday
-        end
 
         if minutes_of_hours.size == 0 
           (0..23).map { |i| self.minutes_of_hours << Analytics::Dimensions::MinutesOfHour.new(hour: i) }
         end
+      end
+
+      def update_metadata
+        metadata.subject  = subject
+        metadata.date     = date
+        metadata.title    = title if title.present?
+        metadata.format   = format
       end
 
     end
