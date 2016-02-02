@@ -70,7 +70,7 @@ class Invitation
   def claim_employer_staff_role(user_obj, redirection_obj)
     employer_staff_role = EmployerStaffRole.find(source_id)
     person = employer_staff_role.person
-    redirection_obj.create_sso_account(user_obj, person, 15, "individual") do
+    redirection_obj.create_sso_account(user_obj, person, 15, "employer") do
       user_obj.roles << "employer_staff" unless user_obj.roles.include?("employer_staff")
       user_obj.save!
       person.user = current_user
@@ -188,6 +188,18 @@ class Invitation
       invitation.send_invitation!(census_employee.full_name)
       invitation
     end
+  end
+
+  def self.invite_employer!(employer_staff_role, email)
+      invitation = self.create(
+        :role => "employer_staff_role",
+        :source_kind => "employer_staff_role",
+        :source_id => employer_staff_role.id,
+        :invitation_email => email
+      )
+      invitation.send_invitation!(employer_staff_role.person.full_name)
+      invitation
+
   end
 
   def self.invite_broker!(broker_role)
