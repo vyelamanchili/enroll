@@ -12,10 +12,10 @@ RSpec.describe DashboardsController, :type => :controller do
     end
   end
 
-  describe "GET report" do
+  describe "GET stock" do
     before do
       sign_in
-      get :report, format: :js
+      get :stock
     end
 
     it "should return to a http status success" do

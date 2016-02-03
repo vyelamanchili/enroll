@@ -9,8 +9,8 @@
 <script type="text/javascript">
   $(document).ready(function(){
     $('input[name="date_range"]').daterangepicker({
-      "startDate": moment().startOf('week').add(1, 'days'),
-      "endDate": moment().endOf('week').add(1, 'days'),
+      "startDate": moment('2015-11-1'),
+      "endDate": moment(),
       ranges: {
         'Today': [moment(), moment()],
         'This Week': [moment().startOf('week').add(1, 'days'), moment().endOf('week').add(1, 'days')],

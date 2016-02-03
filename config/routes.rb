@@ -10,6 +10,7 @@ Rails.application.routes.draw do
     get :live, on: :collection
     get :data_for_live, on: :collection
     get :drilldown, on: :collection
+    get :stock, on: :collection
   end
 
   namespace :users do

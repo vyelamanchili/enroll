@@ -14,6 +14,12 @@ class DashboardsController < ApplicationController
     @reports_for_drilldown = @reports.map {|r| {name: r.subject.split(/ - submitted at/i).first.humanize, data: r.sum}}
   end
 
+  def stock
+    @title = "#{Date.new(2015,11,1).to_s} - #{TimeKeeper.datetime_of_record.to_s}"
+    @reports = Analytics::AggregateEvent.topic_count_monthly
+    @reports_for_stock = group_by_topic(@reports)
+  end
+
   def report
     @type = params[:type]
     if params[:begin_on].present? and params[:end_on].present?
@@ -118,6 +124,16 @@ class DashboardsController < ApplicationController
     subjects.map do |topic|
       {name: topic.humanize,
        data: reports.select{|r| r.topic == topic}.map(&:amount)}
+    end
+  end
+
+  def group_by_topic(reports)
+    topics = reports.map(&:topic).uniq
+    topics.map do |topic|
+      {name: topic.humanize,
+       type: 'column',
+       data: reports.select {|r|r.topic == topic}.map(&:sum_for_stock).flatten(1)
+      }
     end
   end
 end

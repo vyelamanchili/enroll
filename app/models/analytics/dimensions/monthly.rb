@@ -82,13 +82,30 @@ module Analytics
       end
 
       def sum
-        (1..31).map { |i| eval("d" + i.to_s) }
+        (1..31).map do |k|
+          date = Date.new(year, month, k) rescue false
+          if date
+            eval('d' + k.to_s)
+          end
+        end.compact
+      end
+
+      def sum_for_stock
+        (1..31).map do |k|
+          date = Date.new(year, month, k) rescue false
+          if date
+            [date.to_datetime.to_i*1000, self.public_send("d#{k}")]
+          end
+        end.compact
       end
 
       def amount_for_drilldown
         (1..31).map do |k|
-          ["d#{k}", self.public_send("d#{k}")]
-        end
+          date = Date.new(year, month, k) rescue false
+          if date
+            ["d#{k}", self.public_send("d#{k}")]
+          end
+        end.compact
       end
 
       def amount
