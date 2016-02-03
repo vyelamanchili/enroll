@@ -16,8 +16,9 @@ class DashboardsController < ApplicationController
 
   def stock
     @title = "#{Date.new(2015,11,1).to_s} - #{TimeKeeper.datetime_of_record.to_s}"
-    @reports = Analytics::AggregateEvent.topic_count_monthly
-    @reports_for_stock = group_by_topic(@reports)
+    subjects = ["IVL Enrollment - Submitted At", "SHOP Enrollment - Submitted At"]
+    @reports  = Analytics::AggregateEvent.subjects_count_monthly(subjects: subjects, begin_on: @begin_on)
+    @reports_for_stock = group_by_subject(@reports)
   end
 
   def report
@@ -54,27 +55,27 @@ class DashboardsController < ApplicationController
 
     case @type
     when 'Day'
-      @reports = Analytics::AggregateEvent.topic_count_daily(begin_on: begin_on, end_on: end_on)
+      @reports = Analytics::AggregateEvent.subject_count_daily(begin_on: begin_on, end_on: end_on)
       @title = "Today (#{begin_on.to_s})"
       @reports_for_drilldown_options = Analytics::Dimensions::Daily.options
     when 'Week'
-      @reports = Analytics::AggregateEvent.topic_count_weekly(begin_on: begin_on, end_on: end_on)
+      @reports = Analytics::AggregateEvent.subject_count_weekly(begin_on: begin_on, end_on: end_on)
       @title = "#{TimeKeeper.date_of_record.beginning_of_week.to_s} - #{TimeKeeper.datetime_of_record.to_s}"
       @reports_for_drilldown_options = Analytics::Dimensions::Weekly.options
     when 'Month'
-      @reports = Analytics::AggregateEvent.topic_count_monthly(begin_on: begin_on, end_on: end_on)
+      @reports = Analytics::AggregateEvent.subject_count_monthly(begin_on: begin_on, end_on: end_on)
       @reports_for_drilldown_options = Analytics::Dimensions::Monthly.options
     when 'Year'
-      @reports = Analytics::AggregateEvent.topic_count_monthly(begin_on: begin_on, end_on: end_on)
-      @reports_for_chart = group_by_topic_for_year(@reports)
+      @reports = Analytics::AggregateEvent.subject_count_monthly(begin_on: begin_on, end_on: end_on)
+      @reports_for_chart = group_by_subject_for_year(@reports)
       @reports_for_drilldown = group_by_month_for_year(@reports)
       @reports_for_drilldown_options = @reports.map{|r| "#{r.year}-#{r.month}"}.uniq
     end
 
     @title ||= "#{begin_on.to_s} - #{end_on.to_s}"
     @begin_on = begin_on
-    @reports_for_chart ||= @reports.map {|r| {name: r.topic.humanize, y: r.amount}}
-    @reports_for_drilldown ||= @reports.map {|r| {name: r.topic.humanize, data: r.sum}}
+    @reports_for_chart ||= @reports.map {|r| {name: r.subject.humanize, y: r.amount}}
+    @reports_for_drilldown ||= @reports.map {|r| {name: r.subject.humanize, data: r.sum}}
   end
 
   def drilldown
@@ -94,14 +95,14 @@ class DashboardsController < ApplicationController
       end
       end_on = begin_on.end_of_day
       @begin_on = begin_on
-      @reports = Analytics::AggregateEvent.topic_count_daily(begin_on: begin_on, end_on: end_on)
+      @reports = Analytics::AggregateEvent.subject_count_daily(begin_on: begin_on, end_on: end_on)
       @title = begin_on.to_s
       @reports_for_drilldown_options = Analytics::Dimensions::Daily.options
     else
       return
     end
-    @reports_for_chart = @reports.map {|r| {name: r.topic.humanize, y: r.amount}}
-    @reports_for_drilldown = @reports.map {|r| {name: r.topic.humanize, data: r.sum}}
+    @reports_for_chart = @reports.map {|r| {name: r.subject.humanize, y: r.amount}}
+    @reports_for_drilldown = @reports.map {|r| {name: r.subject.humanize, data: r.sum}}
   end
 
   def live
@@ -111,28 +112,28 @@ class DashboardsController < ApplicationController
     render json: [TimeKeeper.datetime_of_record.to_i*1000, rand(10)]
   end
 
-  def group_by_topic_for_year(reports)
-    subjects = reports.map(&:topic).uniq
-    subjects.map do |topic|
-      {name: topic.humanize,
-       y: reports.select{|r| r.topic == topic}.sum(&:amount)}
+  def group_by_subject_for_year(reports)
+    subjects = reports.map(&:subject).uniq
+    subjects.map do |subject|
+      {name: subject.humanize,
+       y: reports.select{|r| r.subject == subject}.sum(&:amount)}
     end
   end
 
   def group_by_month_for_year(reports)
-    subjects = reports.map(&:topic).uniq
-    subjects.map do |topic|
-      {name: topic.humanize,
-       data: reports.select{|r| r.topic == topic}.map(&:amount)}
+    subjects = reports.map(&:subject).uniq
+    subjects.map do |subject|
+      {name: subject.humanize,
+       data: reports.select{|r| r.subject == subject}.map(&:amount)}
     end
   end
 
-  def group_by_topic(reports)
-    topics = reports.map(&:topic).uniq
-    topics.map do |topic|
-      {name: topic.humanize,
+  def group_by_subject(reports)
+    subjects = reports.map(&:subject).uniq
+    subjects.map do |subject|
+      {name: subject.humanize,
        type: 'column',
-       data: reports.select {|r|r.topic == topic}.map(&:sum_for_stock).flatten(1)
+       data: reports.select {|r|r.subject == subject}.map(&:sum_for_stock).flatten(1)
       }
     end
   end

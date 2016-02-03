@@ -61,7 +61,7 @@ module Analytics
       criteria.to_a
     end
 
-    def self.subjects_count_monthly(subject: nil, begin_on: nil, end_on: nil)
+    def self.subjects_count_monthly(subjects: nil, begin_on: nil, end_on: nil)
       # Calling without arguments will return all subjects for entire time period
       subjects  ||= []
       begin_on  ||= DCHBX_EPOCH
