@@ -32,13 +32,13 @@ module ReportSources
 
     def populate_applicable_dimensions!
       eligible_dimensions.each_pair do |k, v|
-        ::Analytics::AggregateEvent.increment_time(topic: k, moment: self.send(v))
+        ::Analytics::AggregateEvent.increment_time(subject: k, moment: self.send(v))
       end
     end
 
     def eligible_dimensions
       dimensions = {}
-      topic_specifications.each do |ts|
+      subject_specifications.each do |ts|
         if self.send(ts.last)
           dimensions[ts.first + " - Submitted At"] = :policy_purchased_at
           dimensions[ts.first + " - Effective Date"] = :policy_start_on
@@ -47,7 +47,7 @@ module ReportSources
       dimensions
     end
 
-    def topic_specifications
+    def subject_specifications
       [
         ["SHOP Enrollment", :shop_purchase?],
         ["IVL Enrollment", :ivl_purchase?],

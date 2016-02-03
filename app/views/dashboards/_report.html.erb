@@ -100,8 +100,7 @@
       <thead>
         <tr>
           <th>#</th>
-          <th>site</th>
-          <th>topic</th>
+          <th>subject</th>
           <th>title</th>
           <th>amount</th>
         </tr>
@@ -110,8 +109,7 @@
         <% @reports.each do |report| %>
           <tr>
             <td><%= report.date %></td>
-            <td><%= report.site %></td>
-            <td><%= report.topic.humanize %></td>
+            <td><%= report.subject.humanize %></td>
             <td><%= report.title %></td>
             <td><%= report.amount %></td>
           </tr>

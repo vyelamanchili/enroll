@@ -32,10 +32,10 @@ module Analytics
                                                   and(:date.lte => end_on).
                                                   sort(date: 1)
       else
-        criteria = Analytics::Dimensions::Daily.any_in(:"metadata.subject" => subjects).
-                                                  and(:"metadata.date".gte => begin_on).
-                                                  and(:"metatdata.date".lte => end_on).
-                                                  sort(:"metadata.date" => 1)
+        criteria = Analytics::Dimensions::Daily.any_in(:"subject" => subjects).
+                                                  and(:date.gte => begin_on).
+                                                  and(:date.lte => end_on).
+                                                  sort(:date => 1)
       end
     end
 
@@ -52,10 +52,10 @@ module Analytics
                                                   and(:date.lte => end_on).
                                                   sort(date: 1)
       else
-        criteria = Analytics::Dimensions::Weekly.any_in(:"metadata.subject" => subjects).
-                                                  and(:"metadata.date".gte => begin_on).
-                                                  and(:"metatdata.date".lte => end_on).
-                                                  sort(:"metadata.date" => 1)
+        criteria = Analytics::Dimensions::Weekly.any_in(:"subject" => subjects).
+                                                  and(:date.gte => begin_on).
+                                                  and(:date.lte => end_on).
+                                                  sort(:date => 1)
       end
 
       criteria.to_a
@@ -72,10 +72,10 @@ module Analytics
                                                   and(:date.lte => end_on).
                                                   sort(date: 1)
       else
-        criteria = Analytics::Dimensions::Monthly.any_in(:"metadata.subject" => subjects).
-                                                  and(:"metadata.date".gte => begin_on).
-                                                  and(:"metatdata.date".lte => end_on).
-                                                  sort(:"metadata.date" => 1)
+        criteria = Analytics::Dimensions::Monthly.any_in(:"subject" => subjects).
+                                                  and(:date.gte => begin_on).
+                                                  and(:date.lte => end_on).
+                                                  sort(:date => 1)
       end
 
       criteria.to_a
