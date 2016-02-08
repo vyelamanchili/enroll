@@ -904,6 +904,9 @@ class HbxEnrollment
 
   def eligibility_event_kind
     if (enrollment_kind == "special_enrollment")
+      if special_enrollment_period.blank?
+        "unknown_sep"
+      end 
       return special_enrollment_period.qualifying_life_event_kind.reason
     end
     return "open_enrollment" if !is_shop?
@@ -911,13 +914,19 @@ class HbxEnrollment
   end
 
   def eligibility_event_date
-    return special_enrollment_period.qle_on if is_special_enrollment?
+    if is_special_enrollment?
+      return nil if special_enrollment_period.nil?
+      return special_enrollment_period.qle_on
+    end
     return nil if !is_shop?
     new_hire_enrollment_for_shop? ? benefit_group_assignment.census_employee.hired_on : nil
   end
 
   def eligibility_event_has_date?
-    return true if is_special_enrollment? 
+    if is_special_enrollment?
+      return false if special_enrollment_period.nil?
+      return true
+    end
     return false unless is_shop?
     new_hire_enrollment_for_shop?
   end
