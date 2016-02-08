@@ -905,7 +905,7 @@ class HbxEnrollment
   def eligibility_event_kind
     if (enrollment_kind == "special_enrollment")
       if special_enrollment_period.blank?
-        "unknown_sep"
+        return "unknown_sep"
       end 
       return special_enrollment_period.qualifying_life_event_kind.reason
     end
