@@ -1199,10 +1199,6 @@ end
 describe HbxEnrollment, "given an enrollment kind of 'special_enrollment'" do
   subject { HbxEnrollment.new({:enrollment_kind => "special_enrollment"}) }
 
-  it "should have an eligibility event date" do
-    expect(subject.eligibility_event_has_date?).to eq true
-  end
-
   it "should NOT be a shop new hire" do
     expect(subject.new_hire_enrollment_for_shop?).to eq false
   end
