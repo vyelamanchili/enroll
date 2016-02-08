@@ -902,6 +902,34 @@ class HbxEnrollment
     end
   end
 
+  def eligibility_event_kind
+    if (enrollment_kind == "special_enrollment")
+      return special_enrollment_period.qualifying_life_event_kind.reason
+    end
+    return "open_enrollment" if !is_shop?
+    new_hire_enrollment_for_shop? ? "new_hire" : "open_enrollment"
+  end
+
+  def eligibility_event_date
+    return special_enrollment_period.qle_on if is_special_enrollment?
+    return nil if !is_shop?
+    new_hire_enrollment_for_shop? ? benefit_group_assignment.census_employee.hired_on : nil
+  end
+
+  def eligibility_event_has_date?
+    return true if is_special_enrollment? 
+    return false unless is_shop?
+    new_hire_enrollment_for_shop?
+  end
+
+  def new_hire_enrollment_for_shop?
+    return false if is_special_enrollment?
+    return false unless is_shop?
+    shopping_plan_year = benefit_group.plan_year
+    return true unless (shopping_plan_year.open_enrollment_start_on..shopping_plan_year.open_enrollment_end_on).include?(TimeKeeper.date_according_to_exchange_at(submitted_at))
+    !(shopping_plan_year.start_on == effective_on)
+  end
+
   private 
 
   def benefit_group_assignment_valid?(coverage_effective_date)
