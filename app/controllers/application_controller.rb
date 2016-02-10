@@ -197,10 +197,10 @@ class ApplicationController < ActionController::Base
     append_after_action :clear_current_user
 
     def set_current_person
-      if current_user.try(:person).try(:agent?)
-        @person = session[:person_id].present? ? Person.find(session[:person_id]) : nil
-      else
-        @person = current_user.person
+      if policy(:application_controller).set_current_person? && session[:person_id].present?
+        @person = Person.find(session[:person_id])
+        else
+         @person = current_user.person
       end
     end
 
