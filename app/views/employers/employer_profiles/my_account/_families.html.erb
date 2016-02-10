@@ -22,7 +22,7 @@
            <td> <%= person.primary_family.is_active %> </td>
            <td> <%= person.primary_family.renewal_consent_through_year %> </td>
            <td>            <%= link_to '<i class="fa fa-pencil"></i> Consumer'.html_safe,
-            employers_employer_profile_consumer_override_path(:person_id=> person.id), class: "btn btn-default"%></td>
+            resume_family_exchanges_agents_path(:person_id=> person.id), class: "btn btn-default"%></td>
       
         </tr> 	
     <% end %>

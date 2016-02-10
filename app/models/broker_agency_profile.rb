@@ -156,6 +156,12 @@ class BrokerAgencyProfile
     families = (consumer_families + employee_families).uniq
     families.sort_by{|f| f.primary_applicant.person.last_name}
   end
+
+  def can_access_person_id person_id
+    people = families.map{|f|f.primary_applicant.person}
+    people.map(&:id).map(&:to_s).include?(person_id)
+  end
+
   ## Class methods
   class << self
     def list_embedded(parent_list)

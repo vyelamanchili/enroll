@@ -36,6 +36,8 @@ class Exchanges::AgentsController < ApplicationController
   end
 
   def resume_enrollment
+    policy = ::AccessPolicies::Person.new(current_user, self)
+    return unless policy.authorize_agent_access_to_family params[:person_id]
     session[:person_id] = params[:person_id]
     session[:original_application_type] = params['original_application_type']
     person = Person.find(params[:person_id])
@@ -49,6 +51,13 @@ class Exchanges::AgentsController < ApplicationController
     else
       redirect_to family_account_path
     end
+  end
+
+  def resume_family
+    policy = ::AccessPolicies::Person.new(current_user, self)
+    return unless policy.authorize_agent_access_to_family params[:person_id]
+    session[:person_id] = params[:person_id]
+    redirect_to family_account_path
   end
 
   def inbox

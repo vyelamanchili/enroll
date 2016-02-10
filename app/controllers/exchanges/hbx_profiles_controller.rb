@@ -86,6 +86,8 @@ class Exchanges::HbxProfilesController < ApplicationController
       status_text = 'Message sent to ' + role + ' ' + agent.full_name + ' <br>' 
       if find_email(agent, role)
         agent_assistance_messages(params,agent,role)
+        agent.assister_role.ask_for_help(params[:person]) if agent.assister_role
+        agent.csr_role.ask_for_help(params[:person]) if agent.csr_role
       else
 
         status_text = "Agent has no email.   Please select another"
