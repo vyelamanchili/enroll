@@ -12,7 +12,7 @@ class Employers::PlanYearsController < ApplicationController
     @benefit_group = params[:benefit_group]
     @plan_year = PlanYear.find(params[:plan_year_id])
     @location_id = params[:location_id]
-
+    @dental_plans = Plan.by_active_year(params[:start_on]).shop_market.dental_coverage.all
     @plans = if params[:plan_option_kind] == "single_carrier"
       @carrier_id = params[:carrier_id]
       @carrier_profile = CarrierProfile.find(params[:carrier_id])
@@ -28,6 +28,22 @@ class Employers::PlanYearsController < ApplicationController
     end
 
     @carriers_cache = CarrierProfile.all.inject({}){|carrier_hash, carrier_profile| carrier_hash[carrier_profile.id] = carrier_profile.legal_name; carrier_hash;}
+    respond_to do |format|
+      format.js
+    end
+  end
+
+  def reference_plan_summary
+    @details = params[:details]
+    @reference_plan_id = params[:ref_plan_id]
+    @start_on = params[:start_on]
+    @plan = Plan.find(@reference_plan_id)
+    @coverage_kind = params[:coverage_kind]
+    @hios_id = params[:hios_id]
+    hios_id = [] << params[:hios_id]
+    @qhps = Products::QhpCostShareVariance.find_qhp_cost_share_variances(hios_id.to_a, params[:start_on], params[:coverage_kind])
+    @visit_types = params[:coverage_kind] == "health" ? Products::Qhp::VISIT_TYPES : Products::Qhp::DENTAL_VISIT_TYPES
+    @visit_types = @qhps.first.qhp_service_visits.map(&:visit_type) if params.has_key?(:details)
 
     respond_to do |format|
       format.js

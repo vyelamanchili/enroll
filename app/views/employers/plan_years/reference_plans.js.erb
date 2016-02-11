@@ -4,8 +4,8 @@ $('#<%= @location_id %> .reference-plans').html("<%= escape_javascript(render(pa
 $('#<%= @location_id %> .reference-plans').css({ "height": "450px", "y-overflow": "scroll" })
 $('#<%= @location_id %> .reference-plans').show();
 
-$('#<%= @location_id %> .reference-plan .col-xs-3').on('click', function() {
-  
+$('#<%= @location_id %> .reference-plan .col-xs-2').on('click', function() {
+
   if ($(this).find('input[type=radio]').is(':checked')) {
   } else {
       $(this).find('input[type=radio]').prop('checked', true )
@@ -22,3 +22,9 @@ if (reference_plan_remainder > 0 ) {
 } else {
 
 }
+
+start_on = $("#plan_year_start_on").val().substr(0,4);
+$('#<%= @location_id %> a.view-summary').each(function() {
+  var url = $(this).attr('href');
+  $(this).attr('href', url+"&start_on="+start_on);
+});
