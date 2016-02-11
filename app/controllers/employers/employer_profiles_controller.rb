@@ -213,7 +213,7 @@ class Employers::EmployerProfilesController < ApplicationController
       end
     else
       flash[:error] = 'You do not have permissions to update the details'
-      redirect_to edit_employers_employer_profile_path(@employer_profile)
+      redirect_to edit_employers_employer_profile_path(@organization)
     end
   end
 
