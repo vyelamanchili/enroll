@@ -106,6 +106,12 @@ RSpec.describe "employers/employer_profiles/my_account/_home_tab.html.erb" do
         monthly_employer_contribution_amount: "monthly_employer_contribution_amount_1",
         monthly_min_employee_cost: "monthly_min_employee_cost_1",
         monthly_max_employee_cost: "monthly_max_employee_cost_1",
+        dental_reference_plan_id: double("id"),
+        dental_reference_plan: reference_plan_1,
+        dental_plan_option_kind: 'single_plan',
+        elected_dental_plan_ids: [:dental_reference_plan_id, :dental_reference_plan_id]
+
+
         )
     end
 
