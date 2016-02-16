@@ -39,6 +39,7 @@
       $('#log-back-in').text('Login');
       $('#log-back-in').on('click', function() {
         window.location.replace('<%= url_for(destroy_user_session_path) %>');
+        //need to destroy currrent user's email address
       });
     }
   }
