@@ -38,14 +38,21 @@ RSpec.describe Users::RegistrationsController do
 
     context "account without person" do
       let(:email) { "devise@test.com" }
-      let!(:user) { FactoryGirl.create(:user, email: email) }
 
       before do
         @request.env["devise.mapping"] = Devise.mappings[:user]
       end
 
-      it "should complete sign up and redirect" do
+      subject do
         post :create, { user: { email: email, password: password, password_confirmation: password } }
+      end
+
+      it 'creates the user' do
+        expect { subject }.to change { User.all.count }.by(1)
+      end
+
+      it "redirects to root_path" do
+        subject
         expect(response).to redirect_to(root_path)
       end
     end
