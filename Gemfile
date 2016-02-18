@@ -116,6 +116,7 @@ group :development, :test do
   gem 'rspec-rails', '~> 3.1.0'
   gem 'factory_girl_rails', "~> 4.0"
   gem 'forgery'
+  gem 'faker'
   gem 'email_spec'
 end
 
@@ -127,6 +128,7 @@ group :test do
   gem 'shoulda-matchers'
   gem 'action_mailer_cache_delivery', '~> 0.3.7'
 #  gem 'headless'
+gem 'simplecov'
 end
 
 group :production do
