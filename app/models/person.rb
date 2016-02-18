@@ -325,7 +325,7 @@ class Person
   end
 
   def first_name_last_name_and_suffix
-    @full_name = [first_name, last_name, name_sfx].compact.join(" ")
+    [first_name, last_name, name_sfx].compact.join(" ")
   end
 
   def age_on(date)
