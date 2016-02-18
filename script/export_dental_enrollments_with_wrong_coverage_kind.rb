@@ -2,17 +2,32 @@
 # this script will export family, hbx_enrollment, plan details for dental plans mistakenly shopped in shop
 
 csv = CSV.open("dental_plans_in_shop.csv", "w")
-csv << %w(hbx_enrollment.household.family.id, hbx_enrollment.id, hbx_enrollment.plan.id, hbx_enrollment.plan.name,
-          hbx_enrollment.coverage_kind, hbx_enrollment.plan.coverage_kind hbx_enrollment.kind hbx_enrollment.created_at hbx_enrollment.aasm_state after_11_01)
+csv << %w(hbx_enrollment.household.family.id, hbx_enrollment.hbx_id, hbx_enrollment.plan.name,
+          hbx_enrollment.coverage_kind, hbx_enrollment.plan.coverage_kind hbx_enrollment.kind hbx_enrollment.created_at
+          hbx_enrollment.aasm_state subscriber)
 
-Family.all.flat_map(&:households).flat_map(&:hbx_enrollments).each do |hbx_enrollment|
-  begin
-    if hbx_enrollment.coverage_kind != hbx_enrollment.plan.coverage_kind
-      csv << [hbx_enrollment.household.family.id, hbx_enrollment.id, hbx_enrollment.plan.id,
-              hbx_enrollment.plan.name, hbx_enrollment.coverage_kind, hbx_enrollment.plan.coverage_kind,
-              hbx_enrollment.kind, hbx_enrollment.created_at, hbx_enrollment.aasm_state, hbx_enrollment.created_at > Date.new(2015, 11, 01)]
+batch_size = Family.count/10
+offset = 0
+
+while offset < Family.count
+  Family.offset(offset).limit(batch_size).flat_map(&:households).flat_map(&:hbx_enrollments).each do |hbx_enrollment|
+    next unless hbx_enrollment.is_active
+    begin
+      if hbx_enrollment.coverage_kind != hbx_enrollment.plan.coverage_kind
+        if hbx_enrollment.subscriber
+          subscriber_person = hbx_enrollment.subscriber.person
+          subscriber = subscriber_person.first_name + " " + (subscriber_person.middle_name || "") + " " + subscriber_person.last_name
+        else
+          subscriber = ""
+        end
+
+        csv << [hbx_enrollment.household.family.id, hbx_enrollment.hbx_id,
+                hbx_enrollment.plan.name, hbx_enrollment.coverage_kind, hbx_enrollment.plan.coverage_kind,
+                hbx_enrollment.kind, hbx_enrollment.created_at, hbx_enrollment.aasm_state, subscriber]
+      end
+    rescue Exception => e
+
     end
-  rescue Exception => e
-    #puts "Family #{hbx_enrollment.household.family.id} hbx_enrollment #{hbx_enrollment.id} " + e.message
   end
+  offset += batch_size
 end
