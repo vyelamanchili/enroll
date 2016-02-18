@@ -1,6 +1,11 @@
 require 'rails_helper'
 
 RSpec.describe WelcomeController, :type => :controller do
+  context 'Factory Testing' do
+    it 'tests factories'  do
+      binding.pry
+    end
+  end
   describe "GET index" do
     shared_examples "welcome" do
       it "returns http success" do

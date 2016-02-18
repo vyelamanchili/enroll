@@ -2,9 +2,10 @@ FactoryGirl.define do
   factory :person do
     first_name Faker::Name.first_name
     last_name Faker::Name.last_name
+    gender ['male', 'female'].shuffle.sample(1).first
     dob Faker::Time.backward(10950).to_date #up to 30 years ago
     is_active true
-    user
+    # The user possibly gets associated by the enrollment_factory. Use the consumer_role_for(user) method to achieve building the user with a consumer role and associating with a user.
 
    #  after(:create) do |p, evaluator|
   #     create_list(:address, 2, person: p)

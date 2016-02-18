@@ -39,11 +39,19 @@ module Factories
     def self.construct_consumer_role(person_params, user)
       person_params = person_params[:person]
       person, person_new = initialize_person(
-        user, person_params["name_pfx"], person_params["first_name"],
-        person_params["middle_name"] , person_params["last_name"],
-        person_params["name_sfx"], person_params["ssn"].gsub("-",""),
-        person_params["dob"], person_params["gender"], "consumer", person_params["no_ssn"]
+        user,
+        person_params["name_pfx"],
+        person_params["first_name"],
+        person_params["middle_name"],
+        person_params["last_name"],
+        person_params["name_sfx"],
+        person_params["ssn"].gsub("-",""),
+        person_params["dob"],
+        person_params["gender"],
+        "consumer",
+        person_params["no_ssn"]
         )
+
       if person.blank? and person_new.blank?
         begin
           raise
@@ -65,7 +73,7 @@ module Factories
 
     def self.build_consumer_role(person, person_new)
       role = find_or_build_consumer_role(person)
-      family, primary_applicant =  initialize_family(person,[])
+      family, primary_applicant =  initialize_family(person, [])
       saved = save_all_or_delete_new(family, primary_applicant, role)
       if saved
         role
@@ -186,6 +194,7 @@ module Factories
 
     def self.initialize_person(user, name_pfx, first_name, middle_name,
                                last_name, name_sfx, ssn, dob, gender, role_type, no_ssn=nil)
+                               
       people = Person.match_by_id_info(ssn: ssn, dob: dob, last_name: last_name, first_name: first_name)
       person, is_new = nil, nil
       case people.count
