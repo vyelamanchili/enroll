@@ -1,5 +1,5 @@
 class Insured::GroupSelectionController < ApplicationController
-  before_action :initialize_common_vars, only: [:create, :terminate_selection]
+  before_action :initialize_common_vars, only: [:create, :terminate_selection, :new]
   # before_action :is_under_open_enrollment, only: [:new]
   
   def select_market(person, params)
@@ -15,7 +15,7 @@ class Insured::GroupSelectionController < ApplicationController
 
   def new
     set_bookmark_url
-    initialize_common_vars
+    #initialize_common_vars
     @waivable = @hbx_enrollment.can_complete_shopping? if @hbx_enrollment.present?
     @employee_role = @person.employee_roles.active.last if @employee_role.blank? and @person.has_active_employee_role?
 
@@ -140,7 +140,7 @@ class Insured::GroupSelectionController < ApplicationController
 
   def initialize_common_vars
     person_id = params.require(:person_id)
-    @person = Person.find(person_id)
+    @person = find_person(person_id)
     @family = @person.primary_family
     @coverage_household = @family.active_household.immediate_family_coverage_household
     @hbx_enrollment = HbxEnrollment.find(params[:hbx_enrollment_id]) if params[:hbx_enrollment_id].present?
@@ -161,6 +161,18 @@ class Insured::GroupSelectionController < ApplicationController
   end
 
   private
+
+  def find_person(person_id)
+    begin
+      Person.find(person_id)
+    rescue Mongoid::Errors::DocumentNotFound => er
+      message = {}
+      message[:message] = 'Application Exception - #{er.message}'
+      message[:session_person_id] = person_id
+      log(message, :severity=>'error')
+      return nil
+    end
+  end
 
   # def is_under_open_enrollment
   #   if @employee_role.present? && !@employee_role.is_under_open_enrollment?
