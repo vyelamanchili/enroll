@@ -187,18 +187,20 @@ class Employers::EmployerProfilesController < ApplicationController
 
     @employer_profile = @organization.employer_profile
     @employer = @employer_profile.match_employer(current_user)
-    if current_user.has_employer_staff_role? && @employer_profile.staff_roles.include?(current_user.person)
+    if (current_user.has_employer_staff_role? && @employer_profile.staff_roles.include?(current_user.person)) || (@employer.blank? && current_user.can_update_organization?(@employer_profile))
       @organization.assign_attributes(organization_profile_params)
 
       #clear office_locations, don't worry, we will recreate
       @organization.assign_attributes(:office_locations => [])
       @organization.save(validate: false)
 
-      #Fix issue 3770. Make sure DOB is in correct format
-      employer_attributes = employer_params
-      employer_attributes["dob"] = DateTime.strptime(employer_attributes["dob"], '%m/%d/%Y').try(:to_date)
+      if @employer.present?
+        #Fix issue 3770. Make sure DOB is in correct format
+        employer_attributes = employer_params
+        employer_attributes["dob"] = DateTime.strptime(employer_attributes["dob"], '%m/%d/%Y').try(:to_date)
+      end
 
-      if @organization.update_attributes(employer_profile_params) and @employer.update_attributes(employer_attributes)
+      if @organization.update_attributes(employer_profile_params) && (@employer.present? ? @employer.update_attributes(employer_attributes) : true)
         flash[:notice] = 'Employer successfully Updated.'
         redirect_to edit_employers_employer_profile_path(@organization)
       else

@@ -345,6 +345,11 @@ class User
     settings
   end
 
+  def can_update_organization?(employer_profile)
+    person_from_broker = employer_profile.active_broker_agency_account.writing_agent.person rescue nil
+    has_hbx_staff_role? || (has_broker_role? && person_from_broker == person)
+  end
+
   private
   # Remove indexed, unique, empty attributes from document
   def strip_empty_fields
