@@ -1,8 +1,8 @@
 # ticket https://devops.dchbx.org/redmine/issues/5142
 # this script will export family, hbx_enrollment, plan details for dental plans having coverage kind as health
 
-csv = CSV.open("dental_plans_in_shop.csv", "w")
-csv << %w(hbx_enrollment.household.family.id, hbx_enrollment.hbx_id, hbx_enrollment.plan.name,
+csv = CSV.open("dental_plans_with_coverage_kind_health.csv", "w")
+csv << %w(hbx_enrollment.household.family.id, hbx_enrollment.hbx_id, hbx_enrollment.plan.name, hbx_enrollment.plan.hios_id,
           hbx_enrollment.coverage_kind, hbx_enrollment.plan.coverage_kind hbx_enrollment.kind hbx_enrollment.created_at
           hbx_enrollment.aasm_state subscriber is_active?)
 
@@ -21,7 +21,7 @@ while offset < Family.count
         end
 
         csv << [hbx_enrollment.household.family.id, hbx_enrollment.hbx_id,
-                hbx_enrollment.plan.name, hbx_enrollment.coverage_kind, hbx_enrollment.plan.coverage_kind,
+                hbx_enrollment.plan.name, hbx_enrollment.plan.hios_id, hbx_enrollment.coverage_kind, hbx_enrollment.plan.coverage_kind,
                 hbx_enrollment.kind, hbx_enrollment.created_at, hbx_enrollment.aasm_state, subscriber, hbx_enrollment.is_active]
       end
     rescue Exception => e
