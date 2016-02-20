@@ -134,17 +134,17 @@ RSpec.describe User, :type => :model do
     context "can_update_organization?" do
       let(:person) {FactoryGirl.build(:person)}
       let(:user) {FactoryGirl.build(:user)}
+      let(:employer_profile) {FactoryGirl.build(:employer_profile)}
       before do
         user.person = person
       end
 
       it "should return true when has hbx staff role" do
         user.roles = ["hbx_staff"]
-        expect(user.can_update_organization?(nil)).to be_truthy
+        expect(user.can_update_organization?(employer_profile)).to be_truthy
       end
 
       context "has broker role" do
-        let(:employer_profile) {FactoryGirl.build(:employer_profile)}
         let(:agent) {double}
         before do
           user.roles = ["broker"]
@@ -155,11 +155,35 @@ RSpec.describe User, :type => :model do
         end
 
         it "should return true" do
-          allow(employer_profile).to receive(:active_broker_agency_account).and_return agent
-          allow(agent).to receive(:writing_agent).and_return agent
-          allow(agent).to receive(:person).and_return person
+          allow(user).to receive(:is_broker_for_employer?).and_return true
           expect(user.can_update_organization?(employer_profile)).to be_truthy
         end
+      end
+    end
+
+    context "is_broker_for_employer?" do
+      let(:person) {FactoryGirl.build(:person)}
+      let(:user) {FactoryGirl.build(:user)}
+      let(:employer_profile) {FactoryGirl.build(:employer_profile)}
+      let(:broker_role) {FactoryGirl.build(:broker_role)}
+      before do
+        user.person = person
+      end
+
+      it "should return false when person has not broker_agency_staff_roles" do
+        person.broker_agency_staff_roles = nil
+        expect(user.is_broker_for_employer?(employer_profile.id)).to be_falsey
+      end
+
+      it "should return false when person has not broker_role" do
+        person.broker_role = nil
+        expect(user.is_broker_for_employer?(employer_profile.id)).to be_falsey
+      end
+
+      it "should return true when person has broker_role for this employer" do
+        person.broker_role = broker_role
+        allow(EmployerProfile).to receive(:find_by_writing_agent).and_return [employer_profile]
+        expect(user.is_broker_for_employer?(employer_profile.id)).to be_truthy
       end
     end
   end
