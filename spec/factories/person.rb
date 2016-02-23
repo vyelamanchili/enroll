@@ -4,7 +4,7 @@ FactoryGirl.define do
     last_name Faker::Name.last_name
     gender ['male', 'female'].shuffle.sample(1).first
     dob Faker::Time.backward(10950).to_date #up to 30 years ago
-    ssn "#{Faker::Number.number(3)}-#{Faker::Number.number(2)}-#{Faker::Number.number(4)}")
+    ssn "#{Faker::Number.number(3)}-#{Faker::Number.number(2)}-#{Faker::Number.number(4)}"
     is_active true
     # The user possibly gets associated by the enrollment_factory. Use the consumer_role_for(user) method to achieve building the user with a consumer role and associating with a user.
 

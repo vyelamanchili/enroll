@@ -7,6 +7,11 @@ FactoryGirl.define do
     authentication_token Faker::Number.hexadecimal(20)
     approved true
     roles ['web_service']
+    
+    # Trait to create person and family through the enrollment factory
+    trait :with_consumer_role do
+      after(:create) { |user| consumer_role_for(user) }
+    end
   end
 
   # trait :without_email do
