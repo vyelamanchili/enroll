@@ -8,7 +8,7 @@ organizations.each do |org|
     benefit_group.elected_plans.each do |elected_plan|
       begin
         if elected_plan.coverage_kind == 'dental'
-          puts "#{org.employer_profile.legal_name}, #{org.employer_profile.fein}, #{benefit_group.title}, #{elected_plan.name}, #{benefit_group.plan_year.start_on}"
+          puts "#{org.employer_profile.legal_name}, #{org.employer_profile.fein}, #{benefit_group.title}, #{elected_plan.name},  #{elected_plan.hios_id}, #{benefit_group.plan_year.start_on}"
         end
       rescue Exception => e
         puts "#{org.id} " + e.message
