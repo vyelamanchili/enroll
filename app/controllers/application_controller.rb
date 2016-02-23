@@ -190,14 +190,15 @@ class ApplicationController < ActionController::Base
 
     append_after_action :clear_current_user
 
-    def set_current_person
-      if policy(:application_controller).set_current_person? && session[:person_id].present?
-        @person = Person.find(session[:person_id])
-      else
-        @person = current_user.person
-      end
-      redirect_to logout_saml_index_path if required && !set_current_person_succeeded?
+  def set_current_person(required=true)
+    if policy(:application_controller).set_current_person?# && session[:person_id].present?
+      @person = Person.find(session[:person_id])
+    else
+      @person = current_user.person
     end
+    #redirect_to logout_saml_index_path if required && !set_current_person_succeeded? # what is this required check?
+    redirect_to logout_saml_index_path if require && !set_current_person_succeeded?
+  end
 
     def set_current_person_succeeded?
       return true if @person
