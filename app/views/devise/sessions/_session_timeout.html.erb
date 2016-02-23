@@ -1,0 +1,18 @@
+<div class="modal" id="sessionTimeoutModal" tabindex="-1" role="dialog" role="document">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Warning</h4>
+      </div>
+      <div class="modal-body">
+        <p>
+          Your session has timed out due to inactivity. Please log back in.
+        </p>
+        <ul class="application-warnings"></ul>
+      </div>
+      <div class="modal-footer">
+        <%= link_to "Login", new_user_session_path, class: "btn btn-primary btn-br mtz btn-small" %>
+      </div>
+    </div>
+  </div>
+</div>
