@@ -347,19 +347,8 @@ class User
 
   def can_update_organization?(employer_profile)
     return false if employer_profile.blank?
-    has_hbx_staff_role? || (has_broker_role? && is_broker_for_employer?(employer_profile.id))
-  end
-
-  def is_broker_for_employer?(employer_id)
-    return false unless person.broker_agency_staff_roles.present? || person.broker_role
-
-    if person.broker_role
-      employers = ::EmployerProfile.find_by_writing_agent(person.broker_role)
-    else
-      broker_agency_profiles = person.broker_agency_staff_roles.map {|role| ::BrokerAgencyProfile.find(role.broker_agency_profile_id)}
-      employers = broker_agency_profiles.map { |bap| ::EmployerProfile.find_by_broker_agency_profile(bap) }.flatten
-    end
-    employers.map(&:id).map(&:to_s).include?(employer_id.to_s)
+    employer_profile_policy = AccessPolicies::EmployerProfile.new(self)
+    has_hbx_staff_role? || (has_broker_role? && employer_profile_policy.is_broker_for_employer?(employer_profile.id))
   end
 
   private
