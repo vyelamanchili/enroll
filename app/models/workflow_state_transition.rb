@@ -10,6 +10,7 @@ class WorkflowStateTransition
   field :reason, type: String
   field :comment, type: String
   field :user_id, type: BSON::ObjectId
+  field :transition_complete, type: Boolean, default: false
 
   before_validation :set_transition_timestamp
 
