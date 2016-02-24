@@ -29,6 +29,8 @@ class CensusEmployee < CensusMember
     cascade_callbacks: true,
     validate: true
 
+  embeds_many :workflow_state_transitions, as: :transitional
+
   accepts_nested_attributes_for :census_dependents, :benefit_group_assignments
 
   validates_presence_of :employer_profile_id, :ssn, :dob, :hired_on, :is_business_owner
@@ -280,12 +282,35 @@ class CensusEmployee < CensusMember
         end
       end
 
-      self.employment_terminated_on = employment_terminated_on
-      self.coverage_terminated_on = earliest_coverage_termination_on(employment_terminated_on)
+      if employment_terminated_on <= TimeKeeper.date_of_record
 
-      active_benefit_group_assignment.terminate_coverage! if active_benefit_group_assignment.present?
-      renewal_benefit_group_assignment.terminate_coverage! if renewal_benefit_group_assignment.present?
-      terminate_employee_role!
+        self.employment_terminated_on = employment_terminated_on
+        self.coverage_terminated_on = earliest_coverage_termination_on(employment_terminated_on)
+
+        active_benefit_group_assignment.terminate_coverage! if active_benefit_group_assignment.present?
+        renewal_benefit_group_assignment.terminate_coverage! if renewal_benefit_group_assignment.present?
+        terminate_employee_role!
+
+      else
+        current_future_terminations = 0
+        if self.try(:workflow_state_transitions)
+          wft = self.workflow_state_transitions.where(:"transition_complete" => false, :to_state => "employment_terminated").order(:created_at.desc)
+          current_future_terminations = wft.count
+        end
+
+        if current_future_terminations == 0
+          self.workflow_state_transitions << WorkflowStateTransition.new(
+            from_state: self.aasm_state,
+            to_state: "employment_terminated",
+            transition_at: employment_terminated_on
+          )
+          self.employment_terminated_on = employment_terminated_on.to_date.end_of_day
+        else # update current workflow_transition if new termination date is set
+          wft.first.transition_at = employment_terminated_on
+          self.employment_terminated_on = employment_terminated_on.to_date.end_of_day
+        end
+      end
+
 
     else
       message = "Error terminating employment: unable to terminate employee role for: #{self.full_name}"
@@ -394,6 +419,23 @@ class CensusEmployee < CensusMember
       query.to_a
     end
 
+    def process_future_terminations(newdate)
+
+      # find all Workflow Transitions where it's not completed and the transition date is less than TODAY
+      ce = CensusEmployee.where(:"workflow_state_transitions.transition_at" =>
+        {"$lte" => TimeKeeper.date_of_record}, :"workflow_state_transitions.to_state" => "employment_terminated",
+        :"workflow_state_transitions.transition_complete" => false)
+
+
+      ce.each do |emp|
+        wst = emp.workflow_state_transitions.where(:transition_complete => false, :to_state => "employment_terminated")
+        emp.terminate_employment!(wst.first.transition_at)
+        wst.first.transition_complete = true
+        emp.save
+      end
+
+    end
+
   end
 
   aasm do
@@ -455,8 +497,13 @@ class CensusEmployee < CensusMember
   end
 
   def check_coverage_terminated_on
+<<<<<<< HEAD
     if employment_terminated_on && employment_terminated_on <= TimeKeeper.date_of_record - 60.days
       errors.add(:base, "Employee termination must be within the past 60 days")
+=======
+    if employment_terminated_on and employment_terminated_on < TimeKeeper.date_of_record - 60.days || employment_terminated_on > TimeKeeper.date_of_record + 60.days
+      errors.add(:base, "Employee termination must be within the past 60 days or within the next 60 days")
+>>>>>>> b67fdca... Refs #2186 Ability to Terminate Employees in the future
     end
   end
 

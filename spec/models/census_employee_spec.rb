@@ -370,7 +370,7 @@ RSpec.describe CensusEmployee, type: :model, dbclean: :after_each do
       let(:er2_active_employee_count)      { 1 }
       let(:er2_terminated_employee_count)  { 1 }
 
-      let(:employee_count)                 { 
+      let(:employee_count)                 {
                                               er1_active_employee_count +
                                               er1_terminated_employee_count +
                                               er1_rehired_employee_count +
@@ -391,11 +391,11 @@ RSpec.describe CensusEmployee, type: :model, dbclean: :after_each do
 
       let(:er1_active_employees)      { FactoryGirl.create_list(:census_employee, er1_active_employee_count,
                                                                  employer_profile: employer_profile_1
-                                                                ) 
+                                                                )
                                                               }
       let(:er1_terminated_employees)  { FactoryGirl.create_list(:census_employee, er1_terminated_employee_count,
                                                                  employer_profile: employer_profile_1
-                                                                ) 
+                                                                )
                                                               }
       let(:er1_rehired_employees)     { FactoryGirl.create_list(:census_employee, er1_rehired_employee_count,
                                                                  employer_profile: employer_profile_1
@@ -403,20 +403,20 @@ RSpec.describe CensusEmployee, type: :model, dbclean: :after_each do
                                                           }
       let(:er2_active_employees)      { FactoryGirl.create_list(:census_employee, er2_active_employee_count,
                                                                  employer_profile: employer_profile_2
-                                                                ) 
+                                                                )
                                                               }
       let(:er2_terminated_employees)  { FactoryGirl.create_list(:census_employee, er2_terminated_employee_count,
                                                                  employer_profile: employer_profile_2
-                                                                ) 
+                                                                )
                                                               }
 
       before do
-        er1_active_employees.each do |ee| 
+        er1_active_employees.each do |ee|
           ee.aasm_state = "employee_role_linked"
           ee.save!
         end
 
-        er1_terminated_employees.each do |ee| 
+        er1_terminated_employees.each do |ee|
           ee.aasm_state = "employment_terminated"
           ee.employment_terminated_on = today
           ee.save!
@@ -428,7 +428,7 @@ RSpec.describe CensusEmployee, type: :model, dbclean: :after_each do
           ee.save!
         end
 
-        er2_active_employees.each do |ee| 
+        er2_active_employees.each do |ee|
           ee.aasm_state = "employee_role_linked"
           ee.save!
         end
@@ -462,7 +462,7 @@ RSpec.describe CensusEmployee, type: :model, dbclean: :after_each do
 
       context "and for one employer, the set of employees terminated since company joined the exchange are queried" do
         it "should find the correct set" do
-          expect(CensusEmployee.find_all_terminated(employer_profiles: [employer_profile_1], 
+          expect(CensusEmployee.find_all_terminated(employer_profiles: [employer_profile_1],
                                                     date_range: last_year_to_date).size).to eq er1_termination_count
         end
       end
@@ -614,8 +614,14 @@ RSpec.describe CensusEmployee, type: :model, dbclean: :after_each do
       expect(census_employee.errors[:employment_terminated_on].any?).to be_truthy
     end
 
-    it "should fail when terminated date not within 60 days" do
+    it "should fail when terminated date not within the past 60 days" do
       census_employee.employment_terminated_on = TimeKeeper.date_of_record - 75.days
+      expect(census_employee.valid?).to be_falsey
+      expect(census_employee.errors[:base].any?).to be_truthy
+    end
+
+    it "should fail when terminated date is not in the withing the next 60 days" do
+      census_employee.employment_terminated_on = TimeKeeper.date_of_record + 75.days
       expect(census_employee.valid?).to be_falsey
       expect(census_employee.errors[:base].any?).to be_truthy
     end
