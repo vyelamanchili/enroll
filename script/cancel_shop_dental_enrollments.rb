@@ -1,64 +1,31 @@
-# ticket https://devops.dchbx.org/redmine/issues/5142
-# this script will
-# cancel any dental enrollments in shop
-
-logger = Logger.new("#{Rails.root}/log/cancel_shop_dental_enrollments.log")
-
-csv = CSV.open("cancel_shop_dental_enrollments.csv", "w")
-csv << %w(hbx_enrollment.household.family.id, hbx_enrollment.id
-          hbx_enrollment.coverage_kind, hbx_enrollment.kind  hbx_enrollment.aasm_state
-          person employer_name )
-ENROLLMENT_CANCELLABLE_STATES = [:auto_renewing, :renewing_coverage_selected, :renewing_transmitted_to_carrier,
-                                 :renewing_coverage_enrolled, :coverage_selected, :transmitted_to_carrier, :coverage_renewed,
-                                 :enrolled_contingent, :unverified, :renewing_waived]
-
-
 dental_plans = Plan.where(:coverage_kind => "dental")
 dental_ids = dental_plans.map(&:id)
-shop_dental_families = families = Family.where({
-                                                   "households.hbx_enrollments" => {
-                                                       "$elemMatch" => {
-                                                           "benefit_group_id" => {"$ne" => nil},
-                                                           "plan_id" => {"$in" => dental_ids}
-                                                       }
-                                                   }
-                                               })
+families = Family.where({"households.hbx_enrollments" => {"$elemMatch" => {"benefit_group_id" => {"$ne" => nil}, "plan_id" => {"$in" => dental_ids}}}})
 
-shop_dental_families.flat_map(&:households).flat_map(&:hbx_enrollments).each do |hbx_enrollment|
-  begin
-    next unless hbx_enrollment.plan.coverage_kind == "dental"
+families.each do |fam|
+  fam.households.each do |hh|
+    hh.hbx_enrollments.each do |en|
+      if (!en.benefit_group_assignment_id.nil?) && (!en.plan_id.blank?) && en.plan.coverage_kind == "dental"
+        puts en.hbx_id
+        other_health_policy = fam.households.flat_map(&:hbx_enrollments).select do |other_en|
+          (other_en.benefit_group_assignment_id == en.benefit_group_assignment_id) &&
+              (!other_en.plan.nil?) &&
+              (other_en.plan.coverage_kind == "health") &&
+              (other_en.aasm_state == "coverage_selected")
+        end
+        latest_health = other_health_policy.sort_by(&:submitted_at).last
 
-    # cancel any dental enrollments in shop
-    if ENROLLMENT_CANCELLABLE_STATES.include? hbx_enrollment.aasm_state.to_sym
-      hbx_enrollment.cancel_coverage!
-    else
-      hbx_enrollment.aasm_state = 'coverage_canceled'
+        en.terminated_on = en.effective_on
+        en.hbx_enrollment_members.each do |hbx_enrollment_member|
+          hbx_enrollment_member.coverage_end_on = hbx_enrollment_member.coverage_start_on
+        end
+        en.coverage_kind = 'dental'
+        en.save!
+
+        benefit_group_assignment = en.benefit_group_assignment
+        benefit_group_assignment.hbx_enrollment_id = latest_health.id
+        benefit_group_assignment.save!
+      end
     end
-
-    hbx_enrollment.terminated_on = hbx_enrollment.effective_on
-
-    hbx_enrollment.hbx_enrollment_members.each do |hbx_enrollment_member|
-      hbx_enrollment_member.coverage_end_on = hbx_enrollment_member.coverage_start_on
-    end
-
-    hbx_enrollment.save
-    hbx_enrollment.reload
-
-    if hbx_enrollment.subscriber
-      person_name = hbx_enrollment.subscriber.person.first_name + " " + hbx_enrollment.subscriber.person.last_name
-    else
-      person_name = ""
-    end
-
-    if hbx_enrollment.employer_profile
-      employer_name = hbx_enrollment.employer_profile.legal_name
-    else
-      employer_name = ""
-    end
-
-    csv << [hbx_enrollment.household.family.id, hbx_enrollment.id, hbx_enrollment.coverage_kind,
-            hbx_enrollment.kind, hbx_enrollment.aasm_state, person_name, employer_name]
-  rescue Exception => e
-    logger.info "Family #{hbx_enrollment.household.family.id} hbx_enrollment #{hbx_enrollment.id} " + e.message + " " + e.backtrace.to_s
   end
 end
