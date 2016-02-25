@@ -1,7 +1,6 @@
 # ticket https://devops.dchbx.org/redmine/issues/5142
 # this script will
-# 1) fix enrollments having the wrong coverage_kind
-# 2) cancel any dental enrollments in shop
+# cancel any dental enrollments in shop
 
 logger = Logger.new("#{Rails.root}/log/cancel_shop_dental_enrollments.log")
 
