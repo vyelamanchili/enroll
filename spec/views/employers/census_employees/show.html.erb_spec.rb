@@ -64,6 +64,11 @@ RSpec.describe "employers/census_employees/show.html.erb" do
     expect(rendered).to match /You Pay/
   end
 
+  it "should show coverage begin" do
+    render template: "employers/census_employees/show.html.erb"
+    expect(rendered).to match /Coverage Begin/
+  end
+
   it "should show the info of employee role" do
     allow(benefit_group_assignment).to receive(:coverage_waived?).and_return(false)
     allow(benefit_group_assignment).to receive(:coverage_selected?).and_return(true)
