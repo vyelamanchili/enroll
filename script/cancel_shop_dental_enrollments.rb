@@ -16,11 +16,7 @@ families.each do |fam|
           end
           latest_health = other_health_policy.sort_by(&:submitted_at).last
 
-          if en.may_cancel_coverage?
-            en.cancel_coverage!
-          else
-            en.aasm_state = 'coverage_canceled'
-          end
+          en.aasm_state = 'coverage_canceled'
 
           en.terminated_on = en.effective_on
           en.hbx_enrollment_members.each do |hbx_enrollment_member|
