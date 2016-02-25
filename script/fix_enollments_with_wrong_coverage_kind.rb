@@ -1,7 +1,6 @@
 # ticket https://devops.dchbx.org/redmine/issues/5142
 # this script will
 # 1) fix enrollments having the wrong coverage_kind
-# 2) cancel any dental enrollments in shop
 
 logger = Logger.new("#{Rails.root}/log/fix_enrollment_coverage_kind.log")
 
@@ -23,11 +22,6 @@ while (offset <= Family.count)
 
         # 1) fix enrollments having the wrong coverage_kind
         hbx_enrollment.coverage_kind = hbx_enrollment.plan.coverage_kind
-
-        # 2) cancel any dental enrollments in shop
-        if (hbx_enrollment.kind == "employer_sponsored") && (hbx_enrollment.coverage_kind == 'dental') && (ENROLLMENT_CANCELLABLE_STATES.include? hbx_enrollment.aasm_state.to_sym)
-          hbx_enrollment.cancel_coverage!
-        end
 
         hbx_enrollment.save
         hbx_enrollment.reload
