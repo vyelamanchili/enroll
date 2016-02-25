@@ -8,9 +8,6 @@
 @csv << %w(hbx_enrollment.household.family.id, hbx_enrollment.id
           hbx_enrollment.coverage_kind, hbx_enrollment.plan.coverage_kind hbx_enrollment.kind  hbx_enrollment.aasm_state
           person employer_name )
-ENROLLMENT_CANCELLABLE_STATES = [:auto_renewing, :renewing_coverage_selected, :renewing_transmitted_to_carrier,
-                                 :renewing_coverage_enrolled, :coverage_selected, :transmitted_to_carrier, :coverage_renewed,
-                                 :enrolled_contingent, :unverified, :renewing_waived]
 
 
 def fix_coverage_kind(families)
