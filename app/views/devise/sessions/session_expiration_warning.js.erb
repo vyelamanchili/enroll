@@ -1,4 +1,3 @@
-
 <% if @time_left <= 30 %>
   $('.navbar-white').before("<%= escape_javascript(render partial: "devise/sessions/session_expiration_warning") %>");
   $('#sessionExpirationWarningModal').show();
