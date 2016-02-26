@@ -130,37 +130,6 @@ RSpec.describe User, :type => :model do
         expect(user.person).to be_an_instance_of Person
       end
     end
-
-    context "can_update_organization?" do
-      let(:person) {FactoryGirl.build(:person)}
-      let(:user) {FactoryGirl.build(:user)}
-      let(:employer_profile) {FactoryGirl.build(:employer_profile)}
-      let(:broker_role) {FactoryGirl.build(:broker_role)}
-      before do
-        user.person = person
-      end
-
-      it "should return true when has hbx staff role" do
-        user.roles = ["hbx_staff"]
-        expect(user.can_update_organization?(employer_profile)).to be_truthy
-      end
-
-      context "has broker role" do
-        before do
-          user.roles = ["broker"]
-        end
-
-        it "should return false when without employer_staff" do
-          expect(user.can_update_organization?(nil)).to be_falsey
-        end
-
-        it "should return true" do
-          person.broker_role = broker_role
-          allow(EmployerProfile).to receive(:find_by_writing_agent).and_return [employer_profile]
-          expect(user.can_update_organization?(employer_profile)).to be_truthy
-        end
-      end
-    end
   end
 end
 

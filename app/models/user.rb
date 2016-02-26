@@ -345,12 +345,6 @@ class User
     settings
   end
 
-  def can_update_organization?(employer_profile)
-    return false if employer_profile.blank?
-    employer_profile_policy = AccessPolicies::EmployerProfile.new(self)
-    has_hbx_staff_role? || (has_broker_role? && employer_profile_policy.is_broker_for_employer?(employer_profile.id))
-  end
-
   private
   # Remove indexed, unique, empty attributes from document
   def strip_empty_fields

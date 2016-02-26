@@ -6,6 +6,7 @@ class Employers::EmployerProfilesController < ApplicationController
   before_action :check_show_permissions, only: [:show, :show_profile, :destroy, :inbox, :bulk_employee_upload, :bulk_employee_upload_form]
   before_action :check_index_permissions, only: [:index]
   before_action :check_employer_staff_role, only: [:new]
+  before_action :check_update_permissions, only: [:update]
   skip_before_action :verify_authenticity_token, only: [:show], if: :check_origin?
 
   layout "two_column", except: [:new]
@@ -187,35 +188,31 @@ class Employers::EmployerProfilesController < ApplicationController
 
     @employer_profile = @organization.employer_profile
     @employer = @employer_profile.match_employer(current_user)
-    if (current_user.has_employer_staff_role? && @employer_profile.staff_roles.include?(current_user.person)) || (@employer.blank? && current_user.can_update_organization?(@employer_profile))
-      @organization.assign_attributes(organization_profile_params)
 
-      #clear office_locations, don't worry, we will recreate
-      @organization.assign_attributes(:office_locations => [])
-      @organization.save(validate: false)
+    @organization.assign_attributes(organization_profile_params)
 
-      if @employer.present?
-        #Fix issue 3770. Make sure DOB is in correct format
-        employer_attributes = employer_params
-        employer_attributes["dob"] = DateTime.strptime(employer_attributes["dob"], '%m/%d/%Y').try(:to_date)
-      end
+    #clear office_locations, don't worry, we will recreate
+    @organization.assign_attributes(:office_locations => [])
+    @organization.save(validate: false)
 
-      if @organization.update_attributes(employer_profile_params) && (@employer.present? ? @employer.update_attributes(employer_attributes) : true)
-        flash[:notice] = 'Employer successfully Updated.'
-        redirect_to edit_employers_employer_profile_path(@organization)
-      else
-        org_error_msg = @organization.errors.full_messages.join(",").humanize if @organization.errors.present?
+    if @employer.present?
+      #Fix issue 3770. Make sure DOB is in correct format
+      employer_attributes = employer_params
+      employer_attributes["dob"] = DateTime.strptime(employer_attributes["dob"], '%m/%d/%Y').try(:to_date)
+    end
 
-        #in case there was an error, reload from saved json
-        @organization.assign_attributes(:office_locations => @organization_dup)
-        @organization.save(validate: false)
-        #@organization.reload
-        flash[:error] = "Employer information not saved. #{org_error_msg}."
-        redirect_to edit_employers_employer_profile_path(@organization)
-      end
+    if @organization.update_attributes(employer_profile_params) && (@employer.present? ? @employer.update_attributes(employer_attributes) : true)
+      flash[:notice] = 'Employer successfully Updated.'
+      redirect_to edit_employers_employer_profile_path(@organization)
     else
-      flash[:error] = 'You do not have permissions to update the details'
-      redirect_to edit_employers_employer_profile_path(@employer_profile)
+      org_error_msg = @organization.errors.full_messages.join(",").humanize if @organization.errors.present?
+
+      #in case there was an error, reload from saved json
+      @organization.assign_attributes(:office_locations => @organization_dup)
+      @organization.save(validate: false)
+      #@organization.reload
+      flash[:error] = "Employer information not saved. #{org_error_msg}."
+      redirect_to edit_employers_employer_profile_path(@organization)
     end
   end
 
@@ -262,6 +259,9 @@ class Employers::EmployerProfilesController < ApplicationController
     redirect_to employers_employer_profile_path(:id => current_user.person.employer_staff_roles.first.employer_profile_id)
   end
 
+  def redirect_to_edit(organization)
+    redirect_to edit_employers_employer_profile_path(organization), flash: {error: 'You do not have permissions to update the details'}
+  end
 
   private
   def paginate_employees
@@ -326,6 +326,13 @@ class Employers::EmployerProfilesController < ApplicationController
   def check_index_permissions
     policy = ::AccessPolicies::EmployerProfile.new(current_user)
     policy.authorize_index(params[:broker_agency_id], self)
+  end
+
+  def check_update_permissions
+    organization = Organization.find(params[:id])
+    ep = organization.employer_profile
+    policy = ::AccessPolicies::EmployerProfile.new(current_user)
+    policy.authorize_update(ep, self)
   end
 
   def check_admin_staff_role

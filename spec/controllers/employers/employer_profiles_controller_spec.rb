@@ -539,20 +539,6 @@ RSpec.describe Employers::EmployerProfilesController do
       end
     end
 
-    context "can not match employer" do
-      before do
-        allow(employer_profile).to receive(:match_employer).and_return nil
-        allow(user).to receive(:has_employer_staff_role?).and_return false
-      end
-
-      it "when user can update organization" do
-        allow(user).to receive(:can_update_organization?).and_return true
-        sign_in(user)
-        put :update, id: organization.id
-        expect(flash[:error]).not_to match "You do not have permissions to update the details"
-      end
-    end
-
      context "given the company have managing staff" do
       it "should render edit template" do
         allow(user).to receive(:save).and_return(true)

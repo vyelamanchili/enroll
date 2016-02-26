@@ -103,4 +103,50 @@ describe AccessPolicies::EmployerProfile, :dbclean => :after_each do
       end
     end
   end
+
+  context "authorize update" do
+    context "for an employer staff user" do
+      let(:person) {FactoryGirl.create(:person, :with_employer_staff_role) }
+      let(:user) {FactoryGirl.create(:user, :employer_staff, person: person)}
+
+      it "should authorize when staff_roles include person" do
+        allow(employer_profile).to receive(:staff_roles).and_return([person])
+        expect(subject.authorize_update(employer_profile, controller)).to be_truthy
+      end
+
+      it "should redirect to edit when staff_roles not include person" do
+        allow(employer_profile).to receive(:staff_roles).and_return([])
+        allow(controller).to receive(:redirect_to_edit)
+        expect(subject.authorize_update(employer_profile, controller)).not_to be_truthy
+      end
+    end
+
+    context "for an admin user" do
+      let(:person) {FactoryGirl.create(:person, :with_hbx_staff_role) }
+
+      it "should authorize" do
+        allow(employer_profile).to receive(:match_employer).and_return nil
+        expect(subject.authorize_update(employer_profile, controller)).to be_truthy
+      end
+    end
+
+    context "for an broker user" do
+      let(:person) {FactoryGirl.create(:person) }
+      let(:user) {FactoryGirl.create(:user, :broker, person: person)}
+      before do
+        allow(employer_profile).to receive(:match_employer).and_return nil
+      end
+
+      it "should authorize" do
+        allow(subject).to receive(:is_broker_for_employer?).and_return true
+        expect(subject.authorize_update(employer_profile, controller)).to be_truthy
+      end
+
+      it "should redirect_to_edit" do
+        allow(controller).to receive(:redirect_to_edit)
+        allow(subject).to receive(:is_broker_for_employer?).and_return false
+        expect(subject.authorize_update(employer_profile, controller)).not_to be_truthy
+      end
+    end
+  end
 end

@@ -41,5 +41,13 @@ module AccessPolicies
       end
       employers.map(&:id).map(&:to_s).include?(employer_id.to_s)
     end
+
+    def authorize_update(employer_profile, controller)
+      return true if user.has_employer_staff_role? && employer_profile.staff_roles.include?(user.person)
+      employer = employer_profile.match_employer(user)
+      return true if employer.blank? && (user.has_hbx_staff_role? || (user.has_broker_role? && is_broker_for_employer?(employer_profile.id)))
+
+      controller.redirect_to_edit(employer_profile.organization)
+    end
   end
 end
