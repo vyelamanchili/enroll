@@ -1,41 +1,64 @@
+=begin
+  User and person are tied together manually. This is not the correct way to do this. I dealing you would use
+  ```
+  create :user, :with_consumer_role
+  ```
+  This uses the enrollment factory to tie everything together.
+
+  This spec is meant to be used to show a clean test and it should be refactored to use the enrollment factory as soon as possible.
+
+  Enrollment factory was not initially used because there were issues with with object cacheing and it causing problems with recreating the setup after the first test was run.
+=end
 require 'rails_helper'
 
-RSpec.describe Exchanges::AgentsController do
-  describe 'Agent Controller behavior' do
-    render_views
-    let(:person_user){Person.new(first_name: 'fred', last_name: 'flintstone')}
-    let(:current_user){FactoryGirl.create(:user)}
-    let(:signed_in?){ true }
-   
-     before :each do
-       allow(current_user).to receive(:person).and_return(person_user)
-     end
+module Exchanges
+  describe AgentsController do
+    # render_views
+    # Trait creates valid tie to a person
+    let(:user) {create :user}
+    let(:person) {create :person}
 
-    it 'renders home for CAC' do
-      current_user.roles=['csr']
-      current_user.person = person_user
-      person_user.csr_role = FactoryGirl.build(:csr_role, cac: true)
-      sign_in current_user
-      get :home
-      expect(response).to have_http_status(:success)
-      expect(response).to render_template("exchanges/agents/home")
-      expect(response.body).to match(/Certified Applicant Counselor/)
+
+    # let(:person_user){Person.new(first_name: 'fred', last_name: 'flintstone')}
+    # let(:current_user){FactoryGirl.create(:user)}
+    # let(:signed_in?){ true }
+    before do
+      person.update(user_id: user.id.to_s)
+      person.user.roles=['csr']
     end
 
-    it 'renders home for CSR' do
-      current_user.roles=['csr']
-      current_user.person = person_user
-      person_user.csr_role = FactoryGirl.build(:csr_role, cac: false)
-      sign_in current_user
-      get :home
-      expect(response).to have_http_status(:success)
-      expect(response).to render_template("exchanges/agents/home")
+    context 'Person csr_role cac: true ' do
+      before do
+        person.csr_role = FactoryGirl.build(:csr_role, cac: true)
+        sign_in person.user
+        session[:person_id] = person.id #unsure how this is being set in the controller
+        get :home
+      end
+
+      it 'sets @person' do
+        expect(assigns[:person]).to eq person
+      end
+
+      it 'sets @title' do # Initiating lazy loaded user does not create a person. Weird!
+        expect(assigns[:title]).to eq person.user.agent_title
+      end
     end
-    
-    it 'begins enrollment' do
-      sign_in current_user
-      get :begin_employee_enrollment
-      expect(response).to have_http_status(:redirect)
+
+    context 'Person csr_role cac: false' do
+      before do
+        person.csr_role = FactoryGirl.build(:csr_role, cac: false)
+        sign_in person.user
+        session[:person_id] = person.id
+        get :home
+      end
+
+      it 'sets @person' do
+        expect(assigns[:person]).to eq person
+      end
+
+      it 'sets @title' do
+        expect(assigns[:title]).to eq person.user.agent_title
+      end
     end
   end
 end

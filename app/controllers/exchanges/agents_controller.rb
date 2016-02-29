@@ -1,26 +1,26 @@
 class Exchanges::AgentsController < ApplicationController
   before_action :check_agent_role
   def home
-     @title = current_user.agent_title
-     person_id = session[:person_id]
-     @person=nil
-     @person = Person.find(person_id) if person_id.present?
-     if @person && !@person.csr_role && !@person.assister_role
-       root = 'http://' + request.env["HTTP_HOST"]+'/exchanges/agents/resume_enrollment?person_id=' + person_id
-       hbx_profile = HbxProfile.find_by_state_abbreviation('DC')
-       message_params = {
-         sender_id: hbx_profile.id,
-         parent_message_id: hbx_profile.id,
-         from: 'Plan Shopping Web Portal',
-         to: "Agent Mailbox",
-         subject: "Account link for  #{@person.full_name}. ",
-         body: "<a href='" + root+"'>Link to access #{@person.full_name}</a>  <br>",
-       }
-       create_secure_message message_params, current_user.person, :inbox
-     end
-     session[:person_id] = nil
-     session[:original_application_type] = nil
-     render 'home'
+    @title = current_user.agent_title
+    person_id = session[:person_id]
+    # @person=nil # Not needed
+    @person = Person.find(person_id) if person_id.present?
+    if @person && !@person.csr_role && !@person.assister_role
+      root = 'http://' + request.env["HTTP_HOST"]+'/exchanges/agents/resume_enrollment?person_id=' + person_id
+      hbx_profile = HbxProfile.find_by_state_abbreviation('DC')
+      message_params = {
+        sender_id: hbx_profile.id,
+        parent_message_id: hbx_profile.id,
+        from: 'Plan Shopping Web Portal',
+        to: "Agent Mailbox",
+        subject: "Account link for  #{@person.full_name}. ",
+        body: "<a href='" + root+"'>Link to access #{@person.full_name}</a>  <br>",
+      }
+      create_secure_message message_params, current_user.person, :inbox
+    end
+    session[:person_id] = nil
+    session[:original_application_type] = nil
+    render 'home'
   end
 
   def begin_employee_enrollment
@@ -79,7 +79,3 @@ class Exchanges::AgentsController < ApplicationController
     return bookmark_path
   end
 end
-
-
-
-
