@@ -5,6 +5,7 @@ class EmployerStaffRole
 
   embedded_in :person
 
+  field :is_active, type: Boolean, default: true
   field :is_owner, type: Boolean, default: false
   field :employer_profile_id, type: BSON::ObjectId
   field :bookmark_url, type: String
@@ -18,20 +19,16 @@ class EmployerStaffRole
 
     event :approve do
       transitions from: [:is_applicant, :is_active], to: :is_active
-      #is_active = true
+      is_active = true
     end
     event :close do
       transitions from: [:is_applicant, :is_active, :is_closed], to: :is_closed
-      #is_active = false
+      is_active = false
     end
   end
 
   def current_state
     aasm_state.humanize.titleize
-  end
-
-  def is_active
-    aasm_state == 'is_active'
   end
 
 end

@@ -8,7 +8,10 @@ Feature: Employer Profile
     Given Hannah is a person
     Given Hannah is the staff person for an employer
     When Hannah accesses the Employer Portal
-      And Hannah edits Business information
+    And Hannah decides to Update Business information
+    Then Point of Contact count is 1
+
+    Then Hannah cannot remove EmployerStaffRole from Hannah
     Then Point of Contact count is 1
     When Hannah adds an EmployerStaffRole to Sarah
     Then Point of Contact count is 2
@@ -23,7 +26,7 @@ Feature: Employer Profile
     Then Hannah logs out
 
     When Sarah accesses the Employer Portal
-      And Sarah edits Business information
+    And Sarah decides to Update Business information
     Then Point of Contact count is 1
     Then Sarah logs out
     Then show elapsed time

@@ -26,17 +26,21 @@ class Employers::EmployerStaffRolesController < Employers::EmployersController
     employer_profile_id = params[:id]
     employer_profile = EmployerProfile.find(employer_profile_id)
     staff_id = params[:staff_id]
-    @status, @result = Person.deactivate_employer_staff_role(staff_id, employer_profile_id)
-    flash[:error] = ('Role was not deactivated because '  + @result) unless @status
+    if Person.staff_for_employer(employer_profile).count <= 1
+      flash[:error] = 'Please add another staff role before deleting this role'
+    else
+      @status, @result = Person.deactivate_employer_staff_role(staff_id, employer_profile_id)
+      @status ? (flash[:notice] = 'Staff role was deleted') : (flash[:error] = ('Role was not deactivated because '  + @result))
+    end
     redirect_to edit_employers_employer_profile_path(employer_profile.organization)
   end
 
   private
   # Check to see if current_user is authorized to access the submitted employer profile
   def check_access_to_employer_profile
-    ep = EmployerProfile.find(params[:id])
+    employer_profile = EmployerProfile.find(params[:id])
     policy = ::AccessPolicies::EmployerProfile.new(current_user)
-    policy.authorize_edit(ep, self, current_user)
+    policy.authorize_edit(employer_profile, self)
   end
 
 end

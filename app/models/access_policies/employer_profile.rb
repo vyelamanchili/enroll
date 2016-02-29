@@ -43,10 +43,10 @@ module AccessPolicies
       employers.map(&:id).map(&:to_s).include?(employer_id.to_s)
     end
 
-    def authorize_edit(employer_profile, controller, current_user)
-      return(true) if current_user.has_hbx_staff_role? || is_broker_for_employer?(employer_profile.id)
-      return(true) if current_user.person.employer_staff_roles.detect{|role|role.is_active && role.employer_profile_id == employer_profile.id}
-      controller.redirect_to_new
+    def authorize_edit(employer_profile, controller)
+      return(true) if @user.has_hbx_staff_role? || is_broker_for_employer?(employer_profile.id)
+      return(true) if @user.person.employer_staff_roles.detect{|role|role.is_active && role.employer_profile_id == employer_profile.id}
+      controller.redirect_to_new and return
     end
   end
 end

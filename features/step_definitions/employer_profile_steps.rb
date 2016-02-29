@@ -30,7 +30,7 @@ When(/(\w+) accesses the Employer Portal/) do |person|
   end
 
 
-Then /(\w+) edits Business information/ do |person|
+Then /(\w+) decides to Update Business information/ do |person|
   @browser.a(class: /interaction-click-control-update-business-info/).wait_until_present
   @browser.a(class: /interaction-click-control-update-business-info/).click
 end
@@ -63,6 +63,11 @@ When /EmployerStaff removes EmployerStaffRole from (\w+)/ do |staff|
   @browser.link(id: @new_staff.id.to_s).click
 end
 
+Then /Hannah cannot remove EmployerStaffRole from Hannah/ do
+  staff = instance_variable_get '@Hannah'
+  @browser.link(id: staff.id.to_s).click
+  @browser.div(text: /before deleting this role/).wait_until_present
+end
 When /(\w+) removes EmployerStaffRole from (\w+)/ do |staff1, staff2|
   staff = instance_variable_get "@"+staff2 
   @browser.link(id: staff.id.to_s).click

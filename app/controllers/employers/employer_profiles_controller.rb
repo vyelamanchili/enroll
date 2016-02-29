@@ -321,13 +321,10 @@ class Employers::EmployerProfilesController < Employers::EmployersController
   end
 
   def check_access_to_organization
-    id_params = params.permit(:id, :employer_profile_id)
-    id = id_params[:id]
-    o = Organization.find(id)
-    ep = o.employer_profile.id
-    ep = EmployerProfile.find(ep)
+    id = params.permit(:id)[:id]
+    organization = Organization.find(id)
     policy = ::AccessPolicies::EmployerProfile.new(current_user)
-    policy.authorize_edit(ep, self, current_user)
+    policy.authorize_edit(organization.employer_profile, self)
   end
 
   def find_employer
@@ -343,10 +340,6 @@ class Employers::EmployerProfilesController < Employers::EmployersController
       :employer_profile_attributes => [:legal_name, :entity_kind, :dba]
     )
   end
-
-
-
-
 
   def employer_profile_params
     params.require(:organization).permit(
