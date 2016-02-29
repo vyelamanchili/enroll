@@ -53,5 +53,11 @@ FactoryGirl.define do
     roles ["broker_agency_staff"]
   end
 
+  # Trait to create person and family through the enrollment factory
+  # Method located in spec/suport/factories.rb
+    trait :with_consumer_role do
+      after(:create) { |user| consumer_role_for(user) }
+    end
+
   factory :invalid_user, traits: [:without_email, :without_password, :without_password_confirmation]
 end
