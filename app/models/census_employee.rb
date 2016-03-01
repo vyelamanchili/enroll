@@ -37,6 +37,7 @@ class CensusEmployee < CensusMember
   validate :allow_id_info_changes_only_in_eligible_state
   validate :check_census_dependents_relationship
   validate :no_duplicate_census_dependent_ssns
+  validate :check_if_hired_date_was_entered_manually
   after_update :update_hbx_enrollment_effective_on_by_hired_on
 
   index({aasm_state: 1})
@@ -456,6 +457,13 @@ class CensusEmployee < CensusMember
     unset("employee_role_id")
     self.benefit_group_assignments = []
     @employee_role = nil
+  end
+
+  def check_if_hired_date_was_entered_manually
+    if(hired_on > Date.today) 
+      message = "Hire Date cannot be in the future."
+      errors.add(:base, message)
+    end
   end
 end
 
