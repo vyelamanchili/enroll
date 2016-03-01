@@ -60,9 +60,14 @@ class HbxEnrollment
 
   field :elected_premium_credit, type: Money, default: 0.0
   field :applied_premium_credit, type: Money, default: 0.0
-  # TODO need to understand these two fields
+
+  # Portion of total available APTC allocated by consumer to this enrollment
   field :elected_aptc_pct, type: Float, default: 0.0
+
+  # Dollar amount of APTC allocated to this enrollment
   field :applied_aptc_amount, type: Money, default: 0.0
+
+  # Deprecate this field
   field :changing, type: Boolean, default: false
 
   field :effective_on, type: Date
@@ -135,6 +140,8 @@ class HbxEnrollment
 
   embeds_many :comments
   accepts_nested_attributes_for :comments, reject_if: proc { |attribs| attribs['content'].blank? }, allow_destroy: true
+
+  embeds_one :health_care_services_usage, as: :health_care_services_countable
 
   validates :kind,
             presence: true,
