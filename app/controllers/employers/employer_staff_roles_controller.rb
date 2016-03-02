@@ -32,6 +32,7 @@ class Employers::EmployerStaffRolesController < Employers::EmployersController
       @status, @result = Person.deactivate_employer_staff_role(staff_id, employer_profile_id)
       @status ? (flash[:notice] = 'Staff role was deleted') : (flash[:error] = ('Role was not deactivated because '  + @result))
     end
+
     redirect_to edit_employers_employer_profile_path(employer_profile.organization)
   end
 

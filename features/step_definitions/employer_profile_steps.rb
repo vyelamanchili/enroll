@@ -33,6 +33,8 @@ When(/(\w+) accesses the Employer Portal/) do |person|
 Then /(\w+) decides to Update Business information/ do |person|
   @browser.a(class: /interaction-click-control-update-business-info/).wait_until_present
   @browser.a(class: /interaction-click-control-update-business-info/).click
+  sleep 1
+  screenshot('update_business_info')
 end
 
 Given /(\w+) adds an EmployerStaffRole to (\w+)/ do |staff, new_staff|
@@ -81,3 +83,21 @@ end
 Then /show elapsed time/  do
   puts Time.now - @a
 end
+Then /(\w+) selects Turner Agency, Inc from the dropdown/ do |name|
+   @browser.text_field(id: 'employer_name').wait_until_present
+   @browser.text_field(id: 'employer_name').set('Tu')
+   @browser.span(class: 'twitter-typeahead').div(text: 'Turner Agency, Inc').wait_until_present
+   screenshot('dropdown_for_existing_company')
+   @browser.span(class: 'twitter-typeahead').div(text: 'Turner Agency, Inc').click
+   sleep 1
+   screenshot('display_data_for_existing_company')
+   #@browser.span(class: 'twitter-typeahead').div(class: 'tt-selectable').text
+   expect(@browser.input(id: 'employer_id').value).to be_truthy
+end
+Then /(\w+) is notified about Employer Staff Role pending status/ do |name|
+   @browser.button(class: 'interaction-click-control-confirm').click
+   sleep 1
+   expect(@browser.div(class: 'alert-notice').text).to match /application is pending/
+   expect(@browser.h2(text: 'Thank you for logging into your DC')).to be_truthy
+   screenshot('pending_person_stays_on_new_page')
+ end

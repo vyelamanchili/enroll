@@ -142,26 +142,31 @@ class Employers::EmployerProfilesController < Employers::EmployersController
   def edit
     @organization = Organization.find(params[:id])
     @employer_profile = @organization.employer_profile
-    @staff = Person.staff_for_employer(@employer_profile)
+    @staff = Person.staff_for_employer_including_pending(@employer_profile)
     @add_staff = params[:add_staff]
   end
 
   def create
+
     params.permit!
     @organization = Forms::EmployerProfile.new(params[:organization])
     organization_saved = false
     begin
-      organization_saved = @organization.save(current_user)
+      organization_saved = @organization.save(current_user, params[:employer_id])
     rescue Exception => e
       flash[:error] = e.message
       render action: "new"
       return
     end
-
     if organization_saved
       @person = current_user.person
       create_sso_account(current_user, current_user.person, 15, "employer") do
-        redirect_to employers_employer_profile_path(@organization.employer_profile, tab: 'home')
+        if params[:employer_id].present?
+          flash[:notice] = 'Your Employer Staff application is pending'
+          render action: 'new'
+        else
+          redirect_to employers_employer_profile_path(@organization.employer_profile, tab: 'home')
+        end  
       end
     else
       render action: "new"
@@ -279,8 +284,8 @@ class Employers::EmployerProfilesController < Employers::EmployersController
   end
 
   def check_employer_staff_role
-    if current_user.has_employer_staff_role?
-      redirect_to employers_employer_profile_path(:id => current_user.person.employer_staff_roles.first.employer_profile_id, :tab => "home")
+    if current_user.person && current_user.person.has_active_employer_staff_role?
+      redirect_to employers_employer_profile_path(:id => current_user.person.active_employer_staff_roles.first.employer_profile_id, :tab => "home")
     end
   end
 

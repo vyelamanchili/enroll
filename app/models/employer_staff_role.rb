@@ -5,13 +5,12 @@ class EmployerStaffRole
 
   embedded_in :person
 
-  field :is_active, type: Boolean, default: true
   field :is_owner, type: Boolean, default: false
   field :employer_profile_id, type: BSON::ObjectId
   field :bookmark_url, type: String
   validates_presence_of :employer_profile_id
   field :aasm_state, type: String, default: 'is_active'
-
+  scope :active, ->{ where(aasm_state: :is_active) }
   aasm do
     state :is_applicant    #Person has requested employer staff role with this company
     state :is_active     #Person has created a company, or been added, or request has been approved
@@ -19,11 +18,9 @@ class EmployerStaffRole
 
     event :approve do
       transitions from: [:is_applicant, :is_active], to: :is_active
-      is_active = true
     end
-    event :close do
+    event :close_role do
       transitions from: [:is_applicant, :is_active, :is_closed], to: :is_closed
-      is_active = false
     end
   end
 

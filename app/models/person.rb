@@ -428,6 +428,14 @@ class Person
     employee_roles.present? ? employee_roles.active : []
   end
 
+  def has_active_employer_staff_role?
+    employer_staff_roles.present? and employer_staff_roles.active.present?
+  end
+
+  def active_employer_staff_roles
+    employer_staff_roles.present? ? employer_staff_roles.active : []
+  end
+
   def has_multiple_roles?
     consumer_role.present? && employee_roles.present?
   end
@@ -544,7 +552,16 @@ class Person
       self.where(:employer_staff_roles => {
         '$elemMatch' => {
             employer_profile_id: employer_profile.id,
-            is_active: true
+            :aasm_state => :is_active
+        }
+        })
+    end
+
+    def staff_for_employer_including_pending(employer_profile)
+      self.where(:employer_staff_roles => {
+        '$elemMatch' => {
+            employer_profile_id: employer_profile.id,
+            :aasm_state.ne => :is_closed
         }
         })
     end
@@ -568,18 +585,21 @@ class Person
     # Returns false if employer staff role not matches
     # Returns true is role was marked inactive
     def deactivate_employer_staff_role(person_id, employer_profile_id)
+
       begin
         person = Person.find(person_id)
       rescue
         return false, 'Person not found'
       end
-      if role = person.employer_staff_roles.detect{|role| role.is_active && role.employer_profile_id.to_s == employer_profile_id.to_s}
-        role.update_attributes!({is_active: false})
+      if role = person.employer_staff_roles.detect{|role| role.is_active? && role.employer_profile_id.to_s == employer_profile_id.to_s}
+        role.update_attributes!(:aasm_state => :is_closed)
         return true, 'Employee Staff Role is inactive'
       else
         return false, 'No matching employer staff role'
       end
     end
+
+
   end
 
   # HACK
