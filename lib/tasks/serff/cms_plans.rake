@@ -7,7 +7,7 @@ require Rails.root.join('lib', 'object_builders', "cms", 'benefit_cost_sharing_b
 
 namespace :import do
 
-  task :network_information => :environment do
+  task :network_data => :environment do
     file = Dir.glob(File.join(Rails.root, "db/seedfiles/cms/2015", "Network_PUF.csv"))[0]
     puts "Importing cms network information from #{file}..."
     if file.present?
@@ -25,16 +25,13 @@ namespace :import do
       plan_data = CmsExchangePlansBuilder.new(result)
       plan_data.run
     end
-  end
 
-  task :more_plan_data => :environment do
-    puts DateTime.now
-    file = Dir.glob(File.join(Rails.root, "db/seedfiles/cms/2015", "Benefits_Cost_Sharing_PUF.csv"))[0]
-    puts "#{file}"
+    puts "Assigning qhp_benefits and service visits to qhp."
+    benefit_file = Dir.glob(File.join(Rails.root, "db/seedfiles/cms/2015", "Benefits_Cost_Sharing_PUF.csv"))[0]
+    puts "#{benefit_file}"
+    more_plan_data = BenefitCostSharingBuilder.new(benefit_file)
+    more_plan_data.run
 
-    plan_data = BenefitCostSharingBuilder.new(file)
-    plan_data.run
-    puts DateTime.now
   end
 
   task :rate_data => :environment do
