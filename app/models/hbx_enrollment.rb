@@ -986,7 +986,7 @@ class HbxEnrollment
 
   def check_for_renewal_event_kind
     if RENEWAL_STATUSES.include?(self.aasm_state) || was_in_renewal_status?
-      "passive_renewal"
+      return "passive_renewal"
     end
     "open_enrollment"
   end
