@@ -6,6 +6,30 @@ Given /(\w+) is a person/ do |name|
   instance_variable_set '@'+name, person
 end
 
+Given /(\w+) is a user with no person who goes to the Employer Portal/ do |name|
+  email = Forgery('email').address
+  instance_variable_set '@email_' + name, email
+  @browser.goto("http://localhost:3000/")
+  portal_class = 'interaction-click-control-employer-portal'
+  @browser.a(class: portal_class).wait_until_present
+  @browser.a(class: portal_class).click
+  @pswd = 'aA1!aA1!aA1!'
+  @browser.text_field(class: /interaction-field-control-user-email/).wait_until_present
+  @browser.text_field(class: /interaction-field-control-user-email/).set(email)
+  @browser.text_field(class: /interaction-field-control-user-password/).wait_until_present
+  @browser.text_field(class: /interaction-field-control-user-password/).set(@pswd)
+  @browser.text_field(class: /interaction-field-control-user-password-confirmation/).wait_until_present
+  @browser.text_field(class: /interaction-field-control-user-password-confirmation/).set(@pswd)
+  @browser.element(class: /interaction-click-control-create-account/).click
+  @browser.element(class: /interaction-click-control-create-account/).wait_while_present
+end
+
+Given /(\w+) enters first, last, dob/ do |name|
+  @browser.text_field(class: 'interaction-field-control-person-first-name').set(name)
+  @browser.text_field(class: 'interaction-field-control-person-last-name').set(Forgery('name').last_name)
+  @browser.text_field(class: 'interaction-field-control-person-dob').set('03/03/1993')
+  @browser.text_field(class: 'interaction-field-control-person-first-name').click
+end
 
 Then(/(\w+) is the staff person for an employer/) do |person|
   person = instance_variable_get '@'+person
@@ -50,6 +74,7 @@ Given /(\w+) adds an EmployerStaffRole to (\w+)/ do |staff, new_staff|
   @browser.text_field(class: first_field).set(person.first_name)
   @browser.text_field(class: last_field).set(person.last_name)
   @browser.text_field(class: dob_field).set(person.dob)
+  screenshot('add_existing_person_as_staff')
   @browser.button(class: 'interaction-click-control-save').click
 end
 
@@ -57,22 +82,25 @@ Then /Point of Contact count is (\d+)/ do |count|
   @browser.tbody.wait_until_present
   rows = @browser.tbody.trs.count
   expect(rows).to eq(count.to_i)
-  screenshot('point_of_contact')
-end
-
-When /EmployerStaff removes EmployerStaffRole from (\w+)/ do |staff|
-  person = instance_variable_get '@' + staff
-  @browser.link(id: @new_staff.id.to_s).click
 end
 
 Then /Hannah cannot remove EmployerStaffRole from Hannah/ do
   staff = instance_variable_get '@Hannah'
-  @browser.link(id: staff.id.to_s).click
+  @browser.link(id: 'delete_' + staff.id.to_s).click
   @browser.div(text: /before deleting this role/).wait_until_present
 end
 When /(\w+) removes EmployerStaffRole from (\w+)/ do |staff1, staff2|
   staff = instance_variable_get "@"+staff2 
-  @browser.link(id: staff.id.to_s).click
+  @browser.link(id: 'delete_' + staff.id.to_s).click
+end
+
+When /(\w+) approves EmployerStaffRole for (\w+)/ do |staff1, staff2|
+  staff = instance_variable_get "@"+staff2 
+  @browser.link(id: 'approve_' + staff.id.to_s).click
+  screenshot('before_approval')
+  @browser.div(class: 'alert-notice').wait_until_present
+  expect(@browser.div(class: 'alert-notice').text).to match /Role is approved/
+  screenshot('after_approval')
 end
 
 Then /(\w+) sees new employer page/ do |ex_staff|
@@ -101,3 +129,10 @@ Then /(\w+) is notified about Employer Staff Role pending status/ do |name|
    expect(@browser.h2(text: 'Thank you for logging into your DC')).to be_truthy
    screenshot('pending_person_stays_on_new_page')
  end
+
+
+
+
+
+
+

@@ -2,7 +2,7 @@
 Feature: Employer Profile
   In order for employers to manage their accounts
   Employer Staff should be able to add and delete employer staff roles
-  
+@wip  
   Scenario: An existing person asks for a staff role at an existing company
     Given Hannah is a person
     Given Hannah is the staff person for an employer
@@ -15,6 +15,7 @@ Feature: Employer Profile
     When Hannah accesses the Employer Portal
     And Hannah decides to Update Business information
     Then Point of Contact count is 2
+    Then Hannah approves EmployerStaffRole for BusyGuy
 
   Scenario: An employer staff adds two roles and deletes one
     Given Sarah is a person
@@ -47,5 +48,7 @@ Feature: Employer Profile
   Scenario: A new person asks for a staff role at an existing company
     Given Hannah is a person
     Given Hannah is the staff person for an employer
-    Given HRDirector accesses the Employer Portal
-    Given HRDirector selects Turner Agency, Inc from the dropdown
+    Given NewGuy is a user with no person who goes to the Employer Portal
+    Given NewGuy enters first, last, dob
+    Given NewGuy selects Turner Agency, Inc from the dropdown
+    Then NewGuy is notified about Employer Staff Role pending status

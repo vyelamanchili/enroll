@@ -20,7 +20,7 @@ module Forms
 
     def create_employer_staff_role(current_user, employer_profile, existing_company)
       person.user = current_user
-      person.employer_staff_roles << EmployerStaffRole.new(person: person, :employer_profile_id => employer_profile.id, is_owner: true, aasm_state: (existing_company ? 'is_pending': 'is_active'))
+      person.employer_staff_roles << EmployerStaffRole.new(person: person, :employer_profile_id => employer_profile.id, is_owner: true, aasm_state: (existing_company ? 'is_applicant': 'is_active'))
       current_user.roles << "employer_staff" unless current_user.roles.include?("employer_staff")
       current_user.save!
       person.save!

@@ -1,12 +1,7 @@
 class Employers::EmployerStaffRolesController < Employers::EmployersController
 
-  # Action to check employer profile access
-  # See check_access_to_employer_profile
   before_action :check_access_to_employer_profile
 
-  # Handles HTTP post
-  #
-  # Creates employer profile role for person
   def create
 
     dob = DateTime.strptime(params[:dob], '%m/%d/%Y').try(:to_date)
@@ -18,9 +13,20 @@ class Employers::EmployerStaffRolesController < Employers::EmployersController
     flash[:error] = ('Role was not added because '  + @result) unless @status
     redirect_to edit_employers_employer_profile_path(employer_profile.organization)
   end
-  # Handles HTTP delete
-  #
-  # id is the person_id
+
+  def approve
+    employer_profile = EmployerProfile.find(params[:id])
+    person = Person.find(params[:staff_id])
+    role = person.employer_staff_roles.detect{|role| role.is_applicant? &&
+      role.employer_profile_id.to_s == params[:id]}
+    if role && role.approve && role.save!
+      flash[:notice] = 'Role is approved'
+    else
+      flash[:error] = 'Please contact HBX Admin to report this error'
+    end
+    redirect_to edit_employers_employer_profile_path(employer_profile.organization)
+  end
+
   # For this person find an employer_staff_role that match this employer_profile_id and mark the role inactive
   def destroy
     employer_profile_id = params[:id]
