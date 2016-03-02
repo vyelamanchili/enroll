@@ -981,7 +981,20 @@ class HbxEnrollment
       return special_enrollment_period.qualifying_life_event_kind.reason
     end
     return "open_enrollment" if !is_shop?
-    new_hire_enrollment_for_shop? ? "new_hire" : "open_enrollment"
+    new_hire_enrollment_for_shop? ? "new_hire" : check_for_renewal_event_kind
+  end
+
+  def check_for_renewal_event_kind
+    if RENEWAL_STATUSES.include?(self.aasm_state) || was_in_renewal_status?
+      "passive_renewal"
+    end
+    "open_enrollment"
+  end
+
+  def was_in_renewal_status?
+    workflow_state_transitions.any? do |wst|
+      RENEWAL_STATUSES.include?(wst.from_state.to_s)
+    end
   end
 
   def eligibility_event_date
