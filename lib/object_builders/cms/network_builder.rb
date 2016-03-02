@@ -1,19 +1,13 @@
-class NetworkBuilder
-
-  def initialize(network_data)
-    @network_data = network_data
-    @last_row = @network_data.last_row
-    @fein_counter = 1
-  end
+class NetworkBuilder < CmsParentBuilder
 
   def run
+    @fein_counter = 1
     iterate_network_hash
   end
 
   def iterate_network_hash
-    assign_headers
-    (2..@last_row).each do |row_number|
-      @network = @network_data.row(row_number)
+    (@first_row..@last_row).each do |row_number|
+      @network = @data.row(row_number)
       next if network_present?
       build_and_save_organization
     end
@@ -21,22 +15,14 @@ class NetworkBuilder
 
   def network_present?
     org = Organization.where(
-      "carrier_profile.network_id" => @network[@headers["NetworkId"]],
-      "carrier_profile.issuer_id" => @network[@headers["IssuerId"]]
+      "carrier_profile.network_id" => @network[@headers["network_id"]],
+      "carrier_profile.issuer_id" => @network[@headers["issuer_id"]]
       )
     org.size > 0 ? true : false
   end
 
-  def assign_headers
-    @headers = Hash.new
-    @network_data.row(1).each_with_index {|header,i|
-      @headers[header] = i
-    }
-    @headers
-  end
-
   def build_and_save_organization
-    @organization = Organization.new(office_locations: [hbx_office_params], fein: generate_fein, legal_name: @network[@headers["NetworkName"]])
+    @organization = Organization.new(office_locations: [hbx_office_params], fein: generate_fein, legal_name: @network[@headers["network_name"]])
     @organization.build_carrier_profile(carrier_profile_params)
     @organization.save
   end
@@ -49,15 +35,14 @@ class NetworkBuilder
   end
 
   def carrier_profile_params
-    test = {
-      network_id: @network[@headers["NetworkId"]],
-      issuer_id: @network[@headers["IssuerId"]],
-      issuer_state: @network[@headers["StateCode"]],
-      market_coverage: @network[@headers["MarketCoverage"]],
-      dental_only_plan: @network[@headers["DentalOnly"]]
+   {
+      network_id: @network[@headers["network_id"]],
+      issuer_id: @network[@headers["issuer_id"]],
+      issuer_state: @network[@headers["state_code"]],
+      market_coverage: @network[@headers["market_coverage"]],
+      dental_only_plan: @network[@headers["dental_only"]]
 
     }
-    test
   end
 
   def hbx_office_params
