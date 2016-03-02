@@ -3,28 +3,22 @@ class PlanRateBuilder
   def initialize(file)
     @file = file
     @results = Hash.new{|results,k| results[k] = []}
-    @rows = []
   end
 
   def run
-    puts "second"
     count = 0
     CSV.foreach(@file,
                 :headers => true,
                 :header_converters => lambda { |h| h.underscore.to_sym }) do |row|
-      puts count+=1
       @row = row
+      next if @row[:state_code] != "NV"
       build_premium_tables
+      count+=1
+      puts "Imported #{count} records" if count % 2000== 0
     end
-    # process_records
+    puts "Imported #{count} records."
     find_plan_and_create_premium_tables
   end
-
-  # def process_records
-  #   @rows.each do |row|
-  #     @row = row
-  #   end
-  # end
 
   # def run
   #   binding.pry
@@ -82,7 +76,6 @@ class PlanRateBuilder
   end
 
   def find_plan_and_create_premium_tables
-    puts "creating premium tables"
     @results.each do |plan_id, premium_tables|
       # @plans = Plan.where(hios_id: /#{plan_id}/, active_year: @row[@headers["RateEffectiveDate"]].to_date.year)
       @plans = Plan.where(hios_id: /#{plan_id}/, active_year: 2015)

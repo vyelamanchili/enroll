@@ -13,6 +13,7 @@ class CmsExchangePlansBuilder < CmsParentBuilder
   def iterate_plans_hash
     (@first_row..@last_row).each do |row_number|
       @plan = @data.row(row_number)
+      next if qhp_params[:state_postal_code] != "NV"
       next if qhp_params[:csr_variation_type] == "00"
       find_or_build_qhp
     end
@@ -147,7 +148,7 @@ class CmsExchangePlansBuilder < CmsParentBuilder
       issuer_id: @plan[@headers["issuer_id2"]],
       state_postal_code: @plan[@headers["state_code"]],
       market_coverage: @plan[@headers["market_coverage"]] == SHOP_SMALL_GROUP ? SHOP : INDIVIDUAL,
-      dental_plan_only_ind: @plan[@headers["dental_only_plan"]].downcase,
+      dental_plan_only_ind: @plan[@headers["dental_only_plan"]],
       tin: @plan[@headers["tin"]],
       standard_component_id: @plan[@headers["standard_component_id"]],
       plan_marketing_name: @plan[@headers["plan_marketing_name"]],
@@ -157,7 +158,7 @@ class CmsExchangePlansBuilder < CmsParentBuilder
       service_area_id: @plan[@headers["service_area_id"]],
       formulary_id: @plan[@headers["formulary_id"]],
       is_new_plan: @plan[@headers["is_new_plan"]],
-      plan_type: @plan[@headers["plan_type"]].downcase,
+      plan_type: @plan[@headers["plan_type"]],
       metal_level: @plan[@headers["metal_level"]],
       unique_plan_design: @plan[@headers["unique_plan_design"]],
       qhp_or_non_qhp: @plan[@headers["qhp_non_qhp_type_id"]],

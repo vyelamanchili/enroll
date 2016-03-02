@@ -1,13 +1,11 @@
 class CmsParentBuilder
 
   def initialize(data)
-    # binding.pry
     @data = data
     @header_row = @data.row(1)
-    # @first_row  = @data.first_row + 1 # data starts from second row
-    @first_row = 2
+    @first_row  = @data.first_row + 1 # data starts from second row
     assign_headers
-    @last_row = 1000000
+    @last_row = @data.last_row
   end
 
   def assign_headers

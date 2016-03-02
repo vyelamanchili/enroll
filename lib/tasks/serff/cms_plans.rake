@@ -28,14 +28,32 @@ namespace :import do
   end
 
   task :more_plan_data => :environment do
+    puts DateTime.now
     file = Dir.glob(File.join(Rails.root, "db/seedfiles/cms/2015", "Benefits_Cost_Sharing_PUF.csv"))[0]
-    puts "Importing rate information from #{file}..."
-    if file.present?
-      result = Roo::Spreadsheet.open(file)
-      plan_data = BenefitCostSharingBuilder.new(result)
-      plan_data.run
-    end
+    puts "#{file}"
+
+    plan_data = BenefitCostSharingBuilder.new(file)
+    plan_data.run
+    puts DateTime.now
   end
+
+  task :rate_data => :environment do
+    file = Dir.glob(File.join(Rails.root, "db/seedfiles/cms/2015", "Rate_PUF.csv"))[0]
+    puts "#{file}"
+
+    plan_rate_data = PlanRateBuilder.new(file)
+    plan_rate_data.run
+  end
+
+  # task :more_plan_data => :environment do
+  #   file = Dir.glob(File.join(Rails.root, "db/seedfiles/cms/2015", "Benefits_Cost_Sharing_PUF.csv"))[0]
+  #   puts "Importing rate information from #{file}..."
+  #   if file.present?
+  #     result = Roo::Spreadsheet.open(file)
+  #     plan_data = BenefitCostSharingBuilder.new(result)
+  #     plan_data.run
+  #   end
+  # end
 
   # task :rate_information => :environment do
   #   file = Dir.glob(File.join(Rails.root, "db/seedfiles/cms/2015", "Rate_PUF.csv"))[0]
@@ -46,13 +64,5 @@ namespace :import do
   #     rate_data.run
   #   end
   # end
-
-  task :rate_data => :environment do
-    file = Dir.glob(File.join(Rails.root, "db/seedfiles/cms/2015", "Rate_PUF.csv"))[0]
-    puts "#{file}"
-
-    plan_rate_data = PlanRateBuilder.new(file)
-    plan_rate_data.run
-  end
 
 end
