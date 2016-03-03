@@ -891,7 +891,7 @@ describe Person do
       end
 
       it 'sets is_active to false' do
-        expect(employer_staff_role.reload.is_active).to eq false
+        expect(employer_staff_role.reload.is_active?).to eq false
       end
     end
   end
