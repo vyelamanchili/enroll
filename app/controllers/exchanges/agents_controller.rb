@@ -1,6 +1,6 @@
 class Exchanges::AgentsController < ApplicationController
   before_action :check_agent_role
-  
+
   def home
     @title = current_user.agent_title
     person_id = session[:person_id]
@@ -68,9 +68,8 @@ class Exchanges::AgentsController < ApplicationController
     # current_user.has_agent_role? || current_user.has_hbx_staff_role? || current_user.has_broker_role?
     # ```
     # Its probably possible to move the entire block to the policy. That will need to be tested. This is the bare minimum of how to use the policy method since you don't have a need to authorize every action.
-    unless policy(:exchanges_agents).correct_role?
-      redirect_to root_path, :flash => { :error => "You must be an Agent:  CSR, CAC, IPA or a Broker" }
-    end
+
+    redirect_to root_path, :flash => { :error => "You must be an Agent:  CSR, CAC, IPA or a Broker" } unless policy(:exchanges_agents).correct_role?
     current_user.last_portal_visited = home_exchanges_agents_path
     current_user.save!
   end
