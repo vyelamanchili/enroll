@@ -109,6 +109,7 @@ Rails.application.routes.draw do
         get 'document_upload'
         get 'find_sep'
         post 'record_sep'
+        get 'shop_for_employer'
         get 'check_qle_date'
         get 'purchase'
         get 'family'

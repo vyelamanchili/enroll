@@ -595,13 +595,13 @@ describe HbxProfile, "class methods", type: :model do
     end
 
     it "when qle is false" do
-      allow(family).to receive(:is_under_special_enrollment_period?).and_return true
+      allow(family).to receive(:is_under_ivl_special_enrollment_period?).and_return true
       enrollment = HbxEnrollment.new_from(consumer_role: consumer_role, coverage_household: coverage_household, benefit_package: benefit_package, qle: false)
       expect(enrollment.enrollment_kind).to eq "open_enrollment"
     end
 
     it "when qle is true" do
-      allow(family).to receive(:is_under_special_enrollment_period?).and_return true
+      allow(family).to receive(:is_under_ivl_special_enrollment_period?).and_return true
       allow(household).to receive(:family).and_return family
       enrollment = HbxEnrollment.new_from(consumer_role: consumer_role, coverage_household: coverage_household, benefit_package: benefit_package, qle: true)
       expect(enrollment.enrollment_kind).to eq "special_enrollment"
@@ -642,26 +642,28 @@ describe HbxProfile, "class methods", type: :model do
 
     context "shop" do
       it "special_enrollment" do
+        allow(family).to receive(:is_under_shop_special_enrollment_period?).and_return(true)
         expect(HbxEnrollment.calculate_effective_on_from(market_kind:'shop', qle:true, family: family, employee_role: nil, benefit_group: nil, benefit_sponsorship: nil)).to eq date
       end
 
       it "open_enrollment" do
         effective_on = date - 10.days
         allow(benefit_group).to receive(:effective_on_for).and_return(effective_on)
-        allow(family).to receive(:is_under_special_enrollment_period?).and_return(false)
+        allow(family).to receive(:is_under_shop_special_enrollment_period?).and_return(false)
         expect(HbxEnrollment.calculate_effective_on_from(market_kind:'shop', qle:false, family: family, employee_role: employee_role, benefit_group: benefit_group, benefit_sponsorship: nil)).to eq effective_on
       end
     end
 
     context "individual" do
       it "special_enrollment" do
+        allow(family).to receive(:is_under_ivl_special_enrollment_period?).and_return(true)
         expect(HbxEnrollment.calculate_effective_on_from(market_kind:'individual', qle:true, family: family, employee_role: nil, benefit_group: nil, benefit_sponsorship: nil)).to eq date
       end
 
       it "open_enrollment" do
         effective_on = date - 10.days
         allow(bcp).to receive(:earliest_effective_date).and_return effective_on
-        allow(family).to receive(:is_under_special_enrollment_period?).and_return(false)
+        allow(family).to receive(:is_under_ivl_special_enrollment_period?).and_return(false)
         expect(HbxEnrollment.calculate_effective_on_from(market_kind:'individual', qle:false, family: family, employee_role: nil, benefit_group: nil, benefit_sponsorship: benefit_sponsorship)).to eq effective_on
       end
     end

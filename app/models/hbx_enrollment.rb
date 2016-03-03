@@ -603,13 +603,13 @@ class HbxEnrollment
 
     case market_kind
     when 'shop'
-      if qle and family.is_under_special_enrollment_period?
+      if qle && family.is_under_shop_special_enrollment_period?
         family.current_sep.effective_on
       else
         benefit_group.effective_on_for(employee_role.hired_on)
       end
     when 'individual'
-      if qle and family.is_under_special_enrollment_period?
+      if qle && family.is_under_ivl_special_enrollment_period?
         family.current_sep.effective_on
       else
         benefit_sponsorship.current_benefit_period.earliest_effective_date
@@ -673,7 +673,7 @@ class HbxEnrollment
       enrollment.kind = "employer_sponsored"
       enrollment.employee_role = employee_role
 
-      if qle && enrollment.family.is_under_special_enrollment_period?
+      if qle && enrollment.family.is_under_shop_special_enrollment_period?
         enrollment.effective_on = enrollment.family.current_sep.effective_on
         enrollment.enrollment_kind = "special_enrollment"
       else
@@ -689,7 +689,7 @@ class HbxEnrollment
       enrollment.benefit_package_id = benefit_package.try(:id)
 
       benefit_sponsorship = HbxProfile.current_hbx.benefit_sponsorship
-      if qle and enrollment.family.is_under_special_enrollment_period?
+      if qle && enrollment.family.is_under_ivl_special_enrollment_period?
         enrollment.effective_on = enrollment.family.current_sep.effective_on
         enrollment.enrollment_kind = "special_enrollment"
       else

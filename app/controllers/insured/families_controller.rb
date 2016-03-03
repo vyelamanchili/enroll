@@ -95,6 +95,23 @@ class Insured::FamiliesController < FamiliesController
     redirect_to new_insured_group_selection_path(action_params)
   end
 
+  def shop_for_employer
+    action_params = {person_id: @person.id, employee_role_id: params[:employee_role_id]}
+    unless @family.is_under_shop_open_enrollment?
+      qle = QualifyingLifeEventKind.where(reason: "new_employment", market_kind: 'shop').last
+      if qle.present? && @employee_role.present?
+        special_enrollment_period = @family.special_enrollment_periods.new(effective_on_kind: qle.effective_on_kinds.last)
+        special_enrollment_period.qualifying_life_event_kind = qle
+        special_enrollment_period.selected_effective_on = @employee_role.hired_on
+        special_enrollment_period.qle_on = TimeKeeper.date_of_record
+        special_enrollment_period.save
+        action_params.merge!({enrollment_kind: 'sep'})
+      end
+    end
+
+    redirect_to new_insured_group_selection_path(action_params)
+  end
+
   def personal
     @tab = params['tab']
 

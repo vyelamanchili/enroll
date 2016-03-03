@@ -277,6 +277,14 @@ class Family
     sep.is_active?
   end
 
+  def is_under_shop_special_enrollment_period?
+    earliest_effective_shop_sep.present?
+  end
+
+  def is_under_ivl_special_enrollment_period?
+    earliest_effective_ivl_sep.present?
+  end
+
   def current_special_enrollment_periods
     return [] if special_enrollment_periods.size == 0
     seps = special_enrollment_periods.order_by(:start_on.desc).only(:special_enrollment_periods)

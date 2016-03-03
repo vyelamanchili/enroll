@@ -326,6 +326,70 @@ RSpec.describe Insured::FamiliesController do
     end
   end
 
+  describe "GET shop_for_employer" do
+    let(:user) { FactoryGirl.build(:user) }
+    let(:employee_role) { FactoryGirl.create(:employee_role) }
+    let(:family) { FactoryGirl.create(:family, :with_primary_family_member) }
+
+    before :each do
+      allow(person).to receive(:primary_family).and_return(family)
+      allow(person).to receive(:has_active_employee_role?).and_return(true)
+      allow(person).to receive(:employee_roles).and_return([employee_role])
+      QualifyingLifeEventKind.create(
+        title: "Started a new job",
+        action_kind: "add_benefit",
+        reason: "new_employment",
+        edi_code: "28-INITIAL ENROLLMENT",
+        market_kind: "shop",
+        effective_on_kinds: ["first_of_next_month"],
+        pre_event_sep_in_days: 0,
+        post_event_sep_in_days: 30,
+        is_self_attested: true,
+        ordinal_position: 10,
+        event_kind_label: 'Date of start a new job',
+        tool_tip: "Enroll due to becoming newly eligibile")
+    end
+
+
+    it "should be a redirect to new group selection page" do
+      get :shop_for_employer, person_id: "person_id", employee_role_id: employee_role.id
+      expect(response).to have_http_status(:redirect)
+    end
+
+    context "when under shop open enrollment" do
+      before do
+        allow(family).to receive(:is_under_shop_open_enrollment?).and_return true
+        get :shop_for_employer, person_id: "person_id", employee_role_id: employee_role.id
+      end
+
+      it "should not create special_enrollment_period" do
+        expect(family.special_enrollment_periods.count).to eq 0
+      end
+
+      it "should redirect to new group selection page without sep" do
+        expect(response).to have_http_status(:redirect)
+        expect(response).to redirect_to(new_insured_group_selection_path({person_id: person.id, employee_role_id: employee_role.id}))
+      end
+    end
+
+    context "when not under shop open enrollment" do
+      before do
+        allow(family).to receive(:is_under_shop_open_enrollment?).and_return false
+        get :shop_for_employer, person_id: "person_id", employee_role_id: employee_role.id
+      end
+
+      it "should create special_enrollment_period" do
+        expect(family.special_enrollment_periods.present?).to eq true
+      end
+
+      it "should redirect to new group selection page with sep" do
+        expect(response).to have_http_status(:redirect)
+        expect(response).to redirect_to(new_insured_group_selection_path({person_id: person.id, employee_role_id: employee_role.id, enrollment_kind: 'sep'}))
+      end
+    end
+  end
+
+
   describe "GET check_qle_date" do
 
     before(:each) do
