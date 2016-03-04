@@ -2,7 +2,7 @@
 Feature: Employer Profile
   In order for employers to manage their accounts
   Employer Staff should be able to add and delete employer staff roles
-@wip  
+  
   Scenario: An existing person asks for a staff role at an existing company
     Given Hannah is a person
     Given Hannah is the staff person for an employer
@@ -44,7 +44,7 @@ Feature: Employer Profile
     Then Point of Contact count is 1
     Then Sarah logs out
     Then show elapsed time
-@wip
+
   Scenario: A new person asks for a staff role at an existing company
     Given Hannah is a person
     Given Hannah is the staff person for an employer
