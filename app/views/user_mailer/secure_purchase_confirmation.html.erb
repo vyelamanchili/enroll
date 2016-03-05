@@ -1,53 +1,221 @@
-<div style='width: 400px; margin-left: 50px'>
-<img src="/dc_health.png" style='margin-left: 100px; width: 200px;' title=<%= "#{Settings.site.short_name}" %>/>
-<br>
-<p>
-Congratulations <%= @person.first_name + ' ' + @person.last_name%>,
-</p>
-<p>
-You're successfully enrolled in <%= @plan.name %>.
-</p>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 
-<% if @market_kind != 'individual' %>
-<p>
-  Your monthly premium contribution is <b><%= ActionView::Base.new.number_to_currency @plan.total_employee_cost%>.</b><br>
-  Your employer contributes <b><%= ActionView::Base.new.number_to_currency @plan.total_employer_contribution %></b> towards your monthly premium.<br>
-  Your coverage start date is <b><%= @enrollment.effective_on.strftime("%m/%d/%Y") %>.</b>
-</p>
-<p>
-  Thank you for enrolling into employer-sponsored coverage through <%= Settings.site.short_name %>.
-</p>
-<% else %>
-<p>
-  <% if @enrollment.applied_aptc_amount.to_f > 0 %>
-  Your monthly total family premium is <b><%= ActionView::Base.new.number_to_currency(@plan.total_premium.to_f) %>.</b><br>
-  Your Advanced Premium Tax Credit is <b><%= ActionView::Base.new.number_to_currency(@enrollment.applied_aptc_amount.to_f) %>.</b><br>
-  <% end %>
-  Your monthly cost is <b><%= ActionView::Base.new.number_to_currency(@plan.total_premium.to_f - @enrollment.applied_aptc_amount.to_f) %>.</b><br>
-</p>
-<p> Your coverage start date is:
-  <b><%= @enrollment.effective_on.strftime("%m/%d/%Y") %></b>
-</p>
-<p>Thank you for your order. </p>
-<% end %>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <title></title>
+  <style></style>
+</head>
 
-<%= Settings.site.short_name %> <br>
-PHONE: <%= Settings.contact_center.phone_number %> <% Settings.contact_center.alt_phone_number %><br>
-TTY/TDD 711-1-532-5465<br>
-Monday-Saturday 8:00am - 8:00pm <br>
-E-Mail: <%= Settings.contact_center.email_address %>
-<br>
-<br>
-<a href="https://www.facebook.com/pages/DC-Health-Benefit-Exchange/254860577970621" target="_blank" title="click to visit us on facebook">
-<img src="http://cdn.filnetinc.com/img/36px_facebook.png" style="height:23px" alt="spacer" />
-</a>
-<a href="https://twitter.com/DCHealthLink" target="_blank" title="click to visit us on twitter">
-	<img src="http://cdn.filnetinc.com/img/36px_twitter.png"  style="height:23px" alt="spacer" />
-</a>
-<a href="http://www.youtube.com/channel/UCb0vgdZ2ZuGK1xFjauVkMsg" target="_blank" title="click to visit us on youtube"><img src="http://cdn.filnetinc.com/img/36px_youtube.png"  style="height:23px" alt="spacer" />
-</a>
-<br><br>
-<p style='font-size: 70%'>
-	Generic disclaimer on this message is for intended recipients only. Generic disclaimer on this message is for intended recipients only. Generic disclaimer on this message is for intended recipients only. Generic disclaimer on this message is for intended recipients only. Generic disclaimer on this message is for intended recipients only. Generic disclaimer on this message is for intended recipients only. Generic disclaimer on this message is for intended recipients only. Generic disclaimer on this message is for intended recipients only. Generic disclaimer on this message is for intended recipients only. Generic disclaimer on this message is for intended recipients only. Generic disclaimer on this message is for intended recipients only.
-</p>
-</div>
+<body>
+  <table border="1" cellpadding="0" cellspacing="0" height="100%" width="100%" id="bodyTable">
+    <tr>
+      <td align="center" valign="top">
+        <table border="0" cellpadding="0" cellspacing="0" width="600" id="emailContainer">
+          <tr>
+            <td>
+              <table border="0" cellpadding="10" cellspacing="0" width="100%">
+                <tr>
+                  <td align="center" valign="top" bgcolor="#ffffff">
+                    <table border="0" cellpadding="20" cellspacing="0" width="100%" background="<%= asset_path('email/abcStateHealthPlan-01.png') %>" style="background-repeat: no-repeat; background-size: 50%; background-position: 0 10px;" id="emailHeader">
+                      <tr>
+                        <td align="right" valign="top">
+                          <span class="h1" style="text-align: center; font-family: sans-serif; font-size: 20px; letter-spacing: -0.55px; color: #3C8EB2; color: rgb(60, 142, 178);">Well done! You've successfully<br/>enrolled for benefits.</span>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <table border="0" cellpadding="0" height="500" cellspacing="0" width="100%" id="emailBody" background="<%= asset_path('email/personHoldingPhone_abc_1024_810.png') %>" style="background-size: cover;">
+                <tr>
+                  <td align="center" valign="top" width="50%" class="templateColumnContainer">
+                    <table border="0" cellpadding="20" cellspacing="0" width="100%">
+                      <tr>
+                        <td class="leftColumnContent">
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                  <td align="center" valign="top" width="50%" class="templateColumnContainer">
+                    <table border="0" cellpadding="20" cellspacing="0" width="100%">
+                      <tr>
+                        <td valign="top" class="rightColumnContent">
+                          <span style="color: #ffffff; font-family: sans-serif; font-size: 24px; text-align: right; display: block;">
+                            Now you can get them at your fingertips
+                          </span>
+                          <br/>
+                          <span class="cch-button action" style="-webkit-box-shadow: 0 0 6px rgba(0, 0, 0, .25); -moz-box-shadow: 0 0 6px rgba(0, 0, 0, .25); box-shadow: 0 0 6px rgba(0, 0, 0, .25); transition: background-color 300ms ease-out; border-style: solid; border-width: 0; font-family: sans-serif; font-weight: 400; line-height: normal; margin: 0 0 .625rem; position: relative; text-align: center; text-decoration: none; display: inline-block; padding: 1.125rem 0 1.1875rem; width: 100%; border-radius: 6px; font-size: 1.25rem; cursor: pointer; background-color: #f69422; border: 3px solid #f69422; color: #fff;">
+                            Download The App
+                          </span>
+                          <img src="<%= asset_path('email/appStoryIcon-01.png') %>" alt="Download our app on Apple's App Store" style="margin: auto; display: block; width: 50%;">
+                          <img src="<%= asset_path('email/appStoryIcon-02.png') %>" alt="Download our app on Google Play" style="margin: 10px auto; display: block; width: 50%;">
+                          <span style="color: #ffffff; font-family: sans-serif; font-size: 24px; text-align: right; display: block;">
+                            Or use our website
+                          </span>
+                          <br/>
+                          <span class="cch-button action action-trans" style="-webkit-box-shadow: 0 0 6px rgba(0, 0, 0, .25); -moz-box-shadow: 0 0 6px rgba(0, 0, 0, .25); box-shadow: 0 0 6px rgba(0, 0, 0, .25); transition: background-color 300ms ease-out; border-style: solid; border-width: 0; font-family: sans-serif; font-weight: 400; line-height: normal; margin: 0 0 .625rem; position: relative; text-align: center; text-decoration: none; display: inline-block; padding: 1.125rem 0 1.1875rem; width: 100%; border-radius: 6px; font-size: 1.25rem; cursor: pointer; background-color: #f69422; border: 3px solid #f69422; color: #fff; background-color: #fff; color: #f69422; border: 3px solid #f69422;">
+                            Website
+                          </span>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+              <table border="0" cellpadding="10" cellspacing="0" width="100%">
+                <tr>
+                  <td align="center" valign="top" width="33%" class="templateColumnContainer" bgcolor="#ffffff">
+                    <table border="0" cellpadding="20" cellspacing="0" width="100%">
+                      <tr>
+                        <td class="leftColumnContent">
+                          <img src="<%= asset_path('email/navIcon-01.png') %>" alt="Get the benefits you need" width="50" style="display: block; margin: auto; margin-top: -60px;">
+                          <br/>
+                          <span class="h2" style="font-family: sans-serif; font-size: 20px; color: #012639; color: rgb(1, 38, 57); display: block; text-align: center;">
+                            Easy
+                          </span>
+                          <p class="p1" style="font-family: sans-serif; font-size: 12px; color: #000000; text-align: center; ">
+                            Get the benefits you need and the relevant phone numbers and websites instantly and intuitively via the resources page
+                          </p>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                  <td align="center" valign="top" width="33%" class="templateColumnContainer" bgcolor="#ffffff">
+                    <table border="0" cellpadding="20" cellspacing="0" width="100%">
+                      <tr>
+                        <td valign="top" class="rightColumnContent">
+                          <img src="<%= asset_path('email/navIcon-02.png') %>" alt="Receive helpful information related to your benefits" width="50" style="display: block; margin: auto; margin-top: -60px;">
+                          <br/>
+                          <span class="h2" style="font-family: sans-serif; font-size: 20px; color: #012639; color: rgb(1, 38, 57); display: block; text-align: center;">
+                            Smart
+                          </span>
+                          <p class="p1" style="font-family: sans-serif; font-size: 12px; color: #000000; text-align: center; ">
+                            Receive helpful information related to your benefits through personalized notifications
+                          </p>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                  <td align="center" valign="top" width="33%" class="templateColumnContainer" bgcolor="#ffffff">
+                    <table border="0" cellpadding="20" cellspacing="0" width="100%">
+                      <tr>
+                        <td valign="top" class="rightColumnContent">
+                          <img src="<%= asset_path('email/navIcon-03.png') %>" alt="Access virtual medical, pharmacy, dental, and vision ID cards" width="50" style="display: block; margin: auto; margin-top: -60px;">
+                          <br/>
+                          <span class="h2" style="font-family: sans-serif; font-size: 20px; color: #012639; color: rgb(1, 38, 57); display: block; text-align: center;">
+                            Convenient
+                          </span>
+                          <p class="p1" style="font-family: sans-serif; font-size: 12px; color: #000000; text-align: center; ">
+                            Access virtual medical, pharmacy, dental, and vision ID cards
+                          </p>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <tr>
+            <td align="center" valign="top">
+              <table border="0" cellpadding="50" cellspacing="0" width="100%" id="emailFooter" bgcolor="#ffffff" style="padding: 20px;">
+                <tr>
+                  <td align="center" valign="top" background="<%= asset_path('email/ribbonBanner-03.png') %>" style="background-size: cover;">
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+<style>
+  .cch-button {
+    -webkit-box-shadow: 0 0 6px rgba(0, 0, 0, .25);
+    -moz-box-shadow: 0 0 6px rgba(0, 0, 0, .25);
+    box-shadow: 0 0 6px rgba(0, 0, 0, .25);
+    transition: background-color 300ms ease-out;
+    border-style: solid;
+    border-width: 0;
+    font-family: sans-serif;
+    font-weight: 400;
+    line-height: normal;
+    margin: 0 0 .625rem;
+    position: relative;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    padding: 1.125rem 0 1.1875rem;
+    width: 100%;
+    border-radius: 6px;
+    font-size: 1.25rem;
+    cursor: pointer;
+  }
+
+  .action {
+    background-color: #f69422;
+    border: 3px solid #f69422;
+    color: #fff;
+  }
+
+  .action-trans {
+    background-color: #fff;
+    color: #f69422;
+    border: 3px solid #f69422;
+  }
+
+  .h1 {
+    font-family: sans-serif;
+    font-size: 20px;
+    letter-spacing: -0.55px;
+    color: #3C8EB2;
+    color: rgb(60, 142, 178);
+  }
+
+  .h2 {
+    font-family: sans-serif;
+    font-size: 20px;
+    color: #012639;
+    color: rgb(1, 38, 57);
+  }
+
+  .h3 {
+    font-family: sans-serif;
+    font-size: 28px;
+    color: #FFFFFF;
+  }
+
+  .p1 {
+    font-family: sans-serif;
+    font-size: 12px;
+    color: #000000;
+  }
+
+  .a1 {
+    font-family: sans-serif;
+    font-size: 12px;
+    color: #009FE3;
+    color: rgb(0, 159, 227);
+  }
+
+  .main {
+    background: #FFFFFF;
+    box-shadow: 0px -0.68px 5.35px rgba(2, 2, 2, 0.15);
+  }
+
+  .bannerText {
+    font-family: sans-serif;
+    font-size: 12px;
+    color: #FFFFFF;
+    color: rgb(255, 255, 255);
+  }
+</style>
+
+</html>

@@ -1,8 +1,221 @@
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <title></title>
+  <style></style>
+</head>
+
 <body>
-<%= person_name %>,
-<br />
-<div>Your employer has created a Health Benefits Program through DC Health Link.</div>
-<div>Please visit <%= link_to "DC Health Link", claim_invitation_url(invitation) %>to learn more about your benefits and sign up for insurance during open enrollment.</div>
+  <table border="1" cellpadding="0" cellspacing="0" height="100%" width="100%" id="bodyTable">
+    <tr>
+      <td align="center" valign="top">
+        <table border="0" cellpadding="0" cellspacing="0" width="600" id="emailContainer">
+          <tr>
+            <td>
+              <table border="0" cellpadding="10" cellspacing="0" width="100%">
+                <tr>
+                  <td align="center" valign="top" bgcolor="#ffffff">
+                    <table border="0" cellpadding="20" cellspacing="0" width="100%" background="<%= asset_path('email/abcStateHealthPlan-01.png') %>" style="background-repeat: no-repeat" id="emailHeader">
+                      <tr>
+                        <td align="right" valign="top">
+                          <span class="h1" style="font-family: sans-serif; font-size: 20px; letter-spacing: -0.55px; color: #3C8EB2; color: rgb(60, 142, 178);">Open Enrollment has begun</span>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <table border="0" cellpadding="10" cellspacing="0" width="100%" id="emailBody" background="<%= asset_path('email/openEnrollMountains_1024_240.jpg') %>" style="background-size: cover;">
+                <tr>
+                  <td align="center" valign="top" width="50%" class="templateColumnContainer">
+                    <table border="0" cellpadding="20" cellspacing="0" width="100%">
+                      <tr>
+                        <td class="leftColumnContent">
+                          <span class="cch-button action" style="-webkit-box-shadow: 0 0 6px rgba(0, 0, 0, .25); -moz-box-shadow: 0 0 6px rgba(0, 0, 0, .25); box-shadow: 0 0 6px rgba(0, 0, 0, .25); transition: background-color 300ms ease-out; border-style: solid; border-width: 0; font-family: sans-serif; font-weight: 400; line-height: normal; margin: 0 0 .625rem; position: relative; text-align: center; text-decoration: none; display: inline-block; padding: 1.125rem 0 1.1875rem; width: 100%; border-radius: 6px; font-size: 1.25rem; cursor: pointer; background-color: #f69422; border: 3px solid #f69422; color: #fff;">
+                            Enroll
+                          </span>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                  <td align="center" valign="top" width="50%" class="templateColumnContainer">
+                    <table border="0" cellpadding="20" cellspacing="0" width="100%">
+                      <tr>
+                        <td valign="top" class="rightColumnContent">
+                          <span class="cch-button action action-trans" style="-webkit-box-shadow: 0 0 6px rgba(0, 0, 0, .25); -moz-box-shadow: 0 0 6px rgba(0, 0, 0, .25); box-shadow: 0 0 6px rgba(0, 0, 0, .25); transition: background-color 300ms ease-out; border-style: solid; border-width: 0; font-family: sans-serif; font-weight: 400; line-height: normal; margin: 0 0 .625rem; position: relative; text-align: center; text-decoration: none; display: inline-block; padding: 1.125rem 0 1.1875rem; width: 100%; border-radius: 6px; font-size: 1.25rem; cursor: pointer; background-color: #f69422; border: 3px solid #f69422; color: #fff; background-color: #fff; color: #f69422; border: 3px solid #f69422;">
+                            Change Plans
+                          </span>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+              <table border="0" cellpadding="10" cellspacing="0" width="100%">
+                <tr>
+                  <td align="center" valign="top" width="50%" class="templateColumnContainer" bgcolor="#ffffff">
+                    <table border="0" cellpadding="20" cellspacing="0" width="100%">
+                      <tr>
+                        <td class="leftColumnContent">
+                          <span class="h2" style="font-family: sans-serif; font-size: 20px; color: #012639; color: rgb(1, 38, 57);">
+                            Enroll
+                          </span>
+                          <p class="p1" style="font-family: sans-serif; font-size: 12px; color: #000000;">
+                            If you are a benefits eligible employee, you can enroll in health care for the 2016 plan year. Click above to enroll and then use the helpful plan chooser to find the right plan for you.
+                          </p>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                  <td align="center" valign="top" width="50%" class="templateColumnContainer" bgcolor="#ffffff">
+                    <table border="0" cellpadding="20" cellspacing="0" width="100%">
+                      <tr>
+                        <td valign="top" class="rightColumnContent">
+                          <span class="h2" style="font-family: sans-serif; font-size: 20px; color: #012639; color: rgb(1, 38, 57);">
+                            Change Plans
+                          </span>
+                          <p class="p1" style="font-family: sans-serif; font-size: 12px; color: #000000;">
+                            Want to change your plan during open enrollment or due to a qualifying event? No problem. Click above to compare plans and find the right one for you. Tell us how you use your health care and we will help you find the right plan for you.
+                          </p>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+                <tr>
+                  <td align="center" valign="top" width="50%" class="templateColumnContainer" bgcolor="#ffffff">
+                    <table border="0" cellpadding="20" cellspacing="0" width="100%">
+                      <tr>
+                        <td class="leftColumnContent">
+                          <span class="h2">
+                            Manage your plan over the phone
+                          </span>
+                          <p class="p1" style="font-family: sans-serif; font-size: 12px; color: #000000;">
+                            You can also call <span class="a1" style="font-family: sans-serif; font-size: 12px; color: #009FE3; color: rgb(0, 159, 227);"><%= Settings.contact_center.phone_number %></span> to enroll or change plans.
+                          </p>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                  <td align="center" valign="top" width="50%" class="templateColumnContainer" bgcolor="#ffffff">
+                    <table border="0" cellpadding="20" cellspacing="0" width="100%">
+                      <tr>
+                        <td valign="top" class="rightColumnContent">
+                          <span class="h2" style="font-family: sans-serif; font-size: 20px; color: #012639; color: rgb(1, 38, 57);">
+                            Questions
+                          </span>
+                          <p class="p1" style="font-family: sans-serif; font-size: 12px; color: #000000;">
+                            Call <span class="a1" style="font-family: sans-serif; font-size: 12px; color: #009FE3; color: rgb(0, 159, 227);"><%= Settings.contact_center.tty_number %></span> or visit our <span class="a1" style="font-family: sans-serif; font-size: 12px; color: #009FE3; color: rgb(0, 159, 227);">FAQ</span> page
+                          </p>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <tr>
+            <td align="center" valign="top">
+              <table border="0" cellpadding="50" cellspacing="0" width="100%" id="emailFooter" bgcolor="#ffffff" style="padding: 20px;">
+                <tr>
+                  <td align="center" valign="top" background="<%= asset_path('email/ribbonBanner-02.png') %>" style="background-size: cover;">
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
 </body>
+<style>
+  .cch-button {
+    -webkit-box-shadow: 0 0 6px rgba(0, 0, 0, .25);
+    -moz-box-shadow: 0 0 6px rgba(0, 0, 0, .25);
+    box-shadow: 0 0 6px rgba(0, 0, 0, .25);
+    transition: background-color 300ms ease-out;
+    border-style: solid;
+    border-width: 0;
+    font-family: sans-serif;
+    font-weight: 400;
+    line-height: normal;
+    margin: 0 0 .625rem;
+    position: relative;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    padding: 1.125rem 0 1.1875rem;
+    width: 100%;
+    border-radius: 6px;
+    font-size: 1.25rem;
+    cursor: pointer;
+  }
+
+  .action {
+    background-color: #f69422;
+    border: 3px solid #f69422;
+    color: #fff;
+  }
+
+  .action-trans {
+    background-color: #fff;
+    color: #f69422;
+    border: 3px solid #f69422;
+  }
+
+  .h1 {
+    font-family: sans-serif;
+    font-size: 20px;
+    letter-spacing: -0.55px;
+    color: #3C8EB2;
+    color: rgb(60, 142, 178);
+  }
+
+  .h2 {
+    font-family: sans-serif;
+    font-size: 20px;
+    color: #012639;
+    color: rgb(1, 38, 57);
+  }
+
+  .h3 {
+    font-family: sans-serif;
+    font-size: 28px;
+    color: #FFFFFF;
+  }
+
+  .p1 {
+    font-family: sans-serif;
+    font-size: 12px;
+    color: #000000;
+  }
+
+  .a1 {
+    font-family: sans-serif;
+    font-size: 12px;
+    color: #009FE3;
+    color: rgb(0, 159, 227);
+  }
+
+  .main {
+    background: #FFFFFF;
+    box-shadow: 0px -0.68px 5.35px rgba(2, 2, 2, 0.15);
+  }
+
+  .bannerText {
+    font-family: sans-serif;
+    font-size: 12px;
+    color: #FFFFFF;
+    color: rgb(255, 255, 255);
+  }
+</style>
+
 </html>
