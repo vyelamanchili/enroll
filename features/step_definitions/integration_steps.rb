@@ -99,6 +99,17 @@ def people
       password: 'aA1!aA1!aA1!'
 
     },
+    "Jack Doe" => {
+      first_name: "Jack",
+      last_name: "Doe",
+      dob: '10/11/1978',
+      legal_name: "BestLife",
+      dba: "BestLife",
+      fein: "050000000",
+      ssn: "197810118",
+      email: "jack@dc.gov",
+      password: 'aA1!aA1!aA1!'
+    },
     "Tim Wood" => {
       first_name: "Tim",
       last_name: "Wood",
