@@ -3,12 +3,22 @@ Given /(\w+) is a person/ do |name|
   person = FactoryGirl.create(:person, first_name: name)
   @pswd = 'aA1!aA1!aA1!'
   user = User.create(email: Forgery('email').address, password: @pswd, password_confirmation: @pswd, person: person)
-  instance_variable_set '@'+name, person
+end
+
+Then  /(\w+) signs in/ do |name|
+  person = Person.where(first_name: name).first
+  @browser.element(class: /interaction-click-control-sign-in-existing-account/).wait_until_present
+  @browser.element(class: /interaction-click-control-sign-in-existing-account/).click
+  @browser.text_field(class: /interaction-field-control-user-email/).wait_until_present
+  @browser.text_field(class: /interaction-field-control-user-email/).set(person.user.email)
+  @browser.text_field(class: /interaction-field-control-user-password/).wait_until_present
+  @browser.text_field(class: /interaction-field-control-user-password/).set('aA1!aA1!aA1!')
+  @browser.element(class: /interaction-click-control-sign-in/).click
+  @browser.element(class: /interaction-click-control-sign-in/).wait_while_present
 end
 
 Given /(\w+) is a user with no person who goes to the Employer Portal/ do |name|
   email = Forgery('email').address
-  instance_variable_set '@email_' + name, email
   @browser.goto("http://localhost:3000/")
   portal_class = 'interaction-click-control-employer-portal'
   @browser.a(class: portal_class).wait_until_present
@@ -31,28 +41,20 @@ Given /(\w+) enters first, last, dob/ do |name|
   @browser.text_field(class: 'interaction-field-control-person-first-name').click
 end
 
-Then(/(\w+) is the staff person for an employer/) do |person|
-  person = instance_variable_get '@'+person
+Then(/(\w+) is the staff person for an employer/) do |name|
+  person = Person.where(first_name: name).first
   employer_profile = FactoryGirl.create(:employer_profile)
   employer_staff_role = FactoryGirl.create(:employer_staff_role, person: person, employer_profile_id: employer_profile.id)
 end
 
-When(/(\w+) accesses the Employer Portal/) do |person|
-  person = instance_variable_get '@' + person
+When(/(\w+) accesses the Employer Portal/) do |name|
+  person = Person.where(first_name: name).first
   @browser.goto("http://localhost:3000/")
   portal_class = 'interaction-click-control-employer-portal'
   @browser.a(class: portal_class).wait_until_present
   @browser.a(class: portal_class).click
-  @browser.element(class: /interaction-click-control-sign-in-existing-account/).wait_until_present
-  @browser.element(class: /interaction-click-control-sign-in-existing-account/).click
-  @browser.text_field(class: /interaction-field-control-user-email/).wait_until_present
-  @browser.text_field(class: /interaction-field-control-user-email/).set(person.user.email)
-  @browser.text_field(class: /interaction-field-control-user-password/).wait_until_present
-  @browser.text_field(class: /interaction-field-control-user-password/).set(@pswd)
-  @browser.element(class: /interaction-click-control-sign-in/).click
-  @browser.element(class: /interaction-click-control-sign-in/).wait_while_present
+  step "#{name} signs in"
   end
-
 
 Then /(\w+) decides to Update Business information/ do |person|
   @browser.a(class: /interaction-click-control-update-business-info/).wait_until_present
@@ -62,7 +64,7 @@ Then /(\w+) decides to Update Business information/ do |person|
 end
 
 Given /(\w+) adds an EmployerStaffRole to (\w+)/ do |staff, new_staff|
-  person = instance_variable_get '@' + new_staff
+  person = Person.where(first_name: new_staff).first
   button_class = 'interaction-click-control-add-employer-staff-role'
   @browser.element(class: button_class).wait_until_present
   @browser.element(class: button_class).click
@@ -85,17 +87,17 @@ Then /Point of Contact count is (\d+)/ do |count|
 end
 
 Then /Hannah cannot remove EmployerStaffRole from Hannah/ do
-  staff = instance_variable_get '@Hannah'
+  staff = Person.where(first_name: 'Hannah').first
   @browser.link(id: 'delete_' + staff.id.to_s).click
   @browser.div(text: /before deleting this role/).wait_until_present
 end
 When /(\w+) removes EmployerStaffRole from (\w+)/ do |staff1, staff2|
-  staff = instance_variable_get "@"+staff2 
+  staff = Person.where(first_name: staff2).first
   @browser.link(id: 'delete_' + staff.id.to_s).click
 end
 
 When /(\w+) approves EmployerStaffRole for (\w+)/ do |staff1, staff2|
-  staff = instance_variable_get "@"+staff2 
+  staff = Person.where(first_name: staff2).first
   @browser.link(id: 'approve_' + staff.id.to_s).click
   screenshot('before_approval')
   @browser.div(class: 'alert-notice').wait_until_present
@@ -119,9 +121,9 @@ Then /(\w+) selects Turner Agency, Inc from the dropdown/ do |name|
    @browser.span(class: 'twitter-typeahead').div(text: 'Turner Agency, Inc').click
    sleep 1
    screenshot('display_data_for_existing_company')
-   #@browser.span(class: 'twitter-typeahead').div(class: 'tt-selectable').text
    expect(@browser.input(id: 'employer_id').value).to be_truthy
 end
+
 Then /(\w+) is notified about Employer Staff Role pending status/ do |name|
    @browser.button(class: 'interaction-click-control-confirm').click
    sleep 1
@@ -130,9 +132,23 @@ Then /(\w+) is notified about Employer Staff Role pending status/ do |name|
    screenshot('pending_person_stays_on_new_page')
  end
 
+Given /Admin accesses the Employers tab of HBX portal/ do
+  @browser.goto("http://localhost:3000/")
+  portal_class = 'interaction-click-control-hbx-portal'
+  @browser.a(class: portal_class).wait_until_present
+  @browser.a(class: portal_class).click
+  step "Admin signs in"
+end
+Given /Admin selects Hannahs company/ do
+  tab_class = 'interaction-click-control-employers'
+  @browser.link(class: tab_class).wait_until_present
+  @browser.link(class: tab_class).click
+  company = @browser.link(text: 'Turner Agency, Inc')
+  company.wait_until_present
+  company.click
+end
 
-
-
-
-
-
+Given /(\w+) has HBXAdmin privileges/ do |name|
+  person = Person.where(first_name: name).first
+  FactoryGirl.create(:hbx_staff_role, person: person)
+end

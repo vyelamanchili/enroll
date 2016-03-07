@@ -52,3 +52,12 @@ Feature: Employer Profile
     Given NewGuy enters first, last, dob
     Given NewGuy selects Turner Agency, Inc from the dropdown
     Then NewGuy is notified about Employer Staff Role pending status
+    Then NewGuy logs out
+
+    Given Admin is a person
+    Given Admin has HBXAdmin privileges
+    And Admin accesses the Employers tab of HBX portal
+    Given Admin selects Hannahs company
+    Given Admin decides to Update Business information
+    Then Point of Contact count is 2
+    Then Admin approves EmployerStaffRole for NewGuy
