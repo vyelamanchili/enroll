@@ -12,6 +12,7 @@ namespace :reports do
       employer_profiles = EmployerProfile.all
 
       field_names  = %w(
+          hbx_id
           fein       
           legal_name        
           dba       
@@ -49,6 +50,7 @@ namespace :reports do
           plan_year = er.active_plan_year || er.latest_plan_year
           next unless plan_year
 
+          hbx_id                = er.hbx_id
           fein                  = er.fein
           legal_name            = er.legal_name
           dba                   = er.dba
