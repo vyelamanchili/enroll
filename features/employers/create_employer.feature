@@ -28,8 +28,8 @@ Feature: Create Employer
           And Employer should see employer census family created success message
         When Employer goes to the benefits tab
         Then Employer should see the plan year
-        When Employer clicks on publish plan year
-        Then Employer should see Publish Plan Year Modal with warnings
+        When Employer clicks on Finalize Plan Offerings
+        Then Employer should see Finalize Plan Offerings Modal with warnings
         When Employer clicks on the Cancel button
         Then Employer should be on the Plan Year Edit page with warnings
         When Employer updates the FTE field with valid input and save plan year
@@ -38,7 +38,7 @@ Feature: Create Employer
         Then Employer should see a form to update the contents of the census employee
           And Employer should see employer census family updated success message
         When Employer goes to the benefits tab I should see plan year information
-        Then Employer clicks on publish plan year
+        Then Employer clicks on Finalize Plan Offerings
         Then Employer should see a published success message
         When Employer logs out
 

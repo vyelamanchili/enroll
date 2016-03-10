@@ -425,12 +425,12 @@ Then(/^.+ should see the plan year$/) do
   @browser.element(class: /interaction-click-control-publish-plan-year/).wait_until_present
 end
 
-When(/^.+ clicks? on publish plan year$/) do
+When(/^.+ clicks? on Finalize Plan Offerings$/) do
   @browser.element(class: /interaction-click-control-publish-plan-year/).wait_until_present
   @browser.element(class: /interaction-click-control-publish-plan-year/).click
 end
 
-Then(/^.+ should see Publish Plan Year Modal with warnings$/) do
+Then(/^.+ should see Finalize Plan Offerings Modal with warnings$/) do
 
   @browser.element(class: /modal-body/).wait_until_present
 
