@@ -21,6 +21,8 @@ class CarrierProfile
   field :market_coverage, type: String, default: "shop (small group)" # or individual
   field :dental_only_plan, type: Boolean, default: false
 
+  field :issuer_id, type: String
+  field :network_id, type: String
 
   delegate :hbx_id, to: :organization, allow_nil: true
   delegate :legal_name, :legal_name=, to: :organization, allow_nil: false
