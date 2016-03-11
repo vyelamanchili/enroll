@@ -337,7 +337,7 @@ class EmployerProfile
           { :$elemMatch => {
            :"open_enrollment_start_on".lte => new_date,
            :"open_enrollment_end_on".gte => new_date,
-           :"aasm_state".in => PlanYear::PUBLISHED + PlanYear::RENEWING_PUBLISHED_STATE
+           :"aasm_state".in => ['published', 'renewing_published']
          }
       })
     end
@@ -353,12 +353,12 @@ class EmployerProfile
     end
 
     def organizations_for_plan_year_begin(new_date)
-      Organization.where(:"employer_profile.plan_years" =>
-        { :$elemMatch => {
+      Organization.where(:"employer_profile.plan_years" => 
+        { :$elemMatch => { 
           :"start_on".lte => new_date,
           :"end_on".gt => new_date,
-           :"aasm_state".in => PlanYear::PUBLISHED + PlanYear::RENEWING_PUBLISHED_STATE
-         }
+          :"aasm_state".in => (PlanYear::PUBLISHED + PlanYear::RENEWING_PUBLISHED_STATE - ['active'])
+        }
       })
     end
 
@@ -404,18 +404,18 @@ class EmployerProfile
           open_enrollment_factory.end_open_enrollment
         end
 
-        employer_enroll_factory = Factories::EmployerEnrollFactory.new
-        employer_enroll_factory.date = new_date
+        # employer_enroll_factory = Factories::EmployerEnrollFactory.new
+        # employer_enroll_factory.date = new_date
 
-        organizations_for_plan_year_begin(new_date).each do |organization|
-          employer_enroll_factory.employer_profile = organization.employer_profile
-          employer_enroll_factory.begin
-        end
+        # organizations_for_plan_year_begin(new_date).each do |organization|
+        #   employer_enroll_factory.employer_profile = organization.employer_profile
+        #   employer_enroll_factory.begin
+        # end
 
-        organizations_for_plan_year_end(new_date).each do |organization|
-          employer_enroll_factory.employer_profile = organization.employer_profile
-          employer_enroll_factory.end
-        end
+        # organizations_for_plan_year_end(new_date).each do |organization|
+        #   employer_enroll_factory.employer_profile = organization.employer_profile
+        #   employer_enroll_factory.end
+        # end
       end
 
       # Employer activities that take place monthly - on first of month

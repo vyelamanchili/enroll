@@ -19,7 +19,7 @@ module Factories
 
       return nil if family.active_household.hbx_enrollments.any?{|enrollment| (HbxEnrollment::RENEWAL_STATUSES.include?(enrollment.aasm_state) || enrollment.renewing_waived?)}
 
-      shop_enrollments  = @family.active_household.hbx_enrollments.enrolled.shop_market + @family.active_household.hbx_enrollments.waived
+      shop_enrollments  = @family.enrollments.shop_market + @family.active_household.hbx_enrollments.waived
       return nil if shop_enrollments.any? {|enrollment| enrollment.effective_on >= @renewing_plan_year.start_on }
 
       @plan_year_start_on = @renewing_plan_year.start_on
