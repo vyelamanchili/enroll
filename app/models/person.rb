@@ -552,7 +552,8 @@ class Person
       self.where(:employer_staff_roles => {
         '$elemMatch' => {
             employer_profile_id: employer_profile.id,
-            :aasm_state => :is_active
+            :aasm_state.ne => :is_closed,
+            :aasm_state.ne => :is_applicant
         }
         })
     end
@@ -681,7 +682,28 @@ class Person
     !!agent
   end
 
-
+  def contact_info(email_address, area_code, number, extension)
+    if email_address.present?
+      email = emails.detect{|mail|mail.kind == 'work'}
+      if email
+        email.update_attributes!(address: email_address)
+      else
+        email= Email.new(kind: 'work', address: email_address)
+        emails.append(email)
+        self.update_attributes!(emails: emails)
+        save!
+      end
+    end
+    phone = phones.detect{|p|p.kind == 'work'}
+    if phone
+      phone.update_attributes!(area_code: area_code, number: number, extension: extension)
+    else
+      phone = Phone.new(kind: 'work', area_code: area_code, number: number, extension: extension)
+      phones.append(phone)
+      self.update_attributes!(phones: phones)
+      save!
+    end
+  end
 
   private
   def is_ssn_composition_correct?

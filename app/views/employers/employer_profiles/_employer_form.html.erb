@@ -36,17 +36,24 @@
         <div class='table-responsive col-12' >
           <table style='width: 100%; border-collapse: collapse; border: 1px solid #d5d5d5'>
             <thead style='height: 40px;'>
-             <th style='width: 23%; height: 40px; padding: 10px'>First Name </th>
-             <th style='width: 23%'>Last Name  </th>
-             <th style='width: 23%'> Email       </th>
-             <th style='width: 15%'> Status      </th>
-             <th style='width: 10%'> Remove Role </th>
+             <th style='width: 18%; height: 40px; padding: 10px'>First Name </th>
+             <th style='width: 18%'>Last Name    </th>
+             <th style='width: 18%'> Email       </th>
+             <th style='width: 18%'> Phone       </th>
+             <th style='width: 18%'> Status      </th>
+             <th style='width: 9%'> Remove Role  </th>
              </thead>
             <% @staff.each do |staff| %>
               <tr style='border: 1px solid #d5d5d5; height: 50px; '>
                 <td style='padding: 10px'><%= staff.first_name %></td>
                 <td><%= staff.last_name %></td>
-                <td><%= staff.user && staff.user.email %></td>
+                <td>
+                  <% mail = staff.emails.detect{|mail| mail.kind=='work'} %>
+                  <%= (mail && mail.address) || (staff.user && staff.user.email) %>
+                </td>
+                <td>
+                  <% phone = staff.phones.detect{|phone| phone.kind == 'work'} %>
+                  <%= phone && (phone.area_code.to_s + phone.number + (phone.extension? ? ' x'+phone.extension : '')) %>
                 <td>
                   <% role = staff.employer_staff_roles.detect{|role| role.employer_profile_id == @employer_profile.id && !role.is_closed?} %>
                   <%= role && role.current_state %>
@@ -57,7 +64,7 @@
                   <% end %>
                 </td>
                 <td>
-                  <%= link_to(employers_employer_staff_role_path(id: @employer_profile.id, staff_id: staff.id), method: 'delete', id: 'delete_' + staff.id.to_s) do %>
+                  <%= link_to(employers_employer_staff_role_path(id: @employer_profile.id, staff_id: staff.id), method: 'delete', id: 'delete_' + staff.id.to_s, data: {confirm: 'Delete this role?'}) do %>
                     <i class="fa fa-trash-o fa-2x role-trashcan"></i>
                   <%end%>
                 </td>

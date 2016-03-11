@@ -2,7 +2,10 @@ require 'date'
 module Forms
   class EmployerProfile  < ::Forms::OrganizationSignup
     attr_reader :employer_profile
-
+    attr_accessor :email
+    attr_accessor :area_code
+    attr_accessor :number
+    attr_accessor :extension
     class OrganizationAlreadyMatched < StandardError; end
 
     def check_existing_organization
@@ -38,6 +41,7 @@ module Forms
         errors.add(:base, "a person matching the provided personal information has already been claimed by another user.  Please contact HBX.")
         return false
       end
+      person.contact_info(email, area_code, number, extension)
       if !employer_profile_id.present?
         existing_org = nil
         begin
