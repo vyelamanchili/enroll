@@ -21,7 +21,6 @@ class Quote
 
   associated_with_one :broker_role, :broker_role_id, "BrokerRole"
 
-
   field :plan_option_kind, type: String, default: "single_carrier"
 
   embeds_many :quote_reference_plans, cascade_callbacks: true
