@@ -42,7 +42,7 @@ RSpec.describe "shared/_signup_progress.html.haml" do
   end
 
   context "step 5" do
-    let(:hbx_enrollment) {double(employee_role: double)}
+    let(:hbx_enrollment) {double(employee_role: double, is_active_for_employee?: true)}
 
     it "should display the waive button" do
       assign(:hbx_enrollment, hbx_enrollment)
@@ -69,6 +69,7 @@ RSpec.describe "shared/_signup_progress.html.haml" do
 
     it "should display the waive button" do
       allow(hbx_enrollment).to receive(:can_select_coverage?).and_return(true)
+      allow(hbx_enrollment).to receive(:is_active_for_employee?).and_return true
       render "shared/signup_progress", step: 6
       expect(rendered).to have_selector('a', text: /Waive/)
     end
@@ -76,12 +77,14 @@ RSpec.describe "shared/_signup_progress.html.haml" do
     it "should not display the waive button" do
       allow(hbx_enrollment).to receive(:can_select_coverage?).and_return(true)
       allow(hbx_enrollment).to receive(:employee_role).and_return(nil)
+      allow(hbx_enrollment).to receive(:is_active_for_employee?).and_return false
       render "shared/signup_progress", step: 6
       expect(rendered).not_to have_selector('a', text: /Waive/)
     end
 
     context "when enrollment cannot be completed" do
       before :each do
+        allow(hbx_enrollment).to receive(:is_active_for_employee?).and_return true
         assign(:enrollable, false)
       end
 

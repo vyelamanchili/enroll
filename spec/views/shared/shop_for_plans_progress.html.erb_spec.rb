@@ -74,7 +74,7 @@ describe "shared/_shop_for_plans_progress.html.erb" do
     context "waive button with employee role" do
       let(:employee_role) {FactoryGirl.build(:employee_role)}
       before :each do
-        allow(enrollment).to receive(:employee_role).and_return employee_role
+        allow(enrollment).to receive(:is_active_for_employee?).and_return true
         assign :enrollment, enrollment
       end
 
@@ -93,14 +93,14 @@ describe "shared/_shop_for_plans_progress.html.erb" do
         let(:employee_role) {FactoryGirl.build(:employee_role)}
         let(:benefit_group) {double("Benefit group")}
         before :each do
-          allow(enrollment).to receive(:employee_role).and_return nil
+          allow(enrollment).to receive(:is_active_for_employee?).and_return false
           allow(enrollment).to receive(:benefit_group).and_return benefit_group
           assign :enrollment, enrollment
         end
 
-        it "should show waive coverage link" do
+        it "should not show waive coverage link" do
           render 'shared/shop_for_plans_progress', step: '1', show_waive: true
-          expect(rendered).to have_selector('a', text: 'Waive Coverage')
+          expect(rendered).not_to have_selector('a', text: 'Waive Coverage')
         end
 
         it "should not show waive coverage link" do

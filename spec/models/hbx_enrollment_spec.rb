@@ -1398,4 +1398,36 @@ describe HbxEnrollment, "given an enrollment kind of 'open_enrollment'" do
       end
     end
   end
+
+  context "is_active_for_employee?" do
+    let(:hbx_enrollment) { HbxEnrollment.new(kind: 'employer_sponsored') }
+    let(:census_employee) { FactoryGirl.build(:census_employee) }
+
+    it "should return false when hbx is not shop" do
+      hbx_enrollment.kind = "unassisted_qhp"
+      expect(hbx_enrollment.is_active_for_employee?).to be_falsey
+    end
+
+    context "when hbx is shop" do
+      it "should return false without census_employee" do
+        expect(hbx_enrollment.is_shop?).to be_truthy
+        expect(hbx_enrollment.is_active_for_employee?).to be_falsey
+      end
+
+      context "with census_employee" do
+        before do
+          allow(hbx_enrollment).to receive(:census_employee).and_return census_employee
+        end
+
+        it "should return false when census_employee is employment_terminated" do
+          allow(census_employee).to receive(:employment_terminated?).and_return true
+          expect(hbx_enrollment.is_active_for_employee?).to be_falsey
+        end
+
+        it "should return true when census_employee is not employment_terminated" do
+          expect(hbx_enrollment.is_active_for_employee?).to be_truthy
+        end
+      end
+    end
+  end
 end

@@ -238,6 +238,10 @@ class HbxEnrollment
     end
   end
 
+  def is_active_for_employee?
+    is_shop? && census_employee.present? && !census_employee.employment_terminated?
+  end
+
   def benefit_sponsored?
     benefit_group.present?
   end

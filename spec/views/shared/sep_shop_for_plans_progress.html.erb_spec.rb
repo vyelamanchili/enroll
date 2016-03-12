@@ -40,6 +40,25 @@ describe "shared/_sep_shop_for_plans_progress.html.haml" do
 
   end
 
+  context "step 2 for waive coverage" do
+    let(:hbx_enrollment) { HbxEnrollment.new }
+    before :each do
+      assign :market_kind, 'shop'
+      assign :hbx_enrollment, hbx_enrollment
+    end
+
+    it "when hbx_enrollment is not active for employee" do
+      render 'shared/sep_shop_for_plans_progress', step: '2'
+      expect(rendered).not_to have_selector('a', text: 'Waive Coverage')
+    end
+
+    it "when hbx_enrollment is active for employee" do
+      allow(hbx_enrollment).to receive(:is_active_for_employee?).and_return true
+      render 'shared/sep_shop_for_plans_progress', step: '2'
+      expect(rendered).to have_selector('a', text: 'Waive Coverage')
+    end
+  end
+
   context "step 3" do
     before :each do
       assign :change_plan, "change_plan"
@@ -61,6 +80,27 @@ describe "shared/_sep_shop_for_plans_progress.html.haml" do
 
     it "should have previous option" do
       expect(rendered).to match /PREVIOUS/
+    end
+  end
+
+  context "step 3 for waive coverage" do
+    let(:hbx_enrollment) { HbxEnrollment.new }
+    let(:plan) { FactoryGirl.create(:plan) }
+    before :each do
+      assign :market_kind, 'shop'
+      assign :enrollment, hbx_enrollment
+      assign :plan, plan
+    end
+
+    it "when hbx_enrollment is not active for employee" do
+      render 'shared/sep_shop_for_plans_progress', step: '3', no_purchase: false
+      expect(rendered).not_to have_selector('a', text: 'Waive Coverage')
+    end
+
+    it "when hbx_enrollment is active for employee" do
+      allow(hbx_enrollment).to receive(:is_active_for_employee?).and_return true
+      render 'shared/sep_shop_for_plans_progress', step: '3', no_purchase: false
+      expect(rendered).to have_selector('a', text: 'Waive Coverage')
     end
   end
 

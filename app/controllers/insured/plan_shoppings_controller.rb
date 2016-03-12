@@ -55,7 +55,7 @@ class Insured::PlanShoppingsController < ApplicationController
     @change_plan = params[:change_plan].present? ? params[:change_plan] : ''
     @enrollment_kind = params[:enrollment_kind].present? ? params[:enrollment_kind] : ''
 
-    if @person.employee_roles.any?
+    if @person.employee_roles.any? && @enrollment.is_active_for_employee?
       @employer_profile = @person.employee_roles.first.employer_profile
     end
 
@@ -97,7 +97,7 @@ class Insured::PlanShoppingsController < ApplicationController
     @enrollment_kind = params[:enrollment_kind].present? ? params[:enrollment_kind] : ''
     flash.now[:error] = qualify_qle_notice unless @enrollment.can_select_coverage?
 
-    if @person.employee_roles.any?
+    if @person.employee_roles.any? && @enrollment.is_active_for_employee?
       @employer_profile = @person.employee_roles.first.employer_profile
     end
 

@@ -86,4 +86,23 @@ describe "shared/_qle_progress.html.erb" do
       expect(rendered).to have_selector('a.disabled')
     end
   end
+
+  context "waive coverage" do
+    let(:hbx_enrollment) { HbxEnrollment.new }
+    before :each do
+      assign :market_kind, 'shop'
+      assign :hbx_enrollment, hbx_enrollment
+    end
+
+    it "when hbx_enrollment is not active for employee" do
+      render 'shared/qle_progress'
+      expect(rendered).not_to have_selector('a', text: 'Waive Coverage')
+    end
+
+    it "when hbx_enrollment is active for employee" do
+      allow(hbx_enrollment).to receive(:is_active_for_employee?).and_return true
+      render 'shared/qle_progress'
+      expect(rendered).to have_selector('a', text: 'Waive Coverage')
+    end
+  end
 end
