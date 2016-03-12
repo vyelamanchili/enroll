@@ -20,6 +20,7 @@ class Quote
 
   associated_with_one :broker_agency_profile, :broker_agency_profile_id, "BrokerAgencyProfile"
 
+
   field :plan_option_kind, type: String
 
   embeds_many :quote_reference_plans, cascade_callbacks: true

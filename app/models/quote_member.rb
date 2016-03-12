@@ -37,5 +37,4 @@ class QuoteMember
     end
     age
   end
-
 end
