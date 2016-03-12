@@ -49,8 +49,9 @@ class Quote
 
         rp1.quote_results << pcd.get_family_details_hash
       end
-
+      
       self.save
+
   end
 
   def gen_data
