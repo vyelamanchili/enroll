@@ -133,5 +133,4 @@ class BrokerAgencies::QuotesController < ApplicationController
     end
   end
 
-
 end
