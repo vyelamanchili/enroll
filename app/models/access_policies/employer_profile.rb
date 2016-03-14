@@ -11,7 +11,7 @@ module AccessPolicies
       return(true) if user.has_hbx_staff_role? || is_broker_for_employer?(employer.id)
       person = user.person
 
-      if person.employer_staff_roles.length > 0
+      if person.employer_staff_roles.active.length > 0
         ep_ids = user.person.employer_staff_roles.map(&:employer_profile_id).map(&:to_s)
         if !ep_ids.include?(employer.id.to_s)
           controller.redirect_to_first_allowed

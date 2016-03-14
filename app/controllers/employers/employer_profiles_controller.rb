@@ -152,7 +152,7 @@ class Employers::EmployerProfilesController < Employers::EmployersController
     @organization = Forms::EmployerProfile.new(params[:organization])
     organization_saved = false
     begin
-      organization_saved = @organization.save(current_user, params[:employer_id])
+      organization_saved, pending = @organization.save(current_user, params[:employer_id])
     rescue Exception => e
       flash[:error] = e.message
       render action: "new"
@@ -161,7 +161,7 @@ class Employers::EmployerProfilesController < Employers::EmployersController
     if organization_saved
       @person = current_user.person
       create_sso_account(current_user, current_user.person, 15, "employer") do
-        if params[:employer_id].present?
+        if pending
           flash[:notice] = 'Your Employer Staff application is pending'
           render action: 'new'
         else
@@ -182,7 +182,7 @@ class Employers::EmployerProfilesController < Employers::EmployersController
     @organization_dup = @organization.office_locations.as_json
     @employer_profile = @organization.employer_profile
 
-    if current_user.has_employer_staff_role? && @employer_profile.staff_roles.include?(current_user.person)
+    if (current_user.has_employer_staff_role? && @employer_profile.staff_roles.include?(current_user.person)) || current_user.person.agent?
       @organization.assign_attributes(organization_profile_params)
 
       #clear office_locations, don't worry, we will recreate

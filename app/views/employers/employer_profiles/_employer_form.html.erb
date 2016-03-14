@@ -111,8 +111,10 @@
               <% end %>
             </div><br>
             <h2> Office Locations </h2>
-            <%= f.fields_for :office_locations, errors: {}, fieldset: false do |office_location| %>
+            <% @row = false %>
+            <%= f.fields_for :office_locations, errors: {}, fieldset: false do |office_location,block| %>
               <%= render partial: 'shared/office_location_fields', locals: {f: office_location} %>
+              <% @row = true %>
             <% end %>
             <br/>
             <div class="form-inputs">

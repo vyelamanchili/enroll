@@ -17,23 +17,12 @@
 	<div class="row">
 		<div class="col-md-9 col-sm-9 col-xs-12">
       <h4>
-        <div class="col-md-4 col-sm-12 col-xs-12 col-4" >New Employer Information
-        </div>
-        <div class="col-md-8 col-sm-12 col-xs-12 col-8">
-          <div class="row search-dropdown-wrapper">
-            <div class="col-md-12 col-sm-12 col-xs-12">
-              <div style='float: left; font-size: 80%'>Additional contact for Existing Company:&nbsp;</div>
-              <div class="col-md-6 col-sm-6 col-xs-12 input-group input-no-pd">
-                <input type="hidden" name="employer_id" id="employer_id" />
-                <input type="text" name="employer_name" id="employer_name" placeholder="Name" class="typeahead form-control" style='width:160px'/>
-              </div>
-            </div>
-          </div>
+        <div class="col-md-4 col-sm-12 col-xs-12 col-4" >Employer Information
         </div>
       </h4>
        <br/> <br/>
 			<div class="row no-buffer row-form-wrapper">
-				<%= render "shared/organizations/entity_name_and_type_fields", f: f, entity_kinds: Organization::ENTITY_KINDS %>
+				<%= render "shared/organizations/entity_name_and_type_fields_autofill", f: f, entity_kinds: Organization::ENTITY_KINDS %>
 			</div><br>
 			<%= render "shared/office_locations", f: f %>
 			<div class="row no-buffer pull-right sm_full_width">
@@ -42,3 +31,4 @@
 		</div>
 	</div><br>
 </div>
+<input type="hidden" name="employer_id" id="employer_id" />

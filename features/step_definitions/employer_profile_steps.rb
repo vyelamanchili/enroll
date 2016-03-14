@@ -34,11 +34,14 @@ Given /(\w+) is a user with no person who goes to the Employer Portal/ do |name|
   @browser.element(class: /interaction-click-control-create-account/).wait_while_present
 end
 
-Given /(\w+) enters first, last, dob/ do |name|
+Given /(\w+) enters first, last, dob and contact info/ do |name|
   @browser.text_field(class: 'interaction-field-control-person-first-name').set(name)
   @browser.text_field(class: 'interaction-field-control-person-last-name').set(Forgery('name').last_name)
   @browser.text_field(class: 'interaction-field-control-person-dob').set('03/03/1993')
   @browser.text_field(class: 'interaction-field-control-person-first-name').click
+  @browser.text_field(class: 'interaction-field-control-person-email').set(Forgery('internet').email_address)
+  @browser.text_field(class: 'interaction-field-control-person-area-code').set(202)
+  @browser.text_field(class: 'interaction-field-control-person-number').set('555-1212')
 end
 
 Then(/(\w+) is the staff person for an employer/) do |name|
@@ -88,12 +91,15 @@ end
 
 Then /Hannah cannot remove EmployerStaffRole from Hannah/ do
   staff = Person.where(first_name: 'Hannah').first
+  @browser.execute_script("window.confirm = function() {return true}")
   @browser.link(id: 'delete_' + staff.id.to_s).click
   @browser.div(text: /before deleting this role/).wait_until_present
 end
 When /(\w+) removes EmployerStaffRole from (\w+)/ do |staff1, staff2|
   staff = Person.where(first_name: staff2).first
+  @browser.execute_script("window.confirm = function() {return true}")
   @browser.link(id: 'delete_' + staff.id.to_s).click
+
 end
 
 When /(\w+) approves EmployerStaffRole for (\w+)/ do |staff1, staff2|
@@ -114,8 +120,8 @@ Then /show elapsed time/  do
   puts Time.now - @a
 end
 Then /(\w+) selects Turner Agency, Inc from the dropdown/ do |name|
-   @browser.text_field(id: 'employer_name').wait_until_present
-   @browser.text_field(id: 'employer_name').set('Tu')
+   @browser.text_field(class: 'typeahead').wait_until_present
+   @browser.text_field(class: 'typeahead').set('Tu')
    @browser.span(class: 'twitter-typeahead').div(text: 'Turner Agency, Inc').wait_until_present
    screenshot('dropdown_for_existing_company')
    @browser.span(class: 'twitter-typeahead').div(text: 'Turner Agency, Inc').click
@@ -124,10 +130,10 @@ Then /(\w+) selects Turner Agency, Inc from the dropdown/ do |name|
    expect(@browser.input(id: 'employer_id').value).to be_truthy
 end
 
-Then /(\w+) is notified about Employer Staff Role pending status/ do |name|
+Then /(\w+) is notified about Employer Staff Role (.*)/ do |name, alert|
    @browser.button(class: 'interaction-click-control-confirm').click
    sleep 1
-   expect(@browser.div(class: 'alert-notice').text).to match /application is pending/
+   expect(@browser.div(class: 'alert-notice').text).to match /#{alert}/
    expect(@browser.h2(text: 'Thank you for logging into your DC')).to be_truthy
    screenshot('pending_person_stays_on_new_page')
  end
@@ -152,3 +158,34 @@ Given /(\w+) has HBXAdmin privileges/ do |name|
   person = Person.where(first_name: name).first
   FactoryGirl.create(:hbx_staff_role, person: person)
 end
+
+Given(/^NewGuy enters the Primary Office Location info$/) do
+  @browser.text_field(class: 'interaction-field-control-organization-legal-name').set(Forgery('name').company_name)
+  @browser.text_field(class: 'interaction-field-control-organization-dba').set(Forgery('name').company_name)
+  @fein = 100000000+rand(10000)
+  @browser.text_field(class: 'interaction-field-control-organization-fein').set(@fein)
+  sleep 1
+  entity = @browser.divs(class: 'selectric')[0]
+  entity.click
+  @browser.li(text: /Partnership/i).click
+
+  @browser.text_field(class: 'interaction-field-control-office-location-address-address-1').set('3 Jump St')
+  @browser.text_field(class: 'interaction-field-control-office-location-address-city').set('Washington')
+  entity = @browser.divs(class: 'selectric')[2]
+  entity.click
+  @browser.li(text: /DC/).click
+  @browser.text_field(class: 'interaction-field-control-office-location-address-zip').set('20002')
+  @browser.text_field(class: 'area_code').set('202')
+  @browser.text_fields(placeholder: 'NUMBER').last.set('363-0145')
+end
+
+Given /The unclaimed company already exists/ do
+  o=FactoryGirl.create(:organization, fein: @fein)
+  ep= FactoryGirl.create(:employer_profile, organization: o)
+end
+
+Then /(\w+) becomes an Employer/ do |name|
+  scroll_then_click(@browser.button(class: 'interaction-click-control-confirm'))
+  @browser.div(text: /I'm an Employer/).wait_until_present
+end
+
