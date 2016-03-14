@@ -48,8 +48,7 @@
                 <td style='padding: 10px'><%= staff.first_name %></td>
                 <td><%= staff.last_name %></td>
                 <td>
-                  <% mail = staff.emails.detect{|mail| mail.kind=='work'} %>
-                  <%= (mail && mail.address) || (staff.user && staff.user.email) %>
+                  <%= staff.work_email_or_best %>
                 </td>
                 <td>
                   <% phone = staff.phones.detect{|phone| phone.kind == 'work'} %>

@@ -400,6 +400,11 @@ class Person
     emails.detect { |adr| adr.kind == "work" }
   end
 
+  def work_email_or_best
+    email = emails.detect { |adr| adr.kind == "work" } || emails.first
+    (email && email.address) || (user && user.email)
+  end
+
   def work_phone
     phones.detect { |phone| phone.kind == "work" } || main_phone
   end

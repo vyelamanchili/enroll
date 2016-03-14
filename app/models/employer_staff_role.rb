@@ -4,7 +4,6 @@ class EmployerStaffRole
   include AASM
 
   embedded_in :person
-
   field :is_owner, type: Boolean, default: false
   field :employer_profile_id, type: BSON::ObjectId
   field :bookmark_url, type: String
