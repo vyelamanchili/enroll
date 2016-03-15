@@ -18,7 +18,6 @@ class Quote
   field :start_on, type: Date, default: TimeKeeper.date_of_record.beginning_of_year
   field :broker_role_id, type: BSON::ObjectId
 
-
   associated_with_one :broker_role, :broker_role_id, "BrokerRole"
 
   field :plan_option_kind, type: String, default: "single_carrier"
@@ -215,5 +214,7 @@ class Quote
   def relationship_benefit_for(relationship)
     quote_relationship_benefits.where(relationship: relationship).first
   end
+
+
 
 end
