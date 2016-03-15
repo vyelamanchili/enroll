@@ -18,8 +18,9 @@ class Quote
   field :start_on, type: Date
   field :broker_agency_profile_id, type: BSON::ObjectId
 
-  associated_with_one :broker_agency_profile, :broker_agency_profile_id, "BrokerAgencyProfile"
+  field :reference_plan_id, type: BSON::ObjectId
 
+  associated_with_one :broker_agency_profile, :broker_agency_profile_id, "BrokerAgencyProfile"
 
   field :plan_option_kind, type: String
 
@@ -129,8 +130,37 @@ class Quote
     end
   end
 
+<<<<<<< b7ff06be1fbbca09e095295d2a1235830fabc494
   def relationship_benefit_for(relationship)
     quote_relationship_benefits.where(relationship: relationship).first
   end
+=======
+  def gen_data
+
+    build_relationship_benefits
+
+    qh = self.quote_households.build
+
+    qm = qh.quote_members.build
+
+    qm.name = "Tony"
+    qm.age = 35
+
+    qm = qh.quote_members.build
+
+    qm.name = "Gabriel"
+    qm.age = 4
+
+    self.save
+
+  end
+
+  def build_relationship_benefits
+    self.relationship_benefits = PERSONAL_RELATIONSHIP_KINDS.map do |relationship|
+       self.relationship_benefits.build(relationship: relationship, offered: true)
+    end
+  end
+
+>>>>>>> Quoting tool Prototype Model
 
 end
