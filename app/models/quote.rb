@@ -151,45 +151,4 @@ class Quote
     quote_relationship_benefits.where(relationship: relationship).first
   end
 
-  def gen_data
-
-    build_relationship_benefits
-
-    qh = self.quote_households.build
-
-    qm = qh.quote_members.build
-
-    qm.first_name = "Tony"
-    qm.last_name = "Schaffert"
-    qm.dob = Date.new(1980,7,26)
-    qm.employee_relationship = "employee"
-
-    qm = qh.quote_members.build
-
-    qm.first_name = "Gabriel"
-    qm.last_name = "Schaffert"
-    qm.dob = Date.new(2012,1,10)
-    qm.employee_relationship = "child_under_26"
-    self.save
-
-    self.calc
-    #qh = self.quote_households.build
-    #qm = qh.quote_members.build
-
-    #qm.first_name = "Andressa"
-    #qm.last_name = "Schaffert"
-    #qm.dob = Date.new(1988,9,27)
-    #qm.employee_relationship = "self"
-
-    #qm = qh.quote_members.build
-
-    #qm.first_name = "Alice"
-    #qm.last_name = "Schaffert"
-    #qm.dob = Date.new(2014,1,13)
-    #qm.employee_relationship = "child_under_26"
-    #self.save
-
-
-  end
-
 end
