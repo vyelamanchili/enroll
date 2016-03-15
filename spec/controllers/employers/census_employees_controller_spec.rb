@@ -250,6 +250,15 @@ RSpec.describe Employers::CensusEmployeesController do
       end
     end
 
+    context "with termination date in the near future" do
+      it "should schedule termination of census employee" do
+        xhr :get, :terminate, :census_employee_id => census_employee.id, :employer_profile_id => employer_profile_id, termination_date: (TimeKeeper.date_of_record + 3.days).to_s, :format => :js
+        expect(flash[:notice]).to eq "Successfully scheduled termination for Census Employee."
+        expect(response).to have_http_status(:success)
+        expect(assigns[:fa]).to eq true
+      end
+    end
+
     context "with no termination date" do
       it "should throw error" do
         xhr :get, :terminate, :census_employee_id => census_employee.id, :employer_profile_id => employer_profile_id, termination_date: "", :format => :js

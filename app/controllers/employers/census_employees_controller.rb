@@ -120,8 +120,11 @@ class Employers::CensusEmployeesController < ApplicationController
     end
     respond_to do |format|
       format.js {
-        if termination_date.present? and @fa
-          flash[:notice] = "Successfully terminated Employee."
+        if termination_date.present? && @fa && termination_date <= TimeKeeper.date_of_record
+          flash[:notice] = "Successfully terminated Census Employee."
+          render text: true
+        elsif termination_date.present? && @fa && termination_date > TimeKeeper.date_of_record
+          flash[:notice] = "Successfully scheduled termination for Census Employee."
           render text: true
         else
           flash[:error] = "Employee could not be terminated: Termination date must be within the past 60 days or within the next 60 days."
