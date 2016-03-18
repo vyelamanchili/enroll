@@ -1,0 +1,22 @@
+BusinessYear,StateCode,IssuerId,SourceName,VersionNum,ImportDate,IssuerId2,StateCode2,NetworkName,NetworkId,NetworkURL,RowNumber,MarketCoverage,DentalOnlyPlan
+2016,NV,60156,OPM,5,1/26/16 09:59,60156,NV,Pathway X - HMO and Dental Prime,NVN201,https://www.anthem.com/health-insurance/provider-directory/searchcriteria?alphaprefix=YFI,13,Individual,No
+2016,NV,12553,SERFF,5,9/24/15 06:32,12553,NV,Delta Dental PPO,NVN001,https://www.deltadentalins.com/find-a-dentist,13,Individual,Yes
+2016,NV,12553,SERFF,5,9/24/15 06:32,12553,NV,Delta Dental PPO,NVN001,https://www.deltadentalins.com/find-a-dentist,13,SHOP (Small Group),Yes
+2016,NV,16698,SERFF,5,8/20/15 12:28,16698,NV,Premier HMO North Network,NVN001,http://prominencehealthplan.com/individual-and-family-plans/nevada-health-link-individual-and-family-plans/,13,Individual,No
+2016,NV,16698,SERFF,5,8/20/15 12:28,16698,NV,Prominence HealthFirst HMO Network (ChoicePlus),NVN002,http://prominencehealthplan.com/individual-and-family-plans/nevada-health-link-individual-and-family-plans/,14,Individual,No
+2016,NV,16698,SERFF,5,8/20/15 12:28,16698,NV,Prominence HMO Network (HCP),NVN003,http://prominencehealthplan.com/individual-and-family-plans/nevada-health-link-individual-and-family-plans/,15,Individual,No
+2016,NV,16698,SERFF,5,8/20/15 12:28,16698,NV,Prominence HMO WellHealth Network,NVN004,http://prominencehealthplan.com/individual-and-family-plans/nevada-health-link-individual-and-family-plans/,16,Individual,No
+2016,NV,33670,SERFF,6,8/21/15 06:27,33670,NV,Pathway X - PPO and Dental Prime,NVN001,https://www.anthem.com/health-insurance/provider-directory/searchcriteria?alphaprefix=YFR,13,Individual,No
+2016,NV,33670,SERFF,6,8/21/15 06:27,33670,NV,Dental Prime,NVN001,http://www.geoaccess.com/awp/Dental/PO/begin.asp?Gateway=False&st=DV&Company=Anthem-BCBS&netcode=DVP,13,Individual,Yes
+2016,NV,34962,SERFF,5,9/24/15 06:32,34962,NV,DeltaCare DHMO,NVN001,https://www.deltadentalins.com/find-a-dentist,13,Individual,Yes
+2016,NV,34962,SERFF,5,9/24/15 06:32,34962,NV,DeltaCare DHMO,NVN001,https://www.deltadentalins.com/find-a-dentist,13,SHOP (Small Group),Yes
+2016,NV,43126,SERFF,3,8/21/15 06:27,43126,NV,NDB Network - SA1MC,NVN001,http://nevadadentalbenefits.com/find_dentist.php,13,Individual,Yes
+2016,NV,43126,SERFF,3,8/21/15 06:27,43126,NV,NDB Network - SA2MC,NVN002,http://nevadadentalbenefits.com/find_dentist.php,14,Individual,Yes
+2016,NV,53694,SERFF,7,8/20/15 12:28,53694,NV,DentalGuard Preferred,NVN001,https://www.guardiananytime.com/fpapp/FPWeb/dentalSearch.process,13,SHOP (Small Group),Yes
+2016,NV,60156,SERFF,12,2/4/16 07:37,60156,NV,Pathway X - HMO and Dental Prime,NVN001,https://www.anthem.com/health-insurance/provider-directory/searchcriteria?alphaprefix=YFI,13,Individual,No
+2016,NV,60156,SERFF,12,2/4/16 07:37,60156,NV,Pathway X - HMO and Dental Prime,NVN001,https://www.anthem.com/health-insurance/provider-directory/searchcriteria?alphaprefix=YFI,13,SHOP (Small Group),No
+2016,NV,75719,SERFF,8,8/20/15 12:28,75719,NV,BEST Life Nationwide,NVN001,http://www.bestlife.com/exchange/dentemax.html,13,Individual,Yes
+2016,NV,75719,SERFF,8,8/20/15 12:28,75719,NV,BEST Life Nationwide,NVN001,http://www.bestlife.com/exchange/dentemax.html,13,SHOP (Small Group),Yes
+2016,NV,88671,SERFF,6,9/24/15 06:32,88671,NV,Dentegra Dental PPO,NVN001,https://www.dentegra.com/find-a-dentist,13,Individual,Yes
+2016,NV,88671,SERFF,6,9/24/15 06:32,88671,NV,Dentegra Dental PPO,NVN001,https://www.dentegra.com/find-a-dentist,13,SHOP (Small Group),Yes
+2016,NV,95865,SERFF,5,8/20/15 12:28,95865,NV,HPN HMO - On Exchange,NVN001,http://www.myhpnonline.com/,13,Individual,No
