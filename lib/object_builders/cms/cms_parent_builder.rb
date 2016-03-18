@@ -1,6 +1,7 @@
 class CmsParentBuilder
 
-  def initialize(data)
+  def initialize(data, state_code)
+    @state_code = state_code
     @data = data
     @header_row = @data.row(1)
     @first_row  = @data.first_row + 1 # data starts from second row

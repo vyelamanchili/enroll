@@ -72,6 +72,7 @@ class Person
 
   embeds_one :csr_role, cascade_callbacks: true, validate: true
   embeds_one :assister_role, cascade_callbacks: true, validate: true
+  embeds_one :inbox, as: :recipient
 
   embeds_one :projected_health_care_service, as: :health_care_service_countable
 

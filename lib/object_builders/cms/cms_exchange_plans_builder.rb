@@ -14,7 +14,9 @@ class CmsExchangePlansBuilder < CmsParentBuilder
     (@first_row..@last_row).each do |row_number|
       @plan = @data.row(row_number)
       next if qhp_params[:state_postal_code] != "NV"
-      next if qhp_params[:csr_variation_type] == "00"
+      next if @plan[@headers["market_coverage"]].downcase == INDIVIDUAL
+      next if cost_share_variance_params[:csr_variation_type] == "00" &&
+        @plan[@headers["dental_only_plan"]].downcase == "no"
       find_or_build_qhp
     end
   end
@@ -60,7 +62,7 @@ class CmsExchangePlansBuilder < CmsParentBuilder
       hios_plan_and_variant_id: @plan[@headers["plan_id"]],
       plan_marketing_name: @plan[@headers["plan_marketing_name"]],
       metal_level: parse_metal_level,
-      csr_variation_type: @plan[@headers["csr_variation_type"]],
+      csr_variation_type: @plan[@headers["plan_id"]].split("-").last,
 
       issuer_actuarial_value: @plan[@headers["issuer_actuarial_value"]],
       av_calculator_output_number: @plan[@headers["av_calculator_output_number"]],
@@ -86,15 +88,21 @@ class CmsExchangePlansBuilder < CmsParentBuilder
     {
       deductible_type: "Combined Medical and Drug EHB Deductible",
       in_network_tier_1_individual: @plan[@headers["tehb_ded_inn_tier1_individual"]],
-      in_network_tier_1_family: @plan[@headers["tehb_ded_inn_tier1_family"]],
       coinsurance_in_network_tier_1: @plan[@headers["tehb_ded_inn_tier1_coinsurance"]],
       in_network_tier_two_individual: @plan[@headers["tehb_ded_inn_tier2_individual"]],
-      in_network_tier_two_family: @plan[@headers["tehb_ded_inn_tier2_family"]],
       coinsurance_in_network_tier_2: @plan[@headers["tehb_ded_inn_tier2_coinsurance"]],
       out_of_network_individual: @plan[@headers["tehb_ded_out_of_net_individual"]],
-      out_of_network_family: @plan[@headers["tehb_ded_out_of_net_family"]],
       combined_in_or_out_network_individual: @plan[@headers["tehb_ded_comb_inn_oon_individual"]],
-      combined_in_or_out_network_family: @plan[@headers["tehb_ded_comb_inn_oon_family"]],
+
+      # in_network_tier_1_family: @plan[@headers["tehb_ded_inn_tier1_family"]],
+      # in_network_tier_two_family: @plan[@headers["tehb_ded_inn_tier2_family"]],
+      # out_of_network_family: @plan[@headers["tehb_ded_out_of_net_family"]],
+      # combined_in_or_out_network_family: @plan[@headers["tehb_ded_comb_inn_oon_family"]],
+
+      in_network_tier_1_family: @plan[@headers["tehb_ded_inn_tier1_family_per_person"]],
+      in_network_tier_two_family: @plan[@headers["tehb_ded_inn_tier2_family_per_person"]],
+      out_of_network_family: @plan[@headers["tehb_ded_out_of_net_family_per_person"]],
+      combined_in_or_out_network_family: @plan[@headers["tehb_ded_comb_inn_oon_family_per_person"]],
     }
   end
 
@@ -102,15 +110,21 @@ class CmsExchangePlansBuilder < CmsParentBuilder
     {
       deductible_type: "Medical EHB Deductible",
       in_network_tier_1_individual: @plan[@headers["mehb_ded_inn_tier1_individual"]],
-      in_network_tier_1_family: @plan[@headers["mehb_ded_inn_tier1_family"]],
       coinsurance_in_network_tier_1: @plan[@headers["mehb_ded_inn_tier1_coinsurance"]],
       in_network_tier_two_individual: @plan[@headers["mehb_ded_inn_tier2_individual"]],
-      in_network_tier_two_family: @plan[@headers["mehb_ded_inn_tier2_family"]],
       coinsurance_in_network_tier_2: @plan[@headers["mehb_ded_inn_tier2_coinsurance"]],
       out_of_network_individual: @plan[@headers["mehb_ded_out_of_net_individual"]],
-      out_of_network_family: @plan[@headers["mehb_ded_out_of_net_family"]],
       combined_in_or_out_network_individual: @plan[@headers["mehb_ded_comb_inn_oon_individual"]],
-      combined_in_or_out_network_family: @plan[@headers["mehb_ded_comb_inn_oon_family"]],
+
+      # in_network_tier_1_family: @plan[@headers["mehb_ded_inn_tier1_family"]],
+      # in_network_tier_two_family: @plan[@headers["mehb_ded_inn_tier2_family"]],
+      # out_of_network_family: @plan[@headers["mehb_ded_out_of_net_family"]],
+      # combined_in_or_out_network_family: @plan[@headers["mehb_ded_comb_inn_oon_family"]],
+
+      in_network_tier_1_family: @plan[@headers["mehb_ded_inn_tier1_family_per_person"]],
+      in_network_tier_two_family: @plan[@headers["mehb_ded_inn_tier2_family_per_person"]],
+      out_of_network_family: @plan[@headers["mehb_ded_out_of_net_family_per_person"]],
+      combined_in_or_out_network_family: @plan[@headers["mehb_ded_comb_inn_oon_family_per_person"]],
     }
   end
 
@@ -118,13 +132,19 @@ class CmsExchangePlansBuilder < CmsParentBuilder
     {
       name: "Maximum Out of Pocket for Medical EHB Benefits",
       in_network_tier_1_individual_amount: @plan[@headers["mehb_inn_tier1_individual_moop"]],
-      in_network_tier_1_family_amount: @plan[@headers["mehb_inn_tier1_family_moop"]],
       in_network_tier_2_individual_amount: @plan[@headers["mehb_inn_tier2_individual_moop"]],
-      in_network_tier_2_family_amount: @plan[@headers["mehb_inn_tier2_family_moop"]],
       out_of_network_individual_amount: @plan[@headers["mehb_out_of_net_individual_moop"]],
-      out_of_network_family_amount: @plan[@headers["mehb_out_of_net_family_moop"]],
       combined_in_out_network_individual_amount: @plan[@headers["mehb_comb_inn_oon_individual_moop"]],
-      combined_in_out_network_family_amount: @plan[@headers["mehb_comb_inn_oon_family_moop"]]
+
+      # in_network_tier_1_family_amount: @plan[@headers["mehb_inn_tier1_family_moop"]],
+      # in_network_tier_2_family_amount: @plan[@headers["mehb_inn_tier2_family_moop"]],
+      # out_of_network_family_amount: @plan[@headers["mehb_out_of_net_family_moop"]],
+      # combined_in_out_network_family_amount: @plan[@headers["mehb_comb_inn_oon_family_moop"]],
+
+      in_network_tier_1_family_amount: @plan[@headers["mehb_inn_tier1_family_per_person_moop"]],
+      in_network_tier_2_family_amount: @plan[@headers["mehb_inn_tier2_family_per_group_moop"]],
+      out_of_network_family_amount: @plan[@headers["mehb_out_of_net_family_per_person_moop"]],
+      combined_in_out_network_family_amount: @plan[@headers["mehb_comb_inn_oon_family_per_person_moop"]],
     }
   end
 
@@ -132,13 +152,19 @@ class CmsExchangePlansBuilder < CmsParentBuilder
     {
       name: "Maximum Out of Pocket for Medical and Drug EHB Benefits (Total)",
       in_network_tier_1_individual_amount: @plan[@headers["tehb_inn_tier1_individual_moop"]],
-      in_network_tier_1_family_amount: @plan[@headers["tehb_inn_tier1_family_moop"]],
       in_network_tier_2_individual_amount: @plan[@headers["tehb_inn_tier2_individual_moop"]],
-      in_network_tier_2_family_amount: @plan[@headers["tehb_inn_tier2_family_moop"]],
       out_of_network_individual_amount: @plan[@headers["tehb_out_of_net_individual_moop"]],
-      out_of_network_family_amount: @plan[@headers["tehb_out_of_net_family_moop"]],
       combined_in_out_network_individual_amount: @plan[@headers["tehb_comb_inn_oon_individual_moop"]],
-      combined_in_out_network_family_amount: @plan[@headers["tehb_comb_inn_oon_family_moop"]]
+
+      # in_network_tier_1_family_amount: @plan[@headers["tehb_inn_tier1_family_moop"]],
+      # in_network_tier_2_family_amount: @plan[@headers["tehb_inn_tier2_family_moop"]],
+      # out_of_network_family_amount: @plan[@headers["tehb_out_of_net_family_moop"]],
+      # combined_in_out_network_family_amount: @plan[@headers["tehb_comb_inn_oon_family_moop"]]
+
+      in_network_tier_1_family_amount: @plan[@headers["tehb_inn_tier1_family_per_person_moop"]],
+      in_network_tier_2_family_amount: @plan[@headers["tehb_inn_tier2_family_per_person_moop"]],
+      out_of_network_family_amount: @plan[@headers["tehb_out_of_net_family_per_group_moop"]],
+      combined_in_out_network_family_amount: @plan[@headers["tehb_comb_inn_oon_family_per_person_moop"]],
     }
   end
 
@@ -167,7 +193,7 @@ class CmsExchangePlansBuilder < CmsParentBuilder
       health_care_specialist_referral_type: @plan[@headers["specialist_requiring_referral"]],
       insurance_plan_benefit_exclusion_text: @plan[@headers["plan_level_exclusions"]],
       indian_plan_variation: @plan[@headers["indian_plan_variation_estimated_advanced_payment_amount_per_enrollee"]],
-      ehb_percent_premium: @plan[@headers["ehb_percent_premium_s4"]],
+      ehb_percent_premium: @plan[@headers["business_year"]] == "2015" ? @plan[@headers["ehb_percent_premium_s4"]] : @plan[@headers["ehb_percent_total_premium"]],
       hsa_eligibility: @plan[@headers["is_hsa_eligible"]],
       employer_hsa_hra_contribution_indicator: @plan[@headers["hsa_or_hra_employer_contribution"]],
       emp_contribution_amount_for_hsa_or_hra: @plan[@headers["hsa_or_hra_employer_contribution_amount"]] || 0,
@@ -207,7 +233,8 @@ class CmsExchangePlansBuilder < CmsParentBuilder
       hios_base_id: @plan[@headers["standard_component_id"]],
       csr_variant_id: @metal_level == DENTAL ? "" : @plan[@headers["plan_id"]].split("-").last,
       name: @plan[@headers["plan_marketing_name"]],
-      ehb: @plan[@headers["ehb_percent_premium_s4"]],
+      # ehb: @plan[@headers["ehb_percent_premium_s4"]],
+      ehb: @plan[@headers["ehb_percent_total_premium"]],
       nationwide: nationwide,
       dc_in_network: dc_in_network,
       plan_type: @plan[@headers["plan_type"]].downcase,
@@ -215,12 +242,25 @@ class CmsExchangePlansBuilder < CmsParentBuilder
   end
 
   def get_carrier_profile_id
-    org = Organization.where(
-      "carrier_profile.network_id" => @plan[@headers["network_id"]],
-      "carrier_profile.issuer_id" => @plan[@headers["issuer_id"]]
-      ).first
-    org.carrier_profile.id
+    carrier = CarrierProfile.find_by_legal_name(get_carrier_name)
+    if carrier.present?
+      carrier
+    else
+      binding.pry
+    end
   end
+
+  def get_carrier_name
+    plan_to_carrier_name_mapping_2016[@plan[@headers["plan_marketing_name"]]]
+  end
+
+  # def get_carrier_profile_id
+  #   org = Organization.where(
+  #     "carrier_profile.network_id" => @plan[@headers["network_id"]],
+  #     "carrier_profile.issuer_id" => @plan[@headers["issuer_id"]]
+  #     ).first
+  #   org.carrier_profile.id
+  # end
 
   def build_and_save_plan
     plan = Plan.new(assign_params)
@@ -244,6 +284,132 @@ class CmsExchangePlansBuilder < CmsParentBuilder
     else
       @plan[@headers["metal_level"]].downcase
     end
+  end
+
+  def plan_to_carrier_name_mapping
+    {
+      "BEST Dental Choice-H" => "BestLife",
+      "BEST Dental Choice-L" => "BestLife",
+      "BEST Dental Premium" => "BestLife",
+      "BEST Dental Standard-H" => "BestLife",
+      "BEST Dental Standard-L" => "BestLife",
+      "BEST Dental Value" => "BestLife",
+      "Connected/Conectado Gold" => "Nevada Health CO-OP",
+      "Connected/Conectado Platinum" => "Nevada Health CO-OP",
+      "Connected/Conectado Silver" => "Nevada Health CO-OP",
+      "Delta Dental PPO Basic Plan for Families for Small Businesses" => "Delta Dental",
+      "Delta Dental PPO Preferred Plan for Families for Small Businesses" => "Delta Dental",
+      "DeltaCare USA Basic Plan for Families for Small Businesses" => "Delta Dental",
+      "DeltaCare USA Preferred Plan for Families for Small Businesses" => "Delta Dental",
+      "Dentegra Dental PPO for Small Businesses Family Basic Plan" => "Dentegra",
+      "Dentegra Dental PPO for Small Businesses Family Preferred Plan" => "Dentegra",
+      "Family DHMO Plan with EHB" => "Premier Life",
+      "Frontier Simple/F?cil Bronze HSA" => "Nevada Health CO-OP",
+      "Frontier Simple/F?cil Gold" => "Nevada Health CO-OP",
+      "Frontier Simple/F?cil Platinum" => "Nevada Health CO-OP",
+      "Frontier Simple/F?cil Silver" => "Nevada Health CO-OP",
+      "Guardian Family Advantage" => "Guardian",
+      "Guardian Family Essentials" => "Guardian",
+      "LIBERTY Dental Plan NV Pediatric High with Adult Option" => "Liberty",
+      "LIBERTY Dental Plan NV Pediatric Low with Adult Option" => "Liberty",
+      "Northern Simple/F?cil Bronze HSA" => "Nevada Health CO-OP",
+      "Northern Simple/F?cil Gold" => "Nevada Health CO-OP",
+      "Northern Simple/F?cil Platinum" => "Nevada Health CO-OP",
+      "Northern Simple/F?cil Silver" => "Nevada Health CO-OP",
+      "Southern Simple/F?cil Bronze" => "Nevada Health CO-OP",
+      "Southern Simple/F?cil Gold" => "Nevada Health CO-OP",
+      "Southern Simple/F?cil Platinum" => "Nevada Health CO-OP",
+      "Southern Simple/F?cil Silver" => "Nevada Health CO-OP",
+      "Southern Simple/Facil Bronze HSA" => "Nevada Health CO-OP",
+      "Southern Simple/Facil Gold HSA" => "Nevada Health CO-OP",
+      "Southern Star/Estrella Gold" => "Nevada Health CO-OP",
+      "Southern Star/Estrella Platinum" => "Nevada Health CO-OP",
+      "Southern Star/Estrella Silver" => "Nevada Health CO-OP",
+      "Union Star/Estrella Gold" => "Nevada Health CO-OP",
+      "Union Star/Estrella Platinum" => "Nevada Health CO-OP",
+      "Union Star/Estrella Silver" => "Nevada Health CO-OP",
+      "VIP Gold" => "Nevada Health CO-OP",
+      "VIP Platinum" => "Nevada Health CO-OP",
+      "VIP Silver" => "Nevada Health CO-OP",
+    }
+  end
+
+  def plan_to_carrier_name_mapping_2016
+    {
+      "Anthem Blue Cross and Blue Shield  Silver DirectAccess, a Multi-State Plan" => "Anthem",
+      "Anthem Blue Cross and Blue Shield Gold DirectAccess, a Multi-State Plan" => "Anthem",
+      "Anthem Bronze Pathway X HMO 0 for HSA" => "Anthem",
+      "Anthem Bronze Pathway X HMO 4950 50" => "Anthem",
+      "Anthem Bronze Pathway X HMO 5000 40" => "Anthem",
+      "Anthem Bronze Pathway X HMO 5000/30%/6850 Plus" => "Anthem",
+      "Anthem Bronze Pathway X HMO 5950 35" => "Anthem",
+      "Anthem Bronze Pathway X HMO 6150 20" => "Anthem",
+      "Anthem Bronze Pathway X PPO 20 for HSA" => "Anthem",
+      "Anthem Bronze Pathway X PPO 4500 20" => "Anthem",
+      "Anthem Bronze Pathway X PPO 5200 20" => "Anthem",
+      "Anthem Bronze Pathway X PPO 6200 30" => "Anthem",
+      "Anthem Dental Family" => "Anthem",
+      "Anthem Dental Family Enhanced" => "Anthem",
+      "Anthem Dental Pediatric" => "Anthem",
+      "Anthem Gold Pathway X HMO 1000 20" => "Anthem",
+      "Anthem Gold Pathway X HMO 1000/10%/5500 Plus" => "Anthem",
+      "Anthem Gold Pathway X HMO 1450 25" => "Anthem",
+      "Anthem Gold Pathway X HMO 1800 50" => "Anthem",
+      "Anthem Gold Pathway X PPO 1500 10" => "Anthem",
+      "Anthem Silver Pathway X HMO 2000 40" => "Anthem",
+      "Anthem Silver Pathway X HMO 2250 20" => "Anthem",
+      "Anthem Silver Pathway X HMO 2250 30" => "Anthem",
+      "Anthem Silver Pathway X HMO 2350 15" => "Anthem",
+      "Anthem Silver Pathway X HMO 2500 40" => "Anthem",
+      "Anthem Silver Pathway X HMO 3000/20%/6000 Plus" => "Anthem",
+      "Anthem Silver Pathway X PPO 2250 20" => "Anthem",
+      "Anthem Silver Pathway X PPO 2500 15" => "Anthem",
+      "Anthem Silver Pathway X PPO 2750 10" => "Anthem",
+      "Anthem Silver Pathway X PPO 3500 0" => "Anthem",
+      "Anthem Silver Pathway X PPO 4000 15" => "Anthem",
+      "BESTDental Choice - H" => "BestLife",
+      "BESTDental Choice - L" => "BestLife",
+      "BESTDental Premium" => "BestLife",
+      "BESTDental Standard - H" => "BestLife",
+      "BESTDental Standard - L" => "BestLife",
+      "BESTDental Value" => "BestLife",
+      "BESTOne Advantage Gold" => "BestLife",
+      "BESTOne Basic Silver" => "BestLife",
+      "BESTOne Plus Gold" => "BestLife",
+      "BESTOne Plus Silver" => "BestLife",
+      "Delta Dental PPO Basic Plan for Families" => "Delta Dental",
+      "Delta Dental PPO Basic Plan for Families for Small Businesses" => "Delta Dental",
+      "Delta Dental PPO Preferred Plan for Families" => "Delta Dental",
+      "Delta Dental PPO Preferred Plan for Families for Small Businesses" => "Delta Dental",
+      "DeltaCare USA Basic Plan for Families" => "Delta Dental",
+      "DeltaCare USA Basic Plan for Families for Small Businesses" => "Delta Dental",
+      "DeltaCare USA Preferred Plan for Families" => "Delta Dental",
+      "DeltaCare USA Preferred Plan for Families for Small Businesses" => "Delta Dental",
+      "Dentegra Dental PPO Family Basic Plan" => "Dentegra",
+      "Dentegra Dental PPO Family Preferred Plan" => "Dentegra",
+      "Dentegra Dental PPO for Small Businesses Family Basic Plan" => "Dentegra",
+      "Dentegra Dental PPO for Small Businesses Family Preferred Plan" => "Dentegra",
+      "Guardian Family Advantage" => "Guardian",
+      "Guardian Family Essentials" => "Guardian",
+      "MyHPN Bronze 10" => "Health Plan of Nevada",
+      "MyHPN Bronze 7" => "Health Plan of Nevada",
+      "MyHPN Bronze 8" => "Health Plan of Nevada",
+      "MyHPN Bronze 9" => "Health Plan of Nevada",
+      "MyHPN Gold 1" => "Health Plan of Nevada",
+      "MyHPN Gold 2" => "Health Plan of Nevada",
+      "MyHPN Gold 3" => "Health Plan of Nevada",
+      "MyHPN Gold 4" => "Health Plan of Nevada",
+      "MyHPN Gold 5" => "Health Plan of Nevada",
+      "MyHPN Platinum 1" => "Health Plan of Nevada",
+      "MyHPN Silver 1.1" => "Health Plan of Nevada",
+      "MyHPN Silver 3.1" => "Health Plan of Nevada",
+      "MyHPN Silver 4.1" => "Health Plan of Nevada",
+      "MyHPN Silver 5" => "Health Plan of Nevada",
+      "MyHPN Silver 6/Medicaid Transition Plan" => "Health Plan of Nevada",
+      "NDB Nevada Kids + Adult" => "Nevada Dental Benefits",
+      "NDB Nevada Kids Gold" => "Nevada Dental Benefits",
+      "NDB Nevada Kids Silver" => "Nevada Dental Benefits",
+    }
   end
 
 end
