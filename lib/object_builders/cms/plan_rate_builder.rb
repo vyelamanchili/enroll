@@ -35,8 +35,8 @@ class PlanRateBuilder
       @results[@row[:plan_id]] << {
         age: age,
         cost: calculate_cost_for_family_option,
-        start_on: @row[:rate_effective_date],
-        end_on: @row[:rate_expiration_date],
+        start_on: Date.strptime(@row[:rate_effective_date], "%m/%d/%y"),
+        end_on: Date.strptime(@row[:rate_expiration_date], "%m/%d/%y")
       }
     end
   end
@@ -56,8 +56,8 @@ class PlanRateBuilder
       @results[@row[:plan_id]] << {
         age: assign_age,
         cost: @row[:individual_rate],
-        start_on: @row[:rate_effective_date],
-        end_on: @row[:rate_expiration_date],
+        start_on: Date.strptime(@row[:rate_effective_date], "%m/%d/%y"),
+        end_on: Date.strptime(@row[:rate_expiration_date], "%m/%d/%y")
       }
     end
   end
