@@ -30,6 +30,7 @@ db/seedfiles/**/*.bson
 db/seedfiles/**/*.json
 # db/seedfiles/*.csv
 db/seedfiles/*.yml
+db/seedfiles/**/*.*
 
 # Ignore Mongoid connection file
 # config/mongoid.yml
