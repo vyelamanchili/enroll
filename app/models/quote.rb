@@ -50,16 +50,12 @@ class Quote
         rp1.quote_results << pcd.get_family_details_hash
       end
 
-
-
       self.save
-
   end
 
   def gen_data
 
     self.quote_name = "My Sample Quote"
-
     self.plan_option_kind = "single_carrier"
     self.plan_year = 2016
     self.start_on = Date.new(2016,5,2)
@@ -194,27 +190,5 @@ class Quote
 
 
   end
-
-  def build_relationship_benefits
-    self.quote_relationship_benefits = PERSONAL_RELATIONSHIP_KINDS.map do |relationship|
-       self.quote_relationship_benefits.build(relationship: relationship, offered: true)
-    end
-  end
-
-  def calc_by_plan(plan_id)
-
-    if quote_households.exists?
-
-      quote_households.each do |hh|
-        puts "Found household of size " + hh.quote_members.count.to_s
-      end
-    end
-  end
-
-  def relationship_benefit_for(relationship)
-    quote_relationship_benefits.where(relationship: relationship).first
-  end
-
-
 
 end
