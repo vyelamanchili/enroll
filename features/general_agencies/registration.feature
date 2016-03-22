@@ -1,4 +1,3 @@
-@wip
 Feature: Create a General Agency Profile
 
   Scenario: A General Agency Submits Application
@@ -14,6 +13,10 @@ Feature: Create a General Agency Profile
     And a general agency, pending approval, exists
     When the HBX admin visits the general agency list
     Then they should see the pending general agency
+    When they click the link of general agency
+    Then they should see the home of general agency
+    When they visit the list of staff
+    Then they should see the name of staff
     When they approve the general agency
     Then they should see updated status
     And the general agency should receive an email
@@ -23,5 +26,5 @@ Feature: Create a General Agency Profile
     When the HBX admin visits the link received in the approval email
     Then they should see an account creation form
     When they complete the account creation form and hit the 'Submit' button
-    Then they should see a confirmation message
+    Then they should see a welcome message
     And they see the General Agency homepage

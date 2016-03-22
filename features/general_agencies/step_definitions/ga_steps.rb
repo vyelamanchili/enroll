@@ -21,6 +21,7 @@ end
 
 Then /^they should see the new general agency form$/ do
   expect(page).to have_content('New General Agency')
+  screenshot("general_agency_registration")
 end
 
 When /^they complete the new general agency form and hit the 'Submit' button$/ do
@@ -70,8 +71,10 @@ Given /^an HBX admin exists$/ do
   user :with_family, :hbx_staff
 end
 
-Given /^a general agency, pending approval, exists$/ do
+And /^a general agency, pending approval, exists$/ do
   general_agency
+  staff = general_agency.general_agency_profile.general_agency_staff_roles.order(id: :desc).first.general_agency_staff_roles.last
+  staff.person.emails.last.update(kind: 'work')
 end
 
 When /^the HBX admin visits the general agency list$/ do
@@ -82,44 +85,85 @@ end
 
 Then /^they should see the pending general agency$/ do
   expect(page).to have_content(general_agency.legal_name)
+  screenshot("general_agency_list")
+end
+
+When /^they click the link of general agency$/ do
+  click_link general_agency.legal_name
+end
+
+Then /^they should see the home of general agency$/ do
+  expect(page).to have_content("General Agency : #{general_agency.legal_name}")
+  screenshot("general_agency_homepage")
+end
+
+When /^they visit the list of staff$/ do
+  find('.interaction-click-control-staff').click
+end
+
+Then /^they should see the name of staff$/ do
+  full_name = general_agency.general_agency_profile.general_agency_staff_roles.order(id: :desc).first.full_name
+  expect(page).to have_content("General Agency Staff")
+  expect(page).to have_content(general_agency.legal_name)
+  expect(page).to have_content(full_name)
+  screenshot("general_agency_staff_list")
+
+  click_link full_name
 end
 
 When /^they approve the general agency$/ do
-  click_link general_agency.legal_name
-  click_link 'Staff'
-  click_link 'Staff'
-  click_link 'Staff'
-  click_link 'Staff'
-  sleep 5
-  click_link general_agency.general_agency_profile.general_agency_staff_roles.first.full_name
+  click_link general_agency.general_agency_profile.general_agency_staff_roles.order(id: :desc).first.full_name
+  screenshot("general_agency_staff_edit_page")
   click_button 'Approve'
 end
 
 Then /^they should see updated status$/ do
   expect(find('.alert')).to have_content('Staff approved successfully.')
+  screenshot("general_agency_staff_approved")
 end
 
 Then /^the general agency should receive an email$/ do
-  pending "figuring out whether open_email isn't working or the email isn't being sent"
-  open_email(general_agency.general_agency_profile.general_agency_staff_roles.first.emails.first.address)
+  staff = general_agency.general_agency_profile.general_agency_staff_roles.order(id: :desc).first.general_agency_staff_roles.last
+  open_email(staff.email_address)
 end
 
 Given /^a general agency, approved, awaiting account creation, exists$/ do
-  pending # Write code here that turns the phrase above into concrete actions
+  general_agency
+  staff = general_agency.general_agency_profile.general_agency_staff_roles.first.general_agency_staff_roles.last
+  staff.person.emails.last.update(kind: 'work')
+  staff.approve!
 end
 
 When /^the HBX admin visits the link received in the approval email$/ do
-  pending # Write code here that turns the phrase above into concrete actions
+  staff = general_agency.general_agency_profile.general_agency_staff_roles.first.general_agency_staff_roles.last
+  email_address = staff.email_address
+
+  open_email(email_address)
+  expect(current_email.to).to eq([email_address])
+
+  invitation_link = links_in_email(current_email).first
+  invitation_link.sub!(/http\:\/\/127\.0\.0\.1\:3000/, '')
+  visit(invitation_link)
 end
 
 Then /^they should see an account creation form$/ do
-  pending # Write code here that turns the phrase above into concrete actions
+  expect(page).to have_css('.interaction-click-control-create-account')
+  screenshot("general_agency_staff_register_by_invitation")
 end
 
 When /^they complete the account creation form and hit the 'Submit' button$/ do
-  pending # Write code here that turns the phrase above into concrete actions
+  email_address = general_agency.general_agency_profile.general_agency_staff_roles.first.emails.first.address
+  fill_in "user[email]", with: email_address
+  fill_in "user[password]", with: "aA1!aA1!aA1!"
+  fill_in "user[password_confirmation]", with: "aA1!aA1!aA1!"
+  click_button 'Create account'
+end
+
+Then /^they should see a welcome message$/ do
+  expect(page).to have_content('Welcome to DC Health Link. Your account has been created.')
+  screenshot("general_agency_homepage_for_staff")
 end
 
 Then /^they see the General Agency homepage$/ do
-  pending # Write code here that turns the phrase above into concrete actions
+  expect(page).to have_content(general_agency.legal_name)
 end
