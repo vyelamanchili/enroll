@@ -19,7 +19,6 @@ class QuoteMember
   field :name_sfx, type: String
   field :gender, type: String
 
-
   validates_presence_of :dob
 
   validates :gender, allow_blank: true, inclusion: { in: GENDER_KINDS, message: "must be selected" }
@@ -37,4 +36,5 @@ class QuoteMember
     end
     age
   end
+
 end

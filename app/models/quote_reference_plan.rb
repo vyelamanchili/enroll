@@ -48,6 +48,7 @@ class QuoteReferencePlan
       self.highest_cost_plan_id = plans_by_cost.last.id
     end
 
+
   end
 
 end

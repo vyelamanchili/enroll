@@ -15,10 +15,12 @@ class Quote
 
   field :quote_name, type: String
   field :plan_year, type: Integer
+
   field :start_on, type: Date
+
   field :broker_agency_profile_id, type: BSON::ObjectId
 
-  field :reference_plan_id, type: BSON::ObjectId
+
 
   associated_with_one :broker_agency_profile, :broker_agency_profile_id, "BrokerAgencyProfile"
 
@@ -54,8 +56,9 @@ class Quote
 
     self.plan_option_kind = "single_carrier"
     self.plan_year = 2016
-    self.start_on = Date.new(2016,5,2)
 
+    self.start_on = Date.new(2016,5,2)
+    
     rp1 = self.quote_reference_plans.build(reference_plan_id:  "56e6c4e53ec0ba9613008f6d")
     rp1.set_bounding_cost_plans
     rp1.save
@@ -130,11 +133,10 @@ class Quote
     end
   end
 
-<<<<<<< b7ff06be1fbbca09e095295d2a1235830fabc494
   def relationship_benefit_for(relationship)
     quote_relationship_benefits.where(relationship: relationship).first
   end
-=======
+
   def gen_data
 
     build_relationship_benefits
@@ -143,24 +145,57 @@ class Quote
 
     qm = qh.quote_members.build
 
-    qm.name = "Tony"
-    qm.age = 35
+    qm.first_name = "Tony"
+    qm.last_name = "Schaffert"
+    qm.dob = Date.new(1980,7,26)
+    qm.employee_relationship = "employee"
 
     qm = qh.quote_members.build
 
-    qm.name = "Gabriel"
-    qm.age = 4
-
+    qm.first_name = "Gabriel"
+    qm.last_name = "Schaffert"
+    qm.dob = Date.new(2012,1,10)
+    qm.employee_relationship = "child_under_26"
     self.save
+
+    self.calc
+    #qh = self.quote_households.build
+    #qm = qh.quote_members.build
+
+    #qm.first_name = "Andressa"
+    #qm.last_name = "Schaffert"
+    #qm.dob = Date.new(1988,9,27)
+    #qm.employee_relationship = "self"
+
+    #qm = qh.quote_members.build
+
+    #qm.first_name = "Alice"
+    #qm.last_name = "Schaffert"
+    #qm.dob = Date.new(2014,1,13)
+    #qm.employee_relationship = "child_under_26"
+    #self.save
+
 
   end
 
   def build_relationship_benefits
-    self.relationship_benefits = PERSONAL_RELATIONSHIP_KINDS.map do |relationship|
-       self.relationship_benefits.build(relationship: relationship, offered: true)
+    self.quote_relationship_benefits = PERSONAL_RELATIONSHIP_KINDS.map do |relationship|
+       self.quote_relationship_benefits.build(relationship: relationship, offered: true)
     end
   end
 
->>>>>>> Quoting tool Prototype Model
+  def calc_by_plan(plan_id)
+
+    if quote_households.exists?
+
+      quote_households.each do |hh|
+        puts "Found household of size " + hh.quote_members.count.to_s
+      end
+    end
+  end
+
+  def relationship_benefit_for(relationship)
+    quote_relationship_benefits.where(relationship: relationship).first
+  end
 
 end

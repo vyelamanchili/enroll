@@ -349,6 +349,7 @@ class BenefitGroup
   def monthly_min_employee_cost(coverage_kind = nil)
     return 0 if targeted_census_employees.count > 100
     targeted_census_employees.active.collect do |ce|
+
       if coverage_kind == 'dental'
         pcd = PlanCostDecorator.new(dental_reference_plan, ce, self, dental_reference_plan)
       else
