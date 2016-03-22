@@ -5,6 +5,7 @@ class CmsExchangePlansBuilder < CmsParentBuilder
   INDIVIDUAL = "individual"
   HEALTH = "health"
   DENTAL = "dental"
+  CATASTROPHIC = "catastrophic"
 
   def run
     iterate_plans_hash
@@ -14,9 +15,9 @@ class CmsExchangePlansBuilder < CmsParentBuilder
     (@first_row..@last_row).each do |row_number|
       @plan = @data.row(row_number)
       next if qhp_params[:state_postal_code] != "NV"
-      next if @plan[@headers["market_coverage"]].downcase == INDIVIDUAL
-      next if cost_share_variance_params[:csr_variation_type] == "00" &&
-        @plan[@headers["dental_only_plan"]].downcase == "no"
+      # next if @plan[@headers["market_coverage"]].downcase == INDIVIDUAL
+      next if @plan[@headers["metal_level"]].downcase == CATASTROPHIC
+      next if cost_share_variance_params[:csr_variation_type] == "00"
       find_or_build_qhp
     end
   end
@@ -26,18 +27,40 @@ class CmsExchangePlansBuilder < CmsParentBuilder
       standard_component_id: qhp_params[:standard_component_id]).first
   end
 
+  def find_qcsv
+    @csv = Products::QhpCostShareVariance.find_qhp_cost_share_variances(
+      [assign_params[:hios_id]], assign_params[:active_year], assign_params[:coverage_kind]
+    )
+  end
+
   def find_or_build_qhp
     find_qhp
     @qhp = Products::Qhp.new(qhp_params) if !@qhp.present?
-    csv = @qhp.qhp_cost_share_variances.build(cost_share_variance_params)
-    csv.qhp_maximum_out_of_pockets.build(moop_params)
-    csv.build_qhp_deductable(deductible_params)
-    if @qhp.valid?
-      @qhp.save!
-      assign_params
-      build_and_save_plan
+    find_qcsv
+    if !@csv.present?
+      csv = @qhp.qhp_cost_share_variances.build(cost_share_variance_params)
+      csv.qhp_maximum_out_of_pockets.build(moop_params)
+      csv.build_qhp_deductable(deductible_params)
+      if @qhp.valid?
+        @qhp.save!
+        assign_params
+        build_and_save_plan
+      else
+        puts "unable to save qhp because of errors: #{@qhp.errors.full_messages}"
+      end
+    end
+  end
+
+  def build_and_save_plan
+    plan = Plan.where(active_year: assign_params[:active_year],
+          hios_id: /#{assign_params[:hios_id]}/,
+          hios_base_id: /#{assign_params[:hios_id].split('-').first}/,
+          csr_variant_id: assign_params[:csr_variant_id]).to_a
+    if plan.present?
+      "Plan already present"
     else
-      puts "unable to save qhp because of errors: #{@qhp.errors.full_messages}"
+      plan = Plan.new(assign_params)
+      plan.save!
     end
   end
 
@@ -173,7 +196,8 @@ class CmsExchangePlansBuilder < CmsParentBuilder
       template_version: @plan[@headers["version_num"]],
       issuer_id: @plan[@headers["issuer_id2"]],
       state_postal_code: @plan[@headers["state_code"]],
-      market_coverage: @plan[@headers["market_coverage"]] == SHOP_SMALL_GROUP ? SHOP : INDIVIDUAL,
+      # market_coverage: @plan[@headers["market_coverage"]] == SHOP_SMALL_GROUP ? SHOP : INDIVIDUAL,
+      market_coverage: SHOP,
       dental_plan_only_ind: @plan[@headers["dental_only_plan"]],
       tin: @plan[@headers["tin"]],
       standard_component_id: @plan[@headers["standard_component_id"]],
@@ -225,7 +249,8 @@ class CmsExchangePlansBuilder < CmsParentBuilder
     nationwide, dc_in_network = parse_nation_wide_and_dc_in_network
     {
       active_year: @plan[@headers["business_year"]],
-      market: @plan[@headers["market_coverage"]] == SHOP_SMALL_GROUP ? SHOP : INDIVIDUAL,
+      # market: #@plan[@headers["market_coverage"]] == SHOP_SMALL_GROUP ? SHOP : INDIVIDUAL,
+      market: SHOP,
       coverage_kind: @plan[@headers["dental_only_plan"]].downcase == "no" ? HEALTH : DENTAL,
       carrier_profile_id: get_carrier_profile_id,
       metal_level: parse_metal_level,
@@ -242,12 +267,7 @@ class CmsExchangePlansBuilder < CmsParentBuilder
   end
 
   def get_carrier_profile_id
-    carrier = CarrierProfile.find_by_legal_name(get_carrier_name)
-    if carrier.present?
-      carrier
-    else
-      binding.pry
-    end
+    CarrierProfile.find_by_legal_name(get_carrier_name)
   end
 
   def get_carrier_name
@@ -261,14 +281,6 @@ class CmsExchangePlansBuilder < CmsParentBuilder
   #     ).first
   #   org.carrier_profile.id
   # end
-
-  def build_and_save_plan
-    plan = Plan.new(assign_params)
-    if plan.save!
-    else
-      puts "unable to save plan :::: #{plan.hios_id}"
-    end
-  end
 
   def parse_nation_wide_and_dc_in_network
     if @plan[@headers["national_network"]].downcase.strip == "yes"
@@ -284,6 +296,106 @@ class CmsExchangePlansBuilder < CmsParentBuilder
     else
       @plan[@headers["metal_level"]].downcase
     end
+  end
+
+  def plan_to_carrier_name_mapping_2016
+    {
+      "Anthem Blue Cross and Blue Shield  Silver DirectAccess, a Multi-State Plan" => "Anthem",
+      "Anthem Blue Cross and Blue Shield Gold DirectAccess, a Multi-State Plan" => "Anthem",
+      "Anthem Bronze Pathway X HMO 0 for HSA" => "Anthem",
+      "Anthem Bronze Pathway X HMO 4950 50" => "Anthem",
+      "Anthem Bronze Pathway X HMO 5000 40" => "Anthem",
+      "Anthem Bronze Pathway X HMO 5000/30%/6850 Plus" => "Anthem",
+      "Anthem Bronze Pathway X HMO 5950 35" => "Anthem",
+      "Anthem Bronze Pathway X HMO 6150 20" => "Anthem",
+      "Anthem Bronze Pathway X PPO 20 for HSA" => "Anthem",
+      "Anthem Bronze Pathway X PPO 4500 20" => "Anthem",
+      "Anthem Bronze Pathway X PPO 5200 20" => "Anthem",
+      "Anthem Bronze Pathway X PPO 6200 30" => "Anthem",
+      "Anthem Gold Pathway X HMO 1000 20" => "Anthem",
+      "Anthem Gold Pathway X HMO 1000/10%/5500 Plus" => "Anthem",
+      "Anthem Gold Pathway X HMO 1450 25" => "Anthem",
+      "Anthem Gold Pathway X HMO 1800 50" => "Anthem",
+      "Anthem Gold Pathway X PPO 1500 10" => "Anthem",
+      "Anthem Silver Pathway X HMO 2000 40" => "Anthem",
+      "Anthem Silver Pathway X HMO 2250 20" => "Anthem",
+      "Anthem Silver Pathway X HMO 2250 30" => "Anthem",
+      "Anthem Silver Pathway X HMO 2350 15" => "Anthem",
+      "Anthem Silver Pathway X HMO 2500 40" => "Anthem",
+      "Anthem Silver Pathway X HMO 3000/20%/6000 Plus" => "Anthem",
+      "Anthem Silver Pathway X PPO 2250 20" => "Anthem",
+      "Anthem Silver Pathway X PPO 2500 15" => "Anthem",
+      "Anthem Silver Pathway X PPO 2750 10" => "Anthem",
+      "Anthem Silver Pathway X PPO 3500 0" => "Anthem",
+      "Anthem Silver Pathway X PPO 4000 15" => "Anthem",
+      "Anthem Dental Family" => "Anthem Dental",
+      "Anthem Dental Family Enhanced" => "Anthem Dental",
+      "Anthem Dental Pediatric" => "Anthem Dental",
+      "BESTDental Choice - H" => "BestLife",
+      "BESTDental Choice - L" => "BestLife",
+      "BESTDental Premium" => "BestLife",
+      "BESTDental Standard - H" => "BestLife",
+      "BESTDental Standard - L" => "BestLife",
+      "BESTDental Value" => "BestLife",
+      "BESTOne Advantage Gold" => "BestLife",
+      "BESTOne Basic Silver" => "BestLife",
+      "BESTOne Plus Gold" => "BestLife",
+      "BESTOne Plus Silver" => "BestLife",
+      "Delta Dental PPO Basic Plan for Families" => "Delta Dental",
+      "Delta Dental PPO Basic Plan for Families for Small Businesses" => "Delta Dental",
+      "Delta Dental PPO Preferred Plan for Families" => "Delta Dental",
+      "Delta Dental PPO Preferred Plan for Families for Small Businesses" => "Delta Dental",
+      "DeltaCare USA Basic Plan for Families" => "Delta Dental",
+      "DeltaCare USA Basic Plan for Families for Small Businesses" => "Delta Dental",
+      "DeltaCare USA Preferred Plan for Families" => "Delta Dental",
+      "DeltaCare USA Preferred Plan for Families for Small Businesses" => "Delta Dental",
+      "Dentegra Dental PPO Family Basic Plan" => "Dentegra",
+      "Dentegra Dental PPO Family Preferred Plan" => "Dentegra",
+      "Dentegra Dental PPO for Small Businesses Family Basic Plan" => "Dentegra",
+      "Dentegra Dental PPO for Small Businesses Family Preferred Plan" => "Dentegra",
+      "Guardian Family Advantage" => "Guardian",
+      "Guardian Family Essentials" => "Guardian",
+      "MyHPN Bronze 10" => "Health Plan of Nevada",
+      "MyHPN Bronze 7" => "Health Plan of Nevada",
+      "MyHPN Bronze 8" => "Health Plan of Nevada",
+      "MyHPN Bronze 9" => "Health Plan of Nevada",
+      "MyHPN Catastrophic" => "Health Plan of Nevada",
+      "MyHPN Gold 1" => "Health Plan of Nevada",
+      "MyHPN Gold 2" => "Health Plan of Nevada",
+      "MyHPN Gold 3" => "Health Plan of Nevada",
+      "MyHPN Gold 4" => "Health Plan of Nevada",
+      "MyHPN Gold 5" => "Health Plan of Nevada",
+      "MyHPN Platinum 1" => "Health Plan of Nevada",
+      "MyHPN Silver 1.1" => "Health Plan of Nevada",
+      "MyHPN Silver 3.1" => "Health Plan of Nevada",
+      "MyHPN Silver 4.1" => "Health Plan of Nevada",
+      "MyHPN Silver 5" => "Health Plan of Nevada",
+      "MyHPN Silver 6/Medicaid Transition Plan" => "Health Plan of Nevada",
+      "NDB Nevada Kids + Adult" => "Nevada Dental Benefits",
+      "NDB Nevada Kids Gold" => "Nevada Dental Benefits",
+      "NDB Nevada Kids Silver" => "Nevada Dental Benefits",
+      "Prominence Health Plan Bronze 4 Health Care Partners" => "Prominence",
+      "Prominence Health Plan Bronze 4 Premier" => "Prominence",
+      "Prominence Health Plan Bronze 4 WellHealth" => "Prominence",
+      "Prominence Health Plan Bronze 5 Health Care Partners" => "Prominence",
+      "Prominence Health Plan Bronze 5 Premier" => "Prominence",
+      "Prominence Health Plan Bronze 5 WellHealth" => "Prominence",
+      "Prominence Health Plan Bronze 6 Premier" => "Prominence",
+      "Prominence Health Plan Gold 1 ChoicePlus" => "Prominence",
+      "Prominence Health Plan Gold 1 Health Care Partners" => "Prominence",
+      "Prominence Health Plan Gold 1 Premier" => "Prominence",
+      "Prominence Health Plan Gold 1 WellHealth" => "Prominence",
+      "Prominence Health Plan HSA 1 Premier" => "Prominence",
+      "Prominence Health Plan Silver 10 Health Care Partners" => "Prominence",
+      "Prominence Health Plan Silver 10 Premier" => "Prominence",
+      "Prominence Health Plan Silver 10 WellHealth" => "Prominence",
+      "Prominence Health Plan Silver 20 ChoicePlus" => "Prominence",
+      "Prominence Health Plan Silver 20 Premier" => "Prominence",
+      "Prominence Health Plan Silver 30 Premier" => "Prominence",
+      "Prominence Health Plan Silver 50 Health Care Partners" => "Prominence",
+      "Prominence Health Plan Silver 50 Premier" => "Prominence",
+      "Prominence Health Plan Silver 50 WellHealth" => "Prominence"
+    }
   end
 
   def plan_to_carrier_name_mapping
@@ -334,82 +446,27 @@ class CmsExchangePlansBuilder < CmsParentBuilder
     }
   end
 
-  def plan_to_carrier_name_mapping_2016
-    {
-      "Anthem Blue Cross and Blue Shield  Silver DirectAccess, a Multi-State Plan" => "Anthem",
-      "Anthem Blue Cross and Blue Shield Gold DirectAccess, a Multi-State Plan" => "Anthem",
-      "Anthem Bronze Pathway X HMO 0 for HSA" => "Anthem",
-      "Anthem Bronze Pathway X HMO 4950 50" => "Anthem",
-      "Anthem Bronze Pathway X HMO 5000 40" => "Anthem",
-      "Anthem Bronze Pathway X HMO 5000/30%/6850 Plus" => "Anthem",
-      "Anthem Bronze Pathway X HMO 5950 35" => "Anthem",
-      "Anthem Bronze Pathway X HMO 6150 20" => "Anthem",
-      "Anthem Bronze Pathway X PPO 20 for HSA" => "Anthem",
-      "Anthem Bronze Pathway X PPO 4500 20" => "Anthem",
-      "Anthem Bronze Pathway X PPO 5200 20" => "Anthem",
-      "Anthem Bronze Pathway X PPO 6200 30" => "Anthem",
-      "Anthem Dental Family" => "Anthem",
-      "Anthem Dental Family Enhanced" => "Anthem",
-      "Anthem Dental Pediatric" => "Anthem",
-      "Anthem Gold Pathway X HMO 1000 20" => "Anthem",
-      "Anthem Gold Pathway X HMO 1000/10%/5500 Plus" => "Anthem",
-      "Anthem Gold Pathway X HMO 1450 25" => "Anthem",
-      "Anthem Gold Pathway X HMO 1800 50" => "Anthem",
-      "Anthem Gold Pathway X PPO 1500 10" => "Anthem",
-      "Anthem Silver Pathway X HMO 2000 40" => "Anthem",
-      "Anthem Silver Pathway X HMO 2250 20" => "Anthem",
-      "Anthem Silver Pathway X HMO 2250 30" => "Anthem",
-      "Anthem Silver Pathway X HMO 2350 15" => "Anthem",
-      "Anthem Silver Pathway X HMO 2500 40" => "Anthem",
-      "Anthem Silver Pathway X HMO 3000/20%/6000 Plus" => "Anthem",
-      "Anthem Silver Pathway X PPO 2250 20" => "Anthem",
-      "Anthem Silver Pathway X PPO 2500 15" => "Anthem",
-      "Anthem Silver Pathway X PPO 2750 10" => "Anthem",
-      "Anthem Silver Pathway X PPO 3500 0" => "Anthem",
-      "Anthem Silver Pathway X PPO 4000 15" => "Anthem",
-      "BESTDental Choice - H" => "BestLife",
-      "BESTDental Choice - L" => "BestLife",
-      "BESTDental Premium" => "BestLife",
-      "BESTDental Standard - H" => "BestLife",
-      "BESTDental Standard - L" => "BestLife",
-      "BESTDental Value" => "BestLife",
-      "BESTOne Advantage Gold" => "BestLife",
-      "BESTOne Basic Silver" => "BestLife",
-      "BESTOne Plus Gold" => "BestLife",
-      "BESTOne Plus Silver" => "BestLife",
-      "Delta Dental PPO Basic Plan for Families" => "Delta Dental",
-      "Delta Dental PPO Basic Plan for Families for Small Businesses" => "Delta Dental",
-      "Delta Dental PPO Preferred Plan for Families" => "Delta Dental",
-      "Delta Dental PPO Preferred Plan for Families for Small Businesses" => "Delta Dental",
-      "DeltaCare USA Basic Plan for Families" => "Delta Dental",
-      "DeltaCare USA Basic Plan for Families for Small Businesses" => "Delta Dental",
-      "DeltaCare USA Preferred Plan for Families" => "Delta Dental",
-      "DeltaCare USA Preferred Plan for Families for Small Businesses" => "Delta Dental",
-      "Dentegra Dental PPO Family Basic Plan" => "Dentegra",
-      "Dentegra Dental PPO Family Preferred Plan" => "Dentegra",
-      "Dentegra Dental PPO for Small Businesses Family Basic Plan" => "Dentegra",
-      "Dentegra Dental PPO for Small Businesses Family Preferred Plan" => "Dentegra",
-      "Guardian Family Advantage" => "Guardian",
-      "Guardian Family Essentials" => "Guardian",
-      "MyHPN Bronze 10" => "Health Plan of Nevada",
-      "MyHPN Bronze 7" => "Health Plan of Nevada",
-      "MyHPN Bronze 8" => "Health Plan of Nevada",
-      "MyHPN Bronze 9" => "Health Plan of Nevada",
-      "MyHPN Gold 1" => "Health Plan of Nevada",
-      "MyHPN Gold 2" => "Health Plan of Nevada",
-      "MyHPN Gold 3" => "Health Plan of Nevada",
-      "MyHPN Gold 4" => "Health Plan of Nevada",
-      "MyHPN Gold 5" => "Health Plan of Nevada",
-      "MyHPN Platinum 1" => "Health Plan of Nevada",
-      "MyHPN Silver 1.1" => "Health Plan of Nevada",
-      "MyHPN Silver 3.1" => "Health Plan of Nevada",
-      "MyHPN Silver 4.1" => "Health Plan of Nevada",
-      "MyHPN Silver 5" => "Health Plan of Nevada",
-      "MyHPN Silver 6/Medicaid Transition Plan" => "Health Plan of Nevada",
-      "NDB Nevada Kids + Adult" => "Nevada Dental Benefits",
-      "NDB Nevada Kids Gold" => "Nevada Dental Benefits",
-      "NDB Nevada Kids Silver" => "Nevada Dental Benefits",
-    }
-  end
+# 2016 Shop plan names
+  # def plan_to_carrier_name_mapping_2016
+  #   {
+  #     "Anthem Bronze Pathway X HMO 5000/30%/6850 Plus" => "Anthem", # Shop Health
+  #     "Anthem Silver Pathway X HMO 3000/20%/6000 Plus" => "Anthem", # Shop Health
+  #     "Anthem Gold Pathway X HMO 1000/10%/5500 Plus" => "Anthem", # Shop Health
+  #     "BESTDental Premium" => "BestLife", # Shop Dental
+  #     "BESTDental Standard - H" => "BestLife", # Shop Dental
+  #     "BESTDental Choice - H" => "BestLife", # Shop Dental
+  #     "BESTDental Standard - L" => "BestLife", # Shop Dental
+  #     "BESTDental Choice - L" => "BestLife", # Shop Dental
+  #     "BESTDental Value" => "BestLife", # Shop Dental
+  #     "Delta Dental PPO Preferred Plan for Families for Small Businesses" => "Delta Dental", # Shop Dental
+  #     "Delta Dental PPO Basic Plan for Families for Small Businesses" => "Delta Dental", # Shop Dental
+  #     "DeltaCare USA Preferred Plan for Families for Small Businesses" => "Delta Dental", # Shop Dental
+  #     "DeltaCare USA Basic Plan for Families for Small Businesses" => "Delta Dental", # Shop Dental
+  #     "Dentegra Dental PPO for Small Businesses Family Preferred Plan" => "Dentegra", # Shop Dental
+  #     "Dentegra Dental PPO for Small Businesses Family Basic Plan" => "Dentegra", # Shop Dental
+  #     "Guardian Family Advantage" => "Guardian", # Shop Dental
+  #     "Guardian Family Essentials" => "Guardian", # Shop Dental
+  #   }
+  # end
 
 end

@@ -9,7 +9,7 @@ class NetworkBuilder < CmsParentBuilder
     (@first_row..@last_row).each do |row_number|
       @network = @data.row(row_number)
       next if @network[@headers["state_code"]] != @state_code
-      next if @network[@headers["market_coverage"]].downcase == "individual"
+      # next if @network[@headers["market_coverage"]].downcase == "individual"
       # next if network_present?
       next if network_name_present?
       build_and_save_organization
@@ -96,14 +96,12 @@ class NetworkBuilder < CmsParentBuilder
       "NDB Network - SA2MC" => "Nevada Dental Benefits",
       "Pathway X - HMO and Dental Prime" => "Anthem",
       "Pathway X - PPO and Dental Prime" => "Anthem",
-      # "Premier HMO North Network" => "Prominence",
-      # "Prominence HMO Network (HCP)" => "Prominence",
-      # "Prominence HMO WellHealth Network" => "Prominence",
-      # "Prominence HealthFirst HMO Network (ChoicePlus)" => "Prominence",
+      "Premier HMO North Network" => "Prominence", # Indiv
+      "Prominence HMO Network (HCP)" => "Prominence", # Indiv
+      "Prominence HMO WellHealth Network" => "Prominence", # Indiv
+      "Prominence HealthFirst HMO Network (ChoicePlus)" => "Prominence", #Indiv
       # "Prominence HealthFirst HMO/POS Network" => "Prominence",
       # "Network Savings 1" => "Assurant Health",
     }
   end
 end
-
-#  premier access

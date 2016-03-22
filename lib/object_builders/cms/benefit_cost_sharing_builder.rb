@@ -7,13 +7,17 @@ class BenefitCostSharingBuilder
   end
 
   def run
+    count = 0
     CSV.foreach(@file,
                 :headers => true,
                 :header_converters => lambda { |h| h.underscore.to_sym }) do |row|
       next if row[:state_code] != @state_code
       @plan = row
       build_qhp_benefits_and_service_visits
+      count+=1
+      puts "processed #{count} records" if count % 2000 == 0
     end
+    puts "processed #{count} records"
   end
 
   def build_qhp_benefits_and_service_visits
