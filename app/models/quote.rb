@@ -25,10 +25,7 @@ class Quote
   embeds_many :quote_reference_plans, cascade_callbacks: true
   embeds_many :quote_households
 
-
   embeds_many :quote_relationship_benefits, cascade_callbacks: true
-
-  accepts_nested_attributes_for :quote_households
 
   def calc
     
@@ -49,7 +46,7 @@ class Quote
 
         rp1.quote_results << pcd.get_family_details_hash
       end
-      
+  
       self.save
 
   end
@@ -80,6 +77,7 @@ class Quote
     qm.last_name = "Schaffert"
     qm.dob = Date.new(2012,1,10)
     qm.employee_relationship = "child_under_26"
+
 
     qm = qh.quote_members.build
 

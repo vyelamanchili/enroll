@@ -8,6 +8,8 @@ class QuoteRelationshipBenefit
   field :employer_max_amt, type: Money
   field :offered, type: Boolean, default: true
 
+  validates_numericality_of :premium_pct, greater_than_or_equal_to: 0.0, less_than_or_equal_to: 100.0
+  
   # Indicates whether employer offers coverage for this relationship
   def offered?
     self.offered
