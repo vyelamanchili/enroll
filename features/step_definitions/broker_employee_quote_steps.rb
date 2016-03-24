@@ -81,3 +81,4 @@ end
 Then(/^the Quote should be deleted$/) do
   page.should have_no_xpath("//table//input[contains(@id, 'family_id')]")
 end
+
