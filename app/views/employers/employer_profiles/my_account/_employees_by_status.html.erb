@@ -8,7 +8,7 @@
   <div class="table-responsive">
     <table>
       <thead>
-        <tr>
+        <tr class="employee-roster-header">
           <th>Employee Name<!-- <i class="fa fa-caret-down"></i>--></th>
           <th>SSN</th>
           <th>DOB</th>
@@ -18,9 +18,9 @@
           <% if @employer_profile.renewing_plan_year.present? %>
           <th>Renewal Benefit Package</th>
           <% end %>
-          <% if ['terminated', 'all'].include?(status) %>
+          <% #if ['terminated', 'all'].include?(status) %>
           <th>Termination Date</th>
-          <% end %>
+          <% #end %>
 
           <th>Status</th>
 
@@ -54,10 +54,10 @@
           <% end %>
           </td>
           <% end %>
-          <% if ['terminated', 'all'].include?(status) %>
+          <% #if ['terminated', 'all'].include?(status) %>
           <td><%= format_date census_employee.employment_terminated_on %>
           </td>
-          <% end %>
+          <% #end %>
 
           <td style="text-transform: capitalize;"><%= census_employee.aasm_state.humanize %></td>
           <td><%= enrollment_state(census_employee) %></td>
@@ -93,7 +93,7 @@
         <% else %>
 
         <tr class="unbrd  remove_<%= census_employee.id %>" style="display: none;">
-          <td class="confirm-terminate-wrapper show_confirm_<%= census_employee.id %>" colspan="9" id="enter-date">
+          <td class="confirm-terminate-wrapper show_confirm_<%= census_employee.id %>" colspan="10" id="enter-date">
             <div class="confirm-terminate">
 
 
@@ -104,7 +104,6 @@
 
 
               <div class="pull-right" style="margin-top: 2px;>
-              <!--<h5>Enter termination date to remove this employee:</h5>-->
               <i class="fa fa-calendar fa-lg"></i> <input class="text-center date-picker" data-date-min="<%= (census_employee.hired_on - TimeKeeper.date_of_record).to_i + 1 > -60 ? (census_employee.hired_on - TimeKeeper.date_of_record).to_i + 1 : -60 %>d" placeholder="MM/DD/YYYY" type="text">
               <a class="delete_confirm terminate" data-link="<%= employers_employer_profile_census_employee_terminate_path(@employer_profile.id, census_employee.id) %>" href="javascript:;" id="remove_<%= census_employee.id %>">
               Terminate Employee
