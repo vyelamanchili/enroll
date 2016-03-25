@@ -328,7 +328,7 @@ class Employers::PlanYearsController < ApplicationController
 
     @location_id = params[:location_id]
     @plan_year_id = params[:plan_year_id]
-    @dental_carrier_names = Plan.valid_for_carrier(params.permit(:active_year)[:active_year])
+    @dental_carrier_names = Plan.valid_for_carrier(params.permit(:active_year)[:active_year]).select{|a| !["CareFirst","MetLife"].include?(a.legal_name) }
     @dental_carriers_array = Organization.valid_dental_carrier_names_for_options
     respond_to do |format|
       format.js
