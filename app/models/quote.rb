@@ -46,9 +46,8 @@ class Quote
 
         rp1.quote_results << pcd.get_family_details_hash
       end
-  
-      self.save
 
+      self.save
   end
 
   def gen_data
@@ -77,7 +76,6 @@ class Quote
     qm.last_name = "Schaffert"
     qm.dob = Date.new(2012,1,10)
     qm.employee_relationship = "child_under_26"
-
 
     qm = qh.quote_members.build
 
