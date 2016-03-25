@@ -19,6 +19,7 @@ class Quote
   field :start_on, type: Date
 
   field :broker_agency_profile_id, type: BSON::ObjectId
+  field :quote_results, type: Array, default: []
 
 
 
@@ -64,21 +65,28 @@ class Quote
     rp1.save
     #reference_plan=("56e6c4e53ec0ba9613008f6d")
 
+    p = Plan.find(self.quote_reference_plans[0].reference_plan_id)
 
-    self.quote_reference_plans.each do |rf|
-      puts "Calculating for Reference Plan" + rf.id
-      quote_households.each do |hh|
-        #puts "   " + hh.first_name
+    puts "Calculating details for " + p.name
+
+      self.quote_households.each do |hh|
+        puts "   " + hh.quote_members.first.first_name
+        pcd = PlanCostDecorator.new(p, hh, self, p)
+        puts "Employee Cost " + pcd.total_employee_cost.to_s
+        puts "Employer Contribution " + pcd.total_employer_contribution.to_s
+
+        quote_results << pcd.get_family_details
       end
-    end
+
+      self.save
 
   end
 
   def gen_data
 
     build_relationship_benefits
-    self.relationship_benefit_for("employee").premium_pct=(100)
-    self.relationship_benefit_for("child_under_26").premium_pct=(100)
+    self.relationship_benefit_for("employee").premium_pct=(70)
+    self.relationship_benefit_for("child_under_26").premium_pct=(70)
 
     qh = self.quote_households.build
 
@@ -95,6 +103,35 @@ class Quote
     qm.last_name = "Schaffert"
     qm.dob = Date.new(2012,1,10)
     qm.employee_relationship = "child_under_26"
+
+    qm = qh.quote_members.build
+
+    qm.first_name = "Steve"
+    qm.last_name = "Schaffert"
+    qm.dob = Date.new(2012,1,10)
+    qm.employee_relationship = "child_under_26"
+
+    qm = qh.quote_members.build
+
+    qm.first_name = "Lucas"
+    qm.last_name = "Schaffert"
+    qm.dob = Date.new(2012,1,10)
+    qm.employee_relationship = "child_under_26"
+
+    qm = qh.quote_members.build
+
+    qm.first_name = "Enzo"
+    qm.last_name = "Schaffert"
+    qm.dob = Date.new(2012,1,10)
+    qm.employee_relationship = "child_under_26"
+
+    qm = qh.quote_members.build
+
+    qm.first_name = "Leonardo"
+    qm.last_name = "Schaffert"
+    qm.dob = Date.new(2012,1,10)
+    qm.employee_relationship = "child_under_26"
+
     self.save
 
     qh = self.quote_households.build
