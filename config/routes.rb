@@ -39,6 +39,7 @@ Rails.application.routes.draw do
         get :request_help
         get :verification_index
         get :binder_index
+        post :binder_paid
       end
 
       member do
