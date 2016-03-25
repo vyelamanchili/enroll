@@ -19,7 +19,7 @@ class Quote
   field :start_on, type: Date
 
   field :broker_agency_profile_id, type: BSON::ObjectId
-  field :quote_results, type: Array, default: []
+
 
 
 
@@ -75,7 +75,7 @@ class Quote
         puts "Employee Cost " + pcd.total_employee_cost.to_s
         puts "Employer Contribution " + pcd.total_employer_contribution.to_s
 
-        quote_results << pcd.get_family_details
+        rp1.quote_results << pcd.get_family_details
       end
 
       self.save
@@ -129,7 +129,7 @@ class Quote
 
     qm.first_name = "Leonardo"
     qm.last_name = "Schaffert"
-    qm.dob = Date.new(2012,1,10)
+    qm.dob = Date.new(1990,1,10)
     qm.employee_relationship = "child_under_26"
 
     self.save
