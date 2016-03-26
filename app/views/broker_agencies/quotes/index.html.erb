@@ -36,6 +36,28 @@
       <br>
       <%= submit_tag "Submit", class: 'btn btn-primary', id: 'waiver_reason_submit' %>
       <% end %>
+
+      <br>
+          <%= params.inspect %>
+      <br>
+
+      <%= form_tag(root_broker_agencies_quotes_path, method: :get) do  %>
+
+      <% #select_tag "plans[]", options_from_collection_for_select(@plans, "id", "name"), {id: 'broker_agency_plan_selection',  multiple: "multiple", class: "floatlabel form-control interaction-field-control-broker-agency-languages-spoken" } %>
+
+      <div>
+        <div class="btn-group" data-toggle="buttons">
+          <% @plans.each do |p| %>
+          <label class="btn btn-sm btn-primary <%= "active" if params['plans'].try(:include?, p.id.to_s) %>">
+            <input name="plans[]" <%= "checked" if params['plans'].try(:include?, p.id.to_s) %> type="checkbox" autocomplete="off" value="<%= p.id %>"><%= p.name %>
+          </label>
+          <% end %>
+        </div>
+      </div>
+
+      <br>
+      <%= submit_tag "Submit", class: 'btn btn-primary', id: 'waiver_reason_submit' %>
+      <% end %>
     </div>
   </div>
 

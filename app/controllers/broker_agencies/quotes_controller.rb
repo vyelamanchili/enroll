@@ -3,8 +3,6 @@ class BrokerAgencies::QuotesController < ApplicationController
   before_action :find_quote , :only => [:destroy ,:show,:edit]
 
   def index
-
-
     @quotes = Quote.where("broker_role_id" => current_user.person.broker_role.id)
     #@quotes = Quote.all
     @plans = Plan.where("active_year" => 2016).limit(15)
