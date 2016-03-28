@@ -38,8 +38,6 @@
       <% end %>
 
       <br>
-          <%= params.inspect %>
-      <br>
 
       <%= form_tag(root_broker_agencies_quotes_path, method: :get) do  %>
       <%= hidden_field_tag 'quote', @quotes.first.id.to_s %>
