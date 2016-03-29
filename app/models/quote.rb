@@ -21,13 +21,13 @@ class Quote
   associated_with_one :broker_role, :broker_role_id, "BrokerRole"
 
   field :plan_option_kind, type: String, default: "single_carrier"
-
+  
   embeds_many :quote_reference_plans, cascade_callbacks: true
   embeds_many :quote_households
 
   embeds_many :quote_relationship_benefits, cascade_callbacks: true
 
-  accepts_nested_attributes_for :quote_households 
+  accepts_nested_attributes_for :quote_households
 
   def calc
 
@@ -49,6 +49,8 @@ class Quote
         rp1.quote_results << pcd.get_family_details_hash
       end
 
+
+
       self.save
   end
 
@@ -69,7 +71,6 @@ class Quote
 
     qm.first_name = "Tony"
     qm.last_name = "Schaffert"
-    qm.employee_id = 1
     qm.dob = Date.new(1980,7,26)
     qm.employee_relationship = "employee"
 

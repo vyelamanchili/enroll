@@ -42,8 +42,11 @@
       <br>
 
       <%= form_tag(root_broker_agencies_quotes_path, method: :get) do  %>
-      <%= hidden_field_tag 'quote', @quotes.first.id.to_s %>
-      <% #select_tag "plans[]", options_from_collection_for_select(@plans, "id", "name"), {id: 'broker_agency_plan_selection',  multiple: "multiple", class: "floatlabel form-control interaction-field-control-broker-agency-languages-spoken" } %>
+      <%=
+      #hidden_field_tag 'quote', @quotes.first.id.to_s
+      puts "test"
+      %>
+      <%= select_tag "quote", options_from_collection_for_select(@quotes, "id", "quote_name"), { } %>
 
       <div>
         <div class="btn-group" data-toggle="buttons">
