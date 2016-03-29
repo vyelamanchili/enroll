@@ -6,46 +6,7 @@
 
       <%@quotes.each do |q| %>
 
-      <br><%= q.quote_name %>
-      <table>
-       <tr>
-         <td>Quote ID</td>
-
-       </tr>
-       <% @quotes.each do |q| %>
-       <tr>
-         <td><br><%= q.id %></td>
-      </tr>
-      <% end %>
-    </table>
-      <br><%=link_to "New Quote" , new_broker_agencies_quotes_path , class: "btn btn-trans"  %>
-      <br>
-
-      <%= form_tag(broker_agencies_quotes_root_path, method: :get) do  %>
-      <%= select_tag "quote", options_from_collection_for_select(@quotes, "id", "quote_name"), { } %>
-
-      <div>
-        <div class="btn-group" data-toggle="buttons">
-          <% @plans.each do |p| %>
-
-          <label class="btn btn-sm btn-primary <%= "active" if params['plans'].try(:include?, p.id.to_s) %>">
-            <input name="plans[]" <%= "checked" if params['plans'].try(:include?, p.id.to_s) %> type="checkbox" autocomplete="off" value="<%= p.id %>"><%= p.name %>
-          </label>
-          <% end %>
-        </div>
-      </div>
-      <br>
-      <%= submit_tag "Submit", class: 'btn btn-primary', id: 'waiver_reason_submit' %>
-      <% end %>
-    </table>
-      <br><%=link_to "New Quote" , new_broker_agencies_quotes_path , class: "btn btn-trans"  %>
-      <br>
-
       <%= form_tag(root_broker_agencies_quotes_path, method: :get) do  %>
-      <%=
-      #hidden_field_tag 'quote', @quotes.first.id.to_s
-      puts "test"
-      %>
       <%= select_tag "quote", options_from_collection_for_select(@quotes, "id", "quote_name"), { } %>
 
       <div>
