@@ -288,6 +288,20 @@ class HbxEnrollment
 
   end
 
+  def waive_coverage_by_benefit_group_assignment(waiver_reason)
+    update_current(aasm_state: "inactive", waiver_reason: waiver_reason)
+    propogate_waiver
+
+    hbxs = HbxEnrollment.find_by_benefit_group_assignments([benefit_group_assignment])
+    return if hbxs.blank?
+    hbxs.each do |hbx|
+      if hbx.may_waive_coverage?
+        hbx.update_current(aasm_state: "inactive", waiver_reason: waiver_reason)
+        hbx.propogate_waiver
+      end
+    end
+  end
+
   def cancel_previous(year)
 
     #Perform cancel of previous enrollments for the same plan year
@@ -791,42 +805,22 @@ class HbxEnrollment
     end
   end
 
-  def self.find_shop_and_health_by_benefit_group_assignment_id(benefit_group_assignment_id)
-    return [] if benefit_group_assignment_id.blank?
-    families = Family.where(:"households.hbx_enrollments.benefit_group_assignment_id" => benefit_group_assignment_id)
+  def self.find_by_benefit_group_assignments(benefit_group_assignments = [])
+    return [] if benefit_group_assignments.blank?
+    id_list = benefit_group_assignments.collect(&:_id).uniq
+
+    families = Family.where(:"households.hbx_enrollments.benefit_group_assignment_id".in => id_list)
 
     enrollment_list = []
     families.each do |family|
       family.households.each do |household|
-        household.hbx_enrollments.show_enrollments.shop_market.by_coverage_kind("health").each do |enrollment|
-          enrollment_list << enrollment if benefit_group_assignment_id.to_s == enrollment.benefit_group_assignment_id.to_s
+        household.hbx_enrollments.active.each do |enrollment|
+          enrollment_list << enrollment if id_list.include?(enrollment.benefit_group_assignment_id)
         end
       end
-    end rescue ''
+    end
     enrollment_list
   end
-  # def self.find_by_benefit_group_assignments(benefit_group_assignments = [])
-  #   id_list = benefit_group_assignments.collect(&:_id)
-
-  #   # families = nil
-  #   # if id_list.size == 1
-  #   #   families = Family.where(:"households.hbx_enrollments.benefit_group_assignment_id" => id_list.first)
-  #   # else
-  #   #   families = Family.any_in(:"households.hbx_enrollments.benefit_group_assignment_id" => id_list )
-  #   # end
-
-  #   families = Family.where(:"households.hbx_enrollments.benefit_group_assignment_id".in => id_list)
-
-  #   enrollment_list = []
-  #   families.each do |family|
-  #     family.households.each do |household|
-  #       household.hbx_enrollments.active.each do |enrollment|
-  #         enrollment_list << enrollment if id_list.include?(enrollment.benefit_group_assignment_id)
-  #       end
-  #     end
-  #   end
-  #   enrollment_list
-  # end
 
   # def self.covered(enrollments)
   #   enrollments.select{|e| ENROLLED_STATUSES.include?(e.aasm_state) && e.is_active? }
