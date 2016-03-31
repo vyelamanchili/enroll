@@ -535,6 +535,6 @@ module ApplicationHelper
   end
 
   def display_dental_metal_level(plan)
-    (plan.active_year == 2015 ? plan.metal_level : plan.dental_level).try(:titleize)
+    (plan.active_year == 2015 ? plan.metal_level : plan.dental_level).try(:titleize) || ""
   end
 end
