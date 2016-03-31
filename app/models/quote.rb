@@ -25,7 +25,7 @@ class Quote
   embeds_many :quote_reference_plans, cascade_callbacks: true
   embeds_many :quote_households
 
-  has_one :broker_agency_profile
+  has_one :broker_role
 
   embeds_many :quote_relationship_benefits, cascade_callbacks: true
   

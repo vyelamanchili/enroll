@@ -34,30 +34,27 @@ class BrokerAgencies::QuotesController < ApplicationController
   def new
   end
 
-  def update
+  def update 
     @quote = Quote.find(params[:id])
     if @quote
       employee_roster = employee_roster_group_by_family_id
       employee_roster.each do |family_id, family_members|
         family_members.each do |family_member|
-          fm = QuoteMember.find(family_member[:id])
+          fm = QuoteMember.where(:_id => family_member[:id]).first
           fm.update_attributes(family_member.permit(:family_id,:employee_relationship,:dob))
         end
       end
-      redirect_to  broker_agencies_quotes_root_path ,  :flash => { :notice => "Successfully Updated the employee roster" }
+      redirect_to  broker_agencies_quotes_root_path ,  :flash => { :notice => "Successfully Updateds the employee roster" }
     else
-      redirect_to  broker_agencies_quotes_root_path ,  :flash => { :error => "Unable to update employee roster" }
+      redirect_to  broker_agencies_quotes_root_path ,  :flash => { :error => "Unable to updates employee roster" }
     end
   end
 
   def create
   	quote = Quote.new(params.permit(:quote_name))
     quote.build_relationship_benefits
-<<<<<<< dae19d44ea5bdc2b72af7827ba7f2f7b7a7c9374
     quote.broker_role_id= current_user.person(:try).broker_role.id
-=======
     quote.broker_agency_profile_id= current_user.person(:try).broker_role.broker_agency_profile_id
->>>>>>> Broker agency profile is linked to the Quote
     employee_roster = employee_roster_group_by_family_id
   	employee_roster.each do |family_id, family_members|
       house_hold = QuoteHousehold.new
