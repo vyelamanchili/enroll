@@ -1,4 +1,5 @@
 class BrokerAgencies::QuotesController < ApplicationController
+  
 
   before_action :find_quote , :only => [:destroy ,:show,:edit]
 
@@ -52,7 +53,11 @@ class BrokerAgencies::QuotesController < ApplicationController
   def create
   	quote = Quote.new(params.permit(:quote_name))
     quote.build_relationship_benefits
+<<<<<<< dae19d44ea5bdc2b72af7827ba7f2f7b7a7c9374
     quote.broker_role_id= current_user.person(:try).broker_role.id
+=======
+    quote.broker_agency_profile_id= current_user.person(:try).broker_role.broker_agency_profile_id
+>>>>>>> Broker agency profile is linked to the Quote
     employee_roster = employee_roster_group_by_family_id
   	employee_roster.each do |family_id, family_members|
       house_hold = QuoteHousehold.new
@@ -78,7 +83,7 @@ class BrokerAgencies::QuotesController < ApplicationController
     @employee_roster = parse_employee_roster_file
     render "new"
   end
-
+    
   def upload_employee_roster
 	end
 
