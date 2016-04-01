@@ -1,5 +1,6 @@
 class BrokerAgencies::QuotesController < ApplicationController
 
+  before_action :find_quote , :only => [:destroy ,:show,:edit]
 
   before_action :find_quote , :only => [:destroy ,:show,:edit]
 
@@ -34,14 +35,13 @@ class BrokerAgencies::QuotesController < ApplicationController
   def new
   end
 
-
-  def update 
+  def update
     @quote = Quote.find(params[:id])
     if @quote
       employee_roster = employee_roster_group_by_family_id
       employee_roster.each do |family_id, family_members|
         family_members.each do |family_member|
-          fm = QuoteMember.where(:_id => family_member[:id]).first
+          fm = QuoteMember.find(family_member[:id])
           fm.update_attributes(family_member.permit(:family_id,:employee_relationship,:dob))
         end
       end
@@ -86,7 +86,6 @@ class BrokerAgencies::QuotesController < ApplicationController
 	end
 
   def download_employee_roster
-    @quote = Quote.find(params[:id])
     @employee_roster = @quote.quote_households.map(&:quote_members).flatten
     send_data(csv_for(@employee_roster), :type => 'text/csv; charset=iso-8859-1; header=present',
     :disposition => "attachment; filename=Employee_Roster.csv")
