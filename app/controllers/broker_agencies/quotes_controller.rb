@@ -1,5 +1,5 @@
 class BrokerAgencies::QuotesController < ApplicationController
-  
+
 
   before_action :find_quote , :only => [:destroy ,:show,:edit]
 
@@ -33,6 +33,7 @@ class BrokerAgencies::QuotesController < ApplicationController
 
   def new
   end
+
 
   def update 
     @quote = Quote.find(params[:id])
@@ -80,7 +81,7 @@ class BrokerAgencies::QuotesController < ApplicationController
     @employee_roster = parse_employee_roster_file
     render "new"
   end
-    
+
   def upload_employee_roster
 	end
 

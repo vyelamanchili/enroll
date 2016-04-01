@@ -64,6 +64,7 @@ namespace :quote_demo do
       q.relationship_benefit_for("child_under_26").premium_pct=(100)
 
       qh = q.quote_households.build
+      qh.family_id = "1"
 
       qm = qh.quote_members.build
 
@@ -111,6 +112,7 @@ namespace :quote_demo do
       q.save
 
       qh = q.quote_households.build
+      qh.family_id = "2"
       qm = qh.quote_members.build
 
       qm.first_name = "Dengo"
