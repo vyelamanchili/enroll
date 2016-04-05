@@ -12,6 +12,8 @@ policy_ids.each do |id|
 		household.hbx_enrollments.each do |hbx_enrollment|
 			if hbx_enrollment.hbx_id == id.to_s
 				hbx_enrollment.update_attributes({:aasm_state => 'coverage_enrolled'})
+				hbx_enrollment.benefit_group_assignment.make_active
+				hbx_enrollment.save!
 			end
 		end
 	end
