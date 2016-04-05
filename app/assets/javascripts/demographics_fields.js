@@ -86,7 +86,8 @@ function showOnly(selected) {
     data: {
       'target_id': target_id,
       'target_type': target_type,
-      'vlp_doc_target': vlp_doc_target
+      'vlp_doc_target': vlp_doc_target,
+      'vlp_doc_subject': selected
     },
   });
 }
@@ -134,9 +135,7 @@ $(document).ready(function(){
   validationForIndianTribeMember();
   if (window.location.href.indexOf("insured") > -1 && window.location.href.indexOf("consumer_role") > -1 && window.location.href.indexOf("edit") > -1) {
     $('form.edit_person, form.new_dependent, form.edit_dependent').submit(function(e){
-      validationForUsCitizenOrUsNational(e);
-      validationForNaturalizedCitizen(e);
-      validationForVlpDocuments(e);
+      
     });
   }
 });

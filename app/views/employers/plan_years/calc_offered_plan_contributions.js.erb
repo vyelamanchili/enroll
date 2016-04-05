@@ -9,7 +9,10 @@ $("#<%= @location_id %> <%= @coverage_type %> .reference-steps .dental .nav-tabs
 $("#<%= @location_id %> <%= @coverage_type %>.selected-plan .row:first").hide();
 $("#<%= @location_id %> .dental .reference-steps div:first").hide()
 $("#<%= @location_id %> <%= @coverage_type %> .col-md-12.top-pd").hide();
-$('#<%= @location_id %> .dental-benefits-fields .col-xs-6.form-group.form-group-lg label > input').attr('disabled', 'disabled');
+
+//unbind checkbox handlers
+$('#<%= @location_id %> <%= @coverage_type %> .checkbox label input[type="checkbox"]').unbind();
+//$('#<%#= @location_id %> .dental-benefits-fields .col-xs-6.form-group.form-group-lg label > input').attr('disabled', 'disabled');
 
 // show dental config links
 $("#<%= @location_id %> .dental-config-links").show();
@@ -60,8 +63,12 @@ if (window.location.href.indexOf("edit") > -1 && window.location.href.indexOf("p
         $(this).attr('href', url+"&location_id="+newLocationId);
       });
       validateEditPlanYear();
-
     });
+    if ( '<%= @plan_option_kind %>' == 'single_plan' ) {
+      plan_count = $('#<%= @location_id %> .dent.plan-count').text();
+      $('#<%= @location_id %> .dental .dental-config-reference-selection').text('Currently Offering: '+plan_count+' Plans');
+    }
+
   } else {
     $("#<%= @location_id %> .health .health .change-dental-reference-plan").on('click', function() {
       $(this).closest('.selected-plan').hide();
@@ -92,12 +99,13 @@ if (window.location.href.indexOf("edit") > -1 && window.location.href.indexOf("p
    } else {
      var coverage_type = '.dental';
      var reference_plan_id = $("#<%= @location_id %> .dental .dental-ref-plan").val();
+     var plan_count = parseInt($("#<%= @location_id %> .dent.plan-count").text());
    }
 
    if (reference_plan_id == "" || reference_plan_id == undefined) {
      return
    }
-   calcEmployerContributions($('a#employee_costs_link').attr('href'), location_id, coverage_type);
+   calcEmployerContributions($('a#employee_costs_link').attr('href'), location_id, coverage_type, plan_count);
  });
 
 } else {
