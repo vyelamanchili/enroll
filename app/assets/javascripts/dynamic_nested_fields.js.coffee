@@ -13,7 +13,10 @@ $(document).on 'click', 'form .add_fields', (event) ->
 
   update_delete_buttons()
   applyJQDatePickers()
-  validatePlanYear()
+
+  if $('#plan_year_start_on').length
+    validatePlanYear()
+
 
 
   # get all dental plan options for all plans option or for elected dental plans
@@ -44,6 +47,7 @@ $(document).on 'click', 'form .add_fields', (event) ->
     return
   $('.benefit-group-fields:last').attr 'id', 'benefit-group-' + time
   $('.benefit-group-fields:last').data 'time', time
+  $('.benefit-group-fields:last').attr 'data-benefit-group-index', $('.benefit-group-fields').length - 1
   $('.benefit-group-fields:last .dental-relationship-benefits-attributes-time').val time
 
   $('.benefit-group-fields:last .elected-plans-tab .reference-plan input[checkbox]').each ->
@@ -54,7 +58,8 @@ $(document).on 'click', 'form .add_fields', (event) ->
   dental_target_url = $('a#generate-dental-carriers-and-plans').attr('href')
   plan_year_id = $('a#generate-dental-carriers-and-plans').data('planYearId')
   location_id = $('.benefit-group-fields:last').attr('id')
-  active_year = $('#plan_year_start_on').val().substr(0, 4)
+  if $('#plan_year_start_on').length
+    active_year = $('#plan_year_start_on').val().substr(0, 4)
   $.ajax
     type: 'GET'
     data:
@@ -62,13 +67,13 @@ $(document).on 'click', 'form .add_fields', (event) ->
       plan_year_id: plan_year_id
       location_id: location_id
     url: dental_target_url
+
   # match health with dental offering selections
   $('.health .offerings input[type=checkbox]').on 'change', ->
     checkedValue = $(this).closest('label').find('span').find('p').text()
     if $(this).is(':checked')
       $(this).closest('.benefit-group-fields').find('.dental-benefits-fields').find('label span p:contains(' + checkedValue + ')').closest('label').find('input[type=checkbox]').removeProp 'disabled', false
       $(this).closest('.benefit-group-fields').find('.dental-benefits-fields').find('label span p:contains(' + checkedValue + ')').closest('label').find('input[type=checkbox]').trigger 'click'
-      $(this).closest('.benefit-group-fields').find('.dental-benefits-fields').find('label span p:contains(' + checkedValue + ')').closest('label').find('input[type=checkbox]').prop 'disabled'
     else
       $(this).closest('.benefit-group-fields').find('.dental-benefits-fields').find('label span p:contains(' + checkedValue + ')').closest('label').find('input[type=checkbox]').removeProp 'checked'
     return
@@ -106,6 +111,7 @@ $(document).on 'click', 'form .add_fields', (event) ->
       calcEmployerContributions $('a#calc_employer_contributions_link').data('href'), location_id, coverage_type
       return
     return
+
 
   start_on = $('#plan_year_start_on').val()
   if start_on
