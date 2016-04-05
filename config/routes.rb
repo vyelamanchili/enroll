@@ -89,7 +89,10 @@ Rails.application.routes.draw do
         post 'set_elected_aptc'
       end
     end
-
+    resources :health_analytics  do
+      get 'new'
+      get :health, on: :collection
+    end
     resources :interactive_identity_verifications, only: [:create, :new, :update]
 
     resources :inboxes, only: [:new, :create, :show, :destroy]

@@ -1,0 +1,116 @@
+<% content_for :horizontal_status do %>
+<%= render :partial => 'insured/families/horizontal_status', locals: {step: 1} %>
+<% end %>
+<% content_for :analytics_submit_column do %>
+<%= render :partial => 'insured/health_analytics/analytics_submit_column' %>
+<% end %>
+
+<h1 class="darkblue">Health</h1>
+<h3>Tell us about your family's Health</h3>
+<p>Your health information can't be used to keep you from getting health insurance and it won't raise your monthly payments.</p>
+</br>
+<div class="module family-member">
+<div class="overall-health panel panel-default col-xs-8 health_analytics">
+  <div class="row">
+    <div class="panel-heading">
+      <h4>This is
+        <span>Adult 1:
+        </span>
+        <span>
+          <i class="fa fa-male"></i>
+        </span>
+        Male,
+        <span>18</span>
+        years old</h4>
+    </div>
+    <div class="panel-body">
+      <h5>Overall,
+        <span>Adult 1</span>'s health is:</h5>
+      <input class="slider" data-slider-value="50" type="text"/>
+    </div>
+    <br/>
+    <div class="panel-footer">
+      <span>
+        <strong>Good:</strong>
+        I go to the doctor regulary. I have at least 1 chronic (long-term) health problem, but it's generally under control.</span>
+    </div>
+  </div>
+</div>
+<div class="col-xs-8 health_analytics">
+  <div class="row">
+    <div class="conditions panel panel-default col-xs-8">
+      <div class="row">
+        <div class="panel-heading">
+          <h4>Does
+            <span>Adult 1</span>
+            have any health conditions?</h4>
+        </div>
+        <div class="panel-body">
+          <%= link_to "<i class='fa fa-plus'></i> Add Health Conditions".html_safe, "", class: "btn btn-trans btn-br", data: { toggle: 'modal', target: '#healthConditions' } %>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+
+  <div class="medications panel panel-default col-xs-8">
+    <div class="row">
+      <div class="panel-heading">
+        <h4>Does
+          <span>Adult 1</span>
+          take any medications?</h4>
+      </div>
+      <div class="panel-body">
+        <%= link_to "<i class='fa fa-plus'></i> Add Medications".html_safe, "", class: "btn btn-trans btn-br", data: { toggle: 'modal', target: '#healthMedications' } %>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+<div class="modal fade" id="healthConditions">
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content">
+			<div class="modal-header" style="border-bottom: none;">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title">Plan Details</h4>
+			</div>
+      <div class="container-fluid" id="plan-details-modal-body">
+      </div>
+		</div>
+	</div>
+</div>
+<div class="modal fade" id="healthMedications">
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content">
+			<div class="modal-header" style="border-bottom: none;">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title">Plan Details</h4>
+			</div>
+      <div class="container-fluid" id="plan-details-modal-body">
+      </div>
+		</div>
+	</div>
+</div>
+<br class="clear"/>
+<p>Insurance won't cover all of your medical expenses. We can help you estimate what you might spend on medical care (your out-of-pocket costs) if you tell us a bit more about your health concerns. This information will not be shared with anymore, including your employer, and will not be saved.</p>
+<br/>
+<h4>Are there any <span>doctors</span> (like your current doctor) that you want to make sure are included in your plan's network?</h4>
+<p>Some insurance plans let you see doctors outside their network, but it's usually much more expensive.</p>
+</div>
+<script>
+$(document).ready(function () {
+  $(".slider").bootstrapSlider({
+    ticks: [
+      0, 50, 100
+    ],
+    ticks_labels: [
+      'Poor', 'Good', 'Excellent'
+    ],
+    ticks_snap_bounds: 50
+  });
+
+  $('#continue').on('click', function () {
+    window.location = "<%= health_insured_health_analytics_path %>"
+  })
+});
+</script>

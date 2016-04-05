@@ -1,0 +1,89 @@
+<% content_for :horizontal_status do %>
+<%= render :partial => 'insured/families/horizontal_status', locals: {step: 1} %>
+<% end %>
+<% content_for :analytics_submit_column do %>
+<%= render :partial => 'insured/health_analytics/analytics_submit_column' %>
+<% end %>
+
+<h1 class="darkblue">Household</h1>
+<h4>What are you looking for?</h4>
+<div class="module panel panel-default col-xs-8 health_analytics">
+  <div class="panel-body" style="padding: 15px 15px 0;">
+
+    <div class="row">
+      <div class="col-xs-6">
+        <label>
+          Employee Type:
+        </label>
+      </div>
+      <div class="col-xs-6">
+        <%= select_tag "employee_type", options_for_select([ "Active Employee", "Non-Medical Primary Retiree", "Medicare Primary Retiree", "Cobra Member", "National Guard, Fire and Emergency Service Member" ]) %>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-xs-6">
+        <label>
+          Who do you want to cover?
+        </label>
+      </div>
+      <div class="col-xs-6">
+        <%= select_tag "employee_type", options_for_select([ "Employee/Retiree Only", "Employee/Retiree + Children", "Employee/Retiree + Spouse", "Employee/Retiree + Family" ]) %>
+      </div>
+    </div>
+  </div>
+</div>
+<br class="clear">
+<h4>
+  Which wellness plans do you participate in?
+</h4>
+<div class="module panel panel-default col-xs-8 health_analytics wellness-plans">
+  <div class="col-xs-12">
+    <div class="col-xs-12">
+      <div class="checkbox">
+        <label>
+          <%= check_box_tag 'asdas' %>
+          <%= label_tag 'asdas' do %>
+
+          <i class="fa fa-check-square-o fa-2x"></i>
+          <i class="fa fa-square-o fa-2x"></i>
+          <% end %>
+          <span>Tobacc-free Attestation or QuitlineNC Enrollment</span>
+        </label>
+      </div>
+    </div>
+    <div class="col-xs-12">
+      <div class="checkbox">
+        <label>
+          <%= check_box_tag 'dsa' %>
+          <%= label_tag 'dsa' do %>
+
+          <i class="fa fa-check-square-o fa-2x"></i>
+          <i class="fa fa-square-o fa-2x"></i>
+          <% end %>
+          <span>Primary Care Provider Selection and PCMH Video Viewing</span>
+        </label>
+      </div>
+    </div>
+    <div class="col-xs-12">
+      <div class="checkbox">
+        <label>
+          <%= check_box_tag 'zz' %>
+          <%= label_tag 'zz' do %>
+
+          <i class="fa fa-check-square-o fa-2x"></i>
+          <i class="fa fa-square-o fa-2x"></i>
+          <% end %>
+          <span>Take/Update Health Assesment with Biometrics</span>
+        </label>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  $(document).ready(function() {
+    $('#continue').on('click', function() {
+      window.location = "<%= health_insured_health_analytics_path %>"
+    })
+  });
+</script>
