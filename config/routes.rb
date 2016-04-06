@@ -92,6 +92,7 @@ Rails.application.routes.draw do
     resources :health_analytics  do
       get 'new'
       get :health, on: :collection
+      get :estimate, on: :collection
     end
     resources :interactive_identity_verifications, only: [:create, :new, :update]
 
@@ -168,7 +169,7 @@ Rails.application.routes.draw do
         get :approve
       end
     end
-    
+
     #TODO REFACTOR
     resources :people do
       collection do

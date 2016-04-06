@@ -11,6 +11,10 @@ class Insured::HealthAnalyticsController < ApplicationController
 
   end
 
+  def estimate
+
+  end
+
 private
   def set_family
     @family = @person.try(:primary_family)
