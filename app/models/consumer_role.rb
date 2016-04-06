@@ -58,6 +58,7 @@ class ConsumerRole
   field :bookmark_url, type: String, default: nil
   field :contact_method, type: String, default: "Only Paper communication"
   field :language_preference, type: String, default: "English"
+  field :special_verification_period, type: DateTime
 
   delegate :hbx_id, :hbx_id=, to: :person, allow_nil: true
   delegate :ssn,    :ssn=,    to: :person, allow_nil: true
@@ -372,17 +373,6 @@ class ConsumerRole
       next if document.identifier.blank?
       doc_key = document.identifier.split('#').last
       doc_key == key
-    end
-  end
-
-  def find_document_to_download(subject)
-    subject_doc = vlp_documents.detect do |documents|
-      documents.subject.eql?(subject)
-    end
-    if subject_doc && !subject_doc.identifier
-      subject_doc
-    else
-      vlp_documents.build({subject:subject})
     end
   end
 
