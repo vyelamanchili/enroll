@@ -75,7 +75,27 @@ $primary-bold: 600;
 			}
 		}
 	}
+	&.smart-plans {
+		margin-bottom: 35px;
+		h5, .progress {
+			margin: 0;
+		}
+		.progress {
+			margin-bottom: 5px;
+		}
+	}
 	&.health_analytics {
+		.overall-health {
+			.panel-body {
+				padding: 25px 15px 0;
+			}
+		}
+		.medications, .conditions {
+			.panel-heading {
+				background: none;
+			}
+		}
+
 		&.visits-estimate {
 			.btn-trans {
 				margin: auto;
@@ -113,12 +133,11 @@ $primary-bold: 600;
 				border-bottom: solid 1px #eee;
 			}
 			.panel-footer {
-				background-color:#007bc4;
-			  border-color: #007bc4;
+				background-color: #d9edf7;
+				border-color: #bce8f1
 				span {
-					color: #FFFFFF;
-
-				}
+						color: #31708f;
+					}
 			}
 		}
 		input[type=checkbox] {

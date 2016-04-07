@@ -6,12 +6,16 @@
 <div class="container" id="plan_shoppings_show_form">
   <div id="select_plan_wrapper">
     <div class="row">
-      <div class="col-lg-8 col-md-8 col-sm-8 col-xs-12">
+      <div class="col-lg-9 col-md-9 col-sm-9 col-xs-12">
         <div class="ct-1">
-          <h1 class="darkblue">Choose Plan</h1>
-          <h4 class="switch-header">Find a quality, affordable health insurance plan that's right for you, or for you and your family. Use 'Filter Results', 'Compare' and 'Details' features to narrow your choices. When you find the plan you want, 'Select Plan'.</h4>
+          <h1 class="darkblue no-buffer">Choose Plan</h1>
           <div class="row no-buffer">
             <%= render "shared/plan_shoppings/more_plan_details" %>
+          </div>
+
+
+          <div class="row no-buffer">
+
             <p class="pull-right">
               <a href="javascript:void(0);" style="display: none;" class="btn btn-trans compare-selected-plans-link", data-uri="<%= comparison_products_plans_path(market_kind: @market_kind, coverage_kind: @coverage_kind) %>">
                 COMPARE PLANS
@@ -27,13 +31,72 @@
               <%= render 'plan_filters' %>
 
               <div class="col-lg-9 col-md-9 co-sm-9 col-xs-12" style="padding-right: 0;">
+
+                <div class="module smart-plans">
+                <div class="row">
+                  <div class="col-xs-7">
+                      <h5><%= Plan.last.name %></h5>
+                    <div class="progress">
+                      <div class="progress-bar progress-bar-success progress-bar-striped" style="width: 26%">
+                        <span class="sr-only">35% Complete (success)</span>
+                      </div>
+                      <div class="progress-bar progress-bar-warning progress-bar-striped" style="width: 8%">
+                        <span class="sr-only">20% Complete (warning)</span>
+                      </div>
+                      <div class="progress-bar progress-bar-danger progress-bar-striped" style="width: 50%">
+                        <span class="sr-only">10% Complete (danger)</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+
+
+                <div class="row">
+                  <div class="col-xs-7">
+                    <h5><%= Plan.first.name %></h5>
+                    <div class="progress">
+                      <div class="progress-bar progress-bar-success progress-bar-striped" style="width: 35%">
+                        <span class="sr-only">35% Complete (success)</span>
+                      </div>
+                      <div class="progress-bar progress-bar-warning progress-bar-striped" style="width: 40%">
+                        <span class="sr-only">20% Complete (warning)</span>
+                      </div>
+                      <div class="progress-bar progress-bar-danger progress-bar-striped" style="width: 20%">
+                        <span class="sr-only">10% Complete (danger)</span>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-xs-7">
+                    <h5><%= Plan.last.name %></h5>
+
+                    <div class="progress">
+                      <div class="progress-bar progress-bar-success progress-bar-striped" style="width: 65%">
+                        <span class="sr-only">35% Complete (success)</span>
+                      </div>
+                      <div class="progress-bar progress-bar-warning progress-bar-striped" style="width: 10%">
+                        <span class="sr-only">20% Complete (warning)</span>
+                      </div>
+                      <div class="progress-bar progress-bar-danger progress-bar-striped" style="width: 5%">
+                        <span class="sr-only">10% Complete (danger)</span>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+                <a class="">Compare Suggested Plans</a>
+
+              </div>
+
                 <div class="sort-area" style='margin:10px 0;'>
-                  <span><strong>Sort By</strong></span>
+                  <span><strong>Sort By:</strong></span>
                   <div class="btn-group" role="group" id='sort_by'>
-                    <a href='javascript:void(0)' class="btn btn-default" data-sort-by='plan-name'>Plan Name</a>
-                    <a href='javascript:void(0)' class="btn btn-default" data-sort-by='plan-metal-premium'>Premium Amount</a>
-                    <a href='javascript:void(0)' class="btn btn-default" data-sort-by='plan-metal-deductible'>Deductible</a>
-                    <a href='javascript:void(0)' class="btn btn-default" data-sort-by='plan-carrier'>Carrier</a>
+                    <a href='javascript:void(0)' class="btn btn-default" data-sort-by='plan-name'>Premium</a>
+                    <a href='javascript:void(0)' class="btn btn-default" data-sort-by='plan-metal-premium'>Estimated Out of Pocket</a>
+                    <a href='javascript:void(0)' class="btn btn-default" data-sort-by='plan-metal-deductible'>Maximum Out of Pocket</a>
                   </div>
                 </div>
 
@@ -54,7 +117,7 @@
         </div>
       </div>
 
-      <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12 col-md-offset-1 col-sm-offset-1 right-section">
+      <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12 right-section">
         <% if @change_plan.blank? && @market_kind == "individual" %>
           <% if @enrollment_kind.blank? && is_under_open_enrollment? %>
             <%= render  partial: 'shared/individual_progress', locals: {step: '4'} %>

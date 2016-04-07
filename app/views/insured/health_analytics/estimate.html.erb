@@ -132,6 +132,10 @@
 
 <script>
 $(document).ready(function () {
+  $('#continue').on('click', function () {
+    window.location = "/insured/plan_shoppings/570661c10522ed15a7000017?coverage_kind=health&enrollment_kind=sep&market_kind=individual"
+  })
+
   $('.visits-estimate .btn-trans').on('click', function() {
     values = $('table tr').find('td:first')
     $.each( values, function( i, val ) {

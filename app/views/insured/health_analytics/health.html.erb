@@ -2,407 +2,446 @@
 <%= render :partial => 'insured/families/horizontal_status', locals: {step: 1} %>
 <% end %>
 <% content_for :analytics_submit_column do %>
+<br/>
+<br/>
 <%= render :partial => 'insured/health_analytics/analytics_submit_column' %>
 <% end %>
 
-<h1 class="darkblue">Health</h1>
-<h3>Tell us about your family's Health</h3>
-<p>Your health information can't be used to keep you from getting health insurance and it won't raise your monthly payments.</p>
-</br>
-<div class="module family-member">
-<div class="overall-health panel panel-default col-xs-10 health_analytics">
-  <div class="row">
-    <div class="panel-heading">
-      <h4>This is
-        <span>Adult 1:
-        </span>
-        <span>
-          <i class="fa fa-male"></i>
-        </span>
-        Male,
-        <span>18</span>
-        years old</h4>
-    </div>
-    <div class="panel-body">
-      <h5>Overall,
-        <span>Adult 1</span>'s health is:</h5>
-      <input class="slider" data-slider-value="50" type="text"/>
-    </div>
-    <br/>
-    <div class="panel-footer">
-      <span>
-        <strong>Good:</strong>
-        I go to the doctor regulary. I have at least 1 chronic (long-term) health problem, but it's generally under control.</span>
-    </div>
-  </div>
+<h1 class="darkblue">Health - Tell us about your family's Health</h1>
+<div class="row">
+<p class="col-xs-10">
+Your health information can't be used to keep you from getting health insurance and it won't raise your monthly payments.
+</p>
 </div>
-<div class="col-xs-12 health_analytics">
-  <div class="row">
-    <div class="conditions panel panel-default col-xs-5">
-      <div class="row">
-        <div class="panel-heading">
-          <h4>Does
-            <span>Adult 1</span>
-            have any health conditions?</h4>
-        </div>
-        <div class="panel-body">
-          <%= link_to "<i class='fa fa-plus'></i> Add Health Conditions".html_safe, "", class: "btn btn-trans btn-br", data: { toggle: 'modal', target: '#healthConditions' } %>
-        </div>
-      </div>
-    </div>
 
-  <div class="medications panel panel-default col-xs-5">
+<div class="module family-member">
+  <h3>This is
+    <span>Adult 1:
+    </span>
+    <span>
+      <i class="fa fa-male"></i>
+    </span>
+    Male,
+    <span>18</span>
+    years old</h3>
+  <div class="overall-health panel panel-default col-xs-10 health_analytics">
     <div class="row">
       <div class="panel-heading">
-        <h4>Does
-          <span>Adult 1</span>
-          take any medications?</h4>
+        <h4>Overall,
+          <span>Adult 1</span>'s health is:</h4>
       </div>
       <div class="panel-body">
-        <%= link_to "<i class='fa fa-plus'></i> Add Medications".html_safe, "", class: "btn btn-trans btn-br", data: { toggle: 'modal', target: '#healthMedications' } %>
+        <input class="slider" data-slider-value="50" type="text"/>
+      </div>
+      <br/>
+      <div class="panel-footer">
+        <span>
+          <strong>Good:</strong>
+          I go to the doctor regulary. I have at least 1 chronic (long-term) health problem, but it's generally under control.</span>
       </div>
     </div>
   </div>
-</div>
-
-<div id="healthConditions" class="modal fade" role="dialog">
-  <div class="modal-dialog">
-
-    <!-- Modal content-->
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal">&times;</button>
-        <h4 class="modal-title">Add Health Conditions</h4>
-      </div>
-      <div class="modal-body">
-        <div class="checkbox">
-          <label>
-            <%= check_box_tag 'asdas' %>
-            <%= label_tag 'asdas' do %>
-            <i class="fa fa-check-square-o fa-2x"></i>
-            <i class="fa fa-square-o fa-2x"></i>
-            <% end %>
-            <span>ADHD</span>
-          </label>
-        </div>
-        <div class="checkbox">
-          <label>
-            <%= check_box_tag 'vf' %>
-            <%= label_tag 'vf' do %>
-            <i class="fa fa-check-square-o fa-2x"></i>
-            <i class="fa fa-square-o fa-2x"></i>
-            <% end %>
-            <span>Angina</span>
-          </label>
-        </div>
-        <div class="checkbox">
-          <label>
-            <%= check_box_tag 'sd' %>
-            <%= label_tag 'sd' do %>
-            <i class="fa fa-check-square-o fa-2x"></i>
-            <i class="fa fa-square-o fa-2x"></i>
-            <% end %>
-            <span>Arthritis Non-specific</span>
-          </label>
-        </div>
-        <div class="checkbox">
-          <label>
-            <%= check_box_tag 'fg' %>
-            <%= label_tag 'fg' do %>
-            <i class="fa fa-check-square-o fa-2x"></i>
-            <i class="fa fa-square-o fa-2x"></i>
-            <% end %>
-            <span>Arthritis Rheumatoid</span>
-          </label>
-        </div>
-        <div class="checkbox">
-          <label>
-            <%= check_box_tag 'w' %>
-            <%= label_tag 'w' do %>
-            <i class="fa fa-check-square-o fa-2x"></i>
-            <i class="fa fa-square-o fa-2x"></i>
-            <% end %>
-            <span>Asthma Controlled</span>
-          </label>
-        </div>
-        <div class="checkbox">
-          <label>
-            <%= check_box_tag 'iu' %>
-            <%= label_tag 'iu' do %>
-            <i class="fa fa-check-square-o fa-2x"></i>
-            <i class="fa fa-square-o fa-2x"></i>
-            <% end %>
-            <span>Asthma Past</span>
-          </label>
-        </div>
-        <div class="checkbox">
-          <label>
-            <%= check_box_tag 're' %>
-            <%= label_tag 're' do %>
-            <i class="fa fa-check-square-o fa-2x"></i>
-            <i class="fa fa-square-o fa-2x"></i>
-            <% end %>
-            <span>Asthma Uncontrolled</span>
-          </label>
-        </div>
-        <div class="checkbox">
-          <label>
-            <%= check_box_tag 'rr' %>
-            <%= label_tag 'rr' do %>
-            <i class="fa fa-check-square-o fa-2x"></i>
-            <i class="fa fa-square-o fa-2x"></i>
-            <% end %>
-            <span>Back Pain</span>
-          </label>
-        </div>
-        <div class="checkbox">
-          <label>
-            <%= check_box_tag 'rer' %>
-            <%= label_tag 'rer' do %>
-            <i class="fa fa-check-square-o fa-2x"></i>
-            <i class="fa fa-square-o fa-2x"></i>
-            <% end %>
-            <span>Breat Cancer Current</span>
-          </label>
-        </div>
-        <div class="checkbox">
-          <label>
-            <%= check_box_tag '4r' %>
-            <%= label_tag '4r' do %>
-            <i class="fa fa-check-square-o fa-2x"></i>
-            <i class="fa fa-square-o fa-2x"></i>
-            <% end %>
-            <span>Breast Cancer Previous</span>
-          </label>
-        </div>
-        <div class="checkbox">
-          <label>
-            <%= check_box_tag 'tr' %>
-            <%= label_tag 'tr' do %>
-            <i class="fa fa-check-square-o fa-2x"></i>
-            <i class="fa fa-square-o fa-2x"></i>
-            <% end %>
-            <span>Bronchitis</span>
-          </label>
-        </div>
-        <div class="checkbox">
-          <label>
-            <%= check_box_tag 'rr' %>
-            <%= label_tag 'rr' do %>
-            <i class="fa fa-check-square-o fa-2x"></i>
-            <i class="fa fa-square-o fa-2x"></i>
-            <% end %>
-            <span>Colon Cancer Current</span>
-          </label>
-        </div>
-        <div class="checkbox">
-          <label>
-            <%= check_box_tag 'rzzr' %>
-            <%= label_tag 'rzzr' do %>
-            <i class="fa fa-check-square-o fa-2x"></i>
-            <i class="fa fa-square-o fa-2x"></i>
-            <% end %>
-            <span>Colon Cancer Previous</span>
-          </label>
-        </div>
-
-      </div>
-      <div class="modal-footer">
-        <a class="btn btn-trans btn-small" data-dismiss="modal">Close</a>
-        <a class="btn btn-primary btn-br btn-small mtz" data-dismiss="modal">Add Health Conditions</a>
-      </div>
-    </div>
-
-  </div>
-</div>
-
-<div id="healthMedications" class="modal fade" role="dialog">
-  <div class="modal-dialog">
-
-    <!-- Modal content-->
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal">&times;</button>
-        <h4 class="modal-title">Add Medications</h4>
-      </div>
-      <div class="modal-body">
-        <div class="checkbox">
-          <label>
-            <%= check_box_tag 'asdqweas' %>
-            <%= label_tag 'asdqweas' do %>
-            <i class="fa fa-check-square-o fa-2x"></i>
-            <i class="fa fa-square-o fa-2x"></i>
-            <% end %>
-            <span>ADHD</span>
-          </label>
-        </div>
-        <div class="checkbox">
-          <label>
-            <%= check_box_tag 'vfqwe' %>
-            <%= label_tag 'vfqwe' do %>
-            <i class="fa fa-check-square-o fa-2x"></i>
-            <i class="fa fa-square-o fa-2x"></i>
-            <% end %>
-            <span>Angina</span>
-          </label>
-        </div>
-        <div class="checkbox">
-          <label>
-            <%= check_box_tag 'sdqwe' %>
-            <%= label_tag 'sdqwe' do %>
-            <i class="fa fa-check-square-o fa-2x"></i>
-            <i class="fa fa-square-o fa-2x"></i>
-            <% end %>
-            <span>Arthritis Non-specific</span>
-          </label>
-        </div>
-        <div class="checkbox">
-          <label>
-            <%= check_box_tag 'fgqwe' %>
-            <%= label_tag 'fgqwe' do %>
-            <i class="fa fa-check-square-o fa-2x"></i>
-            <i class="fa fa-square-o fa-2x"></i>
-            <% end %>
-            <span>Arthritis Rheumatoid</span>
-          </label>
-        </div>
-        <div class="checkbox">
-          <label>
-            <%= check_box_tag 'wqwe' %>
-            <%= label_tag 'wqwe' do %>
-            <i class="fa fa-check-square-o fa-2x"></i>
-            <i class="fa fa-square-o fa-2x"></i>
-            <% end %>
-            <span>Asthma Controlled</span>
-          </label>
-        </div>
-        <div class="checkbox">
-          <label>
-            <%= check_box_tag 'iuqwe' %>
-            <%= label_tag 'iuqwe' do %>
-            <i class="fa fa-check-square-o fa-2x"></i>
-            <i class="fa fa-square-o fa-2x"></i>
-            <% end %>
-            <span>Asthma Past</span>
-          </label>
-        </div>
-        <div class="checkbox">
-          <label>
-            <%= check_box_tag 'reqwe' %>
-            <%= label_tag 'reqwe' do %>
-            <i class="fa fa-check-square-o fa-2x"></i>
-            <i class="fa fa-square-o fa-2x"></i>
-            <% end %>
-            <span>Asthma Uncontrolled</span>
-          </label>
-        </div>
-        <div class="checkbox">
-          <label>
-            <%= check_box_tag 'rrqwe' %>
-            <%= label_tag 'rrqwe' do %>
-            <i class="fa fa-check-square-o fa-2x"></i>
-            <i class="fa fa-square-o fa-2x"></i>
-            <% end %>
-            <span>Back Pain</span>
-          </label>
-        </div>
-        <div class="checkbox">
-          <label>
-            <%= check_box_tag 'rerqwe' %>
-            <%= label_tag 'rerqwe' do %>
-            <i class="fa fa-check-square-o fa-2x"></i>
-            <i class="fa fa-square-o fa-2x"></i>
-            <% end %>
-            <span>Breat Cancer Current</span>
-          </label>
-        </div>
-        <div class="checkbox">
-          <label>
-            <%= check_box_tag '4rqwe' %>
-            <%= label_tag '4rqwe' do %>
-            <i class="fa fa-check-square-o fa-2x"></i>
-            <i class="fa fa-square-o fa-2x"></i>
-            <% end %>
-            <span>Breast Cancer Previous</span>
-          </label>
-        </div>
-        <div class="checkbox">
-          <label>
-            <%= check_box_tag 'trqwe' %>
-            <%= label_tag 'trqwe' do %>
-            <i class="fa fa-check-square-o fa-2x"></i>
-            <i class="fa fa-square-o fa-2x"></i>
-            <% end %>
-            <span>Bronchitis</span>
-          </label>
-        </div>
-        <div class="checkbox">
-          <label>
-            <%= check_box_tag 'rrqwe' %>
-            <%= label_tag 'rrqwe' do %>
-            <i class="fa fa-check-square-o fa-2x"></i>
-            <i class="fa fa-square-o fa-2x"></i>
-            <% end %>
-            <span>Colon Cancer Current</span>
-          </label>
-        </div>
-        <div class="checkbox">
-          <label>
-            <%= check_box_tag 'rzzrqwe' %>
-            <%= label_tag 'rzzrqwe' do %>
-            <i class="fa fa-check-square-o fa-2x"></i>
-            <i class="fa fa-square-o fa-2x"></i>
-            <% end %>
-            <span>Colon Cancer Previous</span>
-          </label>
-        </div>
-
-      </div>
-      <div class="modal-footer">
-        <a class="btn btn-trans btn-small" data-dismiss="modal">Close</a>
-        <a class="btn btn-primary btn-br btn-small mtz" data-dismiss="modal">Add Medications</a>
-      </div>
-    </div>
-
-  </div>
-</div>
-
-<div class="row">
-  <div class="col-xs-10">
-    <div class="row">
   <br class="clear"/>
-  <p>Insurance won't cover all of your medical expenses. We can help you estimate what you might spend on medical care (your out-of-pocket costs) if you tell us a bit more about your health concerns. This information will not be shared with anymore, including your employer, and will not be saved.</p>
   <br/>
-  <h4>Are there any <span>doctors</span> (like your current doctor) that you want to make sure are included in your plan's network?</h4>
-  <p>Some insurance plans let you see doctors outside their network, but it's usually much more expensive.</p>
-  <input class="typeahead" type="text" placeholder="Add A Doctor">
+  <div class="health_analytics col-xs-10">
+    <div class="row">
+      <div class="row">
+        <div class="col-xs-6">
+          <div class="conditions panel panel-default">
+            <div class="panel-heading">
+              <h4>Does
+                <span>Adult 1</span>
+                have any health conditions?</h4>
+            </div>
+            <div class="panel-body">
+              <%= link_to "<i class='fa fa-plus'></i> Add Health Conditions".html_safe, "", class: "btn btn-trans btn-br", data: { toggle: 'modal', target: '#healthConditions' } %>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-xs-6">
+          <div class="medications panel panel-default">
+            <div class="panel-heading">
+              <h4>Does
+                <span>Adult 1</span>
+                take any medications?</h4>
+            </div>
+            <div class="panel-body">
+              <%= link_to "<i class='fa fa-plus'></i> Add Medications".html_safe, "", class: "btn btn-trans btn-br", data: { toggle: 'modal', target: '#healthMedications' } %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <br class="clear"/>
+  <div class="modal fade" id="healthConditions" role="dialog">
+    <div class="modal-dialog">
+
+      <!-- Modal content-->
+      <div class="modal-content">
+        <div class="modal-header">
+          <button class="close" data-dismiss="modal" type="button">&times;</button>
+          <h4 class="modal-title">Add Health Conditions</h4>
+        </div>
+        <div class="modal-body">
+          <div class="checkbox">
+            <label>
+              <%= check_box_tag 'asdas' %>
+              <%= label_tag 'asdas' do %>
+              <i class="fa fa-check-square-o fa-2x"></i>
+              <i class="fa fa-square-o fa-2x"></i>
+              <% end %>
+              <span>ADHD</span>
+            </label>
+          </div>
+          <div class="checkbox">
+            <label>
+              <%= check_box_tag 'vf' %>
+              <%= label_tag 'vf' do %>
+              <i class="fa fa-check-square-o fa-2x"></i>
+              <i class="fa fa-square-o fa-2x"></i>
+              <% end %>
+              <span>Angina</span>
+            </label>
+          </div>
+          <div class="checkbox">
+            <label>
+              <%= check_box_tag 'sd' %>
+              <%= label_tag 'sd' do %>
+              <i class="fa fa-check-square-o fa-2x"></i>
+              <i class="fa fa-square-o fa-2x"></i>
+              <% end %>
+              <span>Arthritis Non-specific</span>
+            </label>
+          </div>
+          <div class="checkbox">
+            <label>
+              <%= check_box_tag 'fg' %>
+              <%= label_tag 'fg' do %>
+              <i class="fa fa-check-square-o fa-2x"></i>
+              <i class="fa fa-square-o fa-2x"></i>
+              <% end %>
+              <span>Arthritis Rheumatoid</span>
+            </label>
+          </div>
+          <div class="checkbox">
+            <label>
+              <%= check_box_tag 'w' %>
+              <%= label_tag 'w' do %>
+              <i class="fa fa-check-square-o fa-2x"></i>
+              <i class="fa fa-square-o fa-2x"></i>
+              <% end %>
+              <span>Asthma Controlled</span>
+            </label>
+          </div>
+          <div class="checkbox">
+            <label>
+              <%= check_box_tag 'iu' %>
+              <%= label_tag 'iu' do %>
+              <i class="fa fa-check-square-o fa-2x"></i>
+              <i class="fa fa-square-o fa-2x"></i>
+              <% end %>
+              <span>Asthma Past</span>
+            </label>
+          </div>
+          <div class="checkbox">
+            <label>
+              <%= check_box_tag 're' %>
+              <%= label_tag 're' do %>
+              <i class="fa fa-check-square-o fa-2x"></i>
+              <i class="fa fa-square-o fa-2x"></i>
+              <% end %>
+              <span>Asthma Uncontrolled</span>
+            </label>
+          </div>
+          <div class="checkbox">
+            <label>
+              <%= check_box_tag 'rr' %>
+              <%= label_tag 'rr' do %>
+              <i class="fa fa-check-square-o fa-2x"></i>
+              <i class="fa fa-square-o fa-2x"></i>
+              <% end %>
+              <span>Back Pain</span>
+            </label>
+          </div>
+          <div class="checkbox">
+            <label>
+              <%= check_box_tag 'rer' %>
+              <%= label_tag 'rer' do %>
+              <i class="fa fa-check-square-o fa-2x"></i>
+              <i class="fa fa-square-o fa-2x"></i>
+              <% end %>
+              <span>Breat Cancer Current</span>
+            </label>
+          </div>
+          <div class="checkbox">
+            <label>
+              <%= check_box_tag '4r' %>
+              <%= label_tag '4r' do %>
+              <i class="fa fa-check-square-o fa-2x"></i>
+              <i class="fa fa-square-o fa-2x"></i>
+              <% end %>
+              <span>Breast Cancer Previous</span>
+            </label>
+          </div>
+          <div class="checkbox">
+            <label>
+              <%= check_box_tag 'tr' %>
+              <%= label_tag 'tr' do %>
+              <i class="fa fa-check-square-o fa-2x"></i>
+              <i class="fa fa-square-o fa-2x"></i>
+              <% end %>
+              <span>Bronchitis</span>
+            </label>
+          </div>
+          <div class="checkbox">
+            <label>
+              <%= check_box_tag 'rr' %>
+              <%= label_tag 'rr' do %>
+              <i class="fa fa-check-square-o fa-2x"></i>
+              <i class="fa fa-square-o fa-2x"></i>
+              <% end %>
+              <span>Colon Cancer Current</span>
+            </label>
+          </div>
+          <div class="checkbox">
+            <label>
+              <%= check_box_tag 'rzzr' %>
+              <%= label_tag 'rzzr' do %>
+              <i class="fa fa-check-square-o fa-2x"></i>
+              <i class="fa fa-square-o fa-2x"></i>
+              <% end %>
+              <span>Colon Cancer Previous</span>
+            </label>
+          </div>
+
+        </div>
+        <div class="modal-footer">
+          <a class="btn btn-trans btn-small" data-dismiss="modal">Close</a>
+          <a class="btn btn-primary btn-br btn-small mtz" data-dismiss="modal">Add Health Conditions</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="modal fade" id="healthMedications" role="dialog">
+    <div class="modal-dialog">
+
+      <!-- Modal content-->
+      <div class="modal-content">
+        <div class="modal-header">
+          <button class="close" data-dismiss="modal" type="button">&times;</button>
+          <h4 class="modal-title">Add Medications</h4>
+        </div>
+        <div class="modal-body">
+          <div class="checkbox">
+            <label>
+              <%= check_box_tag 'asdqweas' %>
+              <%= label_tag 'asdqweas' do %>
+              <i class="fa fa-check-square-o fa-2x"></i>
+              <i class="fa fa-square-o fa-2x"></i>
+              <% end %>
+              <span>ADHD</span>
+            </label>
+          </div>
+          <div class="checkbox">
+            <label>
+              <%= check_box_tag 'vfqwe' %>
+              <%= label_tag 'vfqwe' do %>
+              <i class="fa fa-check-square-o fa-2x"></i>
+              <i class="fa fa-square-o fa-2x"></i>
+              <% end %>
+              <span>Angina</span>
+            </label>
+          </div>
+          <div class="checkbox">
+            <label>
+              <%= check_box_tag 'sdqwe' %>
+              <%= label_tag 'sdqwe' do %>
+              <i class="fa fa-check-square-o fa-2x"></i>
+              <i class="fa fa-square-o fa-2x"></i>
+              <% end %>
+              <span>Arthritis Non-specific</span>
+            </label>
+          </div>
+          <div class="checkbox">
+            <label>
+              <%= check_box_tag 'fgqwe' %>
+              <%= label_tag 'fgqwe' do %>
+              <i class="fa fa-check-square-o fa-2x"></i>
+              <i class="fa fa-square-o fa-2x"></i>
+              <% end %>
+              <span>Arthritis Rheumatoid</span>
+            </label>
+          </div>
+          <div class="checkbox">
+            <label>
+              <%= check_box_tag 'wqwe' %>
+              <%= label_tag 'wqwe' do %>
+              <i class="fa fa-check-square-o fa-2x"></i>
+              <i class="fa fa-square-o fa-2x"></i>
+              <% end %>
+              <span>Asthma Controlled</span>
+            </label>
+          </div>
+          <div class="checkbox">
+            <label>
+              <%= check_box_tag 'iuqwe' %>
+              <%= label_tag 'iuqwe' do %>
+              <i class="fa fa-check-square-o fa-2x"></i>
+              <i class="fa fa-square-o fa-2x"></i>
+              <% end %>
+              <span>Asthma Past</span>
+            </label>
+          </div>
+          <div class="checkbox">
+            <label>
+              <%= check_box_tag 'reqwe' %>
+              <%= label_tag 'reqwe' do %>
+              <i class="fa fa-check-square-o fa-2x"></i>
+              <i class="fa fa-square-o fa-2x"></i>
+              <% end %>
+              <span>Asthma Uncontrolled</span>
+            </label>
+          </div>
+          <div class="checkbox">
+            <label>
+              <%= check_box_tag 'rrqwe' %>
+              <%= label_tag 'rrqwe' do %>
+              <i class="fa fa-check-square-o fa-2x"></i>
+              <i class="fa fa-square-o fa-2x"></i>
+              <% end %>
+              <span>Back Pain</span>
+            </label>
+          </div>
+          <div class="checkbox">
+            <label>
+              <%= check_box_tag 'rerqwe' %>
+              <%= label_tag 'rerqwe' do %>
+              <i class="fa fa-check-square-o fa-2x"></i>
+              <i class="fa fa-square-o fa-2x"></i>
+              <% end %>
+              <span>Breat Cancer Current</span>
+            </label>
+          </div>
+          <div class="checkbox">
+            <label>
+              <%= check_box_tag '4rqwe' %>
+              <%= label_tag '4rqwe' do %>
+              <i class="fa fa-check-square-o fa-2x"></i>
+              <i class="fa fa-square-o fa-2x"></i>
+              <% end %>
+              <span>Breast Cancer Previous</span>
+            </label>
+          </div>
+          <div class="checkbox">
+            <label>
+              <%= check_box_tag 'trqwe' %>
+              <%= label_tag 'trqwe' do %>
+              <i class="fa fa-check-square-o fa-2x"></i>
+              <i class="fa fa-square-o fa-2x"></i>
+              <% end %>
+              <span>Bronchitis</span>
+            </label>
+          </div>
+          <div class="checkbox">
+            <label>
+              <%= check_box_tag 'rrqwe' %>
+              <%= label_tag 'rrqwe' do %>
+              <i class="fa fa-check-square-o fa-2x"></i>
+              <i class="fa fa-square-o fa-2x"></i>
+              <% end %>
+              <span>Colon Cancer Current</span>
+            </label>
+          </div>
+          <div class="checkbox">
+            <label>
+              <%= check_box_tag 'rzzrqwe' %>
+              <%= label_tag 'rzzrqwe' do %>
+              <i class="fa fa-check-square-o fa-2x"></i>
+              <i class="fa fa-square-o fa-2x"></i>
+              <% end %>
+              <span>Colon Cancer Previous</span>
+            </label>
+          </div>
+
+        </div>
+        <div class="modal-footer">
+          <a class="btn btn-trans btn-small" data-dismiss="modal">Close</a>
+          <a class="btn btn-primary btn-br btn-small mtz" data-dismiss="modal">Add Medications</a>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+  <div class="row">
+  <p class="col-xs-10">
+  Insurance won't cover all of your medical expenses. We can help you estimate what you might spend on medical care (your out-of-pocket costs) if you tell us a bit more about your health concerns. This information will not be shared with anymore,
+    including your employer, and will not be saved.
+</p>
 </div>
-</div>
-</div>
+<br/>
+<br/>
+
+  <div class="doctors panel panel-default col-xs-10 health_analytics">
+    <div class="row">
+      <div class="panel-heading">
+        <h4>Are there any
+          <span>doctors</span>
+          (like your current doctor) that you want to make sure are included in your plan's network?</h4>
+      </div>
+      <div class="panel-body">
+        <p>Some insurance plans let you see doctors outside their network, but it's usually much more expensive.</p>
+        <input class="typeahead" placeholder="Add A Doctor" type="text">
+      </div>
+    </div>
+
+
 </div>
 </div>
 <script>
 $(document).ready(function () {
 
-  $('.modal-footer .btn-primary').on('click', function() {
-    if ( $(this).text() == "Add Health Conditions" ) {
-      if ( $(this).closest('.modal').find('input:checked').length > 0 ) {
+  $('.slider').on("slideStop", function (slideEvt) {
+    if ($(this).val() == "100") {
+      $(this).closest('.panel').find('.panel-footer').css({backgroundColor: '#d6e9c6', border: '#d6e9c6'});
+      $(this).closest('.panel').find('.panel-footer span').css({color: '#3c763d'});
+      $(this).closest('.panel').find('.panel-footer span').html("<strong>Excellent</strong>: I’m healthy. I don’t go to the doctor often. I don’t have any chronic (long-term) health problems.");
+
+    }
+    if ($(this).val() == "50") {
+      $(this).closest('.panel').find('.panel-footer').css({backgroundColor: '#d9edf7', border: '#bce8f1'});
+      $(this).closest('.panel').find('.panel-footer span').css({color: '#31708f'});
+      $(this).closest('.panel').find('.panel-footer span').html("<strong>Good</strong>: I go to the doctor regularly. I have at least 1 chronic (long-term) health problem, but it’s generally under control.");
+
+    }
+    if ($(this).val() == "0") {
+      $(this).closest('.panel').find('.panel-footer').css({backgroundColor: '#fcf8e3', border: '#faebcc'});
+      $(this).closest('.panel').find('.panel-footer span').css({color: '#8a6d3b'});
+      $(this).closest('.panel').find('.panel-footer span').html("<strong>Poor</strong>: I go to the doctor often. I have more than 1 chronic (long-term) health problems that aren’t under control.");
+    }
+  })
+
+  $('.modal-footer .btn-primary').on('click', function () {
+    if ($(this).text() == "Add Health Conditions") {
+      if ($(this).closest('.modal').find('input:checked').length > 0) {
         checked_conditions = $('#healthConditions').find('input:checked').closest('label').find('span').clone();
         $('.conditions .panel-body').html("");
-        $.each( checked_conditions, function( i, val ) {
-          if ( checked_conditions.length == 1 ) {
+        $.each(checked_conditions, function (i, val) {
+          if (checked_conditions.length == 1) {
             $('.conditions .panel-body').append(val);
-          }
-          else if ( checked_conditions.length == 2 ) {
-            if ( i+1 == checked_conditions.length ) {
+          } else if (checked_conditions.length == 2) {
+            if (i + 1 == checked_conditions.length) {
               $('.conditions .panel-body').append(" and ");
               $('.conditions .panel-body').append(val);
 
             } else {
               $('.conditions .panel-body').append(val);
             }
-          }
-          else if ( i+1 == checked_conditions.length && checked_conditions.length >= 3 ) {
+          } else if (i + 1 == checked_conditions.length && checked_conditions.length >= 3) {
             $('.conditions .panel-body').append("and ");
             $('.conditions .panel-body').append(val);
           } else {
@@ -412,29 +451,25 @@ $(document).ready(function () {
         });
         $('.conditions .panel-body span').wrap("<a data-target='#healthConditions' data-toggle='modal'></a>")
         $('.conditions .panel-body').append("<a data-target='#healthConditions' data-toggle='modal'> (Edit)</a>")
-      }
-      else {
+      } else {
         $('.conditions .panel-body').html('<a class="btn btn-trans btn-br interaction-click-control-add-health-conditions" data-toggle="modal" data-target="#healthConditions" href=""><i class="fa fa-plus"></i> Add Health Conditions</a>');
       }
-    }
-    else if ( $(this).text() == "Add Medications" ) {
-      if ( $(this).closest('.modal').find('input:checked').length > 0 ) {
+    } else if ($(this).text() == "Add Medications") {
+      if ($(this).closest('.modal').find('input:checked').length > 0) {
         checked_medications = $('#healthMedications').find('input:checked').closest('label').find('span').clone();
         $('.medications .panel-body').html("");
-        $.each( checked_medications, function( i, val ) {
-          if ( checked_medications.length == 1 ) {
+        $.each(checked_medications, function (i, val) {
+          if (checked_medications.length == 1) {
             $('.medications .panel-body').append(val);
-          }
-          else if ( checked_medications.length == 2 ) {
-            if ( i+1 == checked_medications.length ) {
+          } else if (checked_medications.length == 2) {
+            if (i + 1 == checked_medications.length) {
               $('.medications .panel-body').append(" and ");
               $('.medications .panel-body').append(val);
 
             } else {
               $('.medications .panel-body').append(val);
             }
-          }
-          else if ( i+1 == checked_medications.length && checked_medications.length >= 3 ) {
+          } else if (i + 1 == checked_medications.length && checked_medications.length >= 3) {
             $('.medications .panel-body').append("and ");
             $('.medications .panel-body').append(val);
           } else {
@@ -444,8 +479,7 @@ $(document).ready(function () {
         });
         $('.medications .panel-body span').wrap("<a data-target='#healthMedications' data-toggle='modal'></a>")
         $('.medications .panel-body').append("<a data-target='#healthMedications' data-toggle='modal'> (Edit)</a>")
-      }
-      else {
+      } else {
         $('.medications .panel-body').html('<a class="btn btn-trans btn-br interaction-click-control-add-health-medications" data-toggle="modal" data-target="#healthMedications" href=""><i class="fa fa-plus"></i> Add Medications</a>');
       }
     }
@@ -460,45 +494,41 @@ $(document).ready(function () {
     ticks_snap_bounds: 50
   });
 
-    $('#continue').on('click', function() {
-      window.location = "<%= estimate_insured_health_analytics_path %>"
-    })
+  $('#continue').on('click', function () {
+    window.location = "<%= estimate_insured_health_analytics_path %>"
+  })
 
-  var substringMatcher = function(strs) {
-  return function findMatches(q, cb) {
-    var matches, substringRegex;
+  var substringMatcher = function (strs) {
+    return function findMatches(q, cb) {
+      var matches,
+        substringRegex;
 
-    // an array that will be populated with substring matches
-    matches = [];
+      // an array that will be populated with substring matches
+      matches = [];
 
-    // regex used to determine if a string contains the substring `q`
-    substrRegex = new RegExp(q, 'i');
+      // regex used to determine if a string contains the substring `q`
+      substrRegex = new RegExp(q, 'i');
 
-    // iterate through the pool of strings and for any string that
-    // contains the substring `q`, add it to the `matches` array
-    $.each(strs, function(i, str) {
-      if (substrRegex.test(str)) {
-        matches.push(str);
-      }
-    });
+      // iterate through the pool of strings and for any string that
+      // contains the substring `q`, add it to the `matches` array
+      $.each(strs, function (i, str) {
+        if (substrRegex.test(str)) {
+          matches.push(str);
+        }
+      });
 
-    cb(matches);
+      cb(matches);
+    };
   };
-};
 
-var states = ['Dr. Green', 'Dr. Black', 'Dr. Blue', 'Dr. Red', 'Dr. Yellow',
-  'Dr. Pepper', 'Dr. Suess', 'Dr. Rhadke', 'Dr. Orange', 'Dr. Brown'
-];
+  var states = ['Dr. Green', 'Dr. Black', 'Dr. Blue', 'Dr. Red', 'Dr. Yellow', 'Dr. Pepper', 'Dr. Suess', 'Dr. Rhadke', 'Dr. Orange', 'Dr. Brown'];
 
-$('.typeahead').typeahead({
-  hint: true,
-  highlight: true,
-  minLength: 1
-},
-{
-  name: 'states',
-  source: substringMatcher(states)
-});
+  $('.typeahead').typeahead({
+    hint: true, highlight: true, minLength: 1
+  }, {
+    name: 'states',
+    source: substringMatcher(states)
+  });
 
 });
 </script>

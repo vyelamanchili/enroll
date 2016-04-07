@@ -1,5 +1,6 @@
 $('#plans').html("<%= escape_javascript(render partial: "insured/plan_shoppings/plan_details", collection: @plans, as: :plan) %>")
-
+height = $('.filter-sidebar').css('height');
+$('#plans').css({maxHeight: '1000px'});
 $(document).ready(function(){
   if ($('.aptc').length > 0){
     var elected_aptc = $("input#elected_aptc").val();

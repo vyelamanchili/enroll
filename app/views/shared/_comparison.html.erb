@@ -7,11 +7,35 @@
       <tr>
         <th class="row-title">Plans</th>
         <% qhps.each do |qhp|%>
-          <th colspan="2" style="text-align: center; vertical-align:middle; border: none; padding: 0;"><%= display_carrier_logo(qhp.plan.carrier_profile.organization.legal_name, {width: 80}) %></th>
+          <th colspan="2" style="text-align: center; vertical-align:middle; border: none; padding: 0;">
+            <div class="charts">
+              <span>Premium</span>
+              <div class="progress">
+  <div class="progress-bar progress-bar-success progress-bar-striped" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width: 40%">
+    <span class="sr-only">40% Complete (success)</span>
+  </div>
+</div>
+<span>Estimated Out of Pocket</span>
+
+<div class="progress">
+  <div class="progress-bar progress-bar-warning progress-bar-striped" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%">
+    <span class="sr-only">60% Complete (warning)</span>
+  </div>
+</div>
+<span>Maximum Out of Pocket</span>
+
+<div class="progress">
+  <div class="progress-bar progress-bar-danger progress-bar-striped" role="progressbar" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100" style="width: 80%">
+    <span class="sr-only">80% Complete (danger)</span>
+  </div>
+</div>
+            </div>
+            <%= display_carrier_logo(qhp.plan.carrier_profile.organization.legal_name, {width: 80}) %></th>
         <% end %>
       </tr>
       <tr>
-        <th></th>
+        <th>
+        </th>
         <% qhps.each do |qhp|%>
           <th colspan="2" style="text-align: center; vertical-align:middle; border: none; padding: 0;" class="ttc fourteen blue"><%= qhp.plan.name %></th>
         <% end %>
@@ -27,7 +51,13 @@
       <tr>
         <th></th>
         <% qhps.each do |qhp|%>
-          <th colspan="2" class="row-title" style="text-align: center; vertical-align:middle; border: none; padding: 0;"><%=number_to_currency(qhp[:total_employee_cost]) + " / month" %></th>
+          <th colspan="2" class="row-title" style="text-align: center; vertical-align:middle; border: none; padding: 0;"><%=number_to_currency(qhp[:total_employee_cost]/2) + " / employer" %></th>
+        <% end %>
+      </tr>
+      <tr>
+        <th></th>
+        <% qhps.each do |qhp|%>
+          <th colspan="2" class="row-title" style="text-align: center; vertical-align:middle; border: none; padding: 0;"><%=number_to_currency(qhp[:total_employee_cost]) + " / consumer" %></th>
         <% end %>
       </tr>
       <tr>
