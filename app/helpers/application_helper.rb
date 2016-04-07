@@ -553,4 +553,13 @@ module ApplicationHelper
       "glyphicon-star-empty"
     end
   end
+
+  def eligiblity_participation_rule(count)
+    case count
+    when 0
+      return "2/3 Rule Met? : Yes"
+    else
+      return "2/3 Rule Met? : No, #{count} more required"
+    end
+  end
 end
