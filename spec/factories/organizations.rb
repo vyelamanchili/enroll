@@ -47,6 +47,16 @@ FactoryGirl.define do
   end
 
   factory :general_agency, class: Organization do
+    legal_name { Forgery(:name).company_name }
+    dba { legal_name }
+
+    fein do
+      Forgery('basic').text(:allow_lower   => false,
+                            :allow_upper   => false,
+                            :allow_numeric => true,
+                            :allow_special => false, :exactly => 9)
+    end
+
     ignore do
       general_agency_traits []
       general_agency_attributes { {} }
