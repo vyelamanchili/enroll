@@ -302,6 +302,8 @@ module ApplicationHelper
       broker_agencies_inbox_path(provider, message_id: message.id)
     when "HbxProfile"
       exchanges_inbox_path(provider, message_id: message.id)
+    when "GeneralAgencyProfile"
+      general_agencies_inbox_path(provider, message_id: message.id)
     end
   end
 
@@ -317,6 +319,8 @@ module ApplicationHelper
       broker_agencies_profile_inbox_path(profile_id: provider.id, folder: folder)
     when "Person"
       inbox_insured_families_path(profile_id: provider.id, folder: folder)
+    when "GeneralAgencyProfile"
+      inbox_general_agencies_profiles_path(profile_id: provider.id, folder: folder)
     end
   end
 
@@ -520,6 +524,16 @@ module ApplicationHelper
   def display_dental_metal_level(plan)
     return plan.metal_level.humanize if plan.coverage_kind == "health"
     (plan.active_year == 2015 ? plan.metal_level : plan.dental_level).try(:titleize) || ""
+  end
+
+  def favorite_class(broker_role, general_agency_profile)
+    return "" if broker_role.blank?
+
+    if broker_role.included_in_favorite_general_agencies?(general_agency_profile.id)
+      "glyphicon-star"
+    else
+      "glyphicon-star-empty"
+    end
   end
 
 end

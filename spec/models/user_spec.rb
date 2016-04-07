@@ -162,3 +162,87 @@ describe User do
     end
   end
 end
+
+describe User do
+  let(:person) { FactoryGirl.create(:person) }
+  let(:user) { FactoryGirl.create(:user, person: person) }
+
+  describe "can_change_broker?" do
+    context "with user" do
+      it "should return true when hbx staff" do
+        user.roles = ['hbx_staff']
+        expect(user.can_change_broker?).to eq true
+      end
+
+      it "should return true when employer staff" do
+        allow(person).to receive(:has_active_employer_staff_role?).and_return true
+        expect(user.can_change_broker?).to eq true
+      end
+
+      it "should return true when broker role" do
+        user.roles = ['broker']
+        expect(user.can_change_broker?).to eq true
+      end
+
+      it "should return true when broker agency staff" do
+        user.roles = ['broker_agency_staff']
+        expect(user.can_change_broker?).to eq true
+      end
+
+      it "should return false when general agency staff" do
+        user.roles = ['general_agency_staff']
+        expect(user.can_change_broker?).to eq false
+      end
+    end
+  end
+end
+
+describe User do
+  context "get_announcements_by_roles_and_portal" do
+    let(:person) { FactoryGirl.create(:person) }
+    let(:user) { FactoryGirl.create(:user, person: person) }
+    before :each do
+      Announcement.destroy_all
+      Announcement::AUDIENCE_KINDS.each do |kind|
+        FactoryGirl.create(:announcement, content: "msg for #{kind}", audiences: [kind])
+      end
+    end
+
+    it "when employer_staff_role" do
+      allow(user).to receive(:has_employer_staff_role?).and_return true
+      expect(user.get_announcements_by_roles_and_portal("dc.org/employers")).to eq "Announcement:<br/>msg for Employer"
+    end
+
+    it "when employee_role" do
+      user.roles = ['employee']
+      expect(user.get_announcements_by_roles_and_portal("dc.org/employees")).to eq "Announcement:<br/>msg for Employee"
+    end
+
+    it "when broker_role" do
+      user.roles = ['broker']
+      expect(user.get_announcements_by_roles_and_portal("dc.org/broker")).to eq "Announcement:<br/>msg for Broker"
+    end
+
+    it "when consumer_role" do
+      user.roles = ['consumer']
+      expect(user.get_announcements_by_roles_and_portal("dc.org/consumer")).to eq "Announcement:<br/>msg for IVL"
+    end
+
+    context "when broker_role and consumer_role" do
+      it "with employer portal" do
+        user.roles = ['consumer', 'broker']
+        expect(user.get_announcements_by_roles_and_portal("dc.org/employers")).to eq ""
+      end
+
+      it "with consumer portal" do
+        user.roles = ['consumer', 'broker']
+        expect(user.get_announcements_by_roles_and_portal("dc.org/consumer_role")).to eq "Announcement:<br/>msg for IVL"
+      end
+
+      it "with broker agency portal" do
+        user.roles = ['consumer', 'broker']
+        expect(user.get_announcements_by_roles_and_portal("dc.org/broker_agencies")).to eq "Announcement:<br/>msg for Broker"
+      end
+    end
+  end
+end

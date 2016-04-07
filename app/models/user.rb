@@ -111,6 +111,7 @@ class User
     hbx_staff: "hbx_staff",
     employer_staff: "employer_staff",
     broker_agency_staff: "broker_agency_staff",
+    general_agency_staff: "general_agency_staff",
     assister: 'assister',
     csr: 'csr',
   }
@@ -200,6 +201,10 @@ class User
     has_role?(:broker_agency_staff)
   end
 
+  def has_general_agency_staff_role?
+    has_role?(:general_agency_staff)
+  end
+
   def has_insured_role?
     has_employee_role? || has_consumer_role?
   end
@@ -230,6 +235,14 @@ class User
 
   def has_agent_role?
     has_role?(:csr) || has_role?(:assister)
+  end
+
+  def can_change_broker?
+    if has_employer_staff_role? || has_hbx_staff_role? || has_broker_role? || has_broker_agency_staff_role?
+      true
+    elsif has_general_agency_staff_role?
+      false
+    end
   end
 
   def agent_title
@@ -311,6 +324,24 @@ class User
     self.identity_response_description_text = "curam payload"
     self.identity_verified_date = TimeKeeper.date_of_record
     self.save!
+  end
+
+  def get_announcements_by_roles_and_portal(portal_path="")
+    announcements = []
+
+    case 
+    when portal_path.include?("employer")
+      announcements.concat(Announcement.current_msg_for_employer) if has_employer_staff_role?
+    when portal_path.include?("employee")
+      announcements.concat(Announcement.current_msg_for_employee) if has_employee_role? 
+    when portal_path.include?("consumer")
+      announcements.concat(Announcement.current_msg_for_ivl) if has_consumer_role?
+    when portal_path.include?("broker")
+      announcements.concat(Announcement.current_msg_for_broker) if has_broker_role?
+    end
+
+    announcements.uniq!
+    announcements.present? ? ("Announcement:<br/>" + announcements.join("<br/>")) : ""
   end
 
   def self.get_saml_settings

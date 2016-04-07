@@ -1,6 +1,6 @@
 Rails.application.routes.draw do
 
-  devise_for :users, :controllers => { :registrations => "users/registrations" }
+  devise_for :users, :controllers => { :registrations => "users/registrations", :sessions => 'users/sessions' }
 
   get 'check_time_until_logout' => 'session_timeout#check_time_until_logout', :constraints => { :only_ajax => true }
   get 'reset_user_clock' => 'session_timeout#reset_user_clock', :constraints => { :only_ajax => true }
@@ -20,6 +20,7 @@ Rails.application.routes.draw do
 
   namespace :exchanges do
     resources :inboxes, only: [:show, :destroy]
+    resources :announcements, only: [:index, :create, :destroy]
     resources :agents_inboxes, only: [:show, :destroy]
     resources :hbx_profiles do
       root 'hbx_profiles#show'
@@ -28,6 +29,7 @@ Rails.application.routes.draw do
         get :family_index
         get :employer_index
         get :broker_agency_index
+        get :general_agency_index
         get :issuer_index
         get :product_index
         get :configuration
@@ -249,6 +251,13 @@ Rails.application.routes.draw do
         get :staff_index
         get :agency_messages
       end
+      member do
+        get :general_agency_index
+        get :manage_employers
+        post :clear_assign_for_employer
+        get :assign
+        post :update_assign
+      end
 
       resources :applicants
     end
@@ -260,6 +269,34 @@ Rails.application.routes.draw do
         get :new_broker_agency
         get :search_broker_agency
       end
+      member do
+        get :favorite
+      end
+    end
+  end
+
+  match 'general_agency_registration', to: 'general_agencies/profiles#new_agency', via: [:get]
+  namespace :general_agencies do
+    root 'profiles#new'
+    resources :profiles do
+      collection do
+        get :new_agency_staff
+        get :search_general_agency
+        get :new_agency
+        get :messages
+        get :agency_messages
+        get :inbox
+        get :edit_staff
+        post :update_staff
+      end
+      member do
+        get :employers
+        get :families
+        get :staffs
+      end
+    end
+    resources :inboxes, only: [:new, :create, :show, :destroy] do
+      get :msg_to_portal
     end
   end
 

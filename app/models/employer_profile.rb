@@ -46,10 +46,11 @@ class EmployerProfile
   embeds_one  :employer_profile_account
   embeds_many :plan_years, cascade_callbacks: true, validate: true
   embeds_many :broker_agency_accounts, cascade_callbacks: true, validate: true
+  embeds_many :general_agency_accounts, cascade_callbacks: true, validate: true
 
   embeds_many :workflow_state_transitions, as: :transitional
 
-  accepts_nested_attributes_for :plan_years, :inbox, :employer_profile_account, :broker_agency_accounts
+  accepts_nested_attributes_for :plan_years, :inbox, :employer_profile_account, :broker_agency_accounts, :general_agency_accounts
 
   validates_presence_of :entity_kind
 
@@ -108,6 +109,7 @@ class EmployerProfile
     @today = TimeKeeper.date_of_record
   end
 
+  # for broker agency
   def hire_broker_agency(new_broker_agency, start_on = today)
     start_on = start_on.to_date.beginning_of_day
     if active_broker_agency_account.present?
@@ -141,6 +143,41 @@ class EmployerProfile
       Person.where("broker_role._id" => BSON::ObjectId.from_string(active_broker_agency_account.writing_agent_id)).first
     end
   end
+
+  # for General Agency
+  def active_general_agency_legal_name
+    if active_general_agency_account
+      active_general_agency_account.legal_name
+    end
+  end
+
+  def active_general_agency_account
+    return @active_general_agency_account if defined? @active_general_agency_account
+    @active_general_agency_account = general_agency_accounts.detect { |account| account.active? }
+  end
+
+  def general_agency_profile
+    return @general_agency_profile if defined? @general_agency_profile
+    @general_agency_profile = active_general_agency_account.general_agency_profile if active_general_agency_account.present?
+  end
+
+  def hire_general_agency(new_general_agency, start_on = today)
+    start_on = start_on.to_date.beginning_of_day
+    if active_general_agency_account.present?
+      terminate_on = (start_on - 1.day).end_of_day
+      fire_general_agency(terminate_on)
+    end
+    general_agency_accounts.build(general_agency_profile: new_general_agency, start_on: start_on)
+    @general_agency_profile = new_general_agency
+  end
+
+  def fire_general_agency(terminate_on = today)
+    return unless active_general_agency_account
+    active_general_agency_account.end_on = terminate_on
+    active_general_agency_account.terminate if active_general_agency_account.may_terminate?
+  end
+  alias_method :general_agency_profile=, :hire_general_agency
+
 
   def employee_roles
     return @employee_roles if defined? @employee_roles
@@ -206,7 +243,7 @@ class EmployerProfile
       end
     end
 
-    if plan_year.blank? 
+    if plan_year.blank?
       if plan_year = (plan_years.published + plan_years.renewing_published_state).detect{|py| py.start_on > billing_report_date }
         billing_report_date = plan_year.start_on
       end
@@ -284,6 +321,12 @@ class EmployerProfile
       orgs.collect(&:employer_profile)
     end
 
+    def find_by_general_agency_profile(general_agency_profile)
+      raise ArgumentError.new("expected GeneralAgencyProfile") unless general_agency_profile.is_a?(GeneralAgencyProfile)
+      orgs = Organization.by_general_agency_profile(general_agency_profile.id)
+      orgs.collect(&:employer_profile)
+    end
+
     def find_by_writing_agent(writing_agent)
       raise ArgumentError.new("expected BrokerRole") unless writing_agent.is_a?(BrokerRole)
       orgs = Organization.by_broker_role(writing_agent.id)
@@ -296,9 +339,9 @@ class EmployerProfile
     end
 
     def organizations_for_open_enrollment_begin(new_date)
-      Organization.where(:"employer_profile.plan_years" => 
-          { :$elemMatch => { 
-           :"open_enrollment_start_on".lte => new_date, 
+      Organization.where(:"employer_profile.plan_years" =>
+          { :$elemMatch => {
+           :"open_enrollment_start_on".lte => new_date,
            :"open_enrollment_end_on".gte => new_date,
            :"aasm_state".in => ['published', 'renewing_published']
          }
@@ -306,8 +349,8 @@ class EmployerProfile
     end
 
     def organizations_for_open_enrollment_end(new_date)
-      Organization.where(:"employer_profile.plan_years" => 
-          { :$elemMatch => { 
+      Organization.where(:"employer_profile.plan_years" =>
+          { :$elemMatch => {
            :"open_enrollment_end_on".lt => new_date,
            :"start_on".gt => new_date,
            :"aasm_state".in => ['published', 'renewing_published', 'enrolling', 'renewing_enrolling']
@@ -326,8 +369,8 @@ class EmployerProfile
     end
 
     def organizations_for_plan_year_end(new_date)
-      Organization.where(:"employer_profile.plan_years" => 
-        { :$elemMatch => { 
+      Organization.where(:"employer_profile.plan_years" =>
+        { :$elemMatch => {
           :"end_on".lt => new_date,
           :"aasm_state".in => PlanYear::PUBLISHED + PlanYear::RENEWING_PUBLISHED_STATE
         }
@@ -367,18 +410,18 @@ class EmployerProfile
           open_enrollment_factory.end_open_enrollment
         end
 
-        employer_enroll_factory = Factories::EmployerEnrollFactory.new
-        employer_enroll_factory.date = new_date
+        # employer_enroll_factory = Factories::EmployerEnrollFactory.new
+        # employer_enroll_factory.date = new_date
 
-        organizations_for_plan_year_begin(new_date).each do |organization|
-          employer_enroll_factory.employer_profile = organization.employer_profile
-          employer_enroll_factory.begin
-        end
+        # organizations_for_plan_year_begin(new_date).each do |organization|
+        #   employer_enroll_factory.employer_profile = organization.employer_profile
+        #   employer_enroll_factory.begin
+        # end
 
-        organizations_for_plan_year_end(new_date).each do |organization|
-          employer_enroll_factory.employer_profile = organization.employer_profile
-          employer_enroll_factory.end
-        end
+        # organizations_for_plan_year_end(new_date).each do |organization|
+        #   employer_enroll_factory.employer_profile = organization.employer_profile
+        #   employer_enroll_factory.end
+        # end
       end
 
       # Employer activities that take place monthly - on first of month
@@ -533,7 +576,7 @@ class EmployerProfile
       transitions from: [:registered, :eligible, :ineligible, :suspended, :binder_paid, :enrolled], to: :applicant
     end
 
-    event :force_enroll, :after => :record_transition do 
+    event :force_enroll, :after => :record_transition do
       transitions from: [:applicant, :eligible, :registered], to: :enrolled
     end
   end
