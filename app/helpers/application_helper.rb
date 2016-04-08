@@ -389,6 +389,7 @@ module ApplicationHelper
     progress_bar_width = 0
     progress_bar_class = ''
     return if plan_year.nil?
+    return if plan_year.employer_profile.census_employees.count > 100
 
     eligible = plan_year.eligible_to_enroll_count
     enrolled = plan_year.total_enrolled_count
@@ -535,6 +536,7 @@ module ApplicationHelper
   end
 
   def display_dental_metal_level(plan)
+    return plan.metal_level.humanize if plan.coverage_kind == "health"
     (plan.active_year == 2015 ? plan.metal_level : plan.dental_level).try(:titleize) || ""
   end
 end
