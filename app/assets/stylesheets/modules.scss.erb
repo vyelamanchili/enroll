@@ -81,7 +81,28 @@ $primary-bold: 600;
 			margin: 0;
 		}
 		.progress {
-			margin-bottom: 5px;
+			margin-bottom: 10px;
+		}
+		.key {
+			margin-bottom: 8px;
+			.ball {
+				width: 15px;
+				height: 15px;
+				border-radius: 8px;
+				display: inline-block;
+				background-color: #eeac57;
+				margin-right: 7px;
+				top: 2px;
+				position: relative;
+				&.green {
+					background-color: #5fb760;
+				}
+				&.red {
+					background-color: #d75452;
+					position: relative;
+					vertical-align: baseline;
+				}
+			}
 		}
 	}
 	&.health_analytics {

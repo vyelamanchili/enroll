@@ -1,4 +1,5 @@
 $('#plans').html("<%= escape_javascript(render partial: "insured/plan_shoppings/plan_details", collection: @plans, as: :plan) %>")
+$('.smart-plans').html("<%= escape_javascript(render partial: "insured/plan_shoppings/smart_plans", locals: {plans: @plans}) %>")
 height = $('.filter-sidebar').css('height');
 $('#plans').css({maxHeight: '1000px'});
 $(document).ready(function(){

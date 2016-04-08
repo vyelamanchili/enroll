@@ -31,65 +31,8 @@
               <%= render 'plan_filters' %>
 
               <div class="col-lg-9 col-md-9 co-sm-9 col-xs-12" style="padding-right: 0;">
-
                 <div class="module smart-plans">
-                <div class="row">
-                  <div class="col-xs-7">
-                      <h5><%= Plan.last.name %></h5>
-                    <div class="progress">
-                      <div class="progress-bar progress-bar-success progress-bar-striped" style="width: 26%">
-                        <span class="sr-only">35% Complete (success)</span>
-                      </div>
-                      <div class="progress-bar progress-bar-warning progress-bar-striped" style="width: 8%">
-                        <span class="sr-only">20% Complete (warning)</span>
-                      </div>
-                      <div class="progress-bar progress-bar-danger progress-bar-striped" style="width: 50%">
-                        <span class="sr-only">10% Complete (danger)</span>
-                      </div>
-                    </div>
-                  </div>
                 </div>
-
-
-
-                <div class="row">
-                  <div class="col-xs-7">
-                    <h5><%= Plan.first.name %></h5>
-                    <div class="progress">
-                      <div class="progress-bar progress-bar-success progress-bar-striped" style="width: 35%">
-                        <span class="sr-only">35% Complete (success)</span>
-                      </div>
-                      <div class="progress-bar progress-bar-warning progress-bar-striped" style="width: 40%">
-                        <span class="sr-only">20% Complete (warning)</span>
-                      </div>
-                      <div class="progress-bar progress-bar-danger progress-bar-striped" style="width: 20%">
-                        <span class="sr-only">10% Complete (danger)</span>
-                      </div>
-                    </div>
-
-                  </div>
-                </div>
-                <div class="row">
-                  <div class="col-xs-7">
-                    <h5><%= Plan.last.name %></h5>
-
-                    <div class="progress">
-                      <div class="progress-bar progress-bar-success progress-bar-striped" style="width: 65%">
-                        <span class="sr-only">35% Complete (success)</span>
-                      </div>
-                      <div class="progress-bar progress-bar-warning progress-bar-striped" style="width: 10%">
-                        <span class="sr-only">20% Complete (warning)</span>
-                      </div>
-                      <div class="progress-bar progress-bar-danger progress-bar-striped" style="width: 5%">
-                        <span class="sr-only">10% Complete (danger)</span>
-                      </div>
-                    </div>
-
-                  </div>
-                </div>
-                <a class="">Compare Suggested Plans</a>
-
-              </div>
 
                 <div class="sort-area" style='margin:10px 0;'>
                   <span><strong>Sort By:</strong></span>
@@ -140,6 +83,27 @@
   </div>
 </div>
 
+<div class="modal fade" id="shoppingTermsModal">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">What You Pay</h4>
+      </div>
+      <div class="modal-body">
+        <strong>Monthly Premium:</strong> The amount you must pay for insurance each month, even if you don’t go to the doctor.<br/><br/>
+        <strong>Annual Premium:</strong> 12 monthly payments. The amount you must pay for insurance for the year, even if you don’t go to the doctor.<br/><br/>
+        <strong>Estimated out-of-pocket costs:</strong> The amount you’re likely to spend on medical services this year based on the health information you gave us. This amount doesn’t include your monthly premium.<br/><br/>
+        <strong>Likely total cost for one year:</strong> This is your monthly premium plus our estimate of your likely out-of-pocket costs for one year.<br/><br/>
+        <strong>Maximum cost for one  year:</strong> The most you could pay in a year. This is your monthly premium plus the highest possible out-of-pocket cost for your insurance plan. This amount does not include services the plan doesn’t cover, like out-of-network care, experimental treatments, or ling-term nursing care.<br/><br/>
+      </div>
+      <div class="modal-footer">
+        <a class="btn btn-trans" data-dismiss="modal">Close</a>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
 <div class="modal fade" id="plans-compare-alert">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
@@ -163,7 +127,7 @@
 
 <script type="text/javascript">
 $(document).ready(function() {
-
+  $('#shoppingTermsModal').modal('show');
   <%
     #if coverage_kind is dental, disabled metal level options as it's not applicable.
     if @hbx_enrollment.coverage_kind == "dental"

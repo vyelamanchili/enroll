@@ -1,5 +1,6 @@
 <% plan_carrier = Caches::MongoidCache.lookup(CarrierProfile, plan.carrier_profile_id) { plan.carrier_profile } %>
-
+<% csv = Products::QhpCostShareVariance.find_qhp_cost_share_variances(["#{plan.hios_id}"], 2016, "health").first %>
+<% moop = csv.qhp_maximum_out_of_pockets.where(name: "Maximum Out of Pocket for Medical and Drug EHB Benefits (Total)").last %>
 <div style="position: relative;" class="module plan-row panel panel-default" data-plan-category="<%= plan.plan_type ? plan.plan_type.downcase : "" %>" data-plan-metal-level="<%= plan.metal_level.downcase %>" data-plan-metal-network="<%= plan.nationwide ? "nationwide" : "dc metro" %>" data-plan-metal-premium="<%= plan.total_employee_cost %>" data-plan-metal-deductible="<%= plan.deductible == "Not Applicable" ? "$0" : plan.deductible %>" data-plan-name="<%= plan.name %>" data-plan-carrier="<%= plan_carrier.try(:legal_name) %>" data-plan-hsa-eligibility="<%= @plan_hsa_status[plan.id.to_s] %>" data-plan-ehb="<%= plan.ehb %>" data-can-use-aptc="<%= plan.can_use_aptc? %>">
   <div class="panel-body">
     <div class="row">
@@ -30,10 +31,6 @@
         <div class="price-wrapper pull-right">
           <h2 class="no-buffer plan-premium"><%= number_to_currency(current_cost(plan.total_employee_cost, plan.ehb, nil, 'shopping', plan.can_use_aptc?)) %></h2>
           <small>/Month</small>
-          <h5 class="no-buffer plan-premium"><%= number_to_currency(current_cost(plan.total_employee_cost, plan.ehb, nil, 'shopping', plan.can_use_aptc?)*12) %></h5>
-          <small style="position: relative; top: -5px;">/Year</small>
-          <h5 class="no-buffer plan-premium"><%= number_to_currency(current_cost(plan.total_employee_cost, plan.ehb, nil, 'shopping', plan.can_use_aptc?)/2) %></h5>
-          <small style="position: relative; top: -5px;">For Employer</small>
         </div>
       </div>
     </div>
@@ -59,8 +56,12 @@
             <td>DEDUCTIBLE</td>
           </tr>
           <tr>
-            <td><%= plan.plan_type ? plan.plan_type.upcase : "" %></td>
-            <td><%= plan.nationwide ? "Nationwide" : "DC-Metro" %></td>
+            <td></td>
+            <% if @person.primary_family.active_family_members.count > 1 %>
+              <td><%= moop.in_network_tier_1_individual_amount %></td>
+            <% else %>
+              <td><%= moop.in_network_tier_1_family_amount %></td>
+            <% end %>
             <td><%= plan.deductible %></td>
           </tr>
           </tbody>
