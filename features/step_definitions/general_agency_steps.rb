@@ -120,6 +120,8 @@ When(/^CareFirst Broker should see the New Broker Agency form$/) do
 end
 
 When(/^.+ enters personal information for ga flow$/) do
+  visit "/broker_registration"
+
   fill_in 'organization[first_name]', with: 'Broker'
   fill_in 'organization[last_name]', with: 'Martin'
   fill_in 'jq_datepicker_ignore_organization[dob]', with: '05/07/1977'
