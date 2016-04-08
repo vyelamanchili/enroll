@@ -118,6 +118,12 @@ class BrokerAgencies::QuotesController < ApplicationController
     end
   end
 
+
+  def new_household
+    @quote = Quote.new
+    @quote.quote_households.build
+  end
+
  private
 
  def quote_params
