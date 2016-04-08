@@ -390,6 +390,8 @@ end
 
 When(/^.+ completes? the matched employee form for (.*)$/) do |named_person|
   # Sometimes bombs due to overlapping modal
+  # TODO: fix this bombing issue
+  wait_until_present
   person = people[named_person]
   find('.interaction-click-control-click-here').click
   find('.interaction-click-control-close').click
