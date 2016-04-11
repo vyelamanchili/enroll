@@ -12,37 +12,60 @@
       <div class="col-xs-12">
         <div class="row">
 
-          <div class="col-xs-6">
+          <div class="col-xs-4">
             <span class="pull-left">
             <%= display_carrier_logo(@plan.carrier_profile.try(:legal_name), {width: 180}) %>
           </span>
           </div>
-          <div class="col-xs-6">
-            <div class="col-xs-6">
-              <span class="pull-right">
-                <span style="font-size: 24px;">
-                  <% if (@hbx_enrollment.present? && @hbx_enrollment.coverage_kind == 'health') || @plan.coverage_kind == 'health' %>
-                  <%= number_to_currency(current_cost(@plan.total_employee_cost, @plan.ehb, @hbx_enrollment, @source, @plan.can_use_aptc?)) %>
-                  <% else %>
-                  <%= number_to_currency(@plan.total_employee_cost) %>
-                  <% end %>
-                </span>
-                <br/><span class="lg">premium</span>
-            </span>
-            </div>
-            <div class="col-xs-6">
-              <span class="pull-right">
-                <span style="font-size: 24px;">
-                  <% if (@hbx_enrollment.present? && @hbx_enrollment.coverage_kind == 'health') || @plan.coverage_kind == 'health' %>
-                  <%= number_to_currency(current_cost(@plan.total_employee_cost, @plan.ehb, @hbx_enrollment, @source, @plan.can_use_aptc?)*12) %>
-                  <% else %>
-                  <%= number_to_currency(@plan.total_employee_cost*12) %>
-                  <% end %>
-                </span>
-                <br/><span class="lg">employer pays</span>
-            </span>
+          <div class="col-xs-3 pull-right">
+
+            <% csv = Products::QhpCostShareVariance.find_qhp_cost_share_variances(["#{@plan.hios_id}"], 2016, "health").first %>
+            <% moop = csv.qhp_maximum_out_of_pockets.where(name: "Maximum Out of Pocket for Medical and Drug EHB Benefits (Total)").last %>
+            <% premium = current_cost(@plan.total_employee_cost*12, @plan.ehb, nil, 'shopping', @plan.can_use_aptc?) %>
+
+            <% if @person.primary_family.active_family_members.count > 1 %>
+              <% maximum = moop.in_network_tier_1_individual_amount.gsub(/[$,]/, '').to_f + premium %>
+            <% else %>
+              <% maximum = moop.in_network_tier_1_family_amount.gsub(/[$,]/, '').to_f + premium %>
+            <% end %>
+
+            <div style="position: absolute; right: 15px; top: 0;">
+            <div class="pull-right">
+              <span style="font-size: 24px; display: inline-block;" class="pull-right">
+                <% if (@hbx_enrollment.present? && @hbx_enrollment.coverage_kind == 'health') || @plan.coverage_kind == 'health' %>
+                <%= number_to_currency(current_cost(@plan.total_employee_cost, @plan.ehb, @hbx_enrollment, @source, @plan.can_use_aptc?)) %>
+                <% else %>
+                <%= number_to_currency(@plan.total_employee_cost) %>
+                <% end %>
+              </span>
+              <br/><span class="lg" style="margin-bottom: 8px; display: inline-block;">Your Premium Per Month</span>
+              <br/>
             </div>
 
+          <ul class="list-group pull-right">
+            <li class="list-group-item list-group-item-success">Premium Cost:
+              <% if (@hbx_enrollment.present? && @hbx_enrollment.coverage_kind == 'health') || @plan.coverage_kind == 'health' %>
+              <%= number_to_currency(current_cost(@plan.total_employee_cost, @plan.ehb, @hbx_enrollment, @source, @plan.can_use_aptc?)*12) %>
+              <% else %>
+              <%= number_to_currency(@plan.total_employee_cost*12) %>
+              <% end %>
+            </li>
+            <li class="list-group-item list-group-item-warning">Likely Estimated Cost:
+              <% if (@hbx_enrollment.present? && @hbx_enrollment.coverage_kind == 'health') || @plan.coverage_kind == 'health' %>
+              <%= number_to_currency(current_cost(@plan.total_employee_cost, @plan.ehb, @hbx_enrollment, @source, @plan.can_use_aptc?)*1.3) %>
+              <% else %>
+              <%= number_to_currency(@plan.total_employee_cost*1.3) %>
+              <% end %>
+            </li>
+            <li class="list-group-item list-group-item-danger">Maximum Estimated Cost:
+              <% if (@hbx_enrollment.present? && @hbx_enrollment.coverage_kind == 'health') || @plan.coverage_kind == 'health' %>
+              <%= number_to_currency(maximum) %>
+              <% else %>
+              <%= number_to_currency(maximum) %>
+              <% end %>
+            </li>
+          </ul>
+        </div>
         </div>
         <div class="col-xs-12">
           <h3 class="text-blue"><%= @plan.name %></h3>
@@ -50,7 +73,7 @@
 
         <div class="col-xs-12">
           <div class="row">
-            <div class="col-xs-12 module summary-details">
+            <div class="col-xs-8 module summary-details">
               <table>
                 <tr>
                   <td>
@@ -99,40 +122,16 @@
                       <% end %>
                     </span>
                   </td>
-                  <td>
-                    <span class="ttu lg twelve">
-                      Estimated Out of Pocket
-                    </span>
-                    <br/>
-                    <span class="ttu dg fourteen">
-                      <%= @plan.nationwide ? "Nationwide" : "DC-Metro" %>
-                    </span>
-                  </td>
-                  <td>
-                      <span class="ttu lg twelve">
-                        Maximum Out of Pocket
-                      </span>
-                      <br/>
-                      <span class="ttu dg fourteen">
-                        <%= @plan.nationwide ? "Nationwide" : "DC-Metro" %>
-                      </span>
-                    </td>
                 </tr>
               </table>
 
-            </div>
-            <div class="col-xs-12">
-              <div class="pull-right">
-              <% if @hbx_enrollment.shopping?%>
-                <%= render partial: "shared/plan_shoppings/select_plan_button", locals: { plan: @plan } %>
-              <% end %>
-            </div>
             </div>
 
           </div>
           <div class="col-xs-12">
             <div class="row">
-              <hr>
+              <br/>
+              <br/>
               <div class="col-xs-4">
                 <%= render partial: "shared/plan_shoppings/sbc_link", locals: { plan: @plan } %>
               </div>
@@ -147,6 +146,11 @@
                 <% end %>
               </div>
             </div>
+            <div class="pull-right">
+            <% if @hbx_enrollment.shopping?%>
+              <%= render partial: "shared/plan_shoppings/select_plan_button", locals: { plan: @plan } %>
+            <% end %>
+          </div>
           </div>
         </div>
 

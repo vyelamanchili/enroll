@@ -28,8 +28,8 @@
         </h3>
       </div>
       <div class="col-md-3 pull-right" style="right: 0; position: absolute; z-index: 1000;">
-        <div class="price-wrapper pull-right">
-          <h2 class="no-buffer plan-premium"><%= number_to_currency(current_cost(plan.total_employee_cost, plan.ehb, nil, 'shopping', plan.can_use_aptc?)) %></h2>
+        <div class="price-wrapper pull-right text-right">
+          <h2 class="no-buffer plan-premium" data-toggle="tooltip" data-placement="bottom" title="Your Monthly Premium"><%= number_to_currency(current_cost(plan.total_employee_cost, plan.ehb, nil, 'shopping', plan.can_use_aptc?)) %></h2>
           <small>/Month</small>
         </div>
       </div>
@@ -43,25 +43,13 @@
             <td>TYPE</td>
             <td>LEVEL</td>
             <td>NETWORK</td>
+            <td>DEDUCTIBLE</td>
           </tr>
           <tr>
             <td><%= plan.plan_type ? plan.plan_type.upcase : "" %></td>
             <% plan_level = plan.metal_level.humanize %>
             <td><span class="<%= plan_level.downcase %>-icon"><%= plan_level != 'Dental' ? plan_level : display_dental_metal_level(plan).humanize %></span></td>
             <td><%= plan.nationwide ? "Nationwide" : "DC-Metro" %></td>
-          </tr>
-          <tr class="table-header">
-            <td>ESTIMATED OUT OF POCKET</td>
-            <td>MAXIMUM OUT OF POCKET</td>
-            <td>DEDUCTIBLE</td>
-          </tr>
-          <tr>
-            <td></td>
-            <% if @person.primary_family.active_family_members.count > 1 %>
-              <td><%= moop.in_network_tier_1_individual_amount %></td>
-            <% else %>
-              <td><%= moop.in_network_tier_1_family_amount %></td>
-            <% end %>
             <td><%= plan.deductible %></td>
           </tr>
           </tbody>
@@ -95,3 +83,8 @@
         color: green;
     }
 </style>
+<script>
+  $(document).ready(function() {
+    $('[data-toggle="tooltip"]').tooltip();
+  });
+</script>

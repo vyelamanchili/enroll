@@ -1,37 +1,49 @@
 
 <div class="panel panel-default">
   <div class="panel-heading">
+    <h4>
     Annual Estimated Cost Comparison - Lowest 3 Plans by Premium
+  </h4>
   </div>
   <div class="panel-body">
     <div class="row">
   <div class="col-xs-10">
-    <div class="key row">
+    <div class="key">
       <div class="col-xs-3">
-        <span class="ball green"></span>Premium
+        <div class="row">
+          <span class="ball green"></span>
+          <label>Premium</label>
+        </div>
       </div>
       <div class="col-xs-3">
-        <span class="ball"></span>Likely Cost
+        <div class="row">
+        <span class="ball"></span>
+        <label>Likely Cost</label>
+        </div>
       </div>
       <div class="col-xs-3">
-        <span class="ball red"></span>Maximum
+        <div class="row">
+        <span class="ball red"></span>
+        <label>Maximum</label>
+      </div>
       </div>
     </div>
+    <br class="clear"/>
     <% @plans[0..2].each do |plan| %>
 
     <% csv = Products::QhpCostShareVariance.find_qhp_cost_share_variances(["#{plan.hios_id}"], 2016, "health").first %>
     <% moop = csv.qhp_maximum_out_of_pockets.where(name: "Maximum Out of Pocket for Medical and Drug EHB Benefits (Total)").last %>
-    <% premium = current_cost(plan.total_employee_cost, plan.ehb, nil, 'shopping', plan.can_use_aptc?) %>
-    <% likely = current_cost(plan.total_employee_cost, plan.ehb, nil, 'shopping', plan.can_use_aptc?)*0.33 + (current_cost(plan.total_employee_cost, plan.ehb, nil, 'shopping', plan.can_use_aptc?)*12) %>
+    <% premium = current_cost(plan.total_employee_cost*12, plan.ehb, nil, 'shopping', plan.can_use_aptc?) %>
+    <% likely = premium*1.33 %>
     <% if @person.primary_family.active_family_members.count > 1 %>
-      <% maximum = moop.in_network_tier_1_individual_amount.gsub(/[$,]/, '').to_f + current_cost(plan.total_employee_cost, plan.ehb, nil, 'shopping', plan.can_use_aptc?) %>
+      <% maximum = moop.in_network_tier_1_individual_amount.gsub(/[$,]/, '').to_f + premium %>
     <% else %>
-      <% maximum = moop.in_network_tier_1_family_amount.gsub(/[$,]/, '').to_f + current_cost(plan.total_employee_cost, plan.ehb, nil, 'shopping', plan.can_use_aptc?) %>
+      <% maximum = moop.in_network_tier_1_family_amount.gsub(/[$,]/, '').to_f + premium %>
     <% end %>
     <% total = premium + likely + maximum %>
     <% premium_percentage = (premium / total) * 100 %>
-    <% likely_percentage = ((likely - premium)/total)*100 %>
-    <% maximum_percentage = ((maximum - (premium + likely))/total)*100 %>
+    <% likely_percentage = (likely/total)*100 %>
+    <% maximum_percentage = (maximum/total)*100 %>
 
       <h5><%= plan.name %></h5>
     <div class="progress">
@@ -52,6 +64,6 @@
 
 </div>
 <div class="panel-footer">
-  <a class="clear">Compare Suggested Plans</a>
+  <a class="clear btn-block btn btn-trans btn-small">Compare 3 Lowest Plans</a>
 </div>
 </div>

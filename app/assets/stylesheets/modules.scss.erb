@@ -76,6 +76,14 @@ $primary-bold: 600;
 		}
 	}
 	&.smart-plans {
+		.panel-heading {
+			background-image: none;
+			background: #fff;
+			color: #007bc4;
+			h4 {
+				font-weight: 400;
+			}
+		}
 		margin-bottom: 35px;
 		h5, .progress {
 			margin: 0;
@@ -85,6 +93,9 @@ $primary-bold: 600;
 		}
 		.key {
 			margin-bottom: 8px;
+			>.col-xs-3 {
+				width: 20%;
+			}
 			.ball {
 				width: 15px;
 				height: 15px;
@@ -92,7 +103,7 @@ $primary-bold: 600;
 				display: inline-block;
 				background-color: #eeac57;
 				margin-right: 7px;
-				top: 2px;
+				top: 3px;
 				position: relative;
 				&.green {
 					background-color: #5fb760;
@@ -102,6 +113,10 @@ $primary-bold: 600;
 					position: relative;
 					vertical-align: baseline;
 				}
+			}
+			label {
+				display: inline;
+				font-size:11px;
 			}
 		}
 	}

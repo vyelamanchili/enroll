@@ -9,54 +9,45 @@
       <div class="col-lg-9 col-md-9 col-sm-9 col-xs-12">
         <div class="ct-1">
           <h1 class="darkblue no-buffer">Choose Plan</h1>
-          <div class="row no-buffer">
-            <%= render "shared/plan_shoppings/more_plan_details" %>
-          </div>
-
-
-          <div class="row no-buffer">
-
-            <p class="pull-right">
-              <a href="javascript:void(0);" style="display: none;" class="btn btn-trans compare-selected-plans-link", data-uri="<%= comparison_products_plans_path(market_kind: @market_kind, coverage_kind: @coverage_kind) %>">
-                COMPARE PLANS
-              </a>
-            </p>
-
-          </div>
-
           <div class="">
             <div id="plan-summary"></div>
 
-            <div id="all-plans" class="all-filters-row">
+            <div id="all-plans" class="module all-filters-row">
               <%= render 'plan_filters' %>
 
               <div class="col-lg-9 col-md-9 co-sm-9 col-xs-12" style="padding-right: 0;">
-                <div class="module smart-plans">
+                <div class="row no-buffer">
+                  <%= render "shared/plan_shoppings/more_plan_details" %>
                 </div>
-
-                <div class="sort-area" style='margin:10px 0;'>
+                <div class="module sort-plans sort-area" style='margin:10px 0;'>
                   <span><strong>Sort By:</strong></span>
                   <div class="btn-group" role="group" id='sort_by'>
-                    <a href='javascript:void(0)' class="btn btn-default" data-sort-by='plan-name'>Premium</a>
-                    <a href='javascript:void(0)' class="btn btn-default" data-sort-by='plan-metal-premium'>Estimated Out of Pocket</a>
-                    <a href='javascript:void(0)' class="btn btn-default" data-sort-by='plan-metal-deductible'>Maximum Out of Pocket</a>
+                    <%= link_to 'Premium', plans_insured_plan_shopping_path(id: @hbx_enrollment.id, change_plan: @change_plan, market_kind: @market_kind, coverage_kind: @coverage_kind, enrollment_kind: @enrollment_kind, sort: 'premium'), remote: true, class: "btn btn-default" %>
+                    <%= link_to 'Estimated Out of Pocket', plans_insured_plan_shopping_path(id: @hbx_enrollment.id, change_plan: @change_plan, market_kind: @market_kind, coverage_kind: @coverage_kind, enrollment_kind: @enrollment_kind, sort: 'estimated_out_of_pocket'), remote: true, class: "btn btn-default" %>
+                    <%= link_to 'Maximum Out of Pocket', plans_insured_plan_shopping_path(id: @hbx_enrollment.id, change_plan: @change_plan, market_kind: @market_kind, coverage_kind: @coverage_kind, enrollment_kind: @enrollment_kind, sort: 'maximum_out_of_pocket'), remote: true, class: "btn btn-default" %>
                   </div>
                 </div>
+                <div class="module smart-plans">
+                </div>
+                <div class="row no-buffer">
+                    <a href="javascript:void(0);" style="display: none;" class="btn-block btn btn-trans btn-small compare-selected-plans-link", data-uri="<%= comparison_products_plans_path(market_kind: @market_kind, coverage_kind: @coverage_kind) %>">
+                      COMPARE SELECTED PLANS
+                    </a>
+                </div>
 
-                <div id="plans">
-                  <h3>Loading...</h3>
+                <div id="plans" class="module">
+                  <br/><br/>
+<br/><br/><br/><span class='text-block text-center col-xs-12'><i class='fa fa-spinner fa-spin fa-2x' style='color: #007bc4;'></i><br/><h4 class='text-center'>Loading plans...</h4></span><br class='clear'/>                </div>
+                <div class="row no-buffer">
+                    <a href="javascript:void(0);" style="display: none;" class="btn-block btn btn-trans btn-small compare-selected-plans-link", data-uri="<%= comparison_products_plans_path(market_kind: @market_kind, coverage_kind: @coverage_kind) %>">
+                      COMPARE SELECTED PLANS
+                    </a>
                 </div>
               </div>
+
             </div>
           </div>
 
-          <div class="row no-buffer">
-            <p class="pull-right">
-              <a href="javascript:void(0);" style="display: none;" class="btn btn-trans compare-selected-plans-link", data-uri="<%= comparison_products_plans_path(market_kind: @market_kind, coverage_kind: @coverage_kind) %>">
-                COMPARE PLANS
-              </a>
-            </p>
-          </div>
         </div>
       </div>
 
@@ -132,9 +123,15 @@ $(document).ready(function() {
     #if coverage_kind is dental, disabled metal level options as it's not applicable.
     if @hbx_enrollment.coverage_kind == "dental"
   %>
+
     $(".plan-metal-level-selection-filter").attr("disabled", true);
   <% end %>
-
+  $('.sort-plans a').on('click', function() {
+    $('.smart-plans').html("<br/><br/><br/><span class='text-block text-center col-xs-12'><i class='fa fa-spinner fa-spin fa-2x' style='color: #007bc4;'></i><br/><h4 class='text-center'>Loading plans...</h4></span><br class='clear'/>");
+    $('#plans, .compare-selected-plans-link').hide();
+  });
+  $('.smart-plans').html("<br/><br/><br/><span class='text-block text-center col-xs-12'><i class='fa fa-spinner fa-spin fa-2x' style='color: #007bc4;'></i><br/><h4 class='text-center'>Loading plans...</h4></span><br class='clear'/>");
+  $('#plans').hide();
   $.ajax({
     url: "<%= plans_insured_plan_shopping_path(id: @hbx_enrollment.id, change_plan: @change_plan, market_kind: @market_kind, coverage_kind: @coverage_kind, enrollment_kind: @enrollment_kind) if @hbx_enrollment.present? %>",
     type: "GET"

@@ -47,6 +47,8 @@ class Plan
   field :plan_type, type: String  # "POS", "HMO", "EPO", "PPO"
   field :deductible, type: String # Deductible
   field :family_deductible, type: String
+  field :maximum_out_of_pocket, type: Float
+  field :estimated_out_of_pocket, type: Float
 
   field :nationwide, type: Boolean # Nationwide
   field :dc_in_network, type: Boolean # DC In-Network or not
