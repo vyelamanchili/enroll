@@ -38,6 +38,8 @@ Rails.application.routes.draw do
         get :assister_index
         get :request_help
         get :verification_index
+        get :binder_index
+        post :binder_paid
       end
 
       member do
