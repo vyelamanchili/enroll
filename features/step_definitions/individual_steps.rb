@@ -166,7 +166,7 @@ end
 
 And(/I click on continue button on group selection page/) do
   #TODO This some group selection nonsense
-  wait_for_ajax
+  #wait_for_ajax(2,2)
   click_link "Continue" #Get
   click_button "CONTINUE" #Post
   #Goes off the see the wizard at /I select three plans to compare/ for now
