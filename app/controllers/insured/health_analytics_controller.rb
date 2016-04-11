@@ -8,11 +8,11 @@ class Insured::HealthAnalyticsController < ApplicationController
   end
 
   def health
-
+    @hbx_enrollment = params[:id]
   end
 
   def estimate
-
+    @hbx_enrollment = params[:id]
   end
 
 private

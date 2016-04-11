@@ -27,13 +27,13 @@
 
                 <div class="progress">
                   <div class="progress-bar progress-bar-success progress-bar-striped" style="width: <%= premium_percentage %>%">
-                    <span><%= number_to_currency(premium, :precision => 0) %></span>
+                    <span><%= number_to_currency(premium) %></span>
                   </div>
                   <div class="progress-bar progress-bar-warning progress-bar-striped" style="width: <%= likely_percentage %>%">
-                    <span><%= number_to_currency(likely, :precision => 0) %></span>
+                    <span><%= number_to_currency(likely) %></span>
                   </div>
                   <div class="progress-bar progress-bar-danger progress-bar-striped" style="width: <%= maximum_percentage %>%">
-                    <span><%= number_to_currency(maximum, :precision => 0) %></span>
+                    <span><%= number_to_currency(maximum) %></span>
                   </div>
                 </div>
               </div>

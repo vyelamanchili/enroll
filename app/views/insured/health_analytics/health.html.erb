@@ -495,7 +495,7 @@ $(document).ready(function () {
   });
 
   $('#continue').on('click', function () {
-    window.location = "<%= estimate_insured_health_analytics_path %>"
+    window.location = "<%= estimate_insured_health_analytics_path(id: @hbx_enrollment) %>"
   })
 
   var substringMatcher = function (strs) {

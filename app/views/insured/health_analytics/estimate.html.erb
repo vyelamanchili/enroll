@@ -129,11 +129,10 @@
 </div>
 </div>
 </br>
-
 <script>
 $(document).ready(function () {
   $('#continue').on('click', function () {
-    window.location = "/insured/plan_shoppings/570661c10522ed15a7000017?coverage_kind=health&enrollment_kind=sep&market_kind=individual"
+    window.location = "/insured/plan_shoppings/<%= @hbx_enrollment %>"
   })
 
   $('.visits-estimate .btn-trans').on('click', function() {
