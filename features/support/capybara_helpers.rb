@@ -13,7 +13,7 @@ module CapybaraHelpers
       fail "ajax request failed: took longer than #{delta.seconds} seconds. It waited #{end_time - start_time} seconds."
     end
     puts "Finished helper method after #{end_time - start_time} seconds"
-    #sleep(time_to_sleep)
+    sleep(time_to_sleep)
   end
 
   def finished_all_ajax_requests?
