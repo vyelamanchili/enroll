@@ -669,6 +669,7 @@ Then(/^I should see the dependents and group selection page$/) do
 end
 
 And(/I select three plans to compare/) do
+  wait_for_ajax
   expect(page).to have_content("Select Plan")
   if page.all("span.checkbox-custom-label").count > 3
     #modal plan data for IVL not really seeded in.

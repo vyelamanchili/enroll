@@ -3,9 +3,9 @@ module CapybaraHelpers
     start_time = Time.now
     Capybara.default_max_wait_time = delta
     Timeout.timeout(Capybara.default_max_wait_time) do
-      until(finished_all_ajax_requests?) do
+      until finished_all_ajax_requests? do
         sleep(0.01)
-      end
+      end 
     end
     end_time = Time.now
     Capybara.default_max_wait_time = 2
@@ -13,7 +13,7 @@ module CapybaraHelpers
       fail "ajax request failed: took longer than #{delta.seconds} seconds. It waited #{end_time - start_time} seconds."
     end
     puts "Finished helper method after #{end_time - start_time} seconds"
-    sleep(time_to_sleep)
+    #sleep(time_to_sleep)
   end
 
   def finished_all_ajax_requests?
