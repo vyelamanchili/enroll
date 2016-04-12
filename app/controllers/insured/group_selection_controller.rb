@@ -71,20 +71,19 @@ class Insured::GroupSelectionController < ApplicationController
 
 
     hbx_enrollment.coverage_kind = @coverage_kind
-
     if hbx_enrollment.save
       hbx_enrollment.inactive_related_hbxs # FIXME: bad name, but might go away
       if keep_existing_plan
         redirect_to purchase_insured_families_path(change_plan: @change_plan, market_kind: @market_kind, coverage_kind: @coverage_kind)
       elsif @change_plan.present?
-        if hbx_enrollment.kind == "employer_sponsored"
+        if hbx_enrollment.kind == "employer_sponsored" && hbx_enrollment.coverage_kind == "health"
           redirect_to health_insured_health_analytics_path(:id => hbx_enrollment.id, change_plan: @change_plan, market_kind: @market_kind, coverage_kind: @coverage_kind, enrollment_kind: @enrollment_kind)
         else
           redirect_to insured_plan_shopping_path(:id => hbx_enrollment.id, change_plan: @change_plan, market_kind: @market_kind, coverage_kind: @coverage_kind, enrollment_kind: @enrollment_kind)
         end
       else
 
-        if hbx_enrollment.kind == "employer_sponsored"
+        if hbx_enrollment.kind == "employer_sponsored" && hbx_enrollment.coverage_kind == "health"
           redirect_to health_insured_health_analytics_path(:id => hbx_enrollment.id, market_kind: @market_kind, coverage_kind: @coverage_kind, enrollment_kind: @enrollment_kind)
         else
 

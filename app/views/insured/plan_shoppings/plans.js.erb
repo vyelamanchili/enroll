@@ -1,19 +1,25 @@
 $('#plans').html("<%= escape_javascript(render partial: "insured/plan_shoppings/plan_details", collection: @plans, as: :plan) %>")
-$('.smart-plans').html("<%= escape_javascript(render partial: "insured/plan_shoppings/smart_plans", locals: {plans: @plans}) %>")
+<% if @hbx_enrollment.kind == "employer_sponsored" && @hbx_enrollment.coverage_kind == "health" %>
+  $('.smart-plans').html("<%= escape_javascript(render partial: "insured/plan_shoppings/smart_plans", locals: {plans: @plans}) %>")
+  $('.smart-plans').fadeIn('slow', function() {
+    $('#plans').fadeIn('slow');
+  });
+  $('.smart-plans .btn-trans').on('click', function() {
+    $('#plans .plan-row').each(function(i, p) {
+      plans = $('#plans .plan-row').length
+      if ( i < 3 ) {
+        $(p).find('.checkbox label').trigger('click');
+      }
+      $('.compare-selected-plans-link ').trigger('click');
+    })
+  });
+<% else %>
+  $('#plans').fadeIn('slow');
+  $('.smart-plans').remove();
+<% end %>
 height = $('.filter-sidebar').css('height');
 $('#plans').css({maxHeight: '1000px'});
-$('.smart-plans').fadeIn('slow', function() {
-  $('#plans').fadeIn('slow');
-});
-$('.smart-plans .btn-trans').on('click', function() {
-  $('#plans .plan-row').each(function(i, p) {
-    plans = $('#plans .plan-row').length
-    if ( i < 3 ) {
-      $(p).find('.checkbox label').trigger('click');
-    }
-    $('.compare-selected-plans-link ').trigger('click');
-  })
-});
+
 
 $(document).ready(function(){
   if ($('.aptc').length > 0){
