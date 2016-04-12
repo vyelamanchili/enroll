@@ -3,11 +3,6 @@ module GAWorld
     attributes = traits.extract_options!
     @general_agency ||= FactoryGirl.create :general_agency, *traits, attributes.merge(:general_agency_traits => :with_staff)
   end
-
-  def user(*traits)
-    attributes = traits.extract_options!
-    @user ||= FactoryGirl.create :user, *traits, attributes
-  end
 end
 World(GAWorld)
 
@@ -67,10 +62,6 @@ Then /^a pending approval status$/ do
   expect(GeneralAgencyProfile.last.aasm_state).to eq('is_applicant')
 end
 
-Given /^an HBX admin exists$/ do
-  user :with_family, :hbx_staff
-end
-
 And /^a general agency, pending approval, exists$/ do
   general_agency
   staff = general_agency.general_agency_profile.general_agency_staff_roles.order(id: :desc).first.general_agency_staff_roles.last
@@ -78,7 +69,7 @@ And /^a general agency, pending approval, exists$/ do
 end
 
 When /^the HBX admin visits the general agency list$/ do
-  login_as user, scope: :user
+  login_as hbx_admin, scope: :user
   visit exchanges_hbx_profiles_root_path
   click_link 'General Agencies'
 end
