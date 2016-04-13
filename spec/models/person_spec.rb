@@ -1008,5 +1008,12 @@ describe Person do
 
   end
 
+  describe "agent?" do
+    let(:person) { FactoryGirl.create(:person) }
 
+    it "should return true with general_agency_staff_roles" do
+      person.general_agency_staff_roles << FactoryGirl.build(:general_agency_staff_role)
+      expect(person.agent?).to be_truthy
+    end
+  end
 end
