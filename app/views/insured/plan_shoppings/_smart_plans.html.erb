@@ -1,12 +1,12 @@
 <div class="panel panel-default">
   <div class="panel-heading">
     <h4>
-      Annual Estimated Cost Comparison - Lowest 3 Plans by Premium
+      Annual Estimated Cost Comparison - Lowest 3 Plans by <%= "#{@sort}".humanize.titleize || "Likely Cost" %>
     </h4>
   </div>
   <div class="panel-body">
     <div class="row">
-      <div class="col-xs-10">
+      <div class="col-xs-11">
         <div class="key">
           <div class="col-xs-3">
             <div class="row">
@@ -54,15 +54,11 @@
         <% else %>
         <% maximum = moop.in_network_tier_1_family_amount.gsub(/[$,]/, '').to_f + premium %>
         <% end %>
-        <% maximum_per = maximum + likely + premium %>
         <% total = maximums.first %>
-        <% maximums.first %>
 
         <% premium_percentage = (premium / total) * 100 %>
         <% likely_percentage = ((likely - premium)/total)*100 %>
         <% maximum_percentage = ((maximum - likely )/total)*100 %>
-        <% puts "#{premium}, #{likely}, #{maximum}, #{premium_percentage}, #{likely_percentage}, #{maximum_percentage}" %>
-        <% debugger %>
 
         <h5><%= plan.name %></h5>
         <div class="progress">

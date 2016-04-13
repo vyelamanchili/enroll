@@ -132,7 +132,7 @@
 <script>
 $(document).ready(function () {
   $('#continue').on('click', function () {
-    window.location = "/insured/plan_shoppings/<%= @hbx_enrollment %>"
+    window.location = "/insured/plan_shoppings/<%= @hbx_enrollment %>?&sort=likely_cost"
   })
 
   $('.visits-estimate .btn-trans').on('click', function() {

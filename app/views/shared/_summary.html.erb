@@ -42,29 +42,7 @@
               <br/>
             </div>
 
-          <ul class="list-group pull-right">
-            <li class="list-group-item list-group-item-success">Premium Cost:
-              <% if (@hbx_enrollment.present? && @hbx_enrollment.coverage_kind == 'health') || @plan.coverage_kind == 'health' %>
-              <%= number_to_currency(current_cost(@plan.total_employee_cost, @plan.ehb, @hbx_enrollment, @source, @plan.can_use_aptc?)*12) %>
-              <% else %>
-              <%= number_to_currency(@plan.total_employee_cost*12) %>
-              <% end %>
-            </li>
-            <li class="list-group-item list-group-item-warning">Likely Estimated Cost:
-              <% if (@hbx_enrollment.present? && @hbx_enrollment.coverage_kind == 'health') || @plan.coverage_kind == 'health' %>
-              <%= number_to_currency(current_cost(@plan.total_employee_cost, @plan.ehb, @hbx_enrollment, @source, @plan.can_use_aptc?)*1.3) %>
-              <% else %>
-              <%= number_to_currency(@plan.total_employee_cost*1.3) %>
-              <% end %>
-            </li>
-            <li class="list-group-item list-group-item-danger">Maximum Estimated Cost:
-              <% if (@hbx_enrollment.present? && @hbx_enrollment.coverage_kind == 'health') || @plan.coverage_kind == 'health' %>
-              <%= number_to_currency(maximum) %>
-              <% else %>
-              <%= number_to_currency(maximum) %>
-              <% end %>
-            </li>
-          </ul>
+
         </div>
         </div>
         <div class="col-xs-12">
@@ -73,7 +51,7 @@
 
         <div class="col-xs-12">
           <div class="row">
-            <div class="col-xs-8 module summary-details">
+            <div class="col-xs-12 col-sm-8 col-md-8 module summary-details">
               <table>
                 <tr>
                   <td>
@@ -126,7 +104,31 @@
               </table>
 
             </div>
-
+            <div class="col-xs-12 col-sm-4 col-md-4">
+              <ul class="list-group">
+                <li class="list-group-item list-group-item-success">Premium Cost:
+                  <% if (@hbx_enrollment.present? && @hbx_enrollment.coverage_kind == 'health') || @plan.coverage_kind == 'health' %>
+                  <%= number_to_currency(current_cost(@plan.total_employee_cost, @plan.ehb, @hbx_enrollment, @source, @plan.can_use_aptc?)*12) %>
+                  <% else %>
+                  <%= number_to_currency(@plan.total_employee_cost*12) %>
+                  <% end %>
+                </li>
+                <li class="list-group-item list-group-item-warning">Likely Estimated Cost:
+                  <% if (@hbx_enrollment.present? && @hbx_enrollment.coverage_kind == 'health') || @plan.coverage_kind == 'health' %>
+                  <%= number_to_currency(current_cost(@plan.total_employee_cost, @plan.ehb, @hbx_enrollment, @source, @plan.can_use_aptc?)*1.3) %>
+                  <% else %>
+                  <%= number_to_currency(@plan.total_employee_cost*1.3) %>
+                  <% end %>
+                </li>
+                <li class="list-group-item list-group-item-danger">Maximum Estimated Cost:
+                  <% if (@hbx_enrollment.present? && @hbx_enrollment.coverage_kind == 'health') || @plan.coverage_kind == 'health' %>
+                  <%= number_to_currency(maximum) %>
+                  <% else %>
+                  <%= number_to_currency(maximum) %>
+                  <% end %>
+                </li>
+              </ul>
+            </div>
           </div>
           <div class="col-xs-12">
             <div class="row">
@@ -141,6 +143,8 @@
                 <% end %>
               </div>
               <div class="col-xs-4">
+                <%= link_to "PROVIDER DIRECTORY", @plan.provider_directory_url, target: "_blank" %>
+
                 <% if @plan.nationwide %>
                   <%= link_to "PROVIDER DIRECTORY", @plan.provider_directory_url, target: "_blank" %>
                 <% end %>

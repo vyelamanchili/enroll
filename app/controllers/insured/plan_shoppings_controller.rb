@@ -141,6 +141,7 @@ class Insured::PlanShoppingsController < ApplicationController
   end
 
   def show
+    @sort = params[:sort]
     set_consumer_bookmark_url(family_account_path) if params[:market_kind] == 'individual'
     set_employee_bookmark_url(family_account_path) if params[:market_kind] == 'shop'
     hbx_enrollment_id = params.require(:id)
@@ -172,14 +173,15 @@ class Insured::PlanShoppingsController < ApplicationController
   end
 
   def plans
+    @sort = params[:sort]
     set_consumer_bookmark_url(family_account_path)
     set_plans_by(hbx_enrollment_id: params.require(:id))
     if params[:sort].present?
-    case params[:sort]
+    case @sort
       when 'premium'
         @plans = @plans.sort_by(&:total_employee_cost).sort{|a,b| b.csr_variant_id <=> a.csr_variant_id}
         @plans = @plans.partition{ |a| @enrolled_hbx_enrollment_plan_ids.include?(a[:id]) }.flatten
-      when 'estimated_out_of_pocket'
+      when 'likely_cost'
         @plans.each do |plan|
           moop = maximum_out_of_pocket(plan)
           if @person.primary_family.active_family_members.count > 1
@@ -193,7 +195,7 @@ class Insured::PlanShoppingsController < ApplicationController
         @plans = @plans.sort_by(&:estimated_out_of_pocket).sort{|a,b| b.csr_variant_id <=> a.csr_variant_id}
         @plans = @plans.partition{ |a| @enrolled_hbx_enrollment_plan_ids.include?(a[:id]) }.flatten
 
-      when 'maximum_out_of_pocket'
+      when 'maximum_cost'
         @plans.each do |plan|
           moop = maximum_out_of_pocket(plan)
           if @person.primary_family.active_family_members.count > 1
