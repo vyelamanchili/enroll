@@ -600,7 +600,7 @@ When(/^.+ clicks? on the add employee button$/) do
   find('.interaction-click-control-add-new-employee', :wait => 10).click
 end
 
-When(/^.+ clicks? on the (.+) tab$/) do |tab_name|
+When(/^(?:(?!General).)+ clicks? on the ((?:(?!General|Staff).)+) tab$/) do |tab_name|
   find(:xpath, "//li[contains(., '#{tab_name}')]").click
 end
 
