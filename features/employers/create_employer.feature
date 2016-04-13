@@ -9,7 +9,7 @@ Feature: Create Employer
   Employee should be able to create an account, match to their employer and roster family
   Employee should be able to  purchase insurance
 
-    @wip
+    
     Scenario: An Employer Representative has not signed up on the HBX
       Given Employer has not signed up as an HBX user
       When I visit the Employer portal

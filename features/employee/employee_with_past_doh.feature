@@ -6,7 +6,7 @@ Feature: Employee with past date of hire
   Then New Employee should be able to match Employer
   And Employee should be able to purchase Insurance
 
-  @wip
+  
   Scenario: New hire has enrollment period based on roster entry date
     Given Employer for Soren White exists with a published health plan year
     And Employee has past hired on date
@@ -40,4 +40,3 @@ Feature: Employee with past date of hire
     Given I set the eligibility rule to first of month following 60 days
     Then Employee tries to complete purchase of another plan
     Then Employee should see "my account" page with enrollment
-    
