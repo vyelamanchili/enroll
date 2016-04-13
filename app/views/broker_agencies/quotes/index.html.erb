@@ -1,4 +1,4 @@
-<div class="container" id="inbox_provider_form">
+<div class="module container broker_quote_tool" id="inbox_provider_form">
   <div class="row">
     <div class="col-md-12">
         <h4>Compare Quotes</h4>
@@ -12,78 +12,45 @@
        <input name='child_26_and_over' value='0' type='hidden'>
        <%= hidden_field_tag(rb_emp: '777') %>
 
-        <a data-toggle="collapse" href="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
-           <div class='well' style='border: 2px solid gray'>
-            Resume quote or new roster
-            <span class="glyphicon glyphicon-triangle-left" aria-hidden="true"></span></div>
-        </a>
-        <div class="collapse" id="collapseExample">
-           <div class="well">
-
-                <%=render "my_quotes" , quote_results: @quote_results %>
+        <a data-toggle="collapse" href="#collapseExample" aria-expanded="true" aria-controls="collapseExample">
+           <div class='well edge'> Resume quote or new roster
+               <span class="glyphicon glyphicon-triangle-right" aria-hidden="true"></span>
            </div>
+        </a>
+        <div class="collapse in" id="collapseExample">
+            <%=render "my_quotes" , quote_results: @quote_results %>
         </div>
-
+      
         <a data-toggle="collapse" href="#collapseExample1" aria-expanded="true" aria-controls="collapseExample1" >
-            <div class='well' style='border: 2px solid gray'>Select plan features, benefits and costs
-                <span class="glyphicon glyphicon-triangle-left" aria-hidden="true"></span>
+            <div class='well edge'>Features and cost criteria
+                <span class="glyphicon glyphicon-triangle-right" aria-hidden="true"></span>
             </div>
         </a>
          <div class="collapse in" id="collapseExample1">
-              <div class="well">
-
-                  <%= select_tag "quote", options_from_collection_for_select(@quotes, "id", "quote_name"), { } %>
-                  <br/>
-                  <%= render partial: 'select_plans' %>
-                  <br/>
-                  <%= render partial: 'benefit_sliders'%>
-
-              </div>
+            <%= render partial: 'my_features' %>
          </div>
 
-
         <a data-toggle="collapse" href="#collapseExample2" aria-expanded="false" aria-controls="collapseExample2" >
-            <div class='well' style='border: 2px solid gray'>Select plans
-                <span class="glyphicon glyphicon-triangle-left" aria-hidden="true"></span>
+            <div class='well edge'>Select plans
+                <span class="glyphicon glyphicon-triangle-right" aria-hidden="true"></span>
             </div>
         </a>
          <div class="collapse" id="collapseExample2">
-              <div class="well">
-
-                <div>
-                  <div class="btn-group" data-toggle="buttons" style='height: 400px; overflow-y: scroll'>
-                    <% @plans.each_with_index do |p,index| %>
-
-                    <label class="btn btn-small btn-primary <%= "active" if params['plans'].try(:include?, p.id.to_s) %>" >
-                      <input name="plans[]" <%= "checked" if params['plans'].try(:include?, p.id.to_s) %> type="checkbox" autocomplete="off" value="<%= p.id %>"><%= p.name %>
-                    </label>
-                    <% end %>
-                  </div>
-                </div>
-
-             </div>
+                <%= render partial: 'my_plans' %>
          </div>
-
-
 
         <%= submit_tag "Compare Costs", class: 'btn btn-primary', id: 'QuoteCalculation' %>
         <%= submit_tag "Compare Plans", class: 'btn btn-primary', id: 'comparePlans' %>
+        <%= submit_tag "Publish Quote", class: 'btn btn-primary', id: 'publishQuote' %>
         <% end %>
-
-
       </div>
-  </div>
-  <br>
-
-  <%unless @qhps.blank? %>
-    <%=render "plan_comparision" , qhps: @qhps %>
-  <%end%>
-  <br>
-  <% if @quote_results %>
-
- <%=render "quote_comparision" , quote_results: @quote_results %>
-  <% end %>
-
+    </div>
+    <%if @qhps%>
+        <%=render "plan_comparision" , qhps: @qhps %>
+    <%end%>
+    <% if @quote_results %>
+       <%=render "quote_comparision" , quote_results: @quote_results %>
+    <% end %>
 </div>
 <script type="text/javascript">
   var close_handler = function(){
@@ -108,8 +75,13 @@ $('.plan_selectors .criteria').on('click',function(){
 $(document).on('ready page:load', function () {
     setTimeout(function(){
     //bootstrapslider labels will have zero width unless the sliders are initially visible before being hidden
-      $('[aria-controls="collapseExample1"]').attr('aria-visible', true)
+      $('[aria-controls="collapseExample1"]').attr('aria-expanded', false)
       $('#collapseExample1').removeClass('in')
+    }, 0)
+    setTimeout(function(){
+    //bootstrapslider labels will have zero width unless the sliders are initially visible before being hidden
+      $('[aria-controls="collapseExample"]').attr('aria-expanded', false)
+      $('#collapseExample').removeClass('in')
     }, 0)
     window.select_plans = <%=raw @plan_quote_criteria %>
     var select_deductible = 0
@@ -121,10 +93,5 @@ $(document).on('ready page:load', function () {
     })
     window.relationship_benefits = <%= raw @benefit_pcts_json %>
     slider_listeners()
-     $('#pct_employee').bootstrapSlider('setValue',window.relationship_benefits['employee']);
-     $('#pct_spouse').bootstrapSlider('setValue', window.relationship_benefits['spouse']);
-     $('#pct_domestic_partner').bootstrapSlider('setValue', window.relationship_benefits['domestic_partner']);
-     $('#under_26').bootstrapSlider('setValue', window.relationship_benefits['child_under_26']);
-     $('#over_26').bootstrapSlider('setValue', window.relationship_benefits['child_26_and_over']);
 })
 </script>

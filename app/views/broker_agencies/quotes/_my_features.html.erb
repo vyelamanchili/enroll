@@ -1,0 +1,21 @@
+
+<div class="well">
+
+<div class='container'>
+<p> Select a roster/quote then focus your search for plans by feature or cost: 
+	<ul>
+		<li>selection options</li>
+		<li> limit maximum allowable deductible</li>
+		<li> limit by roster cost (based on relationship benefits)</li>
+    </ul>
+</p>
+
+
+  <%= select_tag "quote", options_from_collection_for_select(@quotes, "id", "quote_name"), { } %>
+  <br/>
+  <%= render partial: 'select_plans' %>
+
+  <%= render partial: 'benefit_sliders'%>
+</div>
+</div>
+</div>

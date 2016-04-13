@@ -1,0 +1,12 @@
+<div class="well">
+    <div>
+      <div class="btn-group" data-toggle="buttons" style='height: 400px; overflow-y: scroll'>
+        <% @plans.each_with_index do |p,index| %>
+
+        <label class="btn btn-small btn-primary <%= "active" if params['plans'].try(:include?, p.id.to_s) %>" >
+          <input name="plans[]" <%= "checked" if params['plans'].try(:include?, p.id.to_s) %> type="checkbox" autocomplete="off" value="<%= p.id %>"><%= p.name %>
+        </label>
+        <% end %>
+      </div>
+    </div>
+</div>   
