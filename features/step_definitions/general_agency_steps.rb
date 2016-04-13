@@ -39,7 +39,7 @@ Then(/^.+ should see general agency registration successful message$/) do
   expect(page).to have_content('Your registration has been submitted. A response will be sent to the email address you provided once your application is reviewed.')
 end
 
-And(/^.+ clicks on the General agency tab$/) do
+And(/Hbx Admin clicks on the General agency tab$/) do
   find('.interaction-click-control-general-agencies').click
 end
 
