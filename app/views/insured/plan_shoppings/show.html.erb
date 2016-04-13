@@ -23,8 +23,8 @@
                   <span><strong>Sort By:</strong></span>
                   <div class="btn-group" role="group" id='sort_by'>
                     <%= link_to 'Premium', plans_insured_plan_shopping_path(id: @hbx_enrollment.id, change_plan: @change_plan, market_kind: @market_kind, coverage_kind: @coverage_kind, enrollment_kind: @enrollment_kind, sort: 'premium'), remote: true, class: "btn btn-default" %>
-                    <%= link_to 'Estimated Out of Pocket', plans_insured_plan_shopping_path(id: @hbx_enrollment.id, change_plan: @change_plan, market_kind: @market_kind, coverage_kind: @coverage_kind, enrollment_kind: @enrollment_kind, sort: 'estimated_out_of_pocket'), remote: true, class: "btn btn-default" %>
-                    <%= link_to 'Maximum Out of Pocket', plans_insured_plan_shopping_path(id: @hbx_enrollment.id, change_plan: @change_plan, market_kind: @market_kind, coverage_kind: @coverage_kind, enrollment_kind: @enrollment_kind, sort: 'maximum_out_of_pocket'), remote: true, class: "btn btn-default" %>
+                    <%= link_to 'Likely Cost', plans_insured_plan_shopping_path(id: @hbx_enrollment.id, change_plan: @change_plan, market_kind: @market_kind, coverage_kind: @coverage_kind, enrollment_kind: @enrollment_kind, sort: 'estimated_out_of_pocket'), remote: true, class: "btn btn-default" %>
+                    <%= link_to 'Maximum Cost', plans_insured_plan_shopping_path(id: @hbx_enrollment.id, change_plan: @change_plan, market_kind: @market_kind, coverage_kind: @coverage_kind, enrollment_kind: @enrollment_kind, sort: 'maximum_out_of_pocket'), remote: true, class: "btn btn-default" %>
                   </div>
                 </div>
                 <div class="module smart-plans">

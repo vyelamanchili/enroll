@@ -243,140 +243,28 @@
             <h4 class="modal-title">Add Medications</h4>
           </div>
           <div class="modal-body">
-            <div class="checkbox">
-              <label>
-                <%= check_box_tag 'asdqweas' %>
-                <%= label_tag 'asdqweas' do %>
-                <i class="fa fa-check-square-o fa-2x"></i>
-                <i class="fa fa-square-o fa-2x"></i>
-                <% end %>
-                <span>ADHD</span>
-              </label>
+            <label>Which Medications do you take?</label>
+            <input class="typeahead" placeholder="Add A Prescription Name" type="text">
+            <br/>
+            <div class="collapse">
+              <label>Form</label>
+              <%= select_tag 'Form', options_for_select([ "Tablet", "Capsule" ]) %>
+              <br/>
+              <label>Dosage</label>
+              <%= select_tag 'Form', options_for_select([ "5mg", "10mg", "15mg", "20mg", "25mg", "30mg" ]) %>
+              <br/>
+              <label>Quantity</label>
+              <%= select_tag 'Form', options_for_select([ 10, 20, 30, 40, 50, 60 ]) %>
+              <br/>
+              <label>Refill</label>
+              <%= number_field_tag 'Refill' %>
+              <label>times per</label>
+              <%= select_tag 'frequency', options_for_select([ "Month", "Year"]) %>
             </div>
-            <div class="checkbox">
-              <label>
-                <%= check_box_tag 'vfqwe' %>
-                <%= label_tag 'vfqwe' do %>
-                <i class="fa fa-check-square-o fa-2x"></i>
-                <i class="fa fa-square-o fa-2x"></i>
-                <% end %>
-                <span>Angina</span>
-              </label>
-            </div>
-            <div class="checkbox">
-              <label>
-                <%= check_box_tag 'sdqwe' %>
-                <%= label_tag 'sdqwe' do %>
-                <i class="fa fa-check-square-o fa-2x"></i>
-                <i class="fa fa-square-o fa-2x"></i>
-                <% end %>
-                <span>Arthritis Non-specific</span>
-              </label>
-            </div>
-            <div class="checkbox">
-              <label>
-                <%= check_box_tag 'fgqwe' %>
-                <%= label_tag 'fgqwe' do %>
-                <i class="fa fa-check-square-o fa-2x"></i>
-                <i class="fa fa-square-o fa-2x"></i>
-                <% end %>
-                <span>Arthritis Rheumatoid</span>
-              </label>
-            </div>
-            <div class="checkbox">
-              <label>
-                <%= check_box_tag 'wqwe' %>
-                <%= label_tag 'wqwe' do %>
-                <i class="fa fa-check-square-o fa-2x"></i>
-                <i class="fa fa-square-o fa-2x"></i>
-                <% end %>
-                <span>Asthma Controlled</span>
-              </label>
-            </div>
-            <div class="checkbox">
-              <label>
-                <%= check_box_tag 'iuqwe' %>
-                <%= label_tag 'iuqwe' do %>
-                <i class="fa fa-check-square-o fa-2x"></i>
-                <i class="fa fa-square-o fa-2x"></i>
-                <% end %>
-                <span>Asthma Past</span>
-              </label>
-            </div>
-            <div class="checkbox">
-              <label>
-                <%= check_box_tag 'reqwe' %>
-                <%= label_tag 'reqwe' do %>
-                <i class="fa fa-check-square-o fa-2x"></i>
-                <i class="fa fa-square-o fa-2x"></i>
-                <% end %>
-                <span>Asthma Uncontrolled</span>
-              </label>
-            </div>
-            <div class="checkbox">
-              <label>
-                <%= check_box_tag 'rrqwe' %>
-                <%= label_tag 'rrqwe' do %>
-                <i class="fa fa-check-square-o fa-2x"></i>
-                <i class="fa fa-square-o fa-2x"></i>
-                <% end %>
-                <span>Back Pain</span>
-              </label>
-            </div>
-            <div class="checkbox">
-              <label>
-                <%= check_box_tag 'rerqwe' %>
-                <%= label_tag 'rerqwe' do %>
-                <i class="fa fa-check-square-o fa-2x"></i>
-                <i class="fa fa-square-o fa-2x"></i>
-                <% end %>
-                <span>Breat Cancer Current</span>
-              </label>
-            </div>
-            <div class="checkbox">
-              <label>
-                <%= check_box_tag '4rqwe' %>
-                <%= label_tag '4rqwe' do %>
-                <i class="fa fa-check-square-o fa-2x"></i>
-                <i class="fa fa-square-o fa-2x"></i>
-                <% end %>
-                <span>Breast Cancer Previous</span>
-              </label>
-            </div>
-            <div class="checkbox">
-              <label>
-                <%= check_box_tag 'trqwe' %>
-                <%= label_tag 'trqwe' do %>
-                <i class="fa fa-check-square-o fa-2x"></i>
-                <i class="fa fa-square-o fa-2x"></i>
-                <% end %>
-                <span>Bronchitis</span>
-              </label>
-            </div>
-            <div class="checkbox">
-              <label>
-                <%= check_box_tag 'rrqwe' %>
-                <%= label_tag 'rrqwe' do %>
-                <i class="fa fa-check-square-o fa-2x"></i>
-                <i class="fa fa-square-o fa-2x"></i>
-                <% end %>
-                <span>Colon Cancer Current</span>
-              </label>
-            </div>
-            <div class="checkbox">
-              <label>
-                <%= check_box_tag 'rzzrqwe' %>
-                <%= label_tag 'rzzrqwe' do %>
-                <i class="fa fa-check-square-o fa-2x"></i>
-                <i class="fa fa-square-o fa-2x"></i>
-                <% end %>
-                <span>Colon Cancer Previous</span>
-              </label>
-            </div>
-
           </div>
           <div class="modal-footer">
-            <a class="btn btn-trans btn-small" data-dismiss="modal">Close</a>
+            <a class="btn btn-trans btn-small pull-left" data-dismiss="modal">Close</a>
+            <a class="btn btn-trans btn-br btn-small" data-dismiss="modal">Add Another</a>
             <a class="btn btn-primary btn-br btn-small mtz" data-dismiss="modal">Add Medications</a>
           </div>
         </div>
@@ -418,12 +306,22 @@
         $(this).closest('.panel').find('.panel-footer').css({backgroundColor: '#d6e9c6', border: '#d6e9c6'});
         $(this).closest('.panel').find('.panel-footer span').css({color: '#3c763d'});
         $(this).closest('.panel').find('.panel-footer span').html("<strong>Excellent</strong>: I’m healthy. I don’t go to the doctor often. I don’t have any chronic (long-term) health problems.");
-
+      }
+      if ($(this).val() == "75") {
+        $(this).closest('.panel').find('.panel-footer').css({backgroundColor: '#ddebea', border: '#d6e9c6'});
+        $(this).closest('.panel').find('.panel-footer span').css({color: '#3c763d'});
+        $(this).closest('.panel').find('.panel-footer span').html("<strong>Very Good</strong>: I go to the doctor a few times a year. I have minor health concerns, but I am generally healthy.");
       }
       if ($(this).val() == "50") {
         $(this).closest('.panel').find('.panel-footer').css({backgroundColor: '#d9edf7', border: '#bce8f1'});
         $(this).closest('.panel').find('.panel-footer span').css({color: '#31708f'});
         $(this).closest('.panel').find('.panel-footer span').html("<strong>Good</strong>: I go to the doctor regularly. I have at least 1 chronic (long-term) health problem, but it’s generally under control.");
+
+      }
+      if ($(this).val() == "25") {
+        $(this).closest('.panel').find('.panel-footer').css({backgroundColor: '#e5eff1', border: '#faebcc'});
+        $(this).closest('.panel').find('.panel-footer span').css({color: '#8a6d3b'});
+        $(this).closest('.panel').find('.panel-footer span').html("<strong>Fair</strong>: I go to the doctor often. I have at least 1 chronic (long term) health problem that is not under control.");
 
       }
       if ($(this).val() == "0") {
@@ -494,12 +392,14 @@
     });
     $(".slider").bootstrapSlider({
       ticks: [
-        0, 50, 100
+        0, 25, 50, 75, 100
       ],
+      step: 25,
+      tooltip: 'hide',
       ticks_labels: [
-        'Poor', 'Good', 'Excellent'
+        'Poor', 'Fair', 'Good', 'Very Good', 'Excellent'
       ],
-      ticks_snap_bounds: 50
+      ticks_snap_bounds: 25
     });
 
     $('#continue').on('click', function () {
@@ -530,13 +430,26 @@
     };
 
     var states = ['Dr. Green', 'Dr. Black', 'Dr. Blue', 'Dr. Red', 'Dr. Yellow', 'Dr. Pepper', 'Dr. Suess', 'Dr. Rhadke', 'Dr. Orange', 'Dr. Brown'];
+    var drugs = ['Tylenol', 'Abelcet', '', 'Habitrol', 'Pacerone', 'Rabavert'];
 
-    $('.typeahead').typeahead({
+
+    $('.doctors .typeahead').typeahead({
       hint: true, highlight: true, minLength: 1
     }, {
       name: 'states',
       source: substringMatcher(states)
     });
+
+    $('#healthMedications .typeahead').typeahead({
+      hint: true, highlight: true, minLength: 1
+    }, {
+      name: 'states',
+      source: substringMatcher(drugs)
+    });
+
+    $('#healthMedications .typeahead').on('blur', function() {
+      $(this).closest('.modal').find('.collapse').collapse('show');
+});
 
   });
 </script>

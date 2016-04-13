@@ -158,6 +158,21 @@ $primary-bold: 600;
 			.slider {
 				margin-left: 5%;
 				width: 90%;
+				.slider-selection {
+					background-image: none;
+					filter: none;
+					box-shadow: none;
+					&.tick-slider-selection {
+						background-image: none;
+						filter: none;
+					}
+				}
+				.slider-tick.round {
+					display: none;
+				}
+				.slider-tick-label {
+					font-size: 12px;
+				}
 			}
 			.first-name, .middle-name, .last-name, .gender {
 				text-transform: capitalize;
