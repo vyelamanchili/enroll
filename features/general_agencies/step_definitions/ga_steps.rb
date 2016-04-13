@@ -31,9 +31,6 @@ When /^they complete the new general agency form and hit the 'Submit' button$/ d
   fill_in 'organization[dba]', with: company_name
   fill_in 'organization[fein]', with: '333333333'
 
-  find(:xpath, "//p[contains(., 'Select Entity Kind')]").click
-  find(:xpath, "//li[contains(., 'S Corporation')]").click
-
   find(:xpath, "//p[contains(., 'Select Practice Area')]").click
   find(:xpath, "//li[contains(., 'Both – Individual & Family AND Small Business Marketplaces')]").click
 

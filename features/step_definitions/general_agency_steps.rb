@@ -22,9 +22,6 @@ And(/^.+ enters general agency information$/) do
   fill_in 'organization[dba]', with: "Housecare Inc"
   fill_in 'organization[fein]', with: "990880811"
 
-  find(:xpath, "//p[@class='label'][contains(., 'Select Entity Kind')]").click
-  find(:xpath, "//li[contains(., 'C Corporation')]").click
-
   fill_in 'organization[home_page]', with: 'www.housecare.example.com'
 
   find(:xpath, "//p[@class='label'][contains(., 'Select Practice Area')]").click
