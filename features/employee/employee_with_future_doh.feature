@@ -6,7 +6,7 @@ Feature: Employee with future date of hire
   Then New Employee should be able to match Employer
   And Employee should be able to purchase Insurance
 
-  @wip
+  
   Scenario: New hire has future enrollment period
     Given Employer for Soren White exists with a published health plan year
     And Employee has future hired on date
