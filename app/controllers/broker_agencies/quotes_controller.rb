@@ -2,7 +2,6 @@ class BrokerAgencies::QuotesController < ApplicationController
 
   before_action :find_quote , :only => [:destroy ,:show, :delete_member, :delete_household]
 
-  before_action :find_quote , :only => [:destroy ,:show,:edit]
 
   def index
     @quotes = Quote.where("broker_role_id" => current_user.person.broker_role.id)
@@ -93,15 +92,6 @@ class BrokerAgencies::QuotesController < ApplicationController
     quote = Quote.new(quote_params)
     quote.build_relationship_benefits
     quote.broker_role_id= current_user.person(:try).broker_role.id
-    quote.broker_agency_profile_id= current_user.person(:try).broker_role.broker_agency_profile_id
-    employee_roster = employee_roster_group_by_family_id
-  	employee_roster.each do |family_id, family_members|
-      house_hold = QuoteHousehold.new
-      family_members.each do |family_member|
-  		  house_hold.quote_members << QuoteMember.new(family_member.permit(:family_id,:employee_relationship,:dob))
-  		end
-      quote.quote_households<< house_hold
-    end
     if quote.save
       redirect_to  broker_agencies_quotes_root_path ,  :flash => { :notice => "Successfully saved the employee roster" }
     else
@@ -114,13 +104,13 @@ class BrokerAgencies::QuotesController < ApplicationController
     @quote = Quote.find(params[:id])
   end
 
-	def build_employee_roster
+  def build_employee_roster
     @employee_roster = parse_employee_roster_file
     render "new"
   end
 
   def upload_employee_roster
-	end
+  end
 
   def download_employee_roster
     @quote = Quote.find(params[:id])
@@ -236,5 +226,6 @@ private
       end
     end
   end
+
 
 end

@@ -14,7 +14,7 @@
 
         <a data-toggle="collapse" href="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
            <div class='well' style='border: 2px solid gray'>
-
+            Resume quote or new roster
             <span class="glyphicon glyphicon-triangle-left" aria-hidden="true"></span></div>
         </a>
         <div class="collapse" id="collapseExample">
@@ -64,6 +64,8 @@
              </div>
          </div>
 
+
+
         <%= submit_tag "Compare Costs", class: 'btn btn-primary', id: 'QuoteCalculation' %>
         <%= submit_tag "Compare Plans", class: 'btn btn-primary', id: 'comparePlans' %>
         <% end %>
@@ -105,7 +107,7 @@ $('.plan_selectors .criteria').on('click',function(){
                             })
 $(document).on('ready page:load', function () {
     setTimeout(function(){
-
+    //bootstrapslider labels will have zero width unless the sliders are initially visible before being hidden
       $('[aria-controls="collapseExample1"]').attr('aria-visible', true)
       $('#collapseExample1').removeClass('in')
     }, 0)
