@@ -1,6 +1,6 @@
 Feature: Employee goes through plan shopping with dependents when employer offers health and dental coverage
 
-  @wip
+  
   Scenario: New employee with existing person
     Given Employer for Soren White exists with a published plan year offering health and dental
     And Employee has not signed up as an HBX user

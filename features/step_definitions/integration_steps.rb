@@ -428,7 +428,7 @@ When(/^.+ clicks? delete on baby Soren$/) do
   @browser.button(text: /Confirm Member/i).wait_while_present
 end
 
-Then(/^.+ should see (.*) dependents*$/) do |n|
+Then(/^.+ should see ((?:(?!the).)+) dependents*$/) do |n|
   expect(page).to have_selector('li.dependent_list', :count => n.to_i)
 end
 
