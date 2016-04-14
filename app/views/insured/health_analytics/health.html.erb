@@ -14,289 +14,326 @@
   </p>
 </div>
 <% @person.primary_family.active_family_members.each do |family_member| %>
-  <div class="module family-member <%= family_member.gender %>">
-    <h3>This is
-      <span class="first-name">
-        <%= family_member.person.first_name %>:
-      </span>
-      <span>
-        <% if family_member.person.gender == 'male' %>
-          <i class="fa fa-male"></i>
-        <% else %>
-        <i class="fa fa-female"></i>
-        <% end %>
-      </span>
-      <span class="gender">
-        <%= family_member.person.gender %>,
-      </span>
-      <span> <%= calculate_age_by_dob(family_member.person.dob) %></span>
-      years old</h3>
-    <div class="overall-health panel panel-default col-xs-10 health_analytics">
-      <div class="row">
-        <div class="panel-heading">
-          <h4>Overall,
-            <span class="first-name"><%= family_member.person.first_name %></span>'s health is:</h4>
-        </div>
-        <div class="panel-body">
-          <input class="slider" data-slider-value="50" type="text"/>
-        </div>
-        <br/>
-        <div class="panel-footer">
-          <span>
-            <strong>Good:</strong>
-            I go to the doctor regulary. I have at least 1 chronic (long-term) health problem, but it's generally under control.</span>
-        </div>
-      </div>
-    </div>
-    <br class="clear"/>
-    <br/>
-    <div class="health_analytics col-xs-10">
-      <div class="row">
-        <div class="row">
-          <div class="col-xs-6">
-            <div class="conditions panel panel-default">
-              <div class="panel-heading">
-                <h4>Does
-                  <span class="first-name"><%= family_member.person.first_name %></span>
-                  have any health conditions?</h4>
-              </div>
-              <div class="panel-body">
-                <%= link_to "<i class='fa fa-plus'></i> Add Health Conditions".html_safe, "", class: "btn btn-trans btn-br", data: { toggle: 'modal', target: '#healthConditions' } %>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-xs-6">
-            <div class="medications panel panel-default">
-              <div class="panel-heading">
-                <h4>Does
-                  <span class="first-name"><%= family_member.person.first_name %></span>
-                  take any medications?</h4>
-              </div>
-              <div class="panel-body">
-                <%= link_to "<i class='fa fa-plus'></i> Add Medications".html_safe, "", class: "btn btn-trans btn-br", data: { toggle: 'modal', target: '#healthMedications' } %>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <br class="clear"/>
-    <div class="modal fade" id="healthConditions" role="dialog">
-      <div class="modal-dialog">
-
-        <!-- Modal content-->
-        <div class="modal-content">
-          <div class="modal-header">
-            <button class="close" data-dismiss="modal" type="button">&times;</button>
-            <h4 class="modal-title">Add Health Conditions</h4>
-          </div>
-          <div class="modal-body">
-            <div class="checkbox">
-              <label>
-                <%= check_box_tag 'asdas' %>
-                <%= label_tag 'asdas' do %>
-                <i class="fa fa-check-square-o fa-2x"></i>
-                <i class="fa fa-square-o fa-2x"></i>
-                <% end %>
-                <span>ADHD</span>
-              </label>
-            </div>
-            <div class="checkbox">
-              <label>
-                <%= check_box_tag 'vf' %>
-                <%= label_tag 'vf' do %>
-                <i class="fa fa-check-square-o fa-2x"></i>
-                <i class="fa fa-square-o fa-2x"></i>
-                <% end %>
-                <span>Angina</span>
-              </label>
-            </div>
-            <div class="checkbox">
-              <label>
-                <%= check_box_tag 'sd' %>
-                <%= label_tag 'sd' do %>
-                <i class="fa fa-check-square-o fa-2x"></i>
-                <i class="fa fa-square-o fa-2x"></i>
-                <% end %>
-                <span>Arthritis Non-specific</span>
-              </label>
-            </div>
-            <div class="checkbox">
-              <label>
-                <%= check_box_tag 'fg' %>
-                <%= label_tag 'fg' do %>
-                <i class="fa fa-check-square-o fa-2x"></i>
-                <i class="fa fa-square-o fa-2x"></i>
-                <% end %>
-                <span>Arthritis Rheumatoid</span>
-              </label>
-            </div>
-            <div class="checkbox">
-              <label>
-                <%= check_box_tag 'w' %>
-                <%= label_tag 'w' do %>
-                <i class="fa fa-check-square-o fa-2x"></i>
-                <i class="fa fa-square-o fa-2x"></i>
-                <% end %>
-                <span>Asthma Controlled</span>
-              </label>
-            </div>
-            <div class="checkbox">
-              <label>
-                <%= check_box_tag 'iu' %>
-                <%= label_tag 'iu' do %>
-                <i class="fa fa-check-square-o fa-2x"></i>
-                <i class="fa fa-square-o fa-2x"></i>
-                <% end %>
-                <span>Asthma Past</span>
-              </label>
-            </div>
-            <div class="checkbox">
-              <label>
-                <%= check_box_tag 're' %>
-                <%= label_tag 're' do %>
-                <i class="fa fa-check-square-o fa-2x"></i>
-                <i class="fa fa-square-o fa-2x"></i>
-                <% end %>
-                <span>Asthma Uncontrolled</span>
-              </label>
-            </div>
-            <div class="checkbox">
-              <label>
-                <%= check_box_tag 'rr' %>
-                <%= label_tag 'rr' do %>
-                <i class="fa fa-check-square-o fa-2x"></i>
-                <i class="fa fa-square-o fa-2x"></i>
-                <% end %>
-                <span>Back Pain</span>
-              </label>
-            </div>
-            <div class="checkbox">
-              <label>
-                <%= check_box_tag 'rer' %>
-                <%= label_tag 'rer' do %>
-                <i class="fa fa-check-square-o fa-2x"></i>
-                <i class="fa fa-square-o fa-2x"></i>
-                <% end %>
-                <span>Breat Cancer Current</span>
-              </label>
-            </div>
-            <div class="checkbox">
-              <label>
-                <%= check_box_tag '4r' %>
-                <%= label_tag '4r' do %>
-                <i class="fa fa-check-square-o fa-2x"></i>
-                <i class="fa fa-square-o fa-2x"></i>
-                <% end %>
-                <span>Breast Cancer Previous</span>
-              </label>
-            </div>
-            <div class="checkbox">
-              <label>
-                <%= check_box_tag 'tr' %>
-                <%= label_tag 'tr' do %>
-                <i class="fa fa-check-square-o fa-2x"></i>
-                <i class="fa fa-square-o fa-2x"></i>
-                <% end %>
-                <span>Bronchitis</span>
-              </label>
-            </div>
-            <div class="checkbox">
-              <label>
-                <%= check_box_tag 'rr' %>
-                <%= label_tag 'rr' do %>
-                <i class="fa fa-check-square-o fa-2x"></i>
-                <i class="fa fa-square-o fa-2x"></i>
-                <% end %>
-                <span>Colon Cancer Current</span>
-              </label>
-            </div>
-            <div class="checkbox">
-              <label>
-                <%= check_box_tag 'rzzr' %>
-                <%= label_tag 'rzzr' do %>
-                <i class="fa fa-check-square-o fa-2x"></i>
-                <i class="fa fa-square-o fa-2x"></i>
-                <% end %>
-                <span>Colon Cancer Previous</span>
-              </label>
-            </div>
-
-          </div>
-          <div class="modal-footer">
-            <a class="btn btn-trans btn-small" data-dismiss="modal">Close</a>
-            <a class="btn btn-primary btn-br btn-small mtz" data-dismiss="modal">Add Health Conditions</a>
-          </div>
-        </div>
-
-      </div>
-    </div>
-
-    <div class="modal fade" id="healthMedications" role="dialog">
-      <div class="modal-dialog">
-
-        <!-- Modal content-->
-        <div class="modal-content">
-          <div class="modal-header">
-            <button class="close" data-dismiss="modal" type="button">&times;</button>
-            <h4 class="modal-title">Add Medications</h4>
-          </div>
-          <div class="modal-body">
-            <label>Which Medications do you take?</label>
-            <input class="typeahead" placeholder="Add A Prescription Name" type="text">
-            <br/>
-            <div class="collapse">
-              <label>Form</label>
-              <%= select_tag 'Form', options_for_select([ "Tablet", "Capsule" ]) %>
-              <br/>
-              <label>Dosage</label>
-              <%= select_tag 'Form', options_for_select([ "5mg", "10mg", "15mg", "20mg", "25mg", "30mg" ]) %>
-              <br/>
-              <label>Quantity</label>
-              <%= select_tag 'Form', options_for_select([ 10, 20, 30, 40, 50, 60 ]) %>
-              <br/>
-              <label>Refill</label>
-              <%= number_field_tag 'Refill' %>
-              <label>times per</label>
-              <%= select_tag 'frequency', options_for_select([ "Month", "Year"]) %>
-            </div>
-          </div>
-          <div class="modal-footer">
-            <a class="btn btn-trans btn-small pull-left" data-dismiss="modal">Close</a>
-            <a class="btn btn-trans btn-br btn-small" data-dismiss="modal">Add Another</a>
-            <a class="btn btn-primary btn-br btn-small mtz" data-dismiss="modal">Add Medications</a>
-          </div>
-        </div>
-
-      </div>
-
-    </div>
+<div class="module family-member <%= family_member.gender %>">
+  <h3>This is
+    <span class="first-name">
+      <%= family_member.person.first_name %>:
+    </span>
+    <span>
+      <% if family_member.person.gender == 'male' %>
+      <i class="fa fa-male"></i>
+      <% else %>
+      <i class="fa fa-female"></i>
+      <% end %>
+    </span>
+    <span class="gender">
+      <%= family_member.person.gender %>,
+    </span>
+    <span>
+      <%= calculate_age_by_dob(family_member.person.dob) %></span>
+    years old</h3>
+  <div class="overall-health panel panel-default col-xs-10 health_analytics">
     <div class="row">
-      <p class="col-xs-10">
-        Insurance won't cover all of your medical expenses. We can help you estimate what you might spend on medical care (your out-of-pocket costs) if you tell us a bit more about your health concerns. This information will not be shared with anymore,
-        including your employer, and will not be saved.
-      </p>
+      <div class="panel-heading">
+        <h4>Overall,
+          <span class="first-name"><%= family_member.person.first_name %></span>'s health is:</h4>
+      </div>
+      <div class="panel-body">
+        <input class="slider" data-slider-value="50" type="text"/>
+      </div>
+      <br/>
+      <div class="panel-footer">
+        <span>
+          <strong>Good:</strong>
+          I go to the doctor regulary. I have at least 1 chronic (long-term) health problem, but it's generally under control.</span>
+      </div>
     </div>
-    <br/>
-    <br/>
-
-    <div class="doctors panel panel-default col-xs-10 health_analytics">
+  </div>
+  <br class="clear"/>
+  <br/>
+  <div class="health_analytics col-xs-10">
+    <div class="row">
       <div class="row">
-        <div class="panel-heading">
-          <h4>Are there any
-            <span>doctors</span>
-            (like your current doctor) that you want to make sure are included in your plan's network?</h4>
+        <div class="col-xs-6">
+          <div class="conditions panel panel-default">
+            <div class="panel-heading">
+              <h4>Does
+                <span class="first-name"><%= family_member.person.first_name %></span>
+                have any health conditions?</h4>
+            </div>
+            <div class="panel-body">
+              <%= link_to "<i class='fa fa-plus'></i> Add Health Conditions".html_safe, "", class: "btn btn-trans btn-br", data: { toggle: 'modal', target: '#healthConditions' } %>
+            </div>
+          </div>
         </div>
-        <div class="panel-body">
-          <p>Some insurance plans let you see doctors outside their network, but it's usually much more expensive.</p>
-          <input class="typeahead" placeholder="Add A Doctor" type="text">
+
+        <div class="col-xs-6">
+          <div class="medications panel panel-default">
+            <div class="panel-heading">
+              <h4>Does
+                <span class="first-name"><%= family_member.person.first_name %></span>
+                take any medications?</h4>
+            </div>
+            <div class="panel-body">
+              <%= link_to "<i class='fa fa-plus'></i> Add Medications".html_safe, "", class: "btn btn-trans btn-br", data: { toggle: 'modal', target: '#healthMedications' } %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <br class="clear"/>
+  <div class="modal fade" id="healthConditions" role="dialog">
+    <div class="modal-dialog">
+
+      <!-- Modal content-->
+      <div class="modal-content">
+        <div class="modal-header">
+          <button class="close" data-dismiss="modal" type="button">&times;</button>
+          <h4 class="modal-title">Add Health Conditions</h4>
+        </div>
+        <div class="modal-body">
+          <div class="checkbox">
+            <label>
+              <%= check_box_tag 'asdas' %>
+              <%= label_tag 'asdas' do %>
+              <i class="fa fa-check-square-o fa-2x"></i>
+              <i class="fa fa-square-o fa-2x"></i>
+              <% end %>
+              <span>ADHD</span>
+            </label>
+          </div>
+          <div class="checkbox">
+            <label>
+              <%= check_box_tag 'vf' %>
+              <%= label_tag 'vf' do %>
+              <i class="fa fa-check-square-o fa-2x"></i>
+              <i class="fa fa-square-o fa-2x"></i>
+              <% end %>
+              <span>Angina</span>
+            </label>
+          </div>
+          <div class="checkbox">
+            <label>
+              <%= check_box_tag 'sd' %>
+              <%= label_tag 'sd' do %>
+              <i class="fa fa-check-square-o fa-2x"></i>
+              <i class="fa fa-square-o fa-2x"></i>
+              <% end %>
+              <span>Arthritis Non-specific</span>
+            </label>
+          </div>
+          <div class="checkbox">
+            <label>
+              <%= check_box_tag 'fg' %>
+              <%= label_tag 'fg' do %>
+              <i class="fa fa-check-square-o fa-2x"></i>
+              <i class="fa fa-square-o fa-2x"></i>
+              <% end %>
+              <span>Arthritis Rheumatoid</span>
+            </label>
+          </div>
+          <div class="checkbox">
+            <label>
+              <%= check_box_tag 'w' %>
+              <%= label_tag 'w' do %>
+              <i class="fa fa-check-square-o fa-2x"></i>
+              <i class="fa fa-square-o fa-2x"></i>
+              <% end %>
+              <span>Asthma Controlled</span>
+            </label>
+          </div>
+          <div class="checkbox">
+            <label>
+              <%= check_box_tag 'iu' %>
+              <%= label_tag 'iu' do %>
+              <i class="fa fa-check-square-o fa-2x"></i>
+              <i class="fa fa-square-o fa-2x"></i>
+              <% end %>
+              <span>Asthma Past</span>
+            </label>
+          </div>
+          <div class="checkbox">
+            <label>
+              <%= check_box_tag 're' %>
+              <%= label_tag 're' do %>
+              <i class="fa fa-check-square-o fa-2x"></i>
+              <i class="fa fa-square-o fa-2x"></i>
+              <% end %>
+              <span>Asthma Uncontrolled</span>
+            </label>
+          </div>
+          <div class="checkbox">
+            <label>
+              <%= check_box_tag 'rr' %>
+              <%= label_tag 'rr' do %>
+              <i class="fa fa-check-square-o fa-2x"></i>
+              <i class="fa fa-square-o fa-2x"></i>
+              <% end %>
+              <span>Back Pain</span>
+            </label>
+          </div>
+          <div class="checkbox">
+            <label>
+              <%= check_box_tag 'rer' %>
+              <%= label_tag 'rer' do %>
+              <i class="fa fa-check-square-o fa-2x"></i>
+              <i class="fa fa-square-o fa-2x"></i>
+              <% end %>
+              <span>Breat Cancer Current</span>
+            </label>
+          </div>
+          <div class="checkbox">
+            <label>
+              <%= check_box_tag '4r' %>
+              <%= label_tag '4r' do %>
+              <i class="fa fa-check-square-o fa-2x"></i>
+              <i class="fa fa-square-o fa-2x"></i>
+              <% end %>
+              <span>Breast Cancer Previous</span>
+            </label>
+          </div>
+          <div class="checkbox">
+            <label>
+              <%= check_box_tag 'tr' %>
+              <%= label_tag 'tr' do %>
+              <i class="fa fa-check-square-o fa-2x"></i>
+              <i class="fa fa-square-o fa-2x"></i>
+              <% end %>
+              <span>Bronchitis</span>
+            </label>
+          </div>
+          <div class="checkbox">
+            <label>
+              <%= check_box_tag 'rr' %>
+              <%= label_tag 'rr' do %>
+              <i class="fa fa-check-square-o fa-2x"></i>
+              <i class="fa fa-square-o fa-2x"></i>
+              <% end %>
+              <span>Colon Cancer Current</span>
+            </label>
+          </div>
+          <div class="checkbox">
+            <label>
+              <%= check_box_tag 'rzzr' %>
+              <%= label_tag 'rzzr' do %>
+              <i class="fa fa-check-square-o fa-2x"></i>
+              <i class="fa fa-square-o fa-2x"></i>
+              <% end %>
+              <span>Colon Cancer Previous</span>
+            </label>
+          </div>
+
+        </div>
+        <div class="modal-footer">
+          <a class="btn btn-trans btn-small" data-dismiss="modal">Close</a>
+          <a class="btn btn-primary btn-br btn-small mtz" data-dismiss="modal">Add Health Conditions</a>
         </div>
       </div>
 
     </div>
-    <br class="clear"/>
   </div>
+
+  <div class="modal fade" id="healthMedications" role="dialog">
+    <div class="modal-dialog">
+
+      <!-- Modal content-->
+      <div class="modal-content">
+        <div class="modal-header">
+          <button class="close" data-dismiss="modal" type="button">&times;</button>
+          <h4 class="modal-title">Add Medications</h4>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-xs-12">
+              <label>Which Medications do you take?</label>
+              <br/>
+              <br/>
+              <input class="typeahead" placeholder="Add A Prescription Name" type="text">
+            </div>
+          </div>
+
+          <div class="collapse">
+            <br/>
+            <div class="row">
+              <div class="col-xs-2">
+                <label>Form:</label>
+              </div>
+              <div class="col-xs-10">
+                <%= select_tag 'Form', options_for_select([ "Tablet", "Capsule" ]) %>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-xs-2">
+                <label>Dosage:</label>
+              </div>
+              <div class="col-xs-10">
+                <%= select_tag 'Form', options_for_select([ "5mg", "10mg", "15mg", "20mg", "25mg", "30mg" ]) %>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-xs-2">
+                <label>Quantity:</label>
+              </div>
+              <div class="col-xs-10">
+                <%= select_tag 'Form', options_for_select([ 10, 20, 30, 40, 50, 60 ]) %>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-xs-2">
+                <label>Refill</label>
+              </div>
+              <div class="col-xs-10">
+                <div class="row">
+                  <div class="col-xs-4">
+                    <%= number_field_tag 'Refill', nil, style: 'width: 100%;' %>
+                  </div>
+                  <div class="col-xs-4">
+                    <label>times per</label>
+                  </div>
+                  <div class="col-xs-4">
+                    <%= select_tag 'frequency', options_for_select([ "Month", "Year"]) %>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <a class="btn btn-trans btn-small pull-left" data-dismiss="modal">Close</a>
+          <a class="btn btn-trans btn-br btn-small" data-dismiss="modal">Add Another</a>
+          <a class="btn btn-primary btn-br btn-small mtz" data-dismiss="modal">Add Medications</a>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+  <div class="row">
+    <p class="col-xs-10">
+      Insurance won't cover all of your medical expenses. We can help you estimate what you might spend on medical care (your out-of-pocket costs) if you tell us a bit more about your health concerns. This information will not be shared with anymore,
+      including your employer, and will not be saved.
+    </p>
+  </div>
+  <br/>
+  <br/>
+
+  <div class="doctors panel panel-default col-xs-10 health_analytics">
+    <div class="row">
+      <div class="panel-heading">
+        <h4>Are there any
+          <span>doctors</span>
+          (like your current doctor) that you want to make sure are included in your plan's network?</h4>
+      </div>
+      <div class="panel-body">
+        <p>Some insurance plans let you see doctors outside their network, but it's usually much more expensive.</p>
+        <input class="typeahead" placeholder="Add A Doctor" type="text">
+      </div>
+    </div>
+
+  </div>
+  <br class="clear"/>
+</div>
 <% end %>
 <script>
   $(document).ready(function () {
@@ -331,6 +368,44 @@
       }
     })
 
+    function addMedications() {
+      if ( $('[placeholder="Add A Prescription Name"]:first').val().length > 0 ) {
+        medication = $('[placeholder="Add A Prescription Name"]:first').val();
+        if ( $('.medications .panel-body:first a span').length == 1 ) {
+          $('.medications .panel-body').append(" and ");
+          $('.medications .panel-body').append('<span>'+medication+'</span>');
+        }
+        else if ( $('.medications .panel-body:first a span').length >= 2 ) {
+          $(".medications .panel-body a:contains(' (Edit)')").remove();
+          $('.medications .panel-body').append('<span>'+medication+'</span>');
+          medications = $('.medications .panel-body:first').find('span').clone();
+          $('.medications .panel-body').html("");
+          $.each(medications, function (i, val) {
+            if ( i == 0 ) {
+              $('.medications .panel-body').append(val);
+            }
+            else if ( i+1 == medications.length ) {
+              $('.medications .panel-body').append(", and ");
+              $('.medications .panel-body').append(val);
+            } else {
+              $('.medications .panel-body').append(", ");
+              $('.medications .panel-body').append(val);
+            }
+          });
+
+        } else {
+          $('.medications .panel-body').html("");
+          $('.medications .panel-body').append('<span>'+medication+'</span>');
+        }
+        $(".medications .panel-body a:contains(' (Edit)')").remove();
+        $('.medications .panel-body span').wrap("<a data-target='#healthMedications' data-toggle='modal'></a>")
+        $('.medications .panel-body').append("<a data-target='#healthMedications' data-toggle='modal'> (Edit)</a>")
+
+      }
+      $('#healthMedications input[type="text"], #healthMedications input[type="number"]').val("");
+
+    }
+
     $('.modal-footer .btn-primary').on('click', function () {
       if ($(this).text() == "Add Health Conditions") {
         if ($(this).closest('.modal').find('input:checked').length > 0) {
@@ -361,33 +436,20 @@
           $('.conditions .panel-body').html('<a class="btn btn-trans btn-br interaction-click-control-add-health-conditions" data-toggle="modal" data-target="#healthConditions" href=""><i class="fa fa-plus"></i> Add Health Conditions</a>');
         }
       } else if ($(this).text() == "Add Medications") {
-        if ($(this).closest('.modal').find('input:checked').length > 0) {
-          checked_medications = $('#healthMedications').find('input:checked').closest('label').find('span').clone();
-          $('.medications .panel-body').html("");
-          $.each(checked_medications, function (i, val) {
-            if (checked_medications.length == 1) {
-              $('.medications .panel-body').append(val);
-            } else if (checked_medications.length == 2) {
-              if (i + 1 == checked_medications.length) {
-                $('.medications .panel-body').append(" and ");
-                $('.medications .panel-body').append(val);
-
-              } else {
-                $('.medications .panel-body').append(val);
-              }
-            } else if (i + 1 == checked_medications.length && checked_medications.length >= 3) {
-              $('.medications .panel-body').append("and ");
-              $('.medications .panel-body').append(val);
-            } else {
-              $('.medications .panel-body').append(val);
-              $('.medications .panel-body').append(", ");
-            }
-          });
-          $('.medications .panel-body span').wrap("<a data-target='#healthMedications' data-toggle='modal'></a>")
-          $('.medications .panel-body').append("<a data-target='#healthMedications' data-toggle='modal'> (Edit)</a>")
-        } else {
-          $('.medications .panel-body').html('<a class="btn btn-trans btn-br interaction-click-control-add-health-medications" data-toggle="modal" data-target="#healthMedications" href=""><i class="fa fa-plus"></i> Add Medications</a>');
-        }
+        $('#healthMedications').unbind('hidden');
+        addMedications();
+      }
+    });
+    $('.modal-footer .btn-trans').on('click', function() {
+      if ( $(this).text() == "Add Another" ) {
+        addMedications();
+        $('#healthMedications').on('hidden.bs.modal', function (e) {
+          $('#healthMedications input[type="text"], #healthMedications input[type="number"]').val("");
+          $('#healthMedications').modal('show');
+        });
+      }
+      if ( $(this).text() == "Close" ) {
+        $('#healthMedications').unbind('hidden');
       }
     });
     $(".slider").bootstrapSlider({
@@ -432,7 +494,6 @@
     var states = ['Dr. Green', 'Dr. Black', 'Dr. Blue', 'Dr. Red', 'Dr. Yellow', 'Dr. Pepper', 'Dr. Suess', 'Dr. Rhadke', 'Dr. Orange', 'Dr. Brown'];
     var drugs = ['Tylenol', 'Abelcet', '', 'Habitrol', 'Pacerone', 'Rabavert'];
 
-
     $('.doctors .typeahead').typeahead({
       hint: true, highlight: true, minLength: 1
     }, {
@@ -447,9 +508,9 @@
       source: substringMatcher(drugs)
     });
 
-    $('#healthMedications .typeahead').on('blur', function() {
+    $('#healthMedications .typeahead').on('blur', function () {
       $(this).closest('.modal').find('.collapse').collapse('show');
-});
+    });
 
   });
 </script>
