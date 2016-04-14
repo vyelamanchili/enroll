@@ -51,8 +51,11 @@
     <% if @quote_results %>
        <%=render "quote_comparision" , quote_results: @quote_results %>
     <% end %>
+
 </div>
+
 <script type="text/javascript">
+
   var close_handler = function(){
     $.ajax({
         type: "POST",

@@ -1,6 +1,7 @@
 class BrokerAgencies::QuotesController < ApplicationController
 
   before_action :find_quote , :only => [:destroy ,:show, :delete_member, :delete_household]
+  before_action :format_dateparams  , :only => [:update,:create]
 
 
   def index
@@ -180,10 +181,20 @@ private
  def quote_params
     params.require(:quote).permit(
                     :quote_name,
+                    :start_on,
                     :broker_role_id,
                     :quote_households_attributes => [ :id, :family_id ,
                                        :quote_members_attributes => [ :id, :first_name ,:dob,
                                                                       :employee_relationship,:_delete ] ] )
+ end
+
+ def format_dateparams
+  params[:quote][:start_on] =  Date.strptime(params[:quote][:start_on],"%m/%d/%Y") if params[:quote][:start_on]
+  if params[:quote][:quote_households_attributes] && params[:quote][:quote_households_attributes][:quote_members_attributes]
+    params[:quote][:quote_households_attributes][:quote_members_attributes].each do |member_attribute|
+      member_attribute[:dob] = Date.strptime(member_attribute[:dob],"%m/%d/%Y") if member_attribute[:dob]
+    end
+  end
  end
 
 
