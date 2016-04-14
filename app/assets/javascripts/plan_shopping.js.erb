@@ -233,10 +233,10 @@ $(function() {
   });
 
 // this code has been replaced by the ajax pattern on (4/8/2016), it can probably be deleted
-  // $(document).on('click', '#sort_by a', function(){
-  //   applyPlanSort($(this).data('sort-by'));
-  // });
-//
+  $(document).on('click', '#sort_by a', function(){
+    applyPlanSort($(this).data('sort-by'));
+  });
+
 
 
   $(document).on('click', "#plans .plan-select.btn-trans.select", function(e){

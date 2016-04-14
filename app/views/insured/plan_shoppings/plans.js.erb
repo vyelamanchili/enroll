@@ -10,8 +10,8 @@ $('#plans').html("<%= escape_javascript(render partial: "insured/plan_shoppings/
       if ( i < 3 ) {
         $(p).find('.checkbox label').trigger('click');
       }
-      $('.compare-selected-plans-link ').trigger('click');
-    })
+    });
+    $('.compare-selected-plans-link ').trigger('click');
   });
 <% else %>
   $('#plans').fadeIn('slow');

@@ -180,21 +180,11 @@ class Insured::PlanShoppingsController < ApplicationController
     case @sort
       when 'premium'
         @plans = @plans.sort_by(&:total_employee_cost).sort{|a,b| b.csr_variant_id <=> a.csr_variant_id}
-        @plans = @plans.partition{ |a| @enrolled_hbx_enrollment_plan_ids.include?(a[:id]) }.flatten
       when 'likely_cost'
         @plans.each do |plan|
-          moop = maximum_out_of_pocket(plan)
-          if @person.primary_family.active_family_members.count > 1
-            estimated_out_of_pocket = (moop.in_network_tier_1_family_amount.gsub(/[$,]/, '')*1.33).to_f
-            plan.assign_attributes({ :estimated_out_of_pocket => estimated_out_of_pocket })
-          else
-            estimated_out_of_pocket = (moop.in_network_tier_1_family_amount.gsub(/[$,]/, '')*1.33).to_f
-            plan.assign_attributes({ :estimated_out_of_pocket => estimated_out_of_pocket })
+            plan.assign_attributes({ :likely_cost => (plan.total_employee_cost*1.33) })
           end
-        end
-        @plans = @plans.sort_by(&:estimated_out_of_pocket).sort{|a,b| b.csr_variant_id <=> a.csr_variant_id}
-        @plans = @plans.partition{ |a| @enrolled_hbx_enrollment_plan_ids.include?(a[:id]) }.flatten
-
+        @plans = @plans.sort_by(&:likely_cost).sort{|a,b| b.csr_variant_id <=> a.csr_variant_id}
       when 'maximum_cost'
         @plans.each do |plan|
           moop = maximum_out_of_pocket(plan)
@@ -207,7 +197,6 @@ class Insured::PlanShoppingsController < ApplicationController
           end
         end
         @plans = @plans.sort_by(&:maximum_out_of_pocket).sort{|a,b| b.csr_variant_id <=> a.csr_variant_id}
-        @plans = @plans.partition{ |a| @enrolled_hbx_enrollment_plan_ids.include?(a[:id]) }.flatten
       end
       @plan_hsa_status = Products::Qhp.plan_hsa_status_map(@plans)
       respond_to do |format|
