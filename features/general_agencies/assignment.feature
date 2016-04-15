@@ -17,7 +17,7 @@ Feature: Broker Assigns a General Agency to an Employer
     When the employer confirms broker selection
     Then the employer should see broker selected successful message
     When the employer clicks on the Brokers tab
-    Then the employer should see broker active for the employer
+    Then the employer should see Acarehouse broker active for the employer
     Then the employer logs out
 
     When the broker login in

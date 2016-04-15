@@ -223,7 +223,7 @@ Then /^the employer should see the broker agency$/ do
   expect(page).to have_content('Acarehouse')
 end
 
-Then /^the employer should see broker active for the employer$/ do
+Then /^the employer should see Acarehouse broker active for the employer$/ do
   expect(page).to have_content('Acarehouse')
   expect(page).to have_content('Active Broker')
 end
