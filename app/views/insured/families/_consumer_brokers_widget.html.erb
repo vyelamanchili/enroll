@@ -32,7 +32,7 @@
                 </small>
                 <small>
                   <%= mail_to @person.primary_family.current_broker_agency.writing_agent.email.address  ,truncate(@person.primary_family.current_broker_agency.writing_agent.email.address , :length => 25) %><br>
-                  <%= @person.primary_family.current_broker_agency.writing_agent.person.phones.first %>
+                  <%= @person.primary_family.current_broker_agency.writing_agent.phone %>
                   <br/><br/>
                 </small>
               </span>
