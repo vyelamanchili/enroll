@@ -17,7 +17,6 @@ RSpec.describe "insured/families/_enrollment.html.erb" do
       :carrier_profile_id => "a carrier profile id",
       :carrier_profile => mock_carrier_profile,
       :metal_level => "Silver",
-      :active_year => 2015,
       :coverage_kind => "health",
       :hios_id => "19393939399",
       :plan_type => "A plan type",
@@ -34,7 +33,7 @@ RSpec.describe "insured/families/_enrollment.html.erb" do
                       :identifier=>'urn:openhbx:terms:v1:file_storage:s3:bucket:dchbx-enroll-sbc-local#7816ce0f-a138-42d5-89c5-25c5a3408b82'})
     ) }
 
-    let(:employee_role) { FactoryGirl.create(:employee_role) }  
+    let(:employee_role) { FactoryGirl.create(:employee_role) }
     let(:census_employee) { FactoryGirl.create(:census_employee, employee_role_id: employee_role.id)}
     #let(:employer_profile) { FactoryGirl.create(:employer_profile) }
     let(:hbx_enrollment) {double(plan: plan, id: "12345", total_premium: 200, kind: 'individual',
@@ -43,7 +42,7 @@ RSpec.describe "insured/families/_enrollment.html.erb" do
                                  enroll_step: 2, coverage_terminated?: false,
                                  may_terminate_coverage?: true, effective_on: Date.new(2015,8,10), consumer_role: nil, census_employee: census_employee,
                                  employee_role: employee_role, status_step: 2, applied_aptc_amount: 23.00, aasm_state: 'coverage_selected')}
-    
+
     let(:benefit_group) { FactoryGirl.create(:benefit_group) }
 
     before :each do
@@ -77,8 +76,8 @@ RSpec.describe "insured/families/_enrollment.html.erb" do
       expect(rendered).to have_selector('strong', text: '08/10/2015')
     end
 
-    it "should not disable the Make Changes button" do 
-      expect(rendered).to_not have_selector('.cna') 
+    it "should not disable the Make Changes button" do
+      expect(rendered).to_not have_selector('.cna')
     end
 
     context "when outside Employers open enrollment period" do
@@ -87,12 +86,12 @@ RSpec.describe "insured/families/_enrollment.html.erb" do
         render partial: "insured/families/enrollment", collection: [hbx_enrollment], as: :hbx_enrollment
       end
 
-      it "should disable the Make Changes button" do 
-        expect(rendered).to have_selector('.cna') 
+      it "should disable the Make Changes button" do
+        expect(rendered).to have_selector('.cna')
       end
 
     end
-  
+
     it "should display the effective date" do
       expect(rendered).to have_selector('label', text: 'Effective date:')
       expect(rendered).to have_selector('strong', text: '08/10/2015')
@@ -112,7 +111,7 @@ RSpec.describe "insured/families/_enrollment.html.erb" do
     let(:hbx_enrollment) {double(plan: plan, id: "12345", total_premium: 200, kind: 'individual',
                                  covered_members_first_names: ["name"], can_complete_shopping?: false,
                                  enroll_step: 1, subscriber: nil, coverage_terminated?: false,
-                                 may_terminate_coverage?: true, effective_on: Date.new(2015,8,10), 
+                                 may_terminate_coverage?: true, effective_on: Date.new(2015,8,10),
                                  consumer_role: double, applied_aptc_amount: 100, employee_role: employee_role, census_employee: census_employee,
                                  status_step: 2, aasm_state: 'coverage_selected')}
    let(:benefit_group) { FactoryGirl.create(:benefit_group) }
@@ -142,8 +141,8 @@ RSpec.describe "insured/families/_enrollment.html.erb" do
       expect(rendered).to have_selector('strong', text: '$100')
     end
 
-    it "should not disable the Make Changes button" do 
-      expect(rendered).to_not have_selector('.cna') 
+    it "should not disable the Make Changes button" do
+      expect(rendered).to_not have_selector('.cna')
     end
 
   end
@@ -155,7 +154,7 @@ RSpec.describe "insured/families/_enrollment.html.erb" do
     let(:hbx_enrollment) {double(plan: plan, id: "12345", total_premium: 200, kind: 'individual',
                                  covered_members_first_names: [], can_complete_shopping?: false,
                                  enroll_step: 1, subscriber: nil, coverage_terminated?: false,
-                                 may_terminate_coverage?: true, effective_on: Date.new(2015,8,10), 
+                                 may_terminate_coverage?: true, effective_on: Date.new(2015,8,10),
                                  consumer_role: double, applied_aptc_amount: 100, employee_role: employee_role, census_employee: census_employee,
                                  status_step: 2, aasm_state: 'coverage_selected')}
     let(:benefit_group) { FactoryGirl.create(:benefit_group) }
@@ -174,8 +173,8 @@ RSpec.describe "insured/families/_enrollment.html.erb" do
       render partial: "insured/families/enrollment", collection: [hbx_enrollment], as: :hbx_enrollment
     end
 
-    it "should not disable the Make Changes button" do 
-      expect(rendered).to_not have_selector('.cna') 
+    it "should not disable the Make Changes button" do
+      expect(rendered).to_not have_selector('.cna')
     end
 
   end
