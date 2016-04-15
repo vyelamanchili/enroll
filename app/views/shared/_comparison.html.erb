@@ -37,6 +37,8 @@
           </div>
         </th>
           <% maximums = [] %>
+          <% adjusted_graph = false %>
+          <% cost_below_min = [] %>
 
           <% qhps.each do |qhp|%>
 
@@ -78,20 +80,38 @@
                 <% likely_percentage = ((likely - premium)/total)*100 %>
                 <% maximum_percentage = ((maximum - likely )/total)*100 %>
 
+                <% costs = [premium_percentage, likely_percentage, maximum_percentage] %>
+                <% costs.each do |cost| %>
+                  <% if cost <= 15 %>
+                    <% adjusted_graph = true %>
+                    <% cost = 15 - cost %>
+                    <% cost_below_min << cost %>
+                  <% end %>
+                <% end %>
+
+                <% if cost_below_min.present? %>
+                  <% difference = cost_below_min.sort_by(&:to_i).reverse.first %>
+                  <% total = (total - (difference*3)) %>
+                  <% premium_percentage = ((premium / total) * 100).round(2).to_s[0..3] %>
+                  <% likely_percentage = (((likely - premium)/total)*100).round(2).to_s[0..3] %>
+                  <% maximum_percentage = (((maximum - likely )/total)*100).round(2).to_s[0..3] %>
+                <% end %>
+
                   <div class="progress">
                     <div class="progress-bar progress-bar-success progress-bar-striped" style="width: <%= premium_percentage %>%">
-                      <span><%= number_to_currency(premium) %></span>
+                      <span><%= number_to_currency(premium, precision: 0) %></span>
                     </div>
                     <div class="progress-bar progress-bar-warning progress-bar-striped" style="width: <%= likely_percentage %>%">
-                      <span><%= number_to_currency(likely) %></span>
+                      <span><%= number_to_currency(likely, precision: 0) %></span>
                     </div>
                     <div class="progress-bar progress-bar-danger progress-bar-striped" style="width: <%= maximum_percentage %>%">
-                      <span><%= number_to_currency(maximum) %></span>
+                      <span><%= number_to_currency(maximum, precision: 0) %></span>
                     </div>
                   </div>
                 </div>
         </th>
           <% end %>
+          <%= adjusted_graph %>
       </tr>
       <tr>
         <th>

@@ -29,6 +29,10 @@
         </div>
         <br class="clear"/>
         <% maximums = [] %>
+        <% adjusted_graph = false %>
+        <% cost_below_min = [] %>
+
+
 
         <% @plans[0..2].each_with_index do |plan, i| %>
           <% csv = Products::QhpCostShareVariance.find_qhp_cost_share_variances(["#{plan.hios_id}"], @hbx_enrollment.effective_on.year, @hbx_enrollment.coverage_kind).first %>
@@ -60,16 +64,39 @@
         <% likely_percentage = ((likely - premium)/total)*100 %>
         <% maximum_percentage = ((maximum - likely )/total)*100 %>
 
+        <% costs = [premium_percentage, likely_percentage, maximum_percentage] %>
+        <% costs.each do |cost| %>
+          <% if cost <= 7.5 %>
+            <% adjusted_graph = true %>
+            <% cost = 7.5 - cost %>
+            <% cost_below_min << cost %>
+          <% end %>
+        <% end %>
+
+        <% if cost_below_min.present? %>
+          <% difference = cost_below_min.sort_by(&:to_i).reverse.first %>
+          <% total = (total - (difference*3)) %>
+          <% premium_percentage = ((premium / total) * 100).round(2).to_s[0..3] %>
+          <% likely_percentage = (((likely - premium)/total)*100).round(2).to_s[0..3] %>
+          <% maximum_percentage = (((maximum - likely )/total)*100).round(2).to_s[0..3] %>
+        <% end %>
+
+
+
+        <!-- are any of my numbers less than 7.5%?
+        if something is 6% i need add 1.5% now my new bas is not 100 but 95.5 because I am going to add 1.5 to everything
+        and im only doing this if everything is less than 7.5 percent -->
+
         <h5><%= plan.name %></h5>
         <div class="progress">
           <div class="progress-bar progress-bar-success progress-bar-striped" style="width: <%= premium_percentage %>%">
-            <%= number_to_currency(premium) %>
+            <%= number_to_currency(premium, precision: 0) %>
           </div>
           <div class="progress-bar progress-bar-warning progress-bar-striped" style="width: <%= likely_percentage %>%">
-            <%= number_to_currency(likely) %>
+            <%= number_to_currency(likely, precision: 0) %>
           </div>
           <div class="progress-bar progress-bar-danger progress-bar-striped" style="width: <%= maximum_percentage %>%">
-            <%= number_to_currency(maximum) %>
+            <%= number_to_currency(maximum, precision: 0) %>
           </div>
         </div>
         <% end %>
