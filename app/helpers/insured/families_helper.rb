@@ -84,7 +84,20 @@ module Insured::FamiliesHelper
     employee_role.census_employee.newhire_enrollment_eligible? && employee_role.can_select_coverage?
   end
 
+  def disable_make_changes_button?(hbx_enrollment)
+    if hbx_enrollment.census_employee.blank?
+      return false
+    else
+      if !hbx_enrollment.census_employee.employee_role.blank? && hbx_enrollment.census_employee.employee_role.is_under_open_enrollment? && hbx_enrollment.plan.active_year == TimeKeeper.date_of_record.year
+        return false
+      else
+        return true
+      end
+    end  
+  end
+
   def has_writing_agent?(employee_role)
     employee_role.employer_profile.active_broker_agency_account.writing_agent rescue false
   end
+
 end
