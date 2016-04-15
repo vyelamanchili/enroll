@@ -10,13 +10,14 @@ module BrokerWorld
     attributes = traits.extract_options!
     @broker_agency ||= FactoryGirl.create :broker , *traits, attributes
   end
+
 end
 
 World(BrokerWorld)
 
 Given (/^that a broker exists$/) do
   broker_agency
-  broker :with_family, :broker, organization: broker_agency
+  broker :with_family, :broker_with_person, organization: broker_agency
 end
 
 And(/^the broker is signed in$/) do
@@ -28,18 +29,22 @@ When(/^he visits the Roster Quoting tool$/) do
   click_link 'Roster Quoting Tool'
 end
 
+Then(/^click on Resume quote or new roster$/) do
+  click_link 'Resume quote or new roster'
+end
+
 When(/^click on the New Quote button$/) do
   click_link 'New Quote'
 end
 
-When(/^click on the Add New Employee button$/) do
-  click_link "Add New Employee"
-end
+# When(/^click on the Add New Employee button$/) do
+#   click_link "Add New Employee"
+# end
 
-Then(/^a new row should be added to Employee table$/) do
-  expect(page).to have_selector('table input', count: 2)
-  expect(page).to have_selector('table select', count: 1)
-end
+# Then(/^a new row should be added to Employee table$/) do
+#   expect(page).to have_selector('table input', count: 2)
+#   expect(page).to have_selector('table select', count: 1)
+# end
 
 
 When(/^click on the Upload Employee Roster button$/) do
@@ -58,11 +63,17 @@ Then(/^the broker should see the data in the table$/) do
   expect(page).to have_selector(:xpath,"//table//select[contains(@id, 'relationship')]",count: 3)
 end
 
+When(/^broker clicks on Add member to this family$/) do
+  click_button 'Add member to this family'
+end
 
-When(/^the broker enters valid information$/) do
-  fill_in 'employee_roster[1][family_id]', with: '2'
-  select "Employee", :from => "employee_roster[1][employee_relationship]"
-  fill_in 'employee_roster[1][dob]', with: '11/11/1991'
+When(/^the broker enters Family ID$/) do
+  fill_in 'quote_households_family_id', with: '2'
+end
+
+When(/^broker enters valid information$/) do
+  select "Employee", :from => "select-relationship"
+  fill_in 'date-of-birth', with: '11/11/1991'
 end
 
 When(/^the broker clicks on the Save Quote button$/) do

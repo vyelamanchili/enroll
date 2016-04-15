@@ -7,14 +7,17 @@ Feature: Create Employee Roster
     Given that a broker exists
     And the broker is signed in
     When he visits the Roster Quoting tool
+    Then click on Resume quote or new roster
     And click on the New Quote button
-    And click on the Add New Employee button
-    Then a new row should be added to Employee table
-
+    When broker clicks on Add member to this family
+    And the broker enters Family ID
+    And broker enters valid information
+    
   Scenario: Broker should be able to add employees to the employee roster using Upload Employee Roster button
     Given that a broker exists
     And the broker is signed in
     When he visits the Roster Quoting tool
+    Then click on Resume quote or new roster
     And click on the New Quote button
     And click on the Upload Employee Roster button
     When the broker clicks on the Select File to Upload button
@@ -24,9 +27,11 @@ Feature: Create Employee Roster
     Given that a broker exists
     And the broker is signed in
     When he visits the Roster Quoting tool
+    Then click on Resume quote or new roster
     And click on the New Quote button
-    And click on the Add New Employee button
-    And the broker enters valid information
+    When broker clicks on Add member to this family
+    And the broker enters Family ID
+    And broker enters valid information
     When the broker clicks on the Save Quote button
     Then the broker should see a successful message
 
@@ -34,10 +39,10 @@ Feature: Create Employee Roster
     Given that a broker exists
     And the broker is signed in
     When he visits the Roster Quoting tool
+    Then click on Resume quote or new roster
     And click on the New Quote button
-    And click on the Add New Employee button
-    And the broker enters valid information
     When the broker clicks on the Save Quote button
     Then the broker should see a successful message
+    Then click on Resume quote or new roster
     When the broker clicks on the close button
     Then the Quote should be deleted
