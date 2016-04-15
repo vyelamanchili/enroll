@@ -123,7 +123,7 @@ class BrokerAgencies::QuotesController < ApplicationController
   def destroy
     if @quote.destroy
       respond_to do |format|
-        format.js { flash.now[:notice] = "Deleted the quote Successfully" }
+        format.js { render :text => "deleted Successfully" , :status => 200 }
       end
     end
   end
@@ -133,7 +133,7 @@ class BrokerAgencies::QuotesController < ApplicationController
     if @qh
       if @qh.quote_members.find(params[:member_id]).delete
         respond_to do |format|
-          format.js { render :nothing => true }
+          format.js { render :nothing => true}
         end
       end
     end

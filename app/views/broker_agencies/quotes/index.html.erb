@@ -56,20 +56,6 @@
 
 <script type="text/javascript">
 
-  var close_handler = function(){
-    $.ajax({
-        type: "POST",
-        url: "/broker_agencies/quotes/" + this.getAttribute("data-quote-id"),
-        dataType: "js",
-        data: {"_method":"delete"},
-        complete: function(){
-          alert("Deleted successfully");
-        }
-    });
-    this.parentElement.parentElement.remove();
-    event.preventDefault();
-  };
-$('.table #close_button').click(close_handler);
 $('.plan_selectors .criteria').on('click',function(){
                               selected=this; sibs = $(selected).siblings();
                               $.each(sibs, function(){ this.className='criteria' }) ;
