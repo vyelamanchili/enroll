@@ -99,6 +99,7 @@ gem "recaptcha", '1.1.0'
 group :development do
   # Access an IRB console on exception pages or by using <%= console %> in views
   gem 'web-console', '2.3.0'
+  gem "parallel_tests"
 end
 
 group :development, :test do
@@ -119,21 +120,25 @@ group :development, :test do
   gem 'ruby-progressbar', '1.6.0'
 
   # Keep these in Development and Test environments for access by rails generators
-  gem 'rspec-rails', '~> 3.1.0'
+  gem 'rspec-rails', '~> 3.4.2'
   gem 'factory_girl_rails', "4.6.0"
   gem 'forgery'
   gem 'email_spec', '2.0.0'
   gem 'byebug', '8.2.2'
+  gem 'rspec_junit_formatter', '0.2.3'
 end
 
 group :test do
-  gem 'mongoid-rspec'
+  gem 'mongoid-rspec', '3.0.0'
   gem 'watir'
-  gem 'cucumber-rails', '1.4.3', :require => false
+  gem 'cucumber-rails', '~> 1.4.2', :require => false
+  gem 'poltergeist'
+  gem 'capybara-screenshot'
   gem 'database_cleaner', '1.5.1'
   gem 'shoulda-matchers', '3.1.1'
   gem 'action_mailer_cache_delivery', '~> 0.3.7'
   gem 'capybara', '2.6.2'
+  gem 'warden'
 end
 
 group :production do
