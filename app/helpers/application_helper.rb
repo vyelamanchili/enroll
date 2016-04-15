@@ -536,6 +536,11 @@ module ApplicationHelper
     end
   end
 
+  def show_default_ga?(general_agency_profile, broker_agency_profile)
+    return false if general_agency_profile.blank? || broker_agency_profile.blank?
+    broker_agency_profile.default_general_agency_profile == general_agency_profile
+  end
+
   def eligiblity_participation_rule(count)
     case count
     when 0
