@@ -82,9 +82,9 @@
 
                 <% costs = [premium_percentage, likely_percentage, maximum_percentage] %>
                 <% costs.each do |cost| %>
-                  <% if cost <= 15 %>
+                  <% if cost <= 7.5 %>
                     <% adjusted_graph = true %>
-                    <% cost = 15 - cost %>
+                    <% cost = 7.5 - cost %>
                     <% cost_below_min << cost %>
                   <% end %>
                 <% end %>
@@ -111,7 +111,6 @@
                 </div>
         </th>
           <% end %>
-          <%= adjusted_graph %>
       </tr>
       <tr>
         <th>
