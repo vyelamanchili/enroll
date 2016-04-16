@@ -49,6 +49,23 @@ FactoryGirl.define do
     roles ["broker"]
   end
 
+  trait :broker_with_person do
+    roles ["broker"]
+
+    ignore do
+      organization {}
+    end
+
+    after :create do |user, evaluator|
+      if user.person.present?
+        user.person.broker_agency_staff_roles.push FactoryGirl.build(:broker_agency_staff_role, broker_agency_profile_id: evaluator.organization.broker_agency_profile.id)
+        evaluator.organization.broker_agency_profile.primary_broker_role = FactoryGirl.create :broker_role, person: user.person, broker_agency_profile: evaluator.organization.broker_agency_profile
+        evaluator.organization.save
+        user.save
+      end
+    end
+  end
+
   trait "broker_agency_staff" do
     roles ["broker_agency_staff"]
   end
