@@ -73,18 +73,23 @@ var date_handler = function() {
 
 var remove_member_handler = function(){
 	if(this.getAttribute("data-member-id") != undefined){
+
+		var $quote_member_id = $(this);
+
 	 $.ajax({
         type: "POST",
         url: "/broker_agencies/quotes/" + this.getAttribute("data-quote-id")  +"/delete_member/?member_id=" +this.getAttribute("data-member-id")+"&household_id="+this.getAttribute("data-household-id"),
         dataType: "js",
         data: {"_method":"delete"},
         complete: function(){
-          console.log("Deleted successfully");
+          console.log("Deleted successfully id " + $quote_member_id.attr("data-member-id") );
+					$quote_member_id.parent().parent().remove();
+					$('[type="hidden"][value="' + $quote_member_id.attr("data-member-id") + '"]').remove();
         }
     });
 	}
-  $(this).parent().parent().remove();
-	};
+};
+
 $('button#remove_member_button').click(remove_member_handler);
 
 var remove_household_handler = function(){
@@ -101,7 +106,7 @@ var remove_household_handler = function(){
 	}
   $(this).parent().parent().parent().remove();
 };
-	
+
 $('button#remove_household_button').click(remove_household_handler);
 
 function addEmployeeRowToFamily(family, idx) {
