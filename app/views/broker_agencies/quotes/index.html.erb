@@ -1,7 +1,7 @@
-<div class="module container broker_quote_tool" id="inbox_provider_form">
+<div class="module container broker_quote_tool">
   <div class="row">
     <div class="col-md-12">
-        <h4>Compare Quotes</h4>
+        <h2>Broker Quoting Tool</h2>
 
         <%= form_tag(broker_agencies_quotes_root_path, method: :get) do  %>
 
@@ -12,32 +12,62 @@
        <input name='child_26_and_over' value='0' type='hidden'>
        <%= hidden_field_tag(rb_emp: '777') %>
 
-        <a data-toggle="collapse" href="#collapseExample" aria-expanded="true" aria-controls="collapseExample">
-           <div class='well edge'> Resume quote or new roster
+       <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="false">
+       	<div class="panel panel-default">
+       		<div class="panel-heading" role="tab" id="quote-mgmt-header">
+       				<a role="button" data-toggle="collapse" data-parent="#accordion" href="#quote-mgmt" aria-expanded="true" aria-controls="quote-mgmt">
+       					Quote/Roster Management <span class="glyphicon glyphicon-triangle-right" aria-hidden="true"></span>
+       				</a>
+       		</div>
+       	  <div id="quote-mgmt" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="">
+
+            <%=render "my_quotes" , quote_results: @quote_results %>
+
+       	  </div>
+       	</div>
+      </div>
+
+
+
+        <!--<a data-toggle="collapse" href="#collapseExample" aria-expanded="true" aria-controls="collapseExample">
+           <div class='well edge'> Quote/Roster Management
                <span class="glyphicon glyphicon-triangle-right" aria-hidden="true"></span>
            </div>
         </a>
         <div class="collapse in" id="collapseExample">
-            <%=render "my_quotes" , quote_results: @quote_results %>
-        </div>
-      
-        <a data-toggle="collapse" href="#collapseExample1" aria-expanded="true" aria-controls="collapseExample1" >
+            <=render "my_quotes" , quote_results: @quote_results >
+        </div>-->
+
+        <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="false">
+        	<div class="panel panel-default">
+        		<div class="panel-heading" role="tab" id="feature-mgmt-header">
+        				<a role="button" data-toggle="collapse" data-parent="#accordion" href="#feature-mgmt" aria-expanded="true" aria-controls="feature-mgmt">
+        					Features and cost criteria <span class="glyphicon glyphicon-triangle-right" aria-hidden="true"></span>
+        				</a>
+        		</div>
+        	  <div id="feature-mgmt" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="">
+
+            <%= render partial: 'my_features' %>
+
+        	  </div>
+        	</div>
+       </div>
+
+
+        <!--<a data-toggle="collapse" href="#collapseExample1" aria-expanded="true" aria-controls="collapseExample1" >
             <div class='well edge'>Features and cost criteria
                 <span class="glyphicon glyphicon-triangle-right" aria-hidden="true"></span>
             </div>
         </a>
          <div class="collapse in" id="collapseExample1">
-            <%= render partial: 'my_features' %>
-         </div>
+            <= render partial: 'my_features' >
+         </div>-->
 
-        <a data-toggle="collapse" href="#collapseExample2" aria-expanded="false" aria-controls="collapseExample2" >
+        <!--<a data-toggle="collapse" href="#collapseExample2" aria-expanded="false" aria-controls="collapseExample2" >
             <div class='well edge'>Select plans
                 <span class="glyphicon glyphicon-triangle-right" aria-hidden="true"></span>
             </div>
-        </a>
-         <div class="collapse" id="collapseExample2">
-                <%= render partial: 'my_plans' %>
-         </div>
+        </a>-->
 
         <%= submit_tag "Compare Costs", class: 'btn btn-primary', id: 'QuoteCalculation' %>
         <%= submit_tag "Compare Plans", class: 'btn btn-primary', id: 'comparePlans' %>
@@ -51,7 +81,6 @@
     <% if @quote_results %>
        <%=render "quote_comparision" , quote_results: @quote_results %>
     <% end %>
-
 </div>
 
 <script type="text/javascript">
@@ -59,7 +88,8 @@
 $('.plan_selectors .criteria').on('click',function(){
                               selected=this; sibs = $(selected).siblings();
                               $.each(sibs, function(){ this.className='criteria' }) ;
-                              selected.className='active'
+                              selected.className='active';
+                              console.log('selection triggered');
                             })
 $(document).on('ready page:load', function () {
     setTimeout(function(){

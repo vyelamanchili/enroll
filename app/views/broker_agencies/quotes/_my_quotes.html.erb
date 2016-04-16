@@ -1,10 +1,5 @@
 
-<div class ="well">
-  <p> Roster management options: <ul><li>create a demographic quote,</li><li> edit an existing quote, </li><li> create a roster for a new quote.</li></ul> <p>
-
-
-  <div class="row">
-    <div class="col-md-12 col-sm-12 col-xs-12" style="border: 1px solid gray">
+    <!--<div class="col-md-6 col-sm-6 col-xs-6">
     <p> <b> Demographic roster estimator (need a better name)</b></p>
     <div style='float:left; margin-left:30px; '>
          <div style='float: left; width: 255px; margin-left:30px'>
@@ -23,33 +18,36 @@
         <div  style='float:left; margin-left: 30px'>
           button to use this roster in a quote
         </div>
-    </div>
-    <b> Edit an existing roster </p>
-     <div class="col-md-12 col-sm-12 col-sm-12 col-xs-12">
+    </div>-->
+    <div class="container-fluid">
       <div class="table-responsive">
-        <table class="table-wrapper" style="opacity: 1;">
+        <table class="table">
+          <thead
           <tr>
             <th>Quote ID</th>
             <th>Quote Name</th>
-            <th># of families</th>
+            <th class="text-right"># of families</th>
             <th></th>
           </tr>
+        </thead>
+        <tbody>
            <% @quotes.each do |q| %>
           <tr>
              <td><%=link_to "#{q.id}" , "/broker_agencies/quotes/#{q.id}/edit" %></td>
              <td><%= q.quote_name %></td>
-             <td><%= q.quote_households.count %></td>
+             <td class="text-right"><%= q.quote_households.count %></td>
              <td><button type="button" onclick="delete_quote_handler" id="close_button" data-quote-id="<%=q.id%>" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button></td>
           </tr>
           <% end %>
-        </table>
-        <br><%=link_to "New Quote" , new_broker_agencies_quote_path , method: :get, class: "btn btn-trans", id: "new_quote"%>
-      </div>
+        </tbody>
+      </table>
+        <%=link_to "New Quote" , new_broker_agencies_quote_path , method: :get, class: "btn btn-trans btn-sm", id: "new_quote"%>
+      <br><br>
     </div>
   </div>
-</div>
 
-<script> 
+
+<script>
 
 var delete_quote_handler = function(){
   $.ajax({
@@ -59,7 +57,7 @@ var delete_quote_handler = function(){
       data: {"_method":"delete"},
       success: function(){
         console.log("Deleted successfully");
-        
+
       }
   });
   $(this).parent().parent().remove();

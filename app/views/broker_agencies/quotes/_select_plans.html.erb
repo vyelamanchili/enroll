@@ -1,5 +1,6 @@
 <% if @carriers %>
-    <div class=' plan_selectors'>
+<div class="container-fluid">
+    <div class='plan_selectors'>
 
         <div  id='carriers' style='width: 148px;'>
             <b>Carriers</b><br/>
@@ -14,7 +15,7 @@
                 <div id="<%=metal%>"  class="criteria <%=metal=='any' && 'active'%>"> <%= metal %> </div>
             <% end %>
         </div>
-      
+
         <div id='plan_types'>
             <b>Plan Types</b> <br>
             <%- @plan_types.each do |type| %>
@@ -24,14 +25,14 @@
 
         <div id='dc_in_network'>
              <b>DC Network</b> <br>
-          <%- @dc_network.each do |choice| %>    
+          <%- @dc_network.each do |choice| %>
             <div  id="<%=choice%>" class="criteria <%=choice=='any' && 'active'%>"> <%= choice %> </div>
           <% end %>
         </div>
 
         <div id='nationwide'>
             <b>Nationwide</b> <br>
-          <%- @nationwide.each do |choice| %>    
+          <%- @nationwide.each do |choice| %>
             <div id="<%=choice%>" class="criteria <%=choice=='any' && 'active'%>"><%= choice %> </div>
           <% end %>
         </div>
@@ -46,6 +47,6 @@
         />
     </div>
       <br/>
+</div>
 
 <% end %>
-
