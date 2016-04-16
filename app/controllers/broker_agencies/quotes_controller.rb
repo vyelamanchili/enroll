@@ -73,7 +73,10 @@ class BrokerAgencies::QuotesController < ApplicationController
 
   def new
     @quote = Quote.new
-    @quote.quote_households.build
+    qhh = QuoteHousehold.new
+    qm = QuoteMember.new
+    qhh.quote_members << qm
+    @quote.quote_households << qhh
   end
 
   def update
@@ -113,7 +116,16 @@ class BrokerAgencies::QuotesController < ApplicationController
 
   def build_employee_roster
     @employee_roster = parse_employee_roster_file
-    render "new"
+    @quote= Quote.new
+    if @employee_roster.is_a?(Array)
+      @employee_roster.each do |member|
+        @quote_household = @quote.quote_households.where(:family_id => member[0]).first 
+        @quote_household= QuoteHousehold.new(:family_id => member[0]) if @quote_household.nil? 
+        @quote_members= QuoteMember.new(:employee_relationship => member[1], :dob => member[2])
+        @quote_household.quote_members << @quote_members
+        @quote.quote_households << @quote_household
+      end
+    end
   end
 
   def upload_employee_roster
@@ -239,7 +251,8 @@ private
     begin
       CSV.parse(params[:employee_roster_file].read) if params[:employee_roster_file].present?
     rescue Exception => e
-      redirect_to build_employee_roster_broker_agencies_profiles_path, :flash => { :error => "Unable to parse the csv file" }
+      flash[:error] = "Unable to parse the csv file"
+      #redirect_to :action => "new" and return 
     end
   end
 

@@ -2,8 +2,6 @@
 	<div class="container">
 	  <hr/>
 
-<%= form_for @quote, url: {action: "update"}, method: "put", class: "form-inline" do |f| %>
-
 
 <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="false">
 	<div class="panel panel-default">
@@ -56,11 +54,6 @@
 			</div>
 		</div>
 		<% end %>
-		<%= link_to 'Back' , broker_agencies_quotes_root_path , class: "btn btn-primary" %>
-		<%= submit_tag "Update Roster", class: 'btn btn-primary' %>
-		<%= link_to "Back to Quote Cost/Comparison", broker_agencies_quotes_root_path, class: 'btn btn-primary' %>
-		<% end %>
-
 		</div>
 
 <script>
