@@ -1,5 +1,7 @@
-<div class="container">
-  <h3>Quote Cost Comparison</h3>
+<div class="container-fluid">
+  <h3>Quote Cost Comparison Results</h3>
+
+  <p>Your results are based on your quote <strong><%= @q.quote_name %></strong> effective on <strong><%= @q.start_on %></strong></p>
 
   <div class="mygrid-wrapper-div">
     <table class="quote_cost">
@@ -38,7 +40,7 @@
           <%= qr[:first_name] %>
         </td>
         <td class="quote_detail_results">
-          <%= qr[:employee_relationship] %> <b class="small"><%= qr[:employer_contribution_percent].to_i%></b>%
+          <%= @employee_relationship_map[qr[:employee_relationship]] %> <small><%= qr[:employer_contribution_percent].to_i%></small>%
         </td>
         <td class="quote_detail_results">
           <%= qr[:age] %>

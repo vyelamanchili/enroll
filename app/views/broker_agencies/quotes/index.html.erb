@@ -25,7 +25,6 @@
 
        	  </div>
        	</div>
-      </div>
 
 
 
@@ -38,7 +37,6 @@
             <=render "my_quotes" , quote_results: @quote_results >
         </div>-->
 
-        <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="false">
         	<div class="panel panel-default">
         		<div class="panel-heading" role="tab" id="feature-mgmt-header">
         				<a role="button" data-toggle="collapse" data-parent="#accordion" href="#feature-mgmt" aria-expanded="true" aria-controls="feature-mgmt">
@@ -51,8 +49,6 @@
 
         	  </div>
         	</div>
-       </div>
-
 
         <!--<a data-toggle="collapse" href="#collapseExample1" aria-expanded="true" aria-controls="collapseExample1" >
             <div class='well edge'>Features and cost criteria
@@ -69,18 +65,24 @@
             </div>
         </a>-->
 
-        <%= submit_tag "Compare Costs", class: 'btn btn-primary', id: 'QuoteCalculation' %>
-        <%= submit_tag "Compare Plans", class: 'btn btn-primary', id: 'comparePlans' %>
-        <%= submit_tag "Publish Quote", class: 'btn btn-primary', id: 'publishQuote' %>
         <% end %>
+    <%if @qhps%>
+    <div class="panel panel-default">
+      <div class="panel-collapse collapse in" role="tabpanel" aria-labelledby="">
+        <%=render "plan_comparision" , qhps: @qhps %>
       </div>
     </div>
-    <%if @qhps%>
-        <%=render "plan_comparision" , qhps: @qhps %>
     <%end%>
     <% if @quote_results %>
+      <div class="panel panel-default">
+        <div class="panel-collapse collapse in" role="tabpanel" aria-labelledby="">
        <%=render "quote_comparision" , quote_results: @quote_results %>
+      </div>
+    </div>
     <% end %>
+      </div>
+    </div>
+  </div>
 </div>
 
 <script type="text/javascript">
@@ -89,8 +91,9 @@ $('.plan_selectors .criteria').on('click',function(){
                               selected=this; sibs = $(selected).siblings();
                               $.each(sibs, function(){ this.className='criteria' }) ;
                               selected.className='active';
-                              console.log('selection triggered');
+                              console.log('selection triggered. plans available: ' + window.select_plans.length);
                             })
+
 $(document).on('ready page:load', function () {
     setTimeout(function(){
     //bootstrapslider labels will have zero width unless the sliders are initially visible before being hidden

@@ -1,12 +1,11 @@
 <div class="container-fluid">
     <div>
-      <h4>Showing x of x plans based on your selection criteria</h4>
-      <div class="btn-group" data-toggle="buttons" style='height: 400px; overflow-y: scroll'>
+      <h4>Showing <strong id="x-of-plans"><%= @plans.count %></strong> of <strong><%= @plans.count %></strong>  plans based on your selection criteria</h4>
+      <div class="btn-group" data-toggle="buttons" style='height: 400px; overflow-y: scroll' id="quote-plan-list">
         <% @plans.each_with_index do |p,index| %>
-
         <label class="btn btn-small btn-primary <%= "active" if params['plans'].try(:include?, p.id.to_s) %>" >
-          <input name="plans[]" <%= "checked" if params['plans'].try(:include?, p.id.to_s) %> type="checkbox" autocomplete="off" value="<%= p.id %>"><%= p.name %>
-        </label>
+          <input name="plans[]" <%= "checked" if params['plans'].try(:include?, p.id.to_s) %> type="checkbox" autocomplete="off" value="<%= p.id %>">
+          <%= p.name %></label>
         <% end %>
       </div>
     </div>

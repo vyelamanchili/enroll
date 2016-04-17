@@ -26,6 +26,10 @@ function toggle_plans(){
       display = plan_test(plan, window.criteria) ? 'inline' : 'none'
       $(value).parent().css('display', display)
   }
+
+  // Show number of available plans based on the selection criteria
+  $('#x-of-plans').html($('#quote-plan-list > label:visible').length);
+
 }
 
 window.relationships = ['employee', 'spouse', 'domestic_partner', 'child_under_26', 'child_26_and_over']
@@ -38,7 +42,7 @@ function slider_listeners () {
     $('#pct_domestic_partner').bootstrapSlider({});
     $('#pct_child_under_26').bootstrapSlider({});
     $('#employees_on_roster').bootstrapSlider({});
-    $('#ex1').on('slideStop', function(){deductible_value = this.value; 
+    $('#ex1').on('slideStop', function(){deductible_value = this.value;
       toggle_plans();
       console.log(this.value, 'v')
     })
@@ -77,5 +81,5 @@ function set_relationship_pct(relationship, val) {
     url: '/broker_agencies/quotes/update_benefits.js',
   }).done(function(response){
     window.plan_costs = response
-  }) 
+  })
 }

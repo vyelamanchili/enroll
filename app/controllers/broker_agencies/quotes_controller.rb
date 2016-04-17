@@ -2,6 +2,7 @@ class BrokerAgencies::QuotesController < ApplicationController
 
   before_action :find_quote , :only => [:destroy ,:show, :delete_member, :delete_household]
   before_action :format_dateparams  , :only => [:update,:create]
+  before_action :employee_relationship_map
 
 
   def index
@@ -164,15 +165,19 @@ class BrokerAgencies::QuotesController < ApplicationController
     @plans =  Plan.shop_health_by_active_year(2016)
 
     costs= []
-    @plans.each{ |plan|
+    #@plans.each{ |plan|
     # TODOJF takes 5 seconds, needs caching.
     #  costs << [plan.id, q.roster_employee_cost(plan.id) ]
-    }
+    #}
 
     render json:  costs.to_json
   end
 
 private
+
+  def employee_relationship_map
+    @employee_relationship_map = {"employee" => "Employee", "spouse" => "Spouse", "domestic_partner" => "Domestic Partner", "child_under_26" => "Child", "child_26_and_over" => "Child"}
+  end
 
  def get_standard_component_ids
   Plan.where(:_id => { '$in': params[:plans] } ).map(&:hios_id)

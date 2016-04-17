@@ -21,14 +21,14 @@ class Quote
   associated_with_one :broker_role, :broker_role_id, "BrokerRole"
 
   field :plan_option_kind, type: String, default: "single_carrier"
-  
+
   embeds_many :quote_reference_plans, cascade_callbacks: true
   embeds_many :quote_households
 
 
   embeds_many :quote_relationship_benefits, cascade_callbacks: true
 
-  # accepts_nested_attributes_for :quote_households 
+  # accepts_nested_attributes_for :quote_households
   accepts_nested_attributes_for :quote_households, reject_if: :all_blank
 
 
@@ -57,6 +57,27 @@ class Quote
        self.quote_relationship_benefits.build(relationship: relationship, offered: true)
     end
   end
+
+  def bounding_cost_plans (reference_plan, plan_option_kind)
+
+      if plan_option_kind == "single_plan"
+        plans = [reference_plan]
+      else
+        if plan_option_kind == "single_carrier"
+          plans = Plan.shop_health_by_active_year(reference_plan.active_year).by_carrier_profile(reference_plan.carrier_profile)
+        else
+          plans = Plan.shop_health_by_active_year(reference_plan.active_year).by_health_metal_levels([reference_plan.metal_level])
+        end
+      end
+
+      if plans.size > 0
+        plans_by_cost = plans.sort_by { |plan| plan.premium_tables.first.cost }
+
+        self.lowest_cost_plan_id  = plans_by_cost.first.id
+        self.highest_cost_plan_id = plans_by_cost.last.id
+      end
+  end
+
 
   def calc_by_plan(plan_id)
 
