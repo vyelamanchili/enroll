@@ -179,7 +179,7 @@ class BrokerAgencies::QuotesController < ApplicationController
 private
 
   def employee_relationship_map
-    @employee_relationship_map = {"employee" => "Employee", "spouse" => "Spouse", "domestic_partner" => "Domestic Partner", "child_under_26" => "Child", "child_26_and_over" => "Child"}
+    @employee_relationship_map = {"employee" => "Employee", "spouse" => "Spouse", "domestic_partner" => "Domestic Partner", "child_under_26" => "Child"}
   end
 
  def get_standard_component_ids
