@@ -21,6 +21,7 @@ class BrokerAgencies::QuotesController < ApplicationController
     if !params['plans'].nil? && params['plans'].count > 0 && params["commit"].downcase == "compare costs"
       @q =  Quote.find(params[:quote]) #Quote.find(Quote.first.id)
       @quote_results = Hash.new
+      @quote_results_summary = Hash.new
       unless @q.nil?
         params['plans'].each do |plan_id|
           p = Plan.find(plan_id)
@@ -32,7 +33,9 @@ class BrokerAgencies::QuotesController < ApplicationController
             detailCost << pcd.get_family_details_hash.sort_by { |m| [m[:family_id], -m[:age], -m[:employee_contribution]] }
           end
           @quote_results[p.name] = {:detail => detailCost, :total_employee_cost => @q.roster_employee_cost(p), :total_employer_cost => @q.roster_employeer_contribution(p)}
+          @quote_results_summary[p.name] = @q.cost_by_offerings(p)
         end
+
       end
     elsif !params['plans'].nil? && params['plans'].count > 0 && params["commit"].downcase == "compare plans"
       @visit_types = @coverage_kind == "health" ? Products::Qhp::VISIT_TYPES : Products::Qhp::DENTAL_VISIT_TYPES

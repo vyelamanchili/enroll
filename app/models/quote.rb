@@ -11,8 +11,7 @@ class Quote
     :child_26_and_over
   ]
 
-  PLAN_OPTION_KINDS = %w(single_plan single_carrier metal_level)
-
+  PLAN_OPTION_KINDS = [:single_plan, :single_carrier, :metal_level]
   field :quote_name, type: String, default: "Sample Quote"
   field :plan_year, type: Integer, default: TimeKeeper.date_of_record.year
   field :start_on, type: Date, default: TimeKeeper.date_of_record.beginning_of_year
@@ -58,8 +57,13 @@ class Quote
     end
   end
 
-  def bounding_cost_plans (reference_plan, plan_option_kind)
+  def cost_by_offerings(plan)
+    plan_costs_by_offerings = Hash.new
+    PLAN_OPTION_KINDS.map { |offering| plan_costs_by_offerings[offering] = bounding_cost_plans(plan, offering.to_s) }
+    plan_costs_by_offerings.merge({"reference_plan_cost" => roster_employeer_contribution(plan.id)})
+  end
 
+  def bounding_cost_plans (reference_plan, plan_option_kind)
       if plan_option_kind == "single_plan"
         plans = [reference_plan]
       else
@@ -73,8 +77,9 @@ class Quote
       if plans.size > 0
         plans_by_cost = plans.sort_by { |plan| plan.premium_tables.first.cost }
 
-        self.lowest_cost_plan_id  = plans_by_cost.first.id
-        self.highest_cost_plan_id = plans_by_cost.last.id
+        {"lowest_cost_plan_cost" => roster_employeer_contribution(plans_by_cost.first.id), "highest_cost_plan_cost" => roster_employeer_contribution(plans_by_cost.last.id)}
+      else
+        {}
       end
   end
 

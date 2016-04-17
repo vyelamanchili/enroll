@@ -1,17 +1,42 @@
 <div class="container-fluid">
-  <h3>Quote Cost Comparison Results</h3>
+  <h2>Quote Cost Comparison Results</h2>
 
   <p>Your results are based on your quote <strong><%= @q.quote_name %></strong> effective on <strong><%= @q.start_on %></strong></p>
 
+  <h3>Summary of employer costs by offering and reference plan</h3>
+
+  <table class="quote-detail-cost">
+    <tr>
+      <td class="quote_detail_plan_header"></td>
+      <td class="quote_detail_plan_header">By Single Plan</td>
+      <td class="quote_detail_plan_header">By Single Carrier</td>
+      <td class="quote_detail_plan_header">By Metal Level</td>
+    </tr>
+    <tr>
+      <td class="quote_detail_results_header">Plan</td>
+      <td class="quote_detail_results_header text-center">Reference</td>
+      <td class="quote_detail_results_header text-center">Lowest / Reference / Highest</td>
+      <td class="quote_detail_results_header text-center">Lowest / Reference / Highest</td>
+    </tr>
+    <% @quote_results_summary.each do |k,v| %>
+    <tr>
+      <td class="quote_detail_results"><%= k %></td>
+      <td class="quote_detail_results text-center">$<%= v["reference_plan_cost"] %></td>
+      <td class="quote_detail_results text-center">$<%= v[:single_carrier]["lowest_cost_plan_cost"] %> / $<%= v["reference_plan_cost"] %> / $<%= v[:single_carrier]["highest_cost_plan_cost"] %></td>
+      <td class="quote_detail_results text-center">$<%= v[:metal_level]["lowest_cost_plan_cost"] %> / $<%= v["reference_plan_cost"] %> / $<%= v[:metal_level]["highest_cost_plan_cost"] %></td>
+    </tr>
+    <% end %>
+  </table>
+
+  <h3>Detailed results by reference plan</h3>
   <div class="mygrid-wrapper-div">
-    <table class="quote_cost">
+    <table class="quote-detail-cost">
     <tr>
       <td colspan="3" class="quote_detail_plan_header">
-        <span  class="btn btn-info btn-sm">Employee Cost</span>
-        <span  class="btn btn-danger btn-sm">Employer Cost</span>
+        <span class="btn btn-info btn-sm">Employee Cost</span>
+        <span class="btn btn-danger btn-sm">Employer Cost</span>
       </td>
-    <%
-    @quote_results.each do |qr| %>
+    <% @quote_results.each do |qr| %>
       <td width="350" colspan="3" class="quote_detail_plan_header">
         <%= qr[0] %><br>
         <span  class="btn btn-info btn-sm">$<%= qr[1][:total_employee_cost] %></span>
@@ -22,7 +47,7 @@
 
     <tr style="font-weight: bolder; ">
       <td class="quote_detail_results_header">Name</td>
-      <td class="quote_detail_results_header">Relationship</td>
+      <td class="quote_detail_results_header">Relationship (%)</td>
       <td class="quote_detail_results_header">Age</td>
       <% @quote_results.keys.each do |de| %>
         <td class="quote_detail_results_header">Employee Cost</td>
@@ -40,7 +65,7 @@
           <%= qr[:first_name] %>
         </td>
         <td class="quote_detail_results">
-          <%= @employee_relationship_map[qr[:employee_relationship]] %> <small><%= qr[:employer_contribution_percent].to_i%></small>%
+          <%= @employee_relationship_map[qr[:employee_relationship]] %> <small>(<%= qr[:employer_contribution_percent].to_i%>)</small>
         </td>
         <td class="quote_detail_results">
           <%= qr[:age] %>
