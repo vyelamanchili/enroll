@@ -57,9 +57,9 @@
             <% moop = csv.qhp_maximum_out_of_pockets.where(name: "Maximum Out of Pocket for Medical and Drug EHB Benefits (Total)").last %>
             <% premium = current_cost(plan.total_employee_cost*12, plan.ehb, nil, 'shopping', plan.can_use_aptc?) %>
             <% if @person.primary_family.active_family_members.count > 1 %>
-            <% maximum = moop.in_network_tier_1_individual_amount.gsub(/[$,]/, '').to_i + premium %>
+            <% maximum = moop.in_network_tier_1_individual_amount.gsub(/[$,]/, '').to_i %>
             <% else %>
-            <% maximum = moop.in_network_tier_1_family_amount.gsub(/[$,]/, '').to_i + premium %>
+            <% maximum = moop.in_network_tier_1_family_amount.gsub(/[$,]/, '').to_i %>
             <% end %>
             <td><%= number_to_currency(maximum, precision: 0) %></td>
           </tr>

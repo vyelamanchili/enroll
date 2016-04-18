@@ -69,41 +69,22 @@
         <% premium_percentage = (premium / total) * 100 %>
         <% likely_percentage = ((likely - premium)/total)*100 %>
         <% maximum_percentage = (maximum/total)*100 %>
+
+
         <% likely_percentage = likely_percentage + premium_percentage >= maximum_percentage ? maximum_percentage - premium_percentage : likely_percentage %>
-        <!-- <% costs = [premium_percentage, likely_percentage, maximum_percentage] %>
-        <% costs.each do |cost| %>
-          <% if cost <= 7.5 %>
-            <% adjusted_graph = true %>
-            <% cost = 7.5 - cost %>
-            <% cost_below_min << cost %>
-          <% end %>
-        <% end %>
-        <%= cost_below_min %>
-        <% if cost_below_min.present? %>
-          <% difference = cost_below_min.sort_by(&:to_i).reverse.first %>
-          <% total = (total - (difference*3)) %>
-          <% premium_percentage = ((premium / total) * 100).round(2).to_s[0..3] %>
-          <% likely_percentage = (((likely - premium)/total)*100).round(2).to_s[0..3] %>
-          <% maximum_percentage = (((maximum - likely )/total)*100).round(2).to_s[0..3] %>
-        <% end %> -->
 
-
-
-        <!-- are any of my numbers less than 7.5%?
-        if something is 6% i need add 1.5% now my new bas is not 100 but 95.5 because I am going to add 1.5 to everything
-        and im only doing this if everything is less than 7.5 percent -->
 
         <h5><%= plan.name %></h5>
         <div class="progress">
-          <div class="progress-bar progress-bar-success progress-bar-striped" style="width: <%= premium_percentage %>%" data-toggle="tooltip" title="Premium: your 12 monthly payments">
+          <div class="progress-bar progress-bar-success progress-bar-striped" style="width: <%= premium_percentage.floor %>%" data-toggle="tooltip" title="Premium: your 12 monthly payments">
             <%= number_to_currency(premium, precision: 0) %>
           </div>
-          <div class="progress-bar progress-bar-warning progress-bar-striped" style="width: <%= likely_percentage %>%" data-toggle="tooltip" title="Estimated Out-of-Pocket: the amount you’re likely to spend on medical services this year based on the health information you gave us">
+          <div class="progress-bar progress-bar-warning progress-bar-striped" style="width: <%= likely_percentage.floor %>%" data-toggle="tooltip" title="Estimated Out-of-Pocket: the amount you’re likely to spend on medical services this year based on the health information you gave us">
             <%= number_to_currency((likely-premium), precision: 0) %>
           </div>
         </div>
         <div class="progress">
-          <div class="progress-bar progress-bar-danger progress-bar-striped" style="width: <%= maximum_percentage %>%" data-toggle="tooltip" title="Maximum cost: the most you could pay in one year with this plan">
+          <div class="progress-bar progress-bar-danger progress-bar-striped" style="width: <%= maximum_percentage.floor %>%" data-toggle="tooltip" title="Maximum cost: the most you could pay in one year with this plan">
             <%= number_to_currency(maximum, precision: 0) %>
           </div>
         </div>
