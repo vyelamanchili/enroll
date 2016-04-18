@@ -1,10 +1,11 @@
 Feature: Broker Assigns a General Agency to an Employer
 
-  Scenario: A Broker Assigns a General Agency to an Employer
+  Background:
     Given a general agency, approved, confirmed, exists
     And a broker exists
     And an employer exists for ga
 
+  Scenario: A Broker Assigns a General Agency to an Employer
     When the employer login in
     Then the employer should see the home of employer
     When the employer click the link of brokers
@@ -53,10 +54,6 @@ Feature: Broker Assigns a General Agency to an Employer
     Then the ga should see the home of ga
 
   Scenario: A Broker have the ability to assign default GA for any future employers that come on board
-    Given a general agency, approved, confirmed, exists
-    And a broker exists
-    And an employer exists for ga
-
     When the broker login in
     Then the broker should see the home of broker
     When the broker visits their general agencies page
@@ -76,7 +73,7 @@ Feature: Broker Assigns a General Agency to an Employer
     When the employer confirms broker selection
     Then the employer should see broker selected successful message
     When the employer clicks on the Brokers tab
-    Then the employer should see broker active for the employer
+    Then the employer should see Acarehouse broker active for the employer
     Then the employer logs out
 
     When the ga login in
@@ -85,10 +82,7 @@ Feature: Broker Assigns a General Agency to an Employer
     Then the ga should see the employer
 
   Scenario: A Broker have the ability to assign default GA for any old employers
-    Given a general agency, approved, confirmed, exists
     Given another general agency-ga2, approved, confirmed, exists
-    And a broker exists
-    And an employer exists for ga
 
     When the employer login in
     Then the employer should see the home of employer
@@ -102,7 +96,7 @@ Feature: Broker Assigns a General Agency to an Employer
     When the employer confirms broker selection
     Then the employer should see broker selected successful message
     When the employer clicks on the Brokers tab
-    Then the employer should see broker active for the employer
+    Then the employer should see Acarehouse broker active for the employer
     Then the employer logs out
 
     When the broker login in
@@ -130,10 +124,6 @@ Feature: Broker Assigns a General Agency to an Employer
     Then the ga2 should not see the employer
 
   Scenario: If broker already assigned some ERs, while the Broker remove his default GA, that particular GA should automatically loss the permission to those ERs
-    Given a general agency, approved, confirmed, exists
-    And a broker exists
-    And an employer exists for ga
-
     When the employer login in
     Then the employer should see the home of employer
     When the employer click the link of brokers
@@ -146,7 +136,7 @@ Feature: Broker Assigns a General Agency to an Employer
     When the employer confirms broker selection
     Then the employer should see broker selected successful message
     When the employer clicks on the Brokers tab
-    Then the employer should see broker active for the employer
+    Then the employer should see Acarehouse broker active for the employer
     Then the employer logs out
 
     When the broker login in

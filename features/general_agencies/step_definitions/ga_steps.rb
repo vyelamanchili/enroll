@@ -205,6 +205,7 @@ When /^the employer login in$/ do
 
   fill_in "user[email]", with: "employer1@dc.gov"
   find('#user_email').set("employer1@dc.gov")
+  find('#user_password').set("1qaz@WSX")
   fill_in "user[password]", with: "1qaz@WSX"
   fill_in "user[email]", :with => "employer1@dc.gov" unless find(:xpath, '//*[@id="user_email"]').value == "employer1@dc.gov"
   find('.interaction-click-control-sign-in').click
