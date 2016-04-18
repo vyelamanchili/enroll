@@ -11,7 +11,7 @@
 
 	<h3>Step 1 - Select the quote you wish to compare costs or plan information</h3>
   <div>&nbsp;</div>
-  <%= select_tag "quote-dropdown", options_from_collection_for_select(@quotes, "id", "quote_name"), { } %>
+  <%= select_tag "quote", options_from_collection_for_select(@quotes, "id", "quote_name"), { } %>
   <br/>
 
 	<h3> Step 2 - Define employer contribution percentages</h3>
