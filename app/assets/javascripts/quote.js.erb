@@ -77,7 +77,7 @@ function set_relationship_pct(relationship, val) {
   $("[name~='" + relationship + "']").val(val)
   $.ajax({
     type: 'POST',
-    data: {benefits: window.relationship_benefits, id: $('#quote option').val() },
+    data: {benefits: window.relationship_benefits, id: $('#quote-dropdown option:selected').val() },
     url: '/broker_agencies/quotes/update_benefits.js',
   }).done(function(response){
     window.plan_costs = response

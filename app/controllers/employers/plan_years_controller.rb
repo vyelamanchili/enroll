@@ -337,7 +337,7 @@ class Employers::PlanYearsController < ApplicationController
     @plan_option_kind = params[:plan_option_kind]
     @plan = Plan.find(params[:reference_plan_id])
     @plan_year = ::Forms::PlanYearForm.build(@employer_profile, plan_year_params)
- 
+
     @benefit_group = @plan_year.benefit_groups[0]
 
     if @coverage_type == '.dental'
@@ -383,7 +383,7 @@ class Employers::PlanYearsController < ApplicationController
 
     employee_costs = @plan_year.employer_profile.census_employees.active.inject({}) do |census_employees, employee|
 
-     
+
       costs = {
         ref_plan_cost: @benefit_group.employee_cost_for_plan(employee, plan)
       }
@@ -404,6 +404,8 @@ class Employers::PlanYearsController < ApplicationController
       lowest_plan_employer_cost: @benefit_group.monthly_employer_contribution_amount(@benefit_group.lowest_cost_plan),
       highest_plan_employer_cost: @benefit_group.monthly_employer_contribution_amount(@benefit_group.highest_cost_plan)
       })
+
+      binding.pry
   end
 
   def find_employer

@@ -31,21 +31,23 @@ class Quote
   accepts_nested_attributes_for :quote_households, reject_if: :all_blank
 
 
-  def roster_employee_cost(plan_id)
+  def roster_employee_cost(plan_id, reference_plan_id)
     p = Plan.find(plan_id)
+    reference_plan = Plan.find(reference_plan_id)
     cost = 0
     self.quote_households.each do |hh|
-      pcd = PlanCostDecorator.new(p, hh, self, p)
+      pcd = PlanCostDecorator.new(p, hh, self, reference_plan)
       cost = cost + pcd.total_employee_cost.round(2)
     end
     cost.round(2)
   end
 
-  def roster_employeer_contribution(plan_id)
+  def roster_employer_contribution(plan_id, reference_plan_id)
     p = Plan.find(plan_id)
+    reference_plan = Plan.find(reference_plan_id)
     cost = 0
     self.quote_households.each do |hh|
-      pcd = PlanCostDecorator.new(p, hh, self, p)
+      pcd = PlanCostDecorator.new(p, hh, self, reference_plan)
       cost = cost + pcd.total_employer_contribution.round(2)
     end
     cost.round(2)
@@ -60,7 +62,7 @@ class Quote
   def cost_by_offerings(plan)
     plan_costs_by_offerings = Hash.new
     PLAN_OPTION_KINDS.map { |offering| plan_costs_by_offerings[offering] = bounding_cost_plans(plan, offering.to_s) }
-    plan_costs_by_offerings.merge({"reference_plan_cost" => roster_employeer_contribution(plan.id)})
+    plan_costs_by_offerings.merge({"reference_plan_cost" => roster_employer_contribution(plan.id, plan.id)})
   end
 
   def bounding_cost_plans (reference_plan, plan_option_kind)
@@ -77,7 +79,7 @@ class Quote
       if plans.size > 0
         plans_by_cost = plans.sort_by { |plan| plan.premium_tables.first.cost }
 
-        {"lowest_cost_plan_cost" => roster_employeer_contribution(plans_by_cost.first.id), "highest_cost_plan_cost" => roster_employeer_contribution(plans_by_cost.last.id)}
+        {"lowest_cost_plan_cost" => roster_employer_contribution(plans_by_cost.first.id, reference_plan.id), "highest_cost_plan_cost" => roster_employer_contribution(plans_by_cost.last.id, reference_plan.id)}
       else
         {}
       end
