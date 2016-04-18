@@ -5,6 +5,7 @@ class BrokerAgencies::ProfilesController < ApplicationController
   before_action :find_broker_agency_profile, only: [:show, :edit, :update, :employers, :assign, :update_assign, :manage_employers, :general_agency_index, :clear_assign_for_employer, :set_default_ga]
   before_action :set_current_person, only: [:staff_index]
   before_action :check_general_agency_profile_permissions_assign, only: [:assign, :update_assign, :clear_assign_for_employer]
+  before_action :check_general_agency_profile_permissions_set_default, only: [:set_default_ga]
 
   def index
     @broker_agency_profiles = BrokerAgencyProfile.all
@@ -293,14 +294,23 @@ class BrokerAgencies::ProfilesController < ApplicationController
   end
 
   def update_ga_for_employers(broker_agency_profile)
-    return if broker_agency_profile.blank? || broker_agency_profile.default_general_agency_profile.blank?
+    return if broker_agency_profile.blank?
 
     orgs = Organization.by_broker_agency_profile(broker_agency_profile.id)
     employer_profiles = orgs.map {|o| o.employer_profile}
-    employer_profiles.each do |employer_profile|
-      employer_profile.hire_general_agency(broker_agency_profile.default_general_agency_profile)
-      employer_profile.save
-      send_general_agency_assign_msg(broker_agency_profile.default_general_agency_profile, employer_profile, 'Hire')
+    if broker_agency_profile.default_general_agency_profile.blank?
+      employer_profiles.each do |employer_profile|
+        general_agency = employer_profile.active_general_agency_account.general_agency_profile rescue nil
+        send_general_agency_assign_msg(general_agency, employer_profile, 'Terminate') if general_agency
+        employer_profile.fire_general_agency
+        employer_profile.save
+      end
+    else
+      employer_profiles.each do |employer_profile|
+        employer_profile.hire_general_agency(broker_agency_profile.default_general_agency_profile)
+        employer_profile.save
+        send_general_agency_assign_msg(broker_agency_profile.default_general_agency_profile, employer_profile, 'Hire')
+      end
     end
   end
 
@@ -316,5 +326,11 @@ class BrokerAgencies::ProfilesController < ApplicationController
     @broker_agency_profile = BrokerAgencyProfile.find(params[:id])
     policy = ::AccessPolicies::GeneralAgencyProfile.new(current_user)
     policy.authorize_assign(self, @broker_agency_profile)
+  end
+
+  def check_general_agency_profile_permissions_set_default
+    @broker_agency_profile = BrokerAgencyProfile.find(params[:id])
+    policy = ::AccessPolicies::GeneralAgencyProfile.new(current_user)
+    policy.authorize_set_default_ga(self, @broker_agency_profile)
   end
 end
