@@ -354,7 +354,7 @@ Then /^the employer has assigned to GA2$/ do
   expect(page).to have_content('Zooxy')
 end
 
-Then /^the broker should see the list of general agencies$/ do
+Then /^the broker should see the Clear Default GA in the list of general agencies$/ do
   expect(page).to have_content('General Agencies')
   expect(page).to have_content('Clear Default GA')
   #expect(page).to have_content('Zooxy')

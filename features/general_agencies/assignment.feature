@@ -34,7 +34,7 @@ Feature: Broker Assigns a General Agency to an Employer
     Then the employer will not be assigned that general agency
 
     When the broker visits their general agencies page
-    Then the broker should see the list of general agencies
+    Then the broker should see the Clear Default GA in the list of general agencies
     And the broker set default ga
     When the broker visits their Employers page
     Then the employer will be assigned that general agency
@@ -57,7 +57,7 @@ Feature: Broker Assigns a General Agency to an Employer
     When the broker login in
     Then the broker should see the home of broker
     When the broker visits their general agencies page
-    Then the broker should see the list of general agencies
+    Then the broker should see the Clear Default GA in the list of general agencies
     And the broker set default ga
     Then the broker logs out
 
@@ -112,7 +112,7 @@ Feature: Broker Assigns a General Agency to an Employer
 
     # set default ga(ga1)
     When the broker visits their general agencies page
-    Then the broker should see the list of general agencies
+    Then the broker should see the Clear Default GA in the list of general agencies
     And the broker set default ga
     When the broker visits their Employers page
     Then the employer will be assigned that general agency
@@ -148,7 +148,7 @@ Feature: Broker Assigns a General Agency to an Employer
     Then the employer will be assigned that general agency
 
     When the broker visits their general agencies page
-    Then the broker should see the list of general agencies
+    Then the broker should see the Clear Default GA in the list of general agencies
     When the broker click the link of clear default ga
     When the broker visits their Employers page
     Then the employer will not be assigned that general agency
