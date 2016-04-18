@@ -15,7 +15,7 @@
        <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="false">
        	<div class="panel panel-default">
        		<div class="panel-heading" role="tab" id="quote-mgmt-header">
-       				<a role="button" data-toggle="collapse" data-parent="#accordion" href="#quote-mgmt" aria-expanded="true" aria-controls="quote-mgmt">
+       				<a role="button" data-toggle="collapse" data-parent="#accordion" href="#quote-mgmt" aria-expanded="false" aria-controls="quote-mgmt">
        					Quote/Roster Management <span class="glyphicon glyphicon-triangle-right" aria-hidden="true"></span>
        				</a>
        		</div>
@@ -26,16 +26,6 @@
        	  </div>
        	</div>
 
-
-
-        <!--<a data-toggle="collapse" href="#collapseExample" aria-expanded="true" aria-controls="collapseExample">
-           <div class='well edge'> Quote/Roster Management
-               <span class="glyphicon glyphicon-triangle-right" aria-hidden="true"></span>
-           </div>
-        </a>
-        <div class="collapse in" id="collapseExample">
-            <=render "my_quotes" , quote_results: @quote_results >
-        </div>-->
 
         	<div class="panel panel-default">
         		<div class="panel-heading" role="tab" id="feature-mgmt-header">
@@ -50,20 +40,20 @@
         	  </div>
         	</div>
 
-        <!--<a data-toggle="collapse" href="#collapseExample1" aria-expanded="true" aria-controls="collapseExample1" >
-            <div class='well edge'>Features and cost criteria
-                <span class="glyphicon glyphicon-triangle-right" aria-hidden="true"></span>
-            </div>
-        </a>
-         <div class="collapse in" id="collapseExample1">
-            <= render partial: 'my_features' >
-         </div>-->
+          <div class="panel panel-default">
+        		<div class="panel-heading" role="tab" id="plan-selection-mgmt-header">
+        				<a role="button" data-toggle="collapse" data-parent="#accordion" href="#plan-selection-mgmt" aria-expanded="true" aria-controls="plan-selection-mgmt">
+        					Plan Selection <span class="glyphicon glyphicon-triangle-right" aria-hidden="true"></span>
+        				</a>
+        		</div>
+        	  <div id="plan-selection-mgmt" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="">
 
-        <!--<a data-toggle="collapse" href="#collapseExample2" aria-expanded="false" aria-controls="collapseExample2" >
-            <div class='well edge'>Select plans
-                <span class="glyphicon glyphicon-triangle-right" aria-hidden="true"></span>
-            </div>
-        </a>-->
+
+
+            	<%= render partial: 'my_plans' %>
+
+        	  </div>
+        	</div>
 
         <% end %>
     <%if @qhps%>
