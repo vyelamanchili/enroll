@@ -30,7 +30,6 @@ class Quote
   # accepts_nested_attributes_for :quote_households
   accepts_nested_attributes_for :quote_households, reject_if: :all_blank
 
-
   def roster_employee_cost(plan_id, reference_plan_id)
     p = Plan.find(plan_id)
     reference_plan = Plan.find(reference_plan_id)
@@ -40,6 +39,33 @@ class Quote
       cost = cost + pcd.total_employee_cost.round(2)
     end
     cost.round(2)
+  end
+
+  def roster_cost_all_plans
+    @plan_costs= {}
+    combined_family = flat_roster_for_premiums
+    $quote_shop_health_plans.each {|plan|
+      @plan_costs[plan.id.to_s] = roster_premium(plan, combined_family)
+    }
+    @plan_costs
+  end
+
+  def roster_premium(plan, combined_family)
+    roster_premium = Hash.new{|h,k| h[k]=0.00}
+    pcd = PlanCostDecoratorQuote.new(plan, nil, self, plan)
+    reference_date = pcd.plan_year_start_on
+    pcd.add_premiums(combined_family, reference_date)
+
+  end
+
+  def flat_roster_for_premiums
+    p = $quote_shop_health_plans[0]  #any plan
+    combined_family = Hash.new{|h,k| h[k] = 0}
+    self.quote_households.each do |hh|
+      pcd = PlanCostDecoratorQuote.new(p, hh, self, p)
+      pcd.add_members(combined_family)
+    end
+    combined_family
   end
 
   def roster_employer_contribution(plan_id, reference_plan_id)
