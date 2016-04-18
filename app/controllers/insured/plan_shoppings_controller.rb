@@ -188,11 +188,13 @@ class Insured::PlanShoppingsController < ApplicationController
       when 'maximum_cost'
         @plans.each do |plan|
           moop = maximum_out_of_pocket(plan)
+          premium = current_cost(plan.total_employee_cost*12, plan.ehb, nil, 'shopping', plan.can_use_aptc?)
+
           if @person.primary_family.active_family_members.count > 1
-            maximum_out_of_pocket = moop.in_network_tier_1_individual_amount.gsub(/[$,]/, '').to_f
+            maximum_out_of_pocket = moop.in_network_tier_1_individual_amount.gsub(/[$,]/, '').to_f + premium
             plan.assign_attributes({ :maximum_out_of_pocket => maximum_out_of_pocket })
           else
-            maximum_out_of_pocket = moop.in_network_tier_1_family_amount.gsub(/[$,]/, '').to_f
+            maximum_out_of_pocket = moop.in_network_tier_1_family_amount.gsub(/[$,]/, '').to_f + premium
             plan.assign_attributes({ :maximum_out_of_pocket => maximum_out_of_pocket })
           end
         end
