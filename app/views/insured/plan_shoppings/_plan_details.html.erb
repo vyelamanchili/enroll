@@ -1,3 +1,4 @@
+<% @plans.each_with_index do |plan, i | %>
 <% plan_carrier = Caches::MongoidCache.lookup(CarrierProfile, plan.carrier_profile_id) { plan.carrier_profile } %>
 <% csv = Products::QhpCostShareVariance.find_qhp_cost_share_variances(["#{plan.hios_id}"], @hbx_enrollment.effective_on.year, @hbx_enrollment.coverage_kind).first %>
 <% moop = csv.qhp_maximum_out_of_pockets.where(name: "Maximum Out of Pocket for Medical and Drug EHB Benefits (Total)").last %>
@@ -44,6 +45,7 @@
             <td>LEVEL</td>
             <td>NETWORK</td>
             <td>DEDUCTIBLE</td>
+            <td>MAX OOP <i class="fa fa-info-circle" aria-hidden="true" data-toggle="tooltip" <% if i == 0 %>data-placement="bottom"<% end %> title="Maximum Out-of-Pocket: The highest possible out-of-pocket cost for your insurance plan. This amount does not include services the plan doesn’t cover, like out-of-network care, experimental treatments, or long-term nursing care."></i></td>
           </tr>
           <tr>
             <td><%= plan.plan_type ? plan.plan_type.upcase : "" %></td>
@@ -51,6 +53,15 @@
             <td><span class="<%= plan_level.downcase %>-icon"><%= plan_level != 'Dental' ? plan_level : display_dental_metal_level(plan).humanize %></span></td>
             <td><%= plan.nationwide ? "Nationwide" : "DC-Metro" %></td>
             <td><%= plan.deductible %></td>
+            <% csv = Products::QhpCostShareVariance.find_qhp_cost_share_variances(["#{plan.hios_id}"], @hbx_enrollment.effective_on.year, @hbx_enrollment.coverage_kind).first %>
+            <% moop = csv.qhp_maximum_out_of_pockets.where(name: "Maximum Out of Pocket for Medical and Drug EHB Benefits (Total)").last %>
+            <% premium = current_cost(plan.total_employee_cost*12, plan.ehb, nil, 'shopping', plan.can_use_aptc?) %>
+            <% if @person.primary_family.active_family_members.count > 1 %>
+            <% maximum = moop.in_network_tier_1_individual_amount.gsub(/[$,]/, '').to_i + premium %>
+            <% else %>
+            <% maximum = moop.in_network_tier_1_family_amount.gsub(/[$,]/, '').to_i + premium %>
+            <% end %>
+            <td><%= number_to_currency(maximum, precision: 0) %></td>
           </tr>
           </tbody>
         </table>
@@ -77,6 +88,7 @@
     </div>
   </div>
 </div>
+<% end %>
 
 <style type="text/css">
     .fa-bookmark, .fa-check-square-o {

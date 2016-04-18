@@ -180,11 +180,11 @@ class Insured::PlanShoppingsController < ApplicationController
     case @sort
       when 'premium'
         @plans = @plans.sort_by(&:total_employee_cost).sort{|a,b| b.csr_variant_id <=> a.csr_variant_id}
-      when 'likely_cost'
+      when 'estimated_out_of_pocket'
         @plans.each do |plan|
-            plan.assign_attributes({ :likely_cost => (plan.total_employee_cost*1.33) })
+            plan.assign_attributes({ :estimated_out_of_pocket => (plan.total_employee_cost*1.33) })
           end
-        @plans = @plans.sort_by(&:likely_cost).sort{|a,b| b.csr_variant_id <=> a.csr_variant_id}
+        @plans = @plans.sort_by(&:estimated_out_of_pocket).sort{|a,b| b.csr_variant_id <=> a.csr_variant_id}
       when 'maximum_cost'
         @plans.each do |plan|
           moop = maximum_out_of_pocket(plan)

@@ -24,7 +24,7 @@
                   <% if @hbx_enrollment.is_shop? && @hbx_enrollment.coverage_kind == "health" %>
                     <div class="btn-group" role="group" id='sort_by_shop'>
                       <%= link_to 'Premium', plans_insured_plan_shopping_path(id: @hbx_enrollment.id, change_plan: @change_plan, market_kind: @market_kind, coverage_kind: @coverage_kind, enrollment_kind: @enrollment_kind, sort: 'premium'), remote: true, class: "btn btn-default" %>
-                      <%= link_to 'Likely Cost', plans_insured_plan_shopping_path(id: @hbx_enrollment.id, change_plan: @change_plan, market_kind: @market_kind, coverage_kind: @coverage_kind, enrollment_kind: @enrollment_kind, sort: 'likely_cost'), remote: true, class: "btn btn-default" %>
+                      <%= link_to 'Estimated Out-of-Pocket', plans_insured_plan_shopping_path(id: @hbx_enrollment.id, change_plan: @change_plan, market_kind: @market_kind, coverage_kind: @coverage_kind, enrollment_kind: @enrollment_kind, sort: 'estimated_out_of_pocket'), remote: true, class: "btn btn-default" %>
                       <%= link_to 'Maximum Cost', plans_insured_plan_shopping_path(id: @hbx_enrollment.id, change_plan: @change_plan, market_kind: @market_kind, coverage_kind: @coverage_kind, enrollment_kind: @enrollment_kind, sort: 'maximum_cost'), remote: true, class: "btn btn-default" %>
                     </div>
                   <% else %>
@@ -135,7 +135,7 @@ $(document).ready(function() {
   %>
     $(".plan-metal-level-selection-filter").attr("disabled", true);
   <% end %>
-  
+
   $('.sort-plans a').on('click', function() {
     $('.smart-plans').html("<br/><br/><br/><span class='text-block text-center col-xs-12'><i class='fa fa-spinner fa-spin fa-2x' style='color: #007bc4;'></i><br/><h4 class='text-center'>Loading plans...</h4></span><br class='clear'/>");
     $('#plans, .compare-selected-plans-link').hide();
