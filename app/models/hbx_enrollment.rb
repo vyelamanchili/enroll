@@ -98,6 +98,7 @@ class HbxEnrollment
   field :waiver_reason, type: String
   field :published_to_bus_at, type: DateTime
   field :review_status, type: String, default: "incomplete"
+  field :special_verification_period, type: DateTime
 
   associated_with_one :benefit_group, :benefit_group_id, "BenefitGroup"
   associated_with_one :benefit_group_assignment, :benefit_group_assignment_id, "BenefitGroupAssignment"
@@ -125,6 +126,7 @@ class HbxEnrollment
   scope :with_in,             ->(time_limit){ where(:created_at.gte => time_limit) }
   scope :shop_market,         ->{ where(:kind => "employer_sponsored") }
   scope :individual_market,   ->{ where(:kind.ne => "employer_sponsored") }
+  scope :verification_needed, ->{ where(:aasm_state => "enrolled_contingent", :effective_on.gte => (TimeKeeper.date_of_record - 95.days)).or({:terminated_on => nil }, {:terminated_on.gt => TimeKeeper.date_of_record}) }
 
   scope :canceled, -> { where(:aasm_state.in => CANCELED_STATUSES) }
   #scope :terminated, -> { where(:aasm_state.in => TERMINATED_STATUSES, :terminated_on.gte => TimeKeeper.date_of_record.beginning_of_day) }
@@ -294,20 +296,21 @@ class HbxEnrollment
 
   def cancel_previous(year)
 
-    #Perform cancel of previous enrollments for the same plan year
+    #Perform cancel/terms of previous enrollments for the same plan year
     self.household.hbx_enrollments.ne(id: id).by_coverage_kind(self.coverage_kind).by_year(year).cancel_eligible.by_kind(self.kind).each do |p|
 
       p.update_attributes(enrollment_signature: p.generate_hbx_signature) if !p.enrollment_signature.present?
 
-      if (p.enrollment_signature == self.enrollment_signature && p.plan.carrier_profile_id == self.plan.try(:carrier_profile_id) && p.kind != "employer_sponsored" && TimeKeeper.date_of_record < p.effective_on) || p.kind == "employer_sponsored"
+
+      if (p.enrollment_signature == self.enrollment_signature && p.plan.carrier_profile_id == self.plan.try(:carrier_profile_id) && p.kind != "employer_sponsored" && TimeKeeper.date_of_record < p.effective_on) || (p.kind == "employer_sponsored" && TimeKeeper.date_of_record < p.effective_on)
         if p.may_cancel_coverage?
           p.cancel_coverage!
           p.update_current(terminated_on: p.effective_on)
         end
-      elsif p.enrollment_signature == self.enrollment_signature && p.plan.carrier_profile_id == self.plan.try(:carrier_profile_id) && p.kind != "employer_sponsored" && TimeKeeper.date_of_record >= p.effective_on
+      elsif (p.enrollment_signature == self.enrollment_signature && p.plan.carrier_profile_id == self.plan.try(:carrier_profile_id) && p.kind != "employer_sponsored" && TimeKeeper.date_of_record >= p.effective_on) || (p.kind == "employer_sponsored" && TimeKeeper.date_of_record >= p.effective_on)
         if p.may_terminate_coverage?
-          term_date = self.effective_on - 1
-          term_date = TimeKeeper.date_of_record + 14 if (TimeKeeper.date_of_record + 14) > term_date
+          term_date = self.effective_on - 1.day
+          term_date = TimeKeeper.date_of_record + 14.days if (TimeKeeper.date_of_record + 14.days) > term_date
 
           p.terminate_coverage
           p.update_current(terminated_on: term_date)
@@ -803,13 +806,11 @@ class HbxEnrollment
   def self.find_shop_and_health_by_benefit_group_assignment(benefit_group_assignment)
     return [] if benefit_group_assignment.blank?
     benefit_group_assignment_id = benefit_group_assignment.id
-    return [] if benefit_group_assignment_id.blank?
     families = Family.where(:"households.hbx_enrollments.benefit_group_assignment_id" => benefit_group_assignment_id)
-
     enrollment_list = []
     families.each do |family|
       family.households.each do |household|
-        household.hbx_enrollments.show_enrollments.shop_market.by_coverage_kind("health").each do |enrollment|
+        household.hbx_enrollments.show_enrollments_sans_canceled.shop_market.by_coverage_kind("health").each do |enrollment|
           enrollment_list << enrollment if benefit_group_assignment_id.to_s == enrollment.benefit_group_assignment_id.to_s
         end
       end
@@ -981,7 +982,7 @@ class HbxEnrollment
 
   def can_select_coverage?
     return true unless is_shop?
-    
+
     if employee_role.can_enroll_as_new_hire?
       coverage_effective_date = employee_role.coverage_effective_on
     elsif special_enrollment_period.present? && special_enrollment_period.contains?(TimeKeeper.date_of_record)
@@ -1015,7 +1016,7 @@ class HbxEnrollment
     if (enrollment_kind == "special_enrollment")
       if special_enrollment_period.blank?
         return "unknown_sep"
-      end 
+      end
       return special_enrollment_period.qualifying_life_event_kind.reason
     end
     return "open_enrollment" if !is_shop?

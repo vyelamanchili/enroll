@@ -51,7 +51,7 @@ class Person
 
   field :is_active, type: Boolean, default: true
   field :updated_by, type: String
-  field :no_ssn, type: String #ConsumerRole TODO TODOJF
+  field :no_ssn, type: String #ConsumerRole TODO / Enumeration is from the form wtf?
   # Login account
   belongs_to :user
 
@@ -350,7 +350,7 @@ class Person
   # collect all verification types user can have based on information he provided
   def verification_types
     verification_types = []
-    verification_types << 'SSN' if self.ssn
+    verification_types << 'Social Security Number' if self.ssn
     if self.us_citizen
       verification_types << 'Citizenship'
     else

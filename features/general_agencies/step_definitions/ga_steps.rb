@@ -31,9 +31,6 @@ When /^they complete the new general agency form and hit the 'Submit' button$/ d
   fill_in 'organization[dba]', with: company_name
   fill_in 'organization[fein]', with: '333333333'
 
-  find(:xpath, "//p[contains(., 'Select Entity Kind')]").click
-  find(:xpath, "//li[contains(., 'S Corporation')]").click
-
   find(:xpath, "//p[contains(., 'Select Practice Area')]").click
   find(:xpath, "//li[contains(., 'Both – Individual & Family AND Small Business Marketplaces')]").click
 
@@ -208,6 +205,7 @@ When /^the employer login in$/ do
 
   fill_in "user[email]", with: "employer1@dc.gov"
   find('#user_email').set("employer1@dc.gov")
+  find('#user_password').set("1qaz@WSX")
   fill_in "user[password]", with: "1qaz@WSX"
   fill_in "user[email]", :with => "employer1@dc.gov" unless find(:xpath, '//*[@id="user_email"]').value == "employer1@dc.gov"
   find('.interaction-click-control-sign-in').click
@@ -226,7 +224,7 @@ Then /^the employer should see the broker agency$/ do
   expect(page).to have_content('Acarehouse')
 end
 
-Then /^the employer should see broker active for the employer$/ do
+Then /^the employer should see Acarehouse broker active for the employer$/ do
   expect(page).to have_content('Acarehouse')
   expect(page).to have_content('Active Broker')
 end
@@ -356,7 +354,7 @@ Then /^the employer has assigned to GA2$/ do
   expect(page).to have_content('Zooxy')
 end
 
-Then /^the broker should see the list of general agencies$/ do
+Then /^the broker should see the Clear Default GA in the list of general agencies$/ do
   expect(page).to have_content('General Agencies')
   expect(page).to have_content('Clear Default GA')
   #expect(page).to have_content('Zooxy')
