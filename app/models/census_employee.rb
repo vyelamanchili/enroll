@@ -453,9 +453,9 @@ class CensusEmployee < CensusMember
       errors.add(:employment_terminated_on, "can't occur before hiring date")
     end
   end
-
+  
   def check_coverage_terminated_on
-    if employment_terminated_on && employment_terminated_on <= TimeKeeper.date_of_record - 60.days
+    if employment_terminated_on && employment_terminated_on < TimeKeeper.date_of_record - 60.days
       errors.add(:base, "Employee termination must be within the past 60 days")
     end
   end
