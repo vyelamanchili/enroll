@@ -74,8 +74,9 @@ Then(/Individual should see a form to enter personal information$/) do
   fill_in "person_addresses_attributes_0_address_1", :with => "4900 USAA BLVD"
   fill_in "person_addresses_attributes_0_address_2", :with => "212"
   fill_in "person_addresses_attributes_0_city", :with=> "Washington"
-  find(:xpath, "//p[@class='label'][contains(., 'SELECT STATE')]").click
-  find(:xpath, '//*[@id="address_info"]/div/div[3]/div[2]/div/div[3]/div/ul/li[10]').click
+  # binding.pry
+  find(:xpath, "//p[@class='label'][. ='SELECT STATE ']").trigger('click')
+  find(:xpath, '//*[@id="address_info"]/div/div[3]/div[2]/div/div[3]/div/ul/li[10]').trigger('click')
   fill_in "person[addresses_attributes][0][zip]", :with => "20002"
   fill_in "person[phones_attributes][0][full_phone_number]", :with => "9999999999"
   screenshot("personal_form")
