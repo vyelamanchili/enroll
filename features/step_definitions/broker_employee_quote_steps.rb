@@ -37,15 +37,6 @@ When(/^click on the New Quote button$/) do
   click_link 'New Quote'
 end
 
-# When(/^click on the Add New Employee button$/) do
-#   click_link "Add New Employee"
-# end
-
-# Then(/^a new row should be added to Employee table$/) do
-#   expect(page).to have_selector('table input', count: 2)
-#   expect(page).to have_selector('table select', count: 1)
-# end
-
 
 When(/^click on the Upload Employee Roster button$/) do
   click_link "Upload Employee Roster"
@@ -59,8 +50,10 @@ When(/^the broker clicks on the Select File to Upload button$/) do
 end
 
 Then(/^the broker should see the data in the table$/) do
-  expect(page).to have_selector(:xpath,"//table//input[contains(@id, 'family_id')]",count: 3)
-  expect(page).to have_selector(:xpath,"//table//select[contains(@id, 'relationship')]",count: 3)
+  expect(page).to have_selector("input#quote_quote_households_attributes_0_family_id[value=\"1\"]")
+  expect(page).to have_selector("input#quote_quote_households_attributes_1_family_id[value=\"2\"]")
+  expect(page).to have_selector('div.panel.panel-default div input.uidatepicker', count: 4)
+  expect(page).to have_selector("#quote_quote_households_attributes_0_quote_members_attributes_0_dob[value=\"03/14/2016\"]")
 end
 
 When(/^broker clicks on Add member to this family$/) do

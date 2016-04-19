@@ -139,9 +139,7 @@ Then(/^.+ should see confirm modal dialog box$/) do
 end
 
 Then(/^.+ confirms? broker selection$/) do
-  within '.modal-dialog' do
-    find('input.btn-primary').click
-  end
+  find(:xpath, "//div[@class='modal fade in']//div[@class='modal-dialog']//input[@value='Confirm']").click
 end
 
 Then(/^.+ should see broker selected successful message$/) do
@@ -149,8 +147,9 @@ Then(/^.+ should see broker selected successful message$/) do
 end
 
 And (/^.+ should see broker active for the employer$/) do
-  expect(page).to have_content('Logistics Inc')
-  expect(page).to have_content('RICKY MARTIN')
+  wait_for_ajax(10)
+  expect(page).to have_content('Logistics Inc')  
+  expect(page).to have_content('Ricky Martin')
 end
 
 When(/^.+ terminates broker$/) do
