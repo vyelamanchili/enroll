@@ -257,6 +257,55 @@ RSpec.describe CensusEmployee, type: :model, dbclean: :after_each do
 
                         end
 
+                        context "and employee is terminated outside of 60 days from present day" do
+                          let(:latest_coverage_termination_date) {TimeKeeper.date_of_record - 60.days}
+                          let(:earliest_invalid_coverage_termiantion_date) {TimeKeeper.date_of_record - 61.days}
+                          let(:fifty_ninth_day) {TimeKeeper.date_of_record - 59.days}
+                          let(:earliest_valid_termination_date) {TimeKeeper.date_of_record}
+                          
+                          context "and employer selects the earliest valid termination date" do
+                            before do 
+                              initial_census_employee.terminate_employment!(earliest_valid_termination_date) 
+                              initial_census_employee.valid?
+                            end
+
+                            it "remains valid on the earliest termination date" do 
+                               expect(initial_census_employee.errors.messages).not_to include({base:["Employee termination must be within the past 60 days"]})                           
+                            end
+
+                          end
+                          
+                          context "and employer selects the latest valid termination date" do     
+                            before do 
+                              initial_census_employee.terminate_employment!(latest_coverage_termination_date) 
+                              initial_census_employee.valid?
+                            end
+                            it "remains valid on the latest termination date" do  
+                              expect(initial_census_employee.errors.messages).not_to include({base:["Employee termination must be within the past 60 days"]})
+                            end 
+                          end
+                          
+                          context "and employer selects the next to last valid termination date" do     
+                            before do
+                              initial_census_employee.terminate_employment!(fifty_ninth_day) 
+                              initial_census_employee.valid?
+                            end
+                            it "remains valid on the next to last valid termination date" do 
+                               expect(initial_census_employee.errors.messages).not_to include({base:["Employee termination must be within the past 60 days"]})
+                            end 
+                          end  
+
+                          context "and employer selects the first invalid termination date" do     
+                            before do 
+                              initial_census_employee.terminate_employment!(earliest_invalid_coverage_termiantion_date) 
+                              initial_census_employee.valid?
+                            end    
+                            it "becomes invalid on the first invalid termination date" do  
+                               expect(initial_census_employee.errors.messages).to include({base:["Employee termination must be within the past 60 days"]})
+                            end 
+                          end      
+                        end  
+
                         context "and employee is terminated and reported by employer on timely basis" do
                           let(:earliest_retro_coverage_termination_date)    { (TimeKeeper.date_of_record.advance(
                                                                                   Settings.
@@ -276,6 +325,7 @@ RSpec.describe CensusEmployee, type: :model, dbclean: :after_each do
                             before { initial_census_employee.terminate_employment!(invalid_employment_termination_date) }
 
                             it "calculated coverage termination date should preceed the valid coverage termination date" do
+                    
                               expect(invalid_coverage_termination_date).to be < earliest_retro_coverage_termination_date
                             end
 
