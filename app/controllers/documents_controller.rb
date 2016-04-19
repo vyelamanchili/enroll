@@ -66,6 +66,15 @@ class DocumentsController < ApplicationController
     redirect_to verification_insured_families_path
   end
 
+  def change_person_aasm_state
+    @doc_owner.consumer_role.import!
+    @doc_owner.consumer_role.save
+    respond_to do |format|
+           format.html {redirect_to exchanges_hbx_profiles_root_path, notice: "Person Verification Status Updated"}
+           end
+
+  end
+
   def extend_due_date
     family = Family.find(params[:family_id])
       if family.try(:active_household).try(:hbx_enrollments).verification_needed.any?
