@@ -57,6 +57,7 @@ class BrokerAgencies::QuotesController < ApplicationController
     @max_deductible = 6000
 
     @benefit_pcts_json = @bp_hash.to_json
+    @roster_premiums_json = @q.roster_cost_all_plans.to_json
   end
 
   def edit
@@ -175,6 +176,15 @@ class BrokerAgencies::QuotesController < ApplicationController
     #}
 
     render json:  costs.to_json
+  end
+
+
+  def get_quote_info
+
+    @bp_hash = {}
+    @q =  Quote.find(params[:quote])
+    @q.quote_relationship_benefits.each{|bp| @bp_hash[bp.relationship] = bp.premium_pct}
+    render json: {'relationship_benefits' => @bp_hash, 'roster_premiums' => @q.roster_cost_all_plans}
   end
 
 private

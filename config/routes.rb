@@ -271,6 +271,7 @@ Rails.application.routes.draw do
         post :build_employee_roster
         get :new_household , :format => "js"
         post :update_benefits
+        get :get_quote_info
       end
       member do 
         post :download_employee_roster

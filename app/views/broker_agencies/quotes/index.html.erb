@@ -123,6 +123,7 @@ $(document).on('ready page:load', function () {
       $('[aria-labelledby="compare_benefits"]').html('')  
     })
     window.relationship_benefits = <%= raw @benefit_pcts_json %>
+    window.roster_premiums = <%= raw @roster_premiums_json %>
     slider_listeners()
     toggle_plans()
 })
