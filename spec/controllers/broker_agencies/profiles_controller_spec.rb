@@ -282,21 +282,22 @@ RSpec.describe BrokerAgencies::ProfilesController do
     end
   end
 
-  describe "GET general_agency_index" do
+  describe "GET assign_history" do
+    let(:general_agency_profile) { FactoryGirl.create(:general_agency_profile) }
     let(:broker_role) { FactoryGirl.create(:broker_role) }
     let(:person) { broker_role.person }
     let(:user) { FactoryGirl.create(:user, person: person, roles: ['broker']) }
     before :each do
       sign_in user
-      xhr :get, :assign, id: broker_agency_profile.id
+      xhr :get, :assign_history, id: broker_agency_profile.id, format: :js
     end
 
-    it "returns http success" do
+    it "should return http success" do
       expect(response).to have_http_status(:success)
     end
 
-    it "should get general_agency_profiles" do
-      expect(assigns(:general_agency_profiles).count).to eq GeneralAgencyProfile.count
+    it "should get general_agency_accounts" do
+      expect(assigns(:general_agency_account_history)).to eq GeneralAgencyAccount.all.first(20)
     end
   end
 
@@ -311,8 +312,12 @@ RSpec.describe BrokerAgencies::ProfilesController do
       xhr :get, :clear_assign_for_employer, id: broker_agency_profile.id, employer_id: employer_profile.id
     end
 
-    it "should redirect" do
-      expect(response).to have_http_status(:redirect)
+    it "should http success" do
+      expect(response).to have_http_status(:success)
+    end
+
+    it "should get employer_profile" do
+      expect(assigns(:employer_profile)).to eq employer_profile
     end
   end
 

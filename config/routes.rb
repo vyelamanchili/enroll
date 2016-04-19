@@ -252,6 +252,7 @@ Rails.application.routes.draw do
         get :messages
         get :staff_index
         get :agency_messages
+        get :assign_history
       end
       member do
         get :general_agency_index
