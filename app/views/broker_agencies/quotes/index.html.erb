@@ -5,32 +5,37 @@
 
         <%= form_tag(broker_agencies_quotes_root_path, method: :get) do  %>
 
-       <input name='employee' value='50' type='hidden'>
-       <input name='spouse' value='0' type='hidden'>
-       <input name='domestic_partner' value='0' type='hidden'>
-       <input name='child_under_26' value='0' type='hidden'>
-       <input name='child_26_and_over' value='0' type='hidden'>
-       <%= hidden_field_tag(rb_emp: '777') %>
+         <input name='employee' value='50' type='hidden'>
+         <input name='spouse' value='0' type='hidden'>
+         <input name='domestic_partner' value='0' type='hidden'>
+         <input name='child_under_26' value='0' type='hidden'>
+         <%= hidden_field_tag(rb_emp: '777') %>
 
-       <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="false">
-       	<div class="panel panel-default">
-       		<div class="panel-heading" role="tab" id="quote-mgmt-header">
-       				<a role="button" data-toggle="collapse" data-parent="#accordion" href="#quote-mgmt" aria-expanded="false" aria-controls="quote-mgmt">
-       					Quote/Roster Management <span class="glyphicon glyphicon-triangle-right" aria-hidden="true"></span>
-       				</a>
-       		</div>
-       	  <div id="quote-mgmt" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="">
+         <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="false">
+         	<div class="panel panel-default">
+         		<div class="panel-heading" role="tab" id="quote-mgmt-header">
+         				<a role="button" data-toggle="collapse" data-parent="#accordion" href="#quote-mgmt" aria-expanded="true" aria-controls="quote-mgmt">
+         					<b>Quote/Roster Management</b>
+                  <span class="glyphicon glyphicon-triangle-right" aria-hidden="true"></span>
 
-            <%=render "my_quotes" , quote_results: @quote_results %>
+         				</a>
+         		</div>
+         	  <div id="quote-mgmt" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="">
 
-       	  </div>
-       	</div>
-        <br>
+              <%=render "my_quotes" , quote_results: @quote_results %>
+
+         	  </div>
+         	</div>
+          <br>
 
         	<div class="panel panel-default">
         		<div class="panel-heading" role="tab" id="feature-mgmt-header">
         				<a role="button" data-toggle="collapse" data-parent="#accordion" href="#feature-mgmt" aria-expanded="true" aria-controls="feature-mgmt">
-        					Features and cost criteria <span class="glyphicon glyphicon-triangle-right" aria-hidden="true"></span>
+
+        					<b>Features and cost criteria</b> 
+                  <span class="glyphicon glyphicon-triangle-right" aria-hidden="true"></span>
+                  <span style='margin-left: 50px; font-size: 120%;'  id='show_plan_criteria_count'>Plan count</span>
+                   <label class='btn btn-normal hide' id='reset_criteria'> Reset Criteria</label>
         				</a>
         		</div>
         	  <div id="feature-mgmt" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="">
@@ -39,57 +44,42 @@
 
         	  </div>
         	</div>
-        <!--<a data-toggle="collapse" href="#collapseExample1" aria-expanded="true" aria-controls="collapseExample1" >
-            <div class='well edge'>Features and cost criteria
-                <span class="glyphicon glyphicon-triangle-right" aria-hidden="true"></span>
-            </div>
-        </a>
-         <div class="collapse in" id="collapseExample1">
-            <= render partial: 'my_features' >
-         </div>-->
-
-        <!--<a data-toggle="collapse" href="#collapseExample2" aria-expanded="false" aria-controls="collapseExample2" >
-            <div class='well edge'>Select plans
-                <span class="glyphicon glyphicon-triangle-right" aria-hidden="true"></span>
-                <span class="glyphicon glyphicon-triangle-right"> </span>
-                <span style='margin-left: 50px; font-size: 120%;'  id='show_plan_selected_count'>Plan count</span>
-                <label class='btn btn-normal' id='reset_selections'> Reset</label>
-
-            </div>
-        </a>-->
 
           <div class="panel panel-default">
         		<div class="panel-heading" role="tab" id="plan-selection-mgmt-header">
         				<a role="button" data-toggle="collapse" data-parent="#accordion" href="#plan-selection-mgmt" aria-expanded="true" aria-controls="plan-selection-mgmt">
-        					Plan Selection <span class="glyphicon glyphicon-triangle-right" aria-hidden="true"></span>
+
+        					<b>Plan Selection</b> 
+                  <span class="glyphicon glyphicon-triangle-right" aria-hidden="true"></span>
+                  <span style='margin-left: 50px; font-size: 120%;'  id='show_plan_selected_count'>Plan count</span>
+                <label class='btn btn-normal' id='reset_selected'> Reset Selections</label>
+
         				</a>
         		</div>
         	  <div id="plan-selection-mgmt" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="">
-
-
 
             	<%= render partial: 'my_plans' %>
 
         	  </div>
         	</div>
+      <% end %>
 
+      <%if @qhps%>
+        <div class="panel panel-default">
+          <div class="panel-collapse collapse in" role="tabpanel" aria-labelledby="compare_costs">
+            <%=render "plan_comparision" , qhps: @qhps %>
+          </div>
+        </div>
+      <%end%>
 
-        <% end %>
-    <%if @qhps%>
-    <div class="panel panel-default">
-      <div class="panel-collapse collapse in" role="tabpanel" aria-labelledby="">
-        <%=render "plan_comparision" , qhps: @qhps %>
-      </div>
-    </div>
-    <%end%>
-    <% if @quote_results %>
-      <div class="panel panel-default">
-        <div class="panel-collapse collapse in" role="tabpanel" aria-labelledby="">
-       <%=render "quote_comparision" , quote_results: @quote_results %>
-      </div>
-    </div>
-    <% end %>
-      </div>
+      <% if @quote_results %>
+          <div class="panel panel-default">
+            <div class="panel-collapse collapse in" role="tabpanel" aria-labelledby="compare_benefits">
+           <%=render "quote_comparision" , quote_results: @quote_results %>
+          </div>
+        </div>
+      <% end %>
+
     </div>
   </div>
 </div>
@@ -104,16 +94,17 @@ $('.plan_selectors .criteria').on('click',function(){
                             })
 
 $(document).on('ready page:load', function () {
-    setTimeout(function(){
-    //bootstrapslider labels will have zero width unless the sliders are initially visible before being hidden
-      $('[aria-controls="collapseExample1"]').attr('aria-expanded', false)
-      $('#collapseExample1').removeClass('in')
-    }, 0)
-    setTimeout(function(){
-    //bootstrapslider labels will have zero width unless the sliders are initially visible before being hidden
-      $('[aria-controls="collapseExample"]').attr('aria-expanded', false)
-      $('#collapseExample').removeClass('in')
-    }, 0)
+    if(window.matchMedia('handheld').match) {
+      setTimeout(function(){
+      //bootstrapslider labels will have zero width unless the sliders are initially visible before being hidden
+        $('[aria-controls="quote-mgmt"]').attr('aria-expanded', false)
+        $('#quote-mgmt').removeClass('in')
+        $('[aria-controls="feature-mgmt"]').attr('aria-expanded', false)
+        $('#feature-mgmt').removeClass('in')
+        $('[aria-controls="plan-selection-mgmt"]').attr('aria-expanded', false)
+        $('#plan-selection-mgmt').removeClass('in')
+      }, 0)
+    }
     window.select_plans = <%=raw @plan_quote_criteria %>
     var select_deductible = 0
     select_deductible = <%= @max_deductible %>
@@ -122,7 +113,17 @@ $(document).on('ready page:load', function () {
     $('.plan_selectors .criteria').on('click', function() {
       toggle_plans()
     })
+    $('#reset_selected').on('click', function(){
+      $.each($('.plan_buttons .btn.active input'), function(){
+        $(this).prop('checked', false)
+        $(this).parent().removeClass('active')
+      })
+      set_plan_counts()
+      $('[aria-labelledby="compare_costs"]').html('')
+      $('[aria-labelledby="compare_benefits"]').html('')  
+    })
     window.relationship_benefits = <%= raw @benefit_pcts_json %>
     slider_listeners()
+    toggle_plans()
 })
 </script>

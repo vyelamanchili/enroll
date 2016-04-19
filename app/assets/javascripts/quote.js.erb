@@ -13,6 +13,12 @@ function plan_test(plan, criteria){
    if (plan[3] > deductible_value) {result=false}
   return result
 }
+
+function set_plan_counts() {
+    $('#show_plan_criteria_count').text('Plans that meet your criteria: ' + String(window.available_plans))
+    $('#show_plan_selected_count').text('You have selected ' + String($('.btn.active').size()) +' plans.')
+}
+
 function toggle_plans(){
   window.criteria = []
   $.each($('.plan_selectors .active'), function() {
@@ -20,16 +26,18 @@ function toggle_plans(){
       criteria_value = this.id
       if (criteria_value != 'any') {window.criteria.push([criteria_type,criteria_value])}
     })
+  window.available_plans = 0
   for(var i = 0; i < plan_count; i++) {
       plan = window.select_plans[i]
       value = "[value~=" + plan[4] + "]"
       display = plan_test(plan, window.criteria) ? 'inline' : 'none'
       $(value).parent().css('display', display)
+      if (display=='inline') {window.available_plans += 1}
   }
 
-  // Show number of available plans based on the selection criteria
+  // Show number of available plans based on the selection criteria 
   $('#x-of-plans').html($('#quote-plan-list > label:visible').length);
-
+  set_plan_counts()
 }
 
 window.relationships = ['employee', 'spouse', 'domestic_partner', 'child_under_26', 'child_26_and_over']
@@ -70,6 +78,12 @@ function slider_listeners () {
     $('#pct_spouse').bootstrapSlider('setValue', window.relationship_benefits['spouse']);
     $('#pct_domestic_partner').bootstrapSlider('setValue', window.relationship_benefits['domestic_partner']);
     $('#pct_child_under_26').bootstrapSlider('setValue', window.relationship_benefits['child_under_26']);
+
+    $('.plan_buttons .btn').on('click', function() {
+    delta=$(this).hasClass('active') ? -1 : 1;
+    adjusted_count = $('.btn.active').size() + delta
+     $('#show_plan_selected_count').text('You have selected ' + String(adjusted_count) + ' plans.' )
+      })
 
 }
 function set_relationship_pct(relationship, val) {
