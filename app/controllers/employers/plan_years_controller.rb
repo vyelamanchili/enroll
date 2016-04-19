@@ -405,7 +405,6 @@ class Employers::PlanYearsController < ApplicationController
       highest_plan_employer_cost: @benefit_group.monthly_employer_contribution_amount(@benefit_group.highest_cost_plan)
       })
 
-      binding.pry
   end
 
   def find_employer
