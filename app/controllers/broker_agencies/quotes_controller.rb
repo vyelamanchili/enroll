@@ -17,7 +17,7 @@ class BrokerAgencies::QuotesController < ApplicationController
     #   @q =  Quote.find(params[:quote]) #Quote.find(Quote.first.id)
     #   @benefit_pcts = @q.quote_relationship_benefits
     #   @benefit_pcts.each{|bp| @bp_hash[bp.relationship] = bp.premium_pct}
-
+    @q = nil
     if !params['plans'].nil? && params['plans'].count > 0 && params["commit"].downcase == "compare costs"
       @q =  Quote.find(params[:quote]) #Quote.find(Quote.first.id)
       @quote_results = Hash.new
@@ -27,7 +27,6 @@ class BrokerAgencies::QuotesController < ApplicationController
           p = Plan.find(plan_id)
           detailCost = Array.new
 
-          @q.quote_relationship_benefits.each{|bp| @bp_hash[bp.relationship] = bp.premium_pct}
           @q.quote_households.each do |hh|
             pcd = PlanCostDecorator.new(p, hh, @q, p)
             detailCost << pcd.get_family_details_hash.sort_by { |m| [m[:family_id], -m[:age], -m[:employee_contribution]] }
@@ -55,9 +54,10 @@ class BrokerAgencies::QuotesController < ApplicationController
     @nationwide =  ['true', 'false', 'any']
     @select_detail = @plan_quote_criteria.to_json
     @max_deductible = 6000
-
+    quote_on_page = @q || @quotes.first
+    quote_on_page.quote_relationship_benefits.each{|bp| @bp_hash[bp.relationship] = bp.premium_pct}
     @benefit_pcts_json = @bp_hash.to_json
-    @roster_premiums_json = @q.roster_cost_all_plans.to_json
+    @roster_premiums_json = quote_on_page.roster_cost_all_plans.to_json
   end
 
   def edit
