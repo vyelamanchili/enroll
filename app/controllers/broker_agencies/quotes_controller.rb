@@ -55,9 +55,11 @@ class BrokerAgencies::QuotesController < ApplicationController
     @select_detail = @plan_quote_criteria.to_json
     @max_deductible = 6000
     quote_on_page = @q || @quotes.first
-    quote_on_page.quote_relationship_benefits.each{|bp| @bp_hash[bp.relationship] = bp.premium_pct}
+    unless quote_on_page.nil?
+      quote_on_page.quote_relationship_benefits.each{|bp| @bp_hash[bp.relationship] = bp.premium_pct} if
+      @roster_premiums_json = quote_on_page.roster_cost_all_plans.to_json
+    end
     @benefit_pcts_json = @bp_hash.to_json
-    @roster_premiums_json = quote_on_page.roster_cost_all_plans.to_json
   end
 
   def edit
@@ -119,8 +121,8 @@ class BrokerAgencies::QuotesController < ApplicationController
     @quote= Quote.new
     if @employee_roster.is_a?(Array)
       @employee_roster.each do |member|
-        @quote_household = @quote.quote_households.where(:family_id => member[0]).first 
-        @quote_household= QuoteHousehold.new(:family_id => member[0]) if @quote_household.nil? 
+        @quote_household = @quote.quote_households.where(:family_id => member[0]).first
+        @quote_household= QuoteHousehold.new(:family_id => member[0]) if @quote_household.nil?
         @quote_members= QuoteMember.new(:employee_relationship => member[1], :dob => member[2])
         @quote_household.quote_members << @quote_members
         @quote.quote_households << @quote_household
@@ -252,7 +254,7 @@ private
       CSV.parse(params[:employee_roster_file].read) if params[:employee_roster_file].present?
     rescue Exception => e
       flash[:error] = "Unable to parse the csv file"
-      #redirect_to :action => "new" and return 
+      #redirect_to :action => "new" and return
     end
   end
 
