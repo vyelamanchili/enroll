@@ -433,7 +433,9 @@ Then(/^.+ should see (.*) dependents*$/) do |n|
 end
 
 When(/^.+ clicks? Add Member$/) do
-  click_link "Add Member"
+  within("#dependent_buttons") do 
+    click_link "Add Member"
+  end
 end
 
 Then(/^.+ should see the new dependent form$/) do
