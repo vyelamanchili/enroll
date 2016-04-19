@@ -74,12 +74,12 @@ Then(/Employee should see (.*) page with employer name and plan details/) do |pa
 end
 
 When(/Employee clicks on Continue button on receipt page/) do
-  find('.interaction-click-control-continue').click
+  find('.interaction-click-control-continue').trigger('click')
 end
 
 Then(/Employee should see \"my account\" page with enrollment/) do
-  sleep(1) #wait for e-mail nonsense
-  enrollment = first('.hbx-enrollment-panel')
+  wait_for_ajax(10)
+  enrollment = first('.module.hbx-enrollment-panel')
   enrollment.find('.enrollment-effective', text: expected_effective_on.strftime("%m/%d/%Y"))
   # Timekeeper is probably UTC in this case, as we are in a test environment
   # this will cause arbitrary problems with the specs late at night.
