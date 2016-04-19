@@ -59,7 +59,9 @@ class DocumentsController < ApplicationController
     if current_user.has_hbx_staff_role?
       session[:person_id] = params[:person_id]
       set_current_person
-      @person.primary_family.active_household.hbx_enrollments.verification_needed.first.update_attributes(:review_status => params[:status])
+      if @person.primary_family.active_household.hbx_enrollments.verification_needed.any?
+        @person.primary_family.active_household.hbx_enrollments.verification_needed.first.update_attributes(:review_status => params[:status])
+      end
     end
     redirect_to verification_insured_families_path
   end

@@ -1,4 +1,14 @@
- <div class="module">
+<div class="row container">
+  <div class="form-inline button-group-wrapper families_search_div">
+    <div class="input-group search-wp">
+      <%= render 'shared/search', url: verification_index_exchanges_hbx_profiles_path, q: @q, placeholder: "Name, HBX ID, SSN", remote: true %>
+    </div>
+  </div>
+</div>
+
+
+
+<div class="module">
     <table class="table table-striped" id="verification-dataTable">
       <thead>
         <tr>
@@ -16,7 +26,7 @@
       <% @families.each do |family| %>
       <% person = family.primary_applicant.person %>
           <% if person.has_consumer_role? && person.consumer_role.aasm_state != "fully verified" %>
-        <tr class="<%= cycle("odd", "even top") %>">
+        <tr>
           <td><%= person.hbx_id %></td>
           <td><%= person.first_name %></td>
           <td><%= person.last_name %></td>
@@ -28,7 +38,7 @@
             <% end %>
           </td>
           <td>
-            <%= family.active_household.hbx_enrollments.verification_needed.first.review_status %>&nbsp;
+            <%= family.active_household.hbx_enrollments.verification_needed.first.review_status if family.active_household.hbx_enrollments.verification_needed.any? %>&nbsp;
             <% if verification_due_date(family) <= TimeKeeper.date_of_record %>
               <span class="label label-danger">Past Due</span>
             <% end %>
@@ -46,15 +56,5 @@
     </table>
   </div>
 
- <script type="text/javascript" charset="utf-8">
-   $(document).ready(function() {
-     $('#verification-dataTable').DataTable( {
-       "order": [[ 0, "asc" ]]
-     } );
-     $('select').on('selectric-init', function(element){
-       $('.selectric').closest('.small-6').find('span').remove();
-       $('.selectric').closest('label').after('<span></span>');
-     });
-   } );
- </script>
+ <%= paginate @families, remote: true %>
 
