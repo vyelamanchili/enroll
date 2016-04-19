@@ -29,8 +29,8 @@ When(/^he visits the Roster Quoting tool$/) do
   click_link 'Roster Quoting Tool'
 end
 
-Then(/^click on Resume quote or new roster$/) do
-  click_link 'Resume quote or new roster'
+Then(/^click on QuoteRoster Management$/) do
+  click_link 'Quote/Roster Management'
 end
 
 When(/^click on the New Quote button$/) do
