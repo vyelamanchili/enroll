@@ -2,6 +2,7 @@ class Quote
   include Mongoid::Document
   include Mongoid::Timestamps
   include MongoidSupport::AssociationProxies
+  include AASM
 
   PERSONAL_RELATIONSHIP_KINDS = [
     :employee,
@@ -29,6 +30,10 @@ class Quote
 
   # accepts_nested_attributes_for :quote_households
   accepts_nested_attributes_for :quote_households, reject_if: :all_blank
+
+  # fields for state machine
+  field :aasm_state, type: String
+  field :aasm_state_date, type: Date
 
   def roster_employee_cost(plan_id, reference_plan_id)
     p = Plan.find(plan_id)
@@ -111,14 +116,12 @@ class Quote
       end
   end
 
+  aasm do
+    state :draft, initial: true
+    state :published
 
-  def calc_by_plan(plan_id)
-
-    if quote_households.exists?
-
-      quote_households.each do |hh|
-        puts "Found household of size " + hh.quote_members.count.to_s
-      end
+    event :publish do
+      transitions from: :draft, to: :published
     end
   end
 
