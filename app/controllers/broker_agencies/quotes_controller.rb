@@ -31,7 +31,7 @@ class BrokerAgencies::QuotesController < ApplicationController
             pcd = PlanCostDecorator.new(p, hh, @q, p)
             detailCost << pcd.get_family_details_hash.sort_by { |m| [m[:family_id], -m[:age], -m[:employee_contribution]] }
           end
-          @quote_results[p.name] = {:detail => detailCost, :total_employee_cost => @q.roster_employee_cost(p,p), :total_employer_cost => @q.roster_employer_contribution(p,p)}
+          @quote_results[p.name] = {:detail => detailCost, :total_employee_cost => @q.roster_employee_cost(p,p), :total_employer_cost => @q.roster_employer_contribution(p,p), plan_id: plan_id}
           @quote_results_summary[p.name] = @q.cost_by_offerings(p)
         end
           @quote_results_summary = @quote_results_summary.sort_by { |k, v| v["reference_plan_cost"] }
@@ -201,6 +201,13 @@ class BrokerAgencies::QuotesController < ApplicationController
     @q =  Quote.find(params[:quote])
     @q.quote_relationship_benefits.each{|bp| @bp_hash[bp.relationship] = bp.premium_pct}
     render json: {'relationship_benefits' => @bp_hash, 'roster_premiums' => @q.roster_cost_all_plans}
+  end
+
+  def publish
+    @quote = Quote.find(params[:quote_id])
+    @plan = Plan.find(params[:plan_id][8,100])
+    @elected_plan_choice = ['na', 'Single Plan', 'Single Carrier', 'Metal Level'][params[:elected].to_i]
+    @cost = params[:cost]
   end
 
 private

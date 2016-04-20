@@ -1,0 +1,34 @@
+
+<h3>Publish Action for </h3>
+
+<p>
+Quote: <br/>
+"<%=@quote.quote_name %>"
+<br/>
+Quote Id: <br>
+<%=@quote.id %> <br><br>
+Relationship Benefits: <br>
+<% @quote.quote_relationship_benefits.each do|rb| %>
+	&nbsp;&nbsp;&nbsp; <%=rb.relationship.humanize%>, 
+	Benefit <%= rb.premium_pct %>%
+	<br>
+<% end %>	
+
+
+
+<br><br>
+
+Reference Plan: <br/>
+"<%= @plan.name %>"" <br> 
+
+Reference Plan Id: <br>
+<%= @plan.id.to_s %> 
+
+</p>
+
+<p>  Elected Plan Option: <br/>
+<%= @elected_plan_choice %> </p>
+<br><br>
+Cost String: <br>
+<%=@cost %>
+

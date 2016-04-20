@@ -14,11 +14,11 @@
       end %>
   </ul>
 
-  <h3>Summary of employer costs by offering and reference plan</h3>
+  <h3>Click to Quote:  Select a reference plan for an offering option</h3>
 
   <table class="quote-detail-cost">
     <tr>
-      <td class="quote_detail_plan_header"></td>
+      <td class="quote_detail_plan_header">Offering Option: </td>
       <td class="quote_detail_plan_header">By Single Plan</td>
       <td class="quote_detail_plan_header">By Single Carrier</td>
       <td class="quote_detail_plan_header">By Metal Level</td>
@@ -30,11 +30,17 @@
       <td class="quote_detail_results_header text-center">Lowest / Reference / Highest</td>
     </tr>
     <% @quote_results_summary.each do |k,v| %>
-    <tr>
+    <tr class='publish' id='publish_<%=@quote_results[k][:plan_id]%>'>
       <td class="quote_detail_results"><%= k %></td>
-      <td class="quote_detail_results text-center">$<%= v["reference_plan_cost"] %></td>
-      <td class="quote_detail_results text-center">$<%= v[:single_carrier]["lowest_cost_plan_cost"] %> / $<%= v["reference_plan_cost"] %> / $<%= v[:single_carrier]["highest_cost_plan_cost"] %></td>
-      <td class="quote_detail_results text-center">$<%= v[:metal_level]["lowest_cost_plan_cost"] %> / $<%= v["reference_plan_cost"] %> / $<%= v[:metal_level]["highest_cost_plan_cost"] %></td>
+      <td class="quote_detail_results text-center"><div class='btn'>
+        $<%= v["reference_plan_cost"] %>
+      </div></td>
+      <td class="quote_detail_results text-center"><div class='btn'>
+        $<%= v[:single_carrier]["lowest_cost_plan_cost"] %> / $<%= v["reference_plan_cost"] %> / $<%= v[:single_carrier]["highest_cost_plan_cost"] %>
+        </div></td>
+      <td class="quote_detail_results text-center"><div class='btn'>
+        $<%= v[:metal_level]["lowest_cost_plan_cost"] %> / $<%= v["reference_plan_cost"] %> / $<%= v[:metal_level]["highest_cost_plan_cost"] %>
+        </div></td>
     </tr>
     <% end %>
   </table>

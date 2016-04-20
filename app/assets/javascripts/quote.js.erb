@@ -96,6 +96,17 @@ function slider_listeners () {
      $('#show_plan_selected_count').text('You have selected ' + String(adjusted_count) + ' plans.' )
       })
     set_benefits()
+
+    $('.publish td').on('click',
+       function(){
+        td = $(this)
+        quote_id=$('#quote').val()
+        plan_id=td.parent().attr('id')
+        elected=td.index()
+        cost = td.html()
+        params='?quote_id='+quote_id+'&plan_id='+plan_id+'&elected='+String(elected)+'&cost='+cost
+        window.location= '/broker_agencies/quotes/publish.js' + params
+    })
     $('#quote').on('change',
        function(){
         quote_id = $(this).val()

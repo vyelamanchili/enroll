@@ -99,16 +99,11 @@ $('.plan_selectors .criteria').on('click',function(){
 
 $(document).on('ready page:load', function () {
     if(window.matchMedia('handheld').match) {
-      setTimeout(function(){
-      //bootstrapslider labels will have zero width unless the sliders are initially visible before being hidden
-        $('[aria-controls="quote-mgmt"]').attr('aria-expanded', false)
-        $('#quote-mgmt').removeClass('in')
-        $('[aria-controls="feature-mgmt"]').attr('aria-expanded', false)
-        $('#feature-mgmt').removeClass('in')
-        $('[aria-controls="plan-selection-mgmt"]').attr('aria-expanded', false)
-        $('#plan-selection-mgmt').removeClass('in')
-      }, 0)
+      collapse_all()
     }
+    var focus_on_compare_table = <%= @display_results %>
+    if (focus_on_compare_table) {collapse_all()}
+
     window.select_plans = <%=raw @plan_quote_criteria %>
     var select_deductible = 0
     select_deductible = <%= @max_deductible %>
