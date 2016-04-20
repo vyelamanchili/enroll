@@ -39,8 +39,19 @@ function toggle_plans(){
   $('#x-of-plans').html($('#quote-plan-list > label:visible').length);
   set_plan_counts()
 }
+function collapse_all(){
+  //bootstrapslider labels will have zero width unless the sliders are initially visible before being hidden
+  setTimeout(function(){ 
+    $('[aria-controls="quote-mgmt"]').attr('aria-expanded', false)
+    $('#quote-mgmt').removeClass('in')
+    $('[aria-controls="feature-mgmt"]').attr('aria-expanded', false)
+    $('#feature-mgmt').removeClass('in')
+    $('[aria-controls="plan-selection-mgmt"]').attr('aria-expanded', false)
+    $('#plan-selection-mgmt').removeClass('in')
+    },0)
+}
 
-window.relationships = ['employee', 'spouse', 'domestic_partner', 'child_under_26', 'child_26_and_over']
+window.relationships = ['employee', 'spouse', 'domestic_partner', 'child_under_26']
 function set_benefits () {
     $('#pct_employee').bootstrapSlider('setValue',window.relationship_benefits['employee']);
     $('#pct_spouse').bootstrapSlider('setValue', window.relationship_benefits['spouse']);

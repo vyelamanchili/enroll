@@ -7,4 +7,3 @@ Plan::REFERENCE_PLAN_METAL_LEVELS.map do |metal_level|
 end
 
 $quote_shop_health_plans = Plan.shop_health_by_active_year(2016).all.entries
-puts 'here', $quote_shop_health_plans.count

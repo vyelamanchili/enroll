@@ -42,7 +42,9 @@ class BrokerAgencies::QuotesController < ApplicationController
       standard_component_ids = get_standard_component_ids
       @qhps = Products::QhpCostShareVariance.find_qhp_cost_share_variances(standard_component_ids, active_year, "Health")
     end
-    else
+
+    @display_results = @quote_results.present? || @qhps.present?
+    #else
     #TODO OPTIONAL CACHE/REFACTOR
     @plans.each{|p| @plan_quote_criteria << [p.metal_level, p.carrier_profile.organization.legal_name, p.plan_type,
      p.deductible.gsub(/\$/,'').gsub(/,/,'').to_i, p.id.to_s, p.carrier_profile.abbrev, p.nationwide, p.dc_in_network]
