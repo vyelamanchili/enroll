@@ -61,7 +61,7 @@ Shop for Plans
               options.merge!(change_plan: 'change_plan') if @hbx_enrollments.present?
             %>
             <% if !is_under_open_enrollment? && !@employee_role.try(:is_under_open_enrollment?)  %>
-              You are not under open enrollment period.
+              Open enrollment for 2016 has closed.
             <% else %>
               <p>If you enroll today, coverage will begin <%= format_date ivl_enrollment_effective_date %>. You can
                 <%= link_to 'click here', new_insured_group_selection_path(options) %>
@@ -69,7 +69,10 @@ Shop for Plans
             <% end %>
             <br />
 
-            <p>Do you need coverage earlier? See if you qualify for a <%= link_to "Special Enrollment Period", find_sep_insured_families_path(options) %></p>
+            <p>
+              You can still enroll if you qualify for a Special Enrollment Period. 
+              <%= link_to "See if you qualify", find_sep_insured_families_path(options) %>.
+            </p>
             <% else %>
                You have no Employer Sponsored Insurance. If you wish to purchase insurance, please enroll in the Individual Market.
                <div id="shop-for-plans-widget">
