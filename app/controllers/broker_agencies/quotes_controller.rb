@@ -17,9 +17,9 @@ class BrokerAgencies::QuotesController < ApplicationController
     #   @q =  Quote.find(params[:quote]) #Quote.find(Quote.first.id)
     #   @benefit_pcts = @q.quote_relationship_benefits
     #   @benefit_pcts.each{|bp| @bp_hash[bp.relationship] = bp.premium_pct}
-    @q = nil
+    #@q = nil
+    @q =  Quote.find(params[:quote]) if !params[:quote].nil?#Quote.find(Quote.first.id)
     if !params['plans'].nil? && params['plans'].count > 0 && params["commit"].downcase == "compare costs"
-      @q =  Quote.find(params[:quote]) #Quote.find(Quote.first.id)
       @quote_results = Hash.new
       @quote_results_summary = Hash.new
       unless @q.nil?
