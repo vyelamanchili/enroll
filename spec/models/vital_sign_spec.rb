@@ -62,29 +62,29 @@ RSpec.describe VitalSign, :db_clean => :around_each do
 
 
 
-  context "New VitalSign query is created without date/time constraints", dbclean: :after_each do
-    let(:vital_sign)  { VitalSign.new }
-
-    before :each do
-      shop_past_enrollments
-      shop_current_enrollments
-      ivl_past_enrollments
-      ivl_current_enrollments
-    end
-
-    it "should find all enrollments" do
-      expect(vital_sign.all_enrollments.size).to eq (shop_total_enrollment_count + ivl_total_enrollment_count)
-    end
-
-    it "should find all individual enrollments" do
-      expect(vital_sign.all_individual_enrollments.size).to eq ivl_total_enrollment_count
-    end
-
-    it "should find all SHOP enrollments" do
-      expect(vital_sign.all_shop_enrollments.size).to eq shop_total_enrollment_count
-    end
-
-  end
+  # context "New VitalSign query is created without date/time constraints", dbclean: :after_each do
+  #   let(:vital_sign)  { VitalSign.new }
+  #
+  #   before :each do
+  #     shop_past_enrollments
+  #     shop_current_enrollments
+  #     ivl_past_enrollments
+  #     ivl_current_enrollments
+  #   end
+  #
+  #   it "should find all enrollments" do
+  #     expect(vital_sign.all_enrollments.size).to eq (shop_total_enrollment_count + ivl_total_enrollment_count)
+  #   end
+  #
+  #   it "should find all individual enrollments" do
+  #     expect(vital_sign.all_individual_enrollments.size).to eq ivl_total_enrollment_count
+  #   end
+  #
+  #   it "should find all SHOP enrollments" do
+  #     expect(vital_sign.all_shop_enrollments.size).to eq shop_total_enrollment_count
+  #   end
+  #
+  # end
 
   # context "New VitalSign query is created with date/time constrained to last 24 hours" do
   #   let(:start_at)    { TimeKeeper.datetime_of_record }
