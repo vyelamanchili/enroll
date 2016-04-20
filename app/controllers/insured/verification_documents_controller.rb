@@ -23,7 +23,7 @@ class Insured::VerificationDocumentsController < ApplicationController
         end
       end
     else
-      flash[:error] = "File not uploaded"
+      flash[:error] = "File not uploaded. Please select the file to upload."
     end
     redirect_to verification_insured_families_path
   end
@@ -38,6 +38,7 @@ class Insured::VerificationDocumentsController < ApplicationController
       flash[:error] = "File does not exist or you are not authorized to access it."
       redirect_to verification_insured_families_path
     end
+    vlp_docs_clean(@person)
   end
 
   private
