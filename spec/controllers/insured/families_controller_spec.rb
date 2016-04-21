@@ -335,6 +335,7 @@ RSpec.describe Insured::FamiliesController do
       allow(person).to receive(:primary_family).and_return(family)
       allow(person).to receive(:has_active_employee_role?).and_return(true)
       allow(person).to receive(:employee_roles).and_return([employee_role])
+      allow(person).to receive(:active_employee_roles).and_return([employee_role])
       QualifyingLifeEventKind.create(
         title: "Started a new job",
         action_kind: "add_benefit",
