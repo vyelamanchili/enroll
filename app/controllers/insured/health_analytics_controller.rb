@@ -12,6 +12,7 @@ class Insured::HealthAnalyticsController < ApplicationController
   end
 
   def estimate
+    @multiplyer = params[:rating].to_i
     @hbx_enrollment = params[:id]
   end
 

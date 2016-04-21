@@ -141,6 +141,7 @@ class Insured::PlanShoppingsController < ApplicationController
   end
 
   def show
+    @multiplyer = params[:rating]
     @sort = params[:sort]
     set_consumer_bookmark_url(family_account_path) if params[:market_kind] == 'individual'
     set_employee_bookmark_url(family_account_path) if params[:market_kind] == 'shop'
@@ -173,6 +174,16 @@ class Insured::PlanShoppingsController < ApplicationController
   end
 
   def plans
+    @multiplyer = params[:rating].to_i
+    case @multiplyer
+    when 1
+      @multiplyer = 1.33
+    when 2
+      @multiplyer = 1.5
+    when 3
+      @multiplyer = 2
+    end
+
     @sort = params[:sort]
     set_consumer_bookmark_url(family_account_path)
     set_plans_by(hbx_enrollment_id: params.require(:id))
@@ -182,7 +193,7 @@ class Insured::PlanShoppingsController < ApplicationController
         @plans = @plans.sort_by(&:total_employee_cost).sort{|a,b| b.csr_variant_id <=> a.csr_variant_id}
       when 'estimated_out_of_pocket'
         @plans.each do |plan|
-            plan.assign_attributes({ :estimated_out_of_pocket => (plan.total_employee_cost*1.33) })
+            plan.assign_attributes({ :estimated_out_of_pocket => (plan.total_employee_cost*@multiplyer) })
           end
         @plans = @plans.sort_by(&:estimated_out_of_pocket).sort{|a,b| b.csr_variant_id <=> a.csr_variant_id}
       when 'maximum_cost'

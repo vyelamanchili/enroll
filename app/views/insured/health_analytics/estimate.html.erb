@@ -18,7 +18,7 @@
       <tbody>
         <tr>
           <td>
-            2
+            <%= 2*@multiplyer %>
           </td>
           <td>
             Well visit (checkups) with your primary care doctor
@@ -26,7 +26,7 @@
         </tr>
         <tr>
           <td>
-            1
+            <%= 1*@multiplyer %>
           </td>
           <td>
             Sick visits or follow up with your primary care doctor
@@ -34,7 +34,7 @@
         </tr>
         <tr>
           <td>
-            2
+            <%= 2*@multiplyer %>
           </td>
           <td>
             Visits with a specialist (like an OB/GYN or dermatologist)
@@ -42,7 +42,7 @@
         </tr>
         <tr>
           <td>
-            0
+            <%= (0.35*@multiplyer).floor %>
           </td>
           <td>
             Urgent Care
@@ -50,7 +50,7 @@
         </tr>
         <tr>
           <td>
-            0
+            <%= (0.35*@multiplyer).floor %>
           </td>
           <td>
             Mental health visits (like for counseling)
@@ -58,7 +58,7 @@
         </tr>
         <tr>
           <td>
-            0
+            <%= (0.35*@multiplyer).floor %>
           </td>
           <td>
             Chiropractor visits
@@ -66,7 +66,7 @@
         </tr>
         <tr>
           <td>
-            2
+            <%= 2*@multiplyer %>
           </td>
           <td>
             Lab tests (like a blood test)
@@ -74,7 +74,7 @@
         </tr>
         <tr>
           <td>
-            0
+            <%= (0.35*@multiplyer).floor %>
           </td>
           <td>
             Imaging test (like an MRI or CT scan)
@@ -82,7 +82,7 @@
         </tr>
         <tr>
           <td>
-            0
+            <%= (0.35*@multiplyer).floor %>
           </td>
           <td>
             X-Ray
@@ -90,7 +90,7 @@
         </tr>
         <tr>
           <td>
-            0
+            <%= (0.35*@multiplyer).floor %>
           </td>
           <td>
             Rehabilitation visits (like for physical therapy)
@@ -98,7 +98,7 @@
         </tr>
         <tr>
           <td>
-            0
+            <%= (0.35*@multiplyer).floor %>
           </td>
           <td>
             Outpatient (day) surgeries
@@ -106,7 +106,7 @@
         </tr>
         <tr>
           <td>
-            0
+            <%= (0.35*@multiplyer).floor %>
           </td>
           <td>
             Emergency room visits
@@ -114,7 +114,7 @@
         </tr>
         <tr>
           <td>
-            0
+            <%= (0.35*@multiplyer).floor %>
           </td>
           <td>
             Hospitalization
@@ -125,7 +125,7 @@
     </table>
   </div>
 </div>
-
+<%= @multiplyer%>
 <a class="btn btn-trans">Edit Estimate</a>
 <br class="clear"/>
 </div>
@@ -134,8 +134,7 @@
 <script>
 $(document).ready(function () {
   $('#continue').on('click', function () {
-
-    window.location = "/insured/plan_shoppings/<%= @hbx_enrollment %>?&sort=estimated_out_of_pocket"
+    window.location = "/insured/plan_shoppings/<%= @hbx_enrollment %>?sort=estimated_out_of_pocket&rating=<%=@multiplyer%>"
   })
 
   multiplyer = (window.location.href).substr(-1);
