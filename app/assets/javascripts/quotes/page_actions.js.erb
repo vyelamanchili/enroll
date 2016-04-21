@@ -9,30 +9,32 @@ function collapse_all(){
     $('#plan-selection-mgmt').removeClass('in')
     },0)
 }
-
 function page_load_listeners () {
-
     $('.plan_selectors .criteria').on('click',function(){
         selected=this; sibs = $(selected).siblings();
         $.each(sibs, function(){ this.className='criteria' }) ;
         selected.className='active';
-        toggle_plans()
+        toggle_plans([])
         reset_selected_plans()
     })
 
     $('.plan_buttons .btn').on('click', function() {
         var plan = $(this)
+        window.this = plan
         delta = plan.hasClass('active') ? -1 : 1;
         adjusted_count = $('.btn.active').size() + delta
-        if (adjusted_count > 5) {
+        if ( (adjusted_count > 5) && (delta == 1)  ) {
           alert('You may not select more than 5 plans at a time')
-          setTimeout(function(){plan.removeClass('active')},20)
+          setTimeout(function(){
+            plan.removeClass('active')
+            var input = $(plan.children()[0])
+            input.prop('checked', false)
+          },20)
         }
         else {
          $('#show_plan_selected_count').text('You have selected ' + String(adjusted_count) + ' plans.' )
         }
     })
-
     $('.publish td').on('click',
        function(){
         td = $(this)
@@ -46,7 +48,6 @@ function page_load_listeners () {
     $('#quote').on('change',
        function(){
         quote_id = $(this).val()
-        console.log(quote_id)
         $.ajax({
           type: 'GET',
           data: {quote: quote_id},
@@ -54,8 +55,10 @@ function page_load_listeners () {
         }).done(function(response){
             window.relationship_benefits = response['relationship_benefits']
             window.roster_premiums = response['roster_premiums']
+            turn_off_criteria()
+            toggle_plans(response['criteria'])
             set_benefits()
         })
     })
-
+    $('#reset_selected').on('click', reset_selected_plans)
 }

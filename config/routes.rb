@@ -273,6 +273,7 @@ Rails.application.routes.draw do
         post :update_benefits
         get :get_quote_info
         get :publish
+        get :criteria
       end
       member do 
         post :download_employee_roster

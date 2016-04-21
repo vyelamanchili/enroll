@@ -27,7 +27,7 @@ function slider_listeners () {
     $('#pct_child_under_26').bootstrapSlider({});
     $('#employees_on_roster').bootstrapSlider({});
     $('#ex1').on('slideStop', function(){deductible_value = this.value;
-      toggle_plans();
+      toggle_plans([]);
       reset_selected_plans();
     })
     $('#pct_employee').on('slideStop', function() {

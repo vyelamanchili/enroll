@@ -57,9 +57,11 @@ class BrokerAgencies::QuotesController < ApplicationController
     @select_detail = @plan_quote_criteria.to_json
     @max_deductible = 6000
     quote_on_page = @q || @quotes.first
+    @quote_criteria = []
     unless quote_on_page.nil?
       quote_on_page.quote_relationship_benefits.each{|bp| @bp_hash[bp.relationship] = bp.premium_pct} if
       @roster_premiums_json = quote_on_page.roster_cost_all_plans.to_json
+      @quote_criteria = quote_on_page.criteria_for_ui
     end
     @benefit_pcts_json = @bp_hash.to_json
   end
@@ -200,7 +202,7 @@ class BrokerAgencies::QuotesController < ApplicationController
     @bp_hash = {}
     @q =  Quote.find(params[:quote])
     @q.quote_relationship_benefits.each{|bp| @bp_hash[bp.relationship] = bp.premium_pct}
-    render json: {'relationship_benefits' => @bp_hash, 'roster_premiums' => @q.roster_cost_all_plans}
+    render json: {'relationship_benefits' => @bp_hash, 'roster_premiums' => @q.roster_cost_all_plans, 'criteria' => JSON.parse(@q.criteria_for_ui)}
   end
 
   def publish
@@ -209,6 +211,18 @@ class BrokerAgencies::QuotesController < ApplicationController
     @elected_plan_choice = ['na', 'Single Plan', 'Single Carrier', 'Metal Level'][params[:elected].to_i]
     @cost = params[:cost]
   end
+
+  def criteria
+    if params[:quote_id]
+      q = Quote.find(params[:quote_id])
+      criteria_for_ui = params[:criteria_for_ui]
+      q.update_attributes!(criteria_for_ui: criteria_for_ui ) if criteria_for_ui
+      render json: JSON.parse(q.criteria_for_ui)
+    else
+      render json: []
+    end
+  end
+
 
 private
 

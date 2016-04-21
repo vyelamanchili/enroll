@@ -13,33 +13,43 @@ function plan_test(plan, criteria){
    if (plan[3] > deductible_value) {result=false}
   return result
 }
-
 function set_plan_counts() {
     $('#show_plan_criteria_count').text('Plans that meet your criteria: ' + String(window.available_plans))
     $('#show_plan_selected_count').text('You have selected ' + String($('.btn.active').size()) +' plans.')
 }
-
-function toggle_plans(){
-  window.criteria = []
-  $.each($('.plan_selectors .active'), function() {
-      criteria_type = this.parentNode.id
-      criteria_value = this.id
-      if (criteria_value != 'any') {window.criteria.push([criteria_type,criteria_value])}
-    })
+function turn_off_criteria() {
+    $.each($('#feature-mgmt .active'), function(index,value){ $(value).addClass('criteria').removeClass('active') })
+}
+function toggle_plans(criteria){
+  if(criteria.length== 0){
+      $.each($('.plan_selectors .active'), function() {
+          criteria_type = this.parentNode.id
+          criteria_value = this.id
+          if (criteria_value != 'any') {criteria.push([criteria_type,criteria_value])}
+   })
+ }
+ else{
+    turn_off_criteria()
+   for(var i = 0; i<criteria.length; i++){
+     $('#' + criteria[i][0] +' #' + criteria[i][1]).addClass('active')
+   }
+ }
   window.available_plans = 0
   for(var i = 0; i < plan_count; i++) {
       plan = window.select_plans[i]
       value = "[value~=" + plan[4] + "]"
-      display = plan_test(plan, window.criteria) ? 'inline' : 'none'
+      display = plan_test(plan, criteria) ? 'inline' : 'none'
       $(value).parent().css('display', display)
       if (display=='inline') {window.available_plans += 1}
   }
-
-  // Show number of available plans based on the selection criteria 
   $('#x-of-plans').html($('#quote-plan-list > label:visible').length);
   set_plan_counts()
+  $.ajax({
+    type: 'GET',
+    data: {quote_id: $('#quote').val(), criteria_for_ui: JSON.stringify(criteria) },
+    url: '/broker_agencies/quotes/criteria.js'
+  })
 }
-
 function reset_selected_plans(){
     $.each($('.plan_buttons .btn.active input'), function(){
     $(this).prop('checked', false)
@@ -54,4 +64,3 @@ function reset_selected_plans(){
     }, 0)
 }
 
-$('#reset_selected').on('click', reset_selected_plans)

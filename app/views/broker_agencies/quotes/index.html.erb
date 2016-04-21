@@ -9,7 +9,6 @@
          <input name='spouse' value='0' type='hidden'>
          <input name='domestic_partner' value='0' type='hidden'>
          <input name='child_under_26' value='0' type='hidden'>
-         <%= hidden_field_tag(rb_emp: '777') %>
 
          <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="false">
          	<div class="panel panel-default">
@@ -107,6 +106,6 @@ $(document).on('ready page:load', function () {
     window.roster_premiums = <%= raw @roster_premiums_json %>
     slider_listeners()
     page_load_listeners()
-    toggle_plans()
+    toggle_plans(<%= raw @quote_criteria %>)
 })
 </script>

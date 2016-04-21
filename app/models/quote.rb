@@ -35,6 +35,8 @@ class Quote
   field :aasm_state, type: String
   field :aasm_state_date, type: Date
 
+  field :criteria_for_ui, type: String, default: []
+
   def roster_employee_cost(plan_id, reference_plan_id)
     p = Plan.find(plan_id)
     reference_plan = Plan.find(reference_plan_id)
