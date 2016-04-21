@@ -1,0 +1,61 @@
+function collapse_all(){
+  //bootstrapslider labels will have zero width unless the sliders are initially visible before being hidden
+  setTimeout(function(){ 
+    $('[aria-controls="quote-mgmt"]').attr('aria-expanded', false)
+    $('#quote-mgmt').removeClass('in')
+    $('[aria-controls="feature-mgmt"]').attr('aria-expanded', false)
+    $('#feature-mgmt').removeClass('in')
+    $('[aria-controls="plan-selection-mgmt"]').attr('aria-expanded', false)
+    $('#plan-selection-mgmt').removeClass('in')
+    },0)
+}
+
+function page_load_listeners () {
+
+    $('.plan_selectors .criteria').on('click',function(){
+        selected=this; sibs = $(selected).siblings();
+        $.each(sibs, function(){ this.className='criteria' }) ;
+        selected.className='active';
+        toggle_plans()
+        reset_selected_plans()
+    })
+
+    $('.plan_buttons .btn').on('click', function() {
+        var plan = $(this)
+        delta = plan.hasClass('active') ? -1 : 1;
+        adjusted_count = $('.btn.active').size() + delta
+        if (adjusted_count > 5) {
+          alert('You may not select more than 5 plans at a time')
+          setTimeout(function(){plan.removeClass('active')},20)
+        }
+        else {
+         $('#show_plan_selected_count').text('You have selected ' + String(adjusted_count) + ' plans.' )
+        }
+    })
+
+    $('.publish td').on('click',
+       function(){
+        td = $(this)
+        quote_id=$('#quote').val()
+        plan_id=td.parent().attr('id')
+        elected=td.index()
+        cost = td.html()
+        params='?quote_id='+quote_id+'&plan_id='+plan_id+'&elected='+String(elected)+'&cost='+cost
+        window.location= '/broker_agencies/quotes/publish.js' + params
+    })
+    $('#quote').on('change',
+       function(){
+        quote_id = $(this).val()
+        console.log(quote_id)
+        $.ajax({
+          type: 'GET',
+          data: {quote: quote_id},
+          url: '/broker_agencies/quotes/get_quote_info.js'
+        }).done(function(response){
+            window.relationship_benefits = response['relationship_benefits']
+            window.roster_premiums = response['roster_premiums']
+            set_benefits()
+        })
+    })
+
+}
