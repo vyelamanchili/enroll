@@ -9,20 +9,17 @@ Quote Id: <br>
 <%=@quote.id %> <br><br>
 Relationship Benefits: <br>
 <% @quote.quote_relationship_benefits.each do|rb| %>
-	&nbsp;&nbsp;&nbsp; <%=rb.relationship.humanize%>, 
+	&nbsp;&nbsp;&nbsp; <%=rb.relationship.humanize%>,
 	Benefit <%= rb.premium_pct %>%
 	<br>
-<% end %>	
+<% end %>
 
 
 
 <br><br>
 
 Reference Plan: <br/>
-"<%= @plan.name %>"" <br> 
-
-Reference Plan Id: <br>
-<%= @plan.id.to_s %> 
+"<%= @plan.name %>"" <br>
 
 </p>
 
@@ -32,3 +29,15 @@ Reference Plan Id: <br>
 Cost String: <br>
 <%=@cost %>
 
+
+<p>Below is your Employer's Plan offering Spectrum. Your offerings are based on <%= @offering_param %> <%= @elected_plan_choice %><br><br>
+<% @plans_offered.each do |p|  %>
+		<%= p["employer_cost"] %> - <%= p["employee_cost"] %>
+		<% if p["plan_id"] == @plan.id.to_s %>
+			<b><u><%= p["plan_name"] %></u></b>
+		<% else %>
+			<%= p["plan_name"]%>
+		<% end %>
+		<br>
+<% end %>
+</p>

@@ -209,7 +209,18 @@ class BrokerAgencies::QuotesController < ApplicationController
     @quote = Quote.find(params[:quote_id])
     @plan = Plan.find(params[:plan_id][8,100])
     @elected_plan_choice = ['na', 'Single Plan', 'Single Carrier', 'Metal Level'][params[:elected].to_i]
+    case @elected_plan_choice
+      when 'Single Carrier'
+        @offering_param  = @plan.name
+      when 'Metal Level'
+        @offering_param  = @plan.metal_level.capitalize
+      else
+        @offering_param = ""
+    end
+
     @cost = params[:cost]
+    @plans_offered = @quote.cost_for_plans(@quote.plan_by_offerings(@plan, @elected_plan_choice), @plan).sort_by { |k| [k["employer_cost"], k["employee_cost"]] }
+
   end
 
   def criteria
