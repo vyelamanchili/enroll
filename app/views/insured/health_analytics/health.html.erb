@@ -62,7 +62,7 @@
                 have any health conditions?</h4>
             </div>
             <div class="panel-body">
-              <%= link_to "<i class='fa fa-plus'></i> Add Health Conditions".html_safe, "", class: "btn btn-trans btn-br", data: { toggle: 'modal', target: '#healthConditions' } %>
+              <%= link_to "<i class='fa fa-plus'></i> Add Health Conditions".html_safe, "", class: "btn btn-trans btn-br", data: { toggle: 'modal', target: "#healthConditions-#{family_member.id}" } %>
             </div>
           </div>
         </div>
@@ -75,7 +75,7 @@
                 take any medications?</h4>
             </div>
             <div class="panel-body">
-              <%= link_to "<i class='fa fa-plus'></i> Add Medications".html_safe, "", class: "btn btn-trans btn-br", data: { toggle: 'modal', target: '#healthMedications' } %>
+              <%= link_to "<i class='fa fa-plus'></i> Add Medications".html_safe, "", class: "btn btn-trans btn-br", data: { toggle: 'modal', target: "#healthMedications-#{family_member.id}" } %>
             </div>
           </div>
         </div>
@@ -83,7 +83,7 @@
     </div>
   </div>
   <br class="clear"/>
-  <div class="modal fade" id="healthConditions" role="dialog">
+  <div class="modal fade healthConditions" id="healthConditions-<%= family_member.id %>" role="dialog">
     <div class="modal-dialog">
 
       <!-- Modal content-->
@@ -234,7 +234,7 @@
     </div>
   </div>
 
-  <div class="modal fade" id="healthMedications" role="dialog">
+  <div class="modal fade healthMedications" id="healthMedications-<%= family_member.id %>" role="dialog">
     <div class="modal-dialog">
 
       <!-- Modal content-->
@@ -301,7 +301,6 @@
         </div>
         <div class="modal-footer">
           <a class="btn btn-trans btn-small pull-left" data-dismiss="modal">Close</a>
-          <a class="btn btn-trans btn-br btn-small" data-dismiss="modal">Add Another</a>
           <a class="btn btn-primary btn-br btn-small mtz" data-dismiss="modal">Add Medications</a>
         </div>
       </div>
@@ -368,86 +367,84 @@
       }
     })
 
-    function addMedications() {
-      if ( $('[placeholder="Add A Prescription Name"]:first').val().length > 0 ) {
-        medication = $('[placeholder="Add A Prescription Name"]:first').val();
-        if ( $('.medications .panel-body:first a span').length == 1 ) {
-          $('.medications .panel-body').append(" and ");
-          $('.medications .panel-body').append('<span>'+medication+'</span>');
+    function addMedications(thisObj) {
+      modal_id = thisObj.attr('id');
+      if ( thisObj.find('[placeholder="Add A Prescription Name"]:first').val().length > 0 ) {
+        medication = thisObj.find('[placeholder="Add A Prescription Name"]:first').val();
+        family_member = thisObj.closest('.family-member');
+        if ( family_member.find('.medications .panel-body:first a span').length == 1 ) {
+          family_member.find('.medications .panel-body').append(" and ");
+          family_member.find('.medications .panel-body').append('<span>'+medication+'</span>');
         }
-        else if ( $('.medications .panel-body:first a span').length >= 2 ) {
-          $(".medications .panel-body a:contains(' (Edit)')").remove();
-          $('.medications .panel-body').append('<span>'+medication+'</span>');
-          medications = $('.medications .panel-body:first').find('span').clone();
-          $('.medications .panel-body').html("");
+        else if ( thisObj.find('.medications .panel-body:first a span').length >= 2 ) {
+          family_member.find(".medications .panel-body a:contains(' (Edit)')").remove();
+          family_member.find('.medications .panel-body').append('<span>'+medication+'</span>');
+          medications = family_member.find('.medications .panel-body:first').find('span').clone();
+          family_member.find('.medications .panel-body').html("");
           $.each(medications, function (i, val) {
             if ( i == 0 ) {
-              $('.medications .panel-body').append(val);
+              family_member.find('.medications .panel-body').append(val);
             }
             else if ( i+1 == medications.length ) {
-              $('.medications .panel-body').append(", and ");
-              $('.medications .panel-body').append(val);
+              family_member.find('.medications .panel-body').append(", and ");
+              family_member.find('.medications .panel-body').append(val);
             } else {
-              $('.medications .panel-body').append(", ");
-              $('.medications .panel-body').append(val);
+              family_member.find('.medications .panel-body').append(", ");
+              family_member.find('.medications .panel-body').append(val);
             }
           });
 
         } else {
-          $('.medications .panel-body').html("");
-          $('.medications .panel-body').append('<span>'+medication+'</span>');
+          family_member.find('.medications .panel-body').html("");
+          family_member.find('.medications .panel-body').append('<span>'+medication+'</span>');
         }
-        $(".medications .panel-body a:contains(' (Edit)')").remove();
-        $('.medications .panel-body span').wrap("<a data-target='#healthMedications' data-toggle='modal'></a>")
-        $('.medications .panel-body').append("<a data-target='#healthMedications' data-toggle='modal'> (Edit)</a>")
+        family_member.find(".medications .panel-body a:contains(' (Edit)')").remove();
+        family_member.find('.medications .panel-body span').wrap("<a data-target=#"+modal_id+" data-toggle='modal'></a>")
+        family_member.find('.medications .panel-body').append("<a data-target=#"+modal_id+" data-toggle='modal'> (Edit)</a>")
 
       }
-      $('#healthMedications input[type="text"], #healthMedications input[type="number"]').val("");
+      $('#'+modal_id+' input[type="text"], #'+modal_id+' input[type="number"]').val("");
 
     }
 
     $('.modal-footer .btn-primary').on('click', function () {
       if ($(this).text() == "Add Health Conditions") {
-        if ($(this).closest('.modal').find('input:checked').length > 0) {
-          checked_conditions = $('#healthConditions').find('input:checked').closest('label').find('span').clone();
-          $('.conditions .panel-body').html("");
+        modal = $(this).closest('.modal');
+        modal_id = modal.attr('id');
+        if ( modal.find('input:checked').length > 0) {
+          checked_conditions = modal.find('input:checked').closest('label').find('span').clone();
+          modal.closest('.family-member').find('.conditions .panel-body').html("");
+          family_member = modal.closest('.family-member');
           $.each(checked_conditions, function (i, val) {
             if (checked_conditions.length == 1) {
-              $('.conditions .panel-body').append(val);
+              family_member.find('.conditions .panel-body').append(val);
             } else if (checked_conditions.length == 2) {
               if (i + 1 == checked_conditions.length) {
-                $('.conditions .panel-body').append(" and ");
-                $('.conditions .panel-body').append(val);
+                family_member.find('.conditions .panel-body').append(" and ");
+                family_member.find('.conditions .panel-body').append(val);
 
               } else {
-                $('.conditions .panel-body').append(val);
+                family_member.find('.conditions .panel-body').append(val);
               }
             } else if (i + 1 == checked_conditions.length && checked_conditions.length >= 3) {
-              $('.conditions .panel-body').append("and ");
-              $('.conditions .panel-body').append(val);
+              family_member.find('.conditions .panel-body').append("and ");
+              family_member.find('.conditions .panel-body').append(val);
             } else {
-              $('.conditions .panel-body').append(val);
-              $('.conditions .panel-body').append(", ");
+              family_member.find('.conditions .panel-body').append(val);
+              family_member.find('.conditions .panel-body').append(", ");
             }
           });
-          $('.conditions .panel-body span').wrap("<a data-target='#healthConditions' data-toggle='modal'></a>")
-          $('.conditions .panel-body').append("<a data-target='#healthConditions' data-toggle='modal'> (Edit)</a>")
+          modal.closest('.family-member').find('.conditions .panel-body span').wrap("<a data-target=#"+modal_id+" data-toggle='modal'></a>")
+          modal.closest('.family-member').find('.conditions .panel-body').append("<a data-target=#"+modal_id+" data-toggle='modal'> (Edit)</a>")
         } else {
-          $('.conditions .panel-body').html('<a class="btn btn-trans btn-br interaction-click-control-add-health-conditions" data-toggle="modal" data-target="#healthConditions" href=""><i class="fa fa-plus"></i> Add Health Conditions</a>');
+          modal.closest('.family-member').find('.conditions .panel-body').html('<a class="btn btn-trans btn-br interaction-click-control-add-health-conditions" data-toggle="modal" data-target=#'+modal_id+' href=""><i class="fa fa-plus"></i> Add Health Conditions</a>');
         }
       } else if ($(this).text() == "Add Medications") {
         $('#healthMedications').unbind('hidden');
-        addMedications();
+        addMedications($(this).closest('.modal'));
       }
     });
     $('.modal-footer .btn-trans').on('click', function() {
-      if ( $(this).text() == "Add Another" ) {
-        addMedications();
-        $('#healthMedications').on('hidden.bs.modal', function (e) {
-          $('#healthMedications input[type="text"], #healthMedications input[type="number"]').val("");
-          $('#healthMedications').modal('show');
-        });
-      }
       if ( $(this).text() == "Close" ) {
         $('#healthMedications').unbind('hidden');
       }
@@ -465,7 +462,15 @@
     });
 
     $('#continue').on('click', function () {
-      window.location = "<%= estimate_insured_health_analytics_path(id: @hbx_enrollment) %>"
+      rating = $('input.slider:first').data('value');
+      if ( rating < 50 ) {
+        rating = 3
+      } else if ( rating == 50 ) {
+        rating = 2
+      } else if ( rating > 50 ) {
+        rating = 1
+      }
+      window.location = "<%= estimate_insured_health_analytics_path(id: @hbx_enrollment) %>&rating="+rating
     })
 
     var substringMatcher = function (strs) {
@@ -501,14 +506,14 @@
       source: substringMatcher(states)
     });
 
-    $('#healthMedications .typeahead').typeahead({
+    $('.healthMedications .typeahead').typeahead({
       hint: true, highlight: true, minLength: 1
     }, {
       name: 'states',
       source: substringMatcher(drugs)
     });
 
-    $('#healthMedications .typeahead').on('blur', function () {
+    $('.healthMedications .typeahead').on('blur', function () {
       $(this).closest('.modal').find('.collapse').collapse('show');
     });
 

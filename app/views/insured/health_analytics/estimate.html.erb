@@ -134,14 +134,16 @@
 <script>
 $(document).ready(function () {
   $('#continue').on('click', function () {
+
     window.location = "/insured/plan_shoppings/<%= @hbx_enrollment %>?&sort=estimated_out_of_pocket"
   })
 
+  multiplyer = (window.location.href).substr(-1);
   $('.visits-estimate .btn-trans').on('click', function() {
     values = $('table tr').find('td:first')
     $.each( values, function( i, val ) {
       td_values = $(this).text();
-      $(this).html("<input type='number' value="+ td_values +"/>");
+      $(this).html("<input type='number' value="+ td_values*multiplyer +"/>");
     });
   });
 });
