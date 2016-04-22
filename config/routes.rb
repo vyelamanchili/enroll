@@ -275,6 +275,7 @@ Rails.application.routes.draw do
         get :get_quote_info
         get :publish
         get :criteria
+        get 'published_quote/:id', to: 'quotes#view_published_quote'
       end
       member do
         post :download_employee_roster

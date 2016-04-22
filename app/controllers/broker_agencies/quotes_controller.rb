@@ -1,8 +1,12 @@
 class BrokerAgencies::QuotesController < ApplicationController
 
-  before_action :find_quote , :only => [:destroy ,:show, :delete_member, :delete_household, :publish_quote]
+  before_action :find_quote , :only => [:destroy ,:show, :delete_member, :delete_household, :publish_quote, :view_published_quote]
   before_action :format_dateparams  , :only => [:update,:create]
   before_action :employee_relationship_map
+
+  def view_published_quote
+    
+  end
 
   def publish_quote
     @params = params.inspect

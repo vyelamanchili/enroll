@@ -24,7 +24,7 @@
         <table class="table">
           <thead
           <tr>
-            <th>Quote ID</th>
+            <th>Quote Action</th>
             <th>Quote Name</th>
             <th class="text-right"># of families</th>
             <th class="text-right">State</th>
@@ -34,7 +34,15 @@
         <tbody>
            <% @all_quotes.each do |q| %>
           <tr>
-             <td><%=link_to "#{q.id}" , "/broker_agencies/quotes/#{q.id}/edit" %></td>
+             <td>
+          <%=
+            if q.aasm_state == 'draft'
+             link_to "Edit Quote Info & Roster" , "/broker_agencies/quotes/#{q.id}/edit"
+           else
+             link_to "View Published Quote", "/broker_agencies/quotes/published_quote/#{q.id}"
+           end
+           %>
+         </td>
              <td><%= q.quote_name %></td>
              <td class="text-right"><%= q.quote_households.count %></td>
              <td class="text-right"><%= q.aasm_state %></td>
