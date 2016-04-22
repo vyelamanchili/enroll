@@ -16,6 +16,8 @@ function set_relationship_pct(relationship, val) {
     data: {benefits: window.relationship_benefits, id: $('#quote option:selected').val() },
     url: '/broker_agencies/quotes/update_benefits.js',
   })
+  set_plan_costs()
+  console.log('here')
 }
 
 function slider_listeners () {

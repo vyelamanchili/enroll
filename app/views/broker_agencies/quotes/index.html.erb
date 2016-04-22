@@ -104,6 +104,7 @@ $(document).on('ready page:load', function () {
 
     window.relationship_benefits = <%= raw @benefit_pcts_json %>
     window.roster_premiums = <%= raw @roster_premiums_json %>
+    set_plan_costs()
     slider_listeners()
     page_load_listeners()
     toggle_plans(<%= raw @quote_criteria %>)
