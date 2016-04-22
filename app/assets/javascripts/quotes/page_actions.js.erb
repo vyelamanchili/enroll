@@ -1,6 +1,6 @@
 function collapse_all(){
   //bootstrapslider labels will have zero width unless the sliders are initially visible before being hidden
-  setTimeout(function(){ 
+  setTimeout(function(){
     $('[aria-controls="quote-mgmt"]').attr('aria-expanded', false)
     $('#quote-mgmt').removeClass('in')
     $('[aria-controls="feature-mgmt"]').attr('aria-expanded', false)
@@ -43,7 +43,7 @@ function page_load_listeners () {
         elected=td.index()
         cost = td.html()
         params='?quote_id='+quote_id+'&plan_id='+plan_id+'&elected='+String(elected)+'&cost='+cost
-        window.location= '/broker_agencies/quotes/publish.js' + params
+        window.location= '/broker_agencies/quotes/publish.html' + params
     })
     $('#quote').on('change',
        function(){

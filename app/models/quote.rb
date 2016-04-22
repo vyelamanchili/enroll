@@ -17,8 +17,11 @@ class Quote
   field :plan_year, type: Integer, default: TimeKeeper.date_of_record.year
   field :start_on, type: Date, default: TimeKeeper.date_of_record.beginning_of_year
   field :broker_role_id, type: BSON::ObjectId
+  field :published_reference_plan, type: BSON::ObjectId
 
   associated_with_one :broker_role, :broker_role_id, "BrokerRole"
+
+  associated_with_one :plan, :published_reference_plan, "Plan"
 
   field :plan_option_kind, type: String, default: "single_carrier"
 

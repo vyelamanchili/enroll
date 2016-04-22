@@ -32,7 +32,7 @@
           </tr>
         </thead>
         <tbody>
-           <% @quotes.each do |q| %>
+           <% @all_quotes.each do |q| %>
           <tr>
              <td><%=link_to "#{q.id}" , "/broker_agencies/quotes/#{q.id}/edit" %></td>
              <td><%= q.quote_name %></td>

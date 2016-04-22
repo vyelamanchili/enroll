@@ -166,7 +166,7 @@ Rails.application.routes.draw do
         get :approve
       end
     end
-    
+
     #TODO REFACTOR
     resources :people do
       collection do
@@ -266,16 +266,17 @@ Rails.application.routes.draw do
 
     resources :quotes do
       root 'quotes#index'
-      collection do 
+      collection do
         get :upload_employee_roster
         post :build_employee_roster
         get :new_household , :format => "js"
         post :update_benefits
+        post :publish_quote
         get :get_quote_info
         get :publish
         get :criteria
       end
-      member do 
+      member do
         post :download_employee_roster
         delete :delete_member
         delete :delete_household

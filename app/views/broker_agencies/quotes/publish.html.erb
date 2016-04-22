@@ -5,17 +5,15 @@
 
 <h3>Review: Publish your Quote</h3>
 
-<p>
-Quote: <br/>
-"<%=@quote.quote_name %>"
-<br/>
-Relationship Benefits: <br>
+<p>Please review the information below before publishing your quote. Once the quote is published, no information can be changed.</p>
 
+
+<p>Quote: "<%=@quote.quote_name %>" effective <b><%=@quote.start_on %></b></p>
 
 
 <p>Below is your Employer's Plan offering Spectrum. Your offerings are based on <%= @offering_param %> <%= @elected_plan_choice %>.</p>
 
-<p>Costs are based on the roster associated with this quote of <%= @quote.quote_households.count %> families and the following percentage contributions.</p>
+<p>Costs are based on the roster associated with this quote of <b><%= @quote.quote_households.count %></b> families and the following percentage contributions.</p>
 
 <% @quote.quote_relationship_benefits.each do|rb| %>
 <%=rb.relationship.humanize%> - <%= rb.premium_pct %>%<br>
@@ -24,6 +22,14 @@ Relationship Benefits: <br>
 <br>
 
 <p>Actual costs may vary.</p>
+
+<%= form_tag("/broker_agencies/quotes/publish_quote", method: "post") do %>
+  <%= hidden_field_tag(:id, @quote.id) %>
+  <%= hidden_field_tag(:reference_plan_id, @plan.id.to_s) %>
+  <%= hidden_field_tag(:plan_option_kind, @elected_plan_choice) %>
+  <%= submit_tag "Publish Quote", class: 'btn btn-primary' %>
+<% end %>
+
 
 <br>
 

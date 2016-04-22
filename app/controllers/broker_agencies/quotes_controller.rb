@@ -1,12 +1,28 @@
 class BrokerAgencies::QuotesController < ApplicationController
 
-  before_action :find_quote , :only => [:destroy ,:show, :delete_member, :delete_household]
+  before_action :find_quote , :only => [:destroy ,:show, :delete_member, :delete_household, :publish_quote]
   before_action :format_dateparams  , :only => [:update,:create]
   before_action :employee_relationship_map
 
+  def publish_quote
+    @params = params.inspect
+
+
+    if @quote.may_publish?
+
+      @quote.plan_option_kind = params[:plan_option_kind].gsub(' ','_').downcase
+      @quote.published_reference_plan = Plan.find(params[:reference_plan_id]).id
+      @quote.publish
+      @quote.save!
+    end
+
+    render "publish_quote" , :flash => {:notice => "Quote Published" }
+
+  end
 
   def index
-    @quotes = Quote.where("broker_role_id" => current_user.person.broker_role.id)
+    @quotes = Quote.where("broker_role_id" => current_user.person.broker_role.id, "aasm_state" => "draft")
+    @all_quotes = Quote.where("broker_role_id" => current_user.person.broker_role.id)
     active_year = Date.today.year
     @coverage_kind = "health"
     @plans =  Plan.shop_health_by_active_year(active_year)
