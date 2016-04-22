@@ -13,7 +13,7 @@ class SamlController < ApplicationController
 
     sign_out current_user if current_user.present?
 
-    if response.is_valid?
+    if response.is_valid? && response.attributes['mail'].present?
       email = response.attributes['mail'].downcase
 
       user_with_email = User.where(email: email).first
@@ -55,6 +55,9 @@ class SamlController < ApplicationController
           redirect_to relay_state, flash: {notice: "Signed in Successfully."}
         end
       end
+    elsif !response.attributes['mail'].present?
+      log("ERROR: SAMLResponse has missing required mail attribute", {:severity => "critical"})
+      render file: 'public/403.html', status: 403
     else
       log("ERROR: SAMLResponse assertion errors #{response.errors}", {:severity => "error"})
       render file: 'public/403.html', status: 403
@@ -65,13 +68,20 @@ class SamlController < ApplicationController
   # Going to curam during the initial flow is triggered differently.
   # What we do here is set the navigation flag and send to the right location.
   def navigate_to_assistance
-    ::IdpAccountManager.update_navigation_flag(
-      current_user.oim_id,
-      current_user.email,
-      ::IdpAccountManager::CURAM_NAVIGATION_FLAG
-    )
-    # redirect_to destroy_user_session_path
-    redirect_to SamlInformation.curam_landing_page_url
+
+    if current_user.present?
+
+      ::IdpAccountManager.update_navigation_flag(
+        current_user.oim_id,
+        current_user.email,
+        ::IdpAccountManager::CURAM_NAVIGATION_FLAG
+      )
+      # redirect_to destroy_user_session_path
+      redirect_to SamlInformation.curam_landing_page_url
+    else
+      redirect_to SamlInformation.iam_login_url
+    end
+
   end
 
   def logout

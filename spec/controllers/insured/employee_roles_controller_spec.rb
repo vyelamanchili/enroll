@@ -11,14 +11,12 @@ RSpec.describe Insured::EmployeeRolesController, :dbclean => :after_each do
     let(:effective_date) { double }
     let(:person_id) { BSON::ObjectId::new }
     let(:employee_role) { double(:id => employee_role_id, :employer_profile => employer_profile, employer_profile_id: employer_profile.id, :benefit_group => benefit_group, :census_employee => census_employee) }
-    let(:person) { Person.new }
+    let(:person) { FactoryGirl.create(:person) }
     let(:user) {FactoryGirl.create(:user)}
-    let(:role_form) {
-      Forms::EmployeeRole.new(person, employee_role)
-    }
+    let(:role_form) { Forms::EmployeeRole.new(person, employee_role)}
+    let(:address) {FactoryGirl.create(:address, :person => person)}
 
     before(:each) do
-      sign_in
       allow(Person).to receive(:find).with(person_id).and_return(person)
       allow(person).to receive(:employee_roles).and_return([employee_role])
       allow(Forms::EmployeeRole).to receive(:new).with(person, employee_role).and_return(role_form)
@@ -34,16 +32,20 @@ RSpec.describe Insured::EmployeeRolesController, :dbclean => :after_each do
 
     describe "given valid person parameters" do
       let(:save_result) { true }
-
       it "should redirect to dependent_details" do
         expect(response).to have_http_status(:redirect)
         expect(response).to redirect_to(insured_family_members_path(:employee_role_id => employee_role_id))
+      end
+
+      context "clean duplicate addresses" do
+        it "returns empty array for people's addresses" do
+          expect(person.addresses).to eq []
+        end
       end
     end
 
     describe "given invalid person parameters" do
       let(:save_result) { false }
-
       it "should render edit" do
         expect(response).to have_http_status(:success)
         expect(response).to render_template("edit")
@@ -95,7 +97,7 @@ RSpec.describe Insured::EmployeeRolesController, :dbclean => :after_each do
     end
   end
 
-  describe "PUT update" do
+  describe "GET edit" do
     let(:user) { double("User") }
     let(:person) { double("Person", broker_role: BrokerRole.new) }
     let(:census_employee) { double("CensusEmployee") }
@@ -103,9 +105,10 @@ RSpec.describe Insured::EmployeeRolesController, :dbclean => :after_each do
     let(:addresses) { [address] }
     let(:employee_role) { double("EmployeeRole", id: double("id"), employer_profile_id: "3928392", :person => person) }
     let(:family) { double("Family") }
-    let(:email){ double("Email", address: "test@example.com") }
+    let(:email){ double("Email", address: "test@example.com", kind: "home") }
     let(:id){ EmployeeRole.new.id }
-    it "should render edit template" do
+
+    before :each do
       allow(EmployeeRole).to receive(:find).and_return(employee_role)
       allow(user).to receive(:person).and_return(person)
       allow(Forms::EmployeeRole).to receive(:new).and_return(person)
@@ -113,17 +116,45 @@ RSpec.describe Insured::EmployeeRolesController, :dbclean => :after_each do
       allow(census_employee).to receive(:address).and_return(address)
       allow(person).to receive(:addresses).and_return(addresses)
       allow(person).to receive(:primary_family).and_return(family)
-      allow(person).to receive(:emails).and_return([email])
+      allow(person).to receive(:emails=).and_return([email])
       allow(census_employee).to receive(:email).and_return(email)
       allow(email).to receive(:address=).and_return("test@example.com")
       allow(controller).to receive(:build_nested_models).and_return(true)
       allow(user).to receive(:has_hbx_staff_role?).and_return(false)
+      allow(user).to receive(:has_csr_subrole?).and_return(false)
       allow(person).to receive(:employee_roles).and_return([employee_role])
       allow(employee_role).to receive(:bookmark_url=).and_return(true)
       sign_in user
+
       get :edit, id: employee_role.id
+
+    end
+
+    it "return success http status" do
       expect(response).to have_http_status(:success)
+    end
+
+    it "should render edit template" do
       expect(response).to render_template(:edit)
+    end
+
+    it "return false if person already has address record" do
+      expect(person.addresses.empty?).to eq false
+    end
+
+    it "should NOT overwrite existing address from ER roaster" do
+      expect(person.addresses).to eq addresses
+    end
+
+    it "return true if person doesn't have any address" do
+      allow(person).to receive(:addresses).and_return([])
+      expect(person.addresses.empty?).to eq true
+    end
+
+    it "takes address from ER roaster" do
+      allow(person).to receive(:addresses).and_return([])
+      get :edit, id: employee_role.id
+      expect(person.addresses.count).to eq 1
     end
   end
 
@@ -205,8 +236,9 @@ RSpec.describe Insured::EmployeeRolesController, :dbclean => :after_each do
     before(:each) do
       sign_in(user)
       allow(mock_employee_candidate).to receive(:match_census_employees).and_return(found_census_employees)
+      allow(census_employee).to receive(:is_active?).and_return(true)
       allow(Forms::EmployeeCandidate).to receive(:new).with(person_parameters.merge({user_id: user_id})).and_return(mock_employee_candidate)
-      allow(Factories::EmploymentRelationshipFactory).to receive(:build).with(mock_employee_candidate, census_employee).and_return(employment_relationships)
+      allow(Factories::EmploymentRelationshipFactory).to receive(:build).with(mock_employee_candidate, [census_employee]).and_return(employment_relationships)
       post :match, :person => person_parameters
     end
 
@@ -327,7 +359,5 @@ RSpec.describe Insured::EmployeeRolesController, :dbclean => :after_each do
       end
       get :show, id: 888
     end
-
-
   end
 end

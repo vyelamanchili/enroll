@@ -22,6 +22,7 @@ RSpec.describe SamlController do
           expect(arg1).to match(/ERROR: SAMLResponse assertion errors/)
           expect(arg2).to eq(:severity => 'error')
         end
+
         post :login, :SAMLResponse => invalid_xml
         expect(response).to render_template(:file => "#{Rails.root}/public/403.html")
         expect(response).to have_http_status(403)
@@ -89,6 +90,44 @@ RSpec.describe SamlController do
           end
         end
       end
+
+      context "with no mail attribute" do
+        let(:attributes_double) {{ }}
+
+        it "should render a 403 and log the error as critical" do
+          expect(subject).to receive(:log) do |arg1, arg2|
+            expect(arg1).to match(/ERROR: SAMLResponse has missing required mail attribute/)
+            expect(arg2).to eq(:severity => 'critical')
+          end
+
+          post :login, :SAMLResponse => sample_xml
+          expect(response).to render_template(:file => "#{Rails.root}/public/403.html")
+          expect(response).to have_http_status(403)
+        end
+      end
     end
   end
+
+  describe "GET navigate_to_assistance" do
+
+    context "logged on user" do
+      let(:user) { FactoryGirl.create(:user, last_portal_visited: family_account_path, oim_id: '00001')}
+
+      it "should redirect user to curam URL" do
+        sign_in user
+        allow(::IdpAccountManager).to receive(:update_navigation_flag).with(user.oim_id, user.email, ::IdpAccountManager::CURAM_NAVIGATION_FLAG)
+        get :navigate_to_assistance
+        expect(response).to redirect_to(SamlInformation.curam_landing_page_url)
+      end
+    end
+
+    context "user not logged on" do
+      it "should redirect user to login URL" do
+        allow(controller).to receive(:current_user).and_return(false)
+        get :navigate_to_assistance
+        expect(response).to redirect_to(SamlInformation.iam_login_url)
+      end
+    end
+  end
+
 end

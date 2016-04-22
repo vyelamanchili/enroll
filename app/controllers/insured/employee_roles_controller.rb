@@ -21,7 +21,7 @@ class Insured::EmployeeRolesController < ApplicationController
     @employee_candidate = Forms::EmployeeCandidate.new(@person_params)
     @person = @employee_candidate
     if @employee_candidate.valid?
-      found_census_employees = @employee_candidate.match_census_employees
+      found_census_employees = @employee_candidate.match_census_employees.select{|census_employee| census_employee.is_active? }
       if found_census_employees.empty?
         # @person = Factories::EnrollmentFactory.construct_consumer_role(params.permit!, current_user)
 
@@ -29,7 +29,7 @@ class Insured::EmployeeRolesController < ApplicationController
           format.html { render 'no_match' }
         end
       else
-        @employment_relationships = Factories::EmploymentRelationshipFactory.build(@employee_candidate, found_census_employees.first)
+        @employment_relationships = Factories::EmploymentRelationshipFactory.build(@employee_candidate, found_census_employees)
         respond_to do |format|
           format.html { render 'match' }
         end
@@ -66,12 +66,9 @@ class Insured::EmployeeRolesController < ApplicationController
     if @person.present?
       @person.addresses << @employee_role.new_census_employee.address if @employee_role.new_census_employee.address.present?
       if @employee_role.new_census_employee.email.present?
-        new_employee_email = @employee_role.new_census_employee.email.address
-        if @person.emails.first
-          @person.emails.first.address = new_employee_email
-        else
-          @person..emails =[Email.new(kind: 'home', address: new_employee_email)]
-        end
+        new_employee_email = @employee_role.new_census_employee.email
+        email_kind = new_employee_email.kind.present? ? new_employee_email.kind : "home"
+        @person.emails = [Email.new(kind: email_kind, address: new_employee_email.address)]
       end
       @family = @person.primary_family
       build_nested_models
@@ -84,6 +81,7 @@ class Insured::EmployeeRolesController < ApplicationController
     object_params = params.require(:person).permit(*person_parameters_list)
     @employee_role = person.employee_roles.detect { |emp_role| emp_role.id.to_s == object_params[:employee_role_id].to_s }
     @person = Forms::EmployeeRole.new(person, @employee_role)
+    @person.addresses = [] #fix unexpected duplicates issue
     if @person.update_attributes(object_params)
       if save_and_exit
         respond_to do |format|
@@ -152,9 +150,9 @@ class Insured::EmployeeRolesController < ApplicationController
   def person_parameters_list
     [
       :employee_role_id,
-      { :addresses_attributes => [:kind, :address_1, :address_2, :city, :state, :zip] },
-      { :phones_attributes => [:kind, :full_phone_number] },
-      { :email_attributes => [:kind, :address] },
+      { :addresses_attributes => [:kind, :address_1, :address_2, :city, :state, :zip, :id] },
+      { :phones_attributes => [:kind, :full_phone_number, :id] },
+      { :emails_attributes => [:kind, :address, :id] },
       { :employee_roles_attributes => [:id, :contact_method, :language_preference]},
       :first_name,
       :last_name,
@@ -205,5 +203,4 @@ class Insured::EmployeeRolesController < ApplicationController
       current_user.save!
     end
   end
-
 end
