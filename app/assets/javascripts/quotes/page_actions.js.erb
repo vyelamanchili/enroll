@@ -58,6 +58,7 @@ function page_load_listeners () {
             turn_off_criteria()
             toggle_plans(response['criteria'])
             set_benefits()
+            set_plan_costs()
         })
     })
     $('#reset_selected').on('click', reset_selected_plans)

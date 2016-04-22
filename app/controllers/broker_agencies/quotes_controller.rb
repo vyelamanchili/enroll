@@ -9,7 +9,10 @@ class BrokerAgencies::QuotesController < ApplicationController
     @quotes = Quote.where("broker_role_id" => current_user.person.broker_role.id)
     active_year = Date.today.year
     @coverage_kind = "health"
-    @plans =  Plan.shop_health_by_active_year(active_year)
+    #@plans =  Plan.shop_health_by_active_year(active_year)
+    @plans = $quote_shop_health_plans
+
+
     @plan_quote_criteria  = []
     @bp_hash = {'employee':50, 'spouse': 0, 'domestic_partner': 0, 'child_under_26': 0, 'child_26_and_over': 0}
     # if !params['plans'].nil? && params['plans'].count > 0
@@ -26,7 +29,6 @@ class BrokerAgencies::QuotesController < ApplicationController
         params['plans'].each do |plan_id|
           p = Plan.find(plan_id)
           detailCost = Array.new
-
           @q.quote_households.each do |hh|
             pcd = PlanCostDecorator.new(p, hh, @q, p)
             detailCost << pcd.get_family_details_hash.sort_by { |m| [m[:family_id], -m[:age], -m[:employee_contribution]] }
