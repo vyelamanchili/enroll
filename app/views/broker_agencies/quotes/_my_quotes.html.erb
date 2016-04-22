@@ -27,6 +27,7 @@
             <th>Quote ID</th>
             <th>Quote Name</th>
             <th class="text-right"># of families</th>
+            <th class="text-right">State</th>
             <th></th>
           </tr>
         </thead>
@@ -36,6 +37,7 @@
              <td><%=link_to "#{q.id}" , "/broker_agencies/quotes/#{q.id}/edit" %></td>
              <td><%= q.quote_name %></td>
              <td class="text-right"><%= q.quote_households.count %></td>
+             <td class="text-right"><%= q.aasm_state %></td>
              <td><button type="button" onclick="delete_quote_handler" id="close_button" data-quote-id="<%=q.id%>" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button></td>
           </tr>
           <% end %>

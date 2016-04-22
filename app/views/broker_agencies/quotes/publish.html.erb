@@ -1,34 +1,55 @@
+<div class="module container broker_quote_tool">
+  <div class="row">
+    <div class="col-md-12">
 
-<h3>Publish Action for </h3>
+
+<h3>Review: Publish your Quote</h3>
 
 <p>
 Quote: <br/>
 "<%=@quote.quote_name %>"
 <br/>
-Quote Id: <br>
-<%=@quote.id %> <br><br>
 Relationship Benefits: <br>
+
+
+
+<p>Below is your Employer's Plan offering Spectrum. Your offerings are based on <%= @offering_param %> <%= @elected_plan_choice %>.</p>
+
+<p>Costs are based on the roster associated with this quote of <%= @quote.quote_households.count %> families and the following percentage contributions.</p>
+
 <% @quote.quote_relationship_benefits.each do|rb| %>
-	&nbsp;&nbsp;&nbsp; <%=rb.relationship.humanize%>, 
-	Benefit <%= rb.premium_pct %>%
-	<br>
-<% end %>	
+<%=rb.relationship.humanize%> - <%= rb.premium_pct %>%<br>
+<% end %>
 
+<br>
 
+<p>Actual costs may vary.</p>
 
-<br><br>
+<br>
 
-Reference Plan: <br/>
-"<%= @plan.name %>"" <br> 
+<p>Your reference plan is highlighted below.</p>
 
-Reference Plan Id: <br>
-<%= @plan.id.to_s %> 
+	<table class="quote_publish_table">
+		<th>
+			<tr>
+				<td class="quote_detail_plan_header">Employer Cost</td>
+				<td class="quote_detail_plan_header">Employee Cost</td>
+				<td class="quote_detail_plan_header">Plan Name</td>
+				<td class="quote_detail_plan_header">Metal Level</td>
+			</tr>
+		</th>
+		<tbody>
+<% @plans_offered.each do |p|  %>
+			<tr <% if p["plan_id"] == @plan.id.to_s %> class="reference_plan_row" <% end %>>
+					<td class="quote_detail_results text-center">$<%= p["employer_cost"] %></td>
+					<td class="quote_detail_results text-center">$<%= p["employee_cost"] %></td>
+					<td class="quote_detail_results text-center"><%= p["plan_name"] %></td>
+          <td class="quote_detail_results text-center">XXX</td>
+			</tr>
+<% end %>
+	</tbody>
+</table>
 
-</p>
-
-<p>  Elected Plan Option: <br/>
-<%= @elected_plan_choice %> </p>
-<br><br>
-Cost String: <br>
-<%=@cost %>
-
+		</div>
+	</div>
+</div>
