@@ -23,8 +23,8 @@ function page_load_listeners () {
         window.this = plan
         delta = plan.hasClass('active') ? -1 : 1;
         adjusted_count = $('.btn.active').size() + delta
-        if ( (adjusted_count > 5) && (delta == 1)  ) {
-          alert('You may not select more than 5 plans at a time')
+        if ( (adjusted_count > 25) && (delta == 1)  ) {
+          alert('You may not select more than 25 plans at a time')
           setTimeout(function(){
             plan.removeClass('active')
             var input = $(plan.children()[0])

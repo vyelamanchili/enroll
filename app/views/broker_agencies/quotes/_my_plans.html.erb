@@ -1,6 +1,6 @@
 <div class="container-fluid">
     <div>
-      <h3>Step 4 - Select reference plans for comparison (up to 5)</h3>
+      <h3>Step 4 - Select reference plans for comparison using Roster Cost to Employer</h3>
 
       <h4>Showing <strong id="x-of-plans"><%= @plans.count %></strong> of <strong><%= @plans.count %></strong>  plans based on your selection criteria</h4>
       <div class="btn-group plan_buttons" data-toggle="buttons" style='max-height: 340px; overflow-y: scroll' id="quote-plan-list">
@@ -11,7 +11,7 @@
         <% end %>
       </div>
     </div>
-
+r
       <br>
     	<%= submit_tag "Compare Costs", class: 'btn btn-primary', id: 'QuoteCalculation' %>
     	<%= submit_tag "Compare Plans", class: 'btn btn-primary', id: 'comparePlans' %>
