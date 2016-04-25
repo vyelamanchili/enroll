@@ -1,0 +1,18 @@
+$('.smart-plans').html("<%= escape_javascript(render partial: "insured/plan_shoppings/smart_plans", locals: {plans: @plans, hbx_enrollment: @hbx_enrollment, multiplyer: @multiplyer}) %>");
+if ( <%= @plans.count %> == 1 ) {
+  $('.smart-plans .panel-footer').hide();
+} else {
+  $('.smart-plans .panel-footer').show();
+}
+$('.smart-plans').fadeIn('slow', function() {
+});
+$('#plans').slideDown();
+$('.smart-plans .btn-trans').on('click', function() {
+  $('#plans .plan-row').each(function(i, p) {
+    plans = $('#plans .plan-row').length
+    if ( i < 3 ) {
+      $(p).find('.checkbox label').trigger('click');
+    }
+  });
+  $('.compare-selected-plans-link ').trigger('click');
+});

@@ -1,18 +1,31 @@
   var SmartPlans = ( function( window, undefined ) {
 
   function update() {
-    url = $('#select_plan_wrapper').data('url');
-    plans = []
-    $('.plan-row:visible').each(function(index, plan) {
-      if ( index <= 2 ) {
-        plans.push($(this).data('plan-id'));
-      }
-    });
-    $.ajax({
-      url: url+"&smart_plans=smart_plans",
-      plans: plans,
-      type: "GET"
-    });
+    if ( $('.plan-row:visible').length > 0 ) {
+      $('.smart-plans').html("<br/><br/><br/><span class='text-block text-center col-xs-12'><i class='fa fa-spinner fa-spin fa-2x' style='color: #007bc4;'></i><br/><h4 class='text-center'>Loading plans...</h4></span><br class='clear'/>");
+      plans = []
+      $('.plan-row:visible').each(function(index, plan) {
+        if ( index <= 2 ) {
+          plans.push($(this).data('plan-id'));
+        }
+      });
+      $('#plans').hide();
+      url = "/insured/plan_shoppings/smart_plans"
+      multiplyer = $('#select_plan_wrapper').data('rating');
+      hbx_enrollment = $('#select_plan_wrapper').data('hbx-enrollment');
+
+      $.ajax({
+        url: url,
+        type: "GET",
+        data: {
+          "plans": plans,
+          "multiplyer": multiplyer,
+          "hbx_enrollment": hbx_enrollment
+        }
+      });
+    } else {
+      $('.smart-plans').html("<br/><br/><br/><span class='text-block text-center col-xs-12'><br/><h4 class='text-center'>No Plans</h4></span><br class='clear'/>");
+    }
   }
   // explicitly return public methods when this object is instantiated
   return {
@@ -129,9 +142,11 @@ function maybeAddComparisonPlan(cb) {
 		plansToCompareArray = tmpArray;
 	}
 	if (plansToCompareArray.length > 1) {
-		$(".compare-selected-plans-link").show();
+    data_uri = $('a.compare-uri').data('uri');
+    $('.content.plan_shoppings').after('<div class="module compare-plans-footer container-fluid dn"><div class="container"><div class="col-xs-6 col-xs-offset-3"><a href="javascript:void(0);" class="btn-block btn btn-trans btn-small compare-selected-plans-link", data-uri="'+data_uri+'">Compare Selected Plans</a></div></div></div>')
+		$(".compare-plans-footer").slideDown();
 	} else {
-		$(".compare-selected-plans-link").hide();
+		$(".compare-plans-footer").slideUp();
 	}
 }
 

@@ -7,7 +7,7 @@ class Insured::PlanShoppingsController < ApplicationController
   include Acapi::Notifiers
   extend Acapi::Notifiers
   include Aptc
-  before_action :set_current_person, :only => [:receipt, :thankyou, :waive, :show, :plans, :checkout]
+  before_action :set_current_person, :only => [:receipt, :thankyou, :waive, :show, :plans, :smart_plans, :checkout]
   before_action :set_kind_for_market_and_coverage, only: [:thankyou, :show, :plans, :checkout, :receipt]
 
   def checkout
@@ -178,6 +178,22 @@ class Insured::PlanShoppingsController < ApplicationController
     render json: 'ok'
   end
 
+  def smart_plans
+    @sort = "Custom Filter"
+    @multiplyer = params[:multiplyer].to_i
+    @hbx_enrollment = HbxEnrollment.find(params[:hbx_enrollment])
+    smart_plans = []
+    params[:plans].each do |plan|
+      p = Plan.where(id: plan)
+      p = p.collect {|plan| UnassistedPlanCostDecorator.new(plan, @hbx_enrollment)}
+      smart_plans << p.first
+    end
+    @plans = smart_plans.to_a
+    respond_to do |format|
+      format.js { render 'insured/plan_shoppings/smart_plans.js.erb' }
+    end
+  end
+
   def plans
     @multiplyer = params[:rating].to_i
     case @multiplyer
@@ -189,7 +205,9 @@ class Insured::PlanShoppingsController < ApplicationController
       @multiplyer = 2
     end
     @sort = params[:sort]
+
     set_consumer_bookmark_url(family_account_path)
+
     set_plans_by(hbx_enrollment_id: params.require(:id)) unless params[:smart_plans] == "smart_plans"
     if params[:sort].present?
     case @sort

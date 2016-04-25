@@ -78,9 +78,10 @@ Rails.application.routes.draw do
     get 'verification_documents/download/:key', to: 'verification_documents#download'
 
     resources :plan_shoppings, :only => [:show] do
+      get 'smart_plans', on: :collection
+
       member do
         get 'plans'
-        get 'smart_plans'
         get 'receipt'
         get 'print_waiver'
         post 'checkout'

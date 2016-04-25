@@ -1,3 +1,4 @@
+$primary-color: #007bc4;
 
 .compare-table {
   .charts {
@@ -24,6 +25,17 @@
   }
 }
 .module {
+  &.compare-plans-footer {
+    width: 100%;
+    bottom: 0;
+    position: fixed;
+    background-color: $primary-color;
+    padding: 15px;
+    z-index:8000;
+    a {
+      background-color: #ffffff;
+    }
+  }
   &.smart-plans {
 		.panel-heading {
 			background-image: none;

@@ -1,3 +1,9 @@
+$(".compare-plans-footer").fadeOut();
 $(".modal-header").remove();
 $("#plan-details-modal-body").html("<%= escape_javascript(render partial: "shared/comparison", locals: {qhps: @qhps}) %>");
 $("#plan-details-modal").modal("show");
+$('#plan-details-modal').on('hidden.bs.modal', function () {
+  if ( $('.select-plan-for-comparison:checked').length >= 2 ) {
+    $(".compare-plans-footer").slideDown();
+  }
+})
