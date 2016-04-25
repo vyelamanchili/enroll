@@ -1,9 +1,33 @@
-function hidePlanTabs() {
-  $(".all-filters-row").hide();
-  $("ul[role='tablist'] li[role='presentation']").each(function(idx, ele) {
-    $(ele).removeClass("active");
-  });
-}
+  var SmartPlans = ( function( window, undefined ) {
+
+  function update() {
+    url = $('#select_plan_wrapper').data('url');
+    plans = []
+    $('.plan-row:visible').each(function(index, plan) {
+      if ( index <= 2 ) {
+        plans.push($(this).data('plan-id'));
+      }
+    });
+    $.ajax({
+      url: url+"&smart_plans=smart_plans",
+      plans: plans,
+      type: "GET"
+    });
+  }
+  // explicitly return public methods when this object is instantiated
+  return {
+      update : update,
+    };
+  } )( window );
+
+  //  example usage
+  function hidePlanTabs() {
+    $(".all-filters-row").hide();
+    $("ul[role='tablist'] li[role='presentation']").each(function(idx, ele) {
+      $(ele).removeClass("active");
+    });
+
+  }
 
 function combineAllPlanSelectors(planSelectors) {
   var selectors = [];
@@ -219,7 +243,12 @@ $(function() {
         }
       });
     };
+
+    SmartPlans.update();
+
   });
+
+
 
   $(document).on('click', '.all-filters-row .reset-btn', function(){
     $(".filter-sidebar input[type='checkbox']").attr("checked", false);

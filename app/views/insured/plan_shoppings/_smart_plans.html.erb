@@ -1,7 +1,7 @@
 <div class="panel panel-default">
   <div class="panel-heading">
     <h4>
-      Annual Estimated Cost Comparison - Lowest 3 Plans by <%= "#{@sort}".humanize.titleize || "Likely Cost" %>
+      Your Annual Plan Costs - Lowest Plans by <%= "#{@sort}".humanize.titleize || "Likely Cost" %>
     </h4>
   </div>
   <div class="panel-body">
@@ -76,15 +76,15 @@
 
         <h5><%= plan.name %></h5>
         <div class="progress">
-          <div class="progress-bar progress-bar-success progress-bar-striped" style="width: <%= premium_percentage.floor %>%" data-toggle="tooltip" title="Premium: your 12 monthly payments">
+          <div class="progress-bar progress-bar-success progress-bar-striped" style="width: <%= premium_percentage.floor %>%" data-toggle="tooltip" title="Premium: Your 12 monthly payments">
             <%= number_to_currency(premium, precision: 0) %>
           </div>
-          <div class="progress-bar progress-bar-warning progress-bar-striped" style="width: <%= likely_percentage.floor %>%" data-toggle="tooltip" title="Estimated Out-of-Pocket: the amount you’re likely to spend on medical services this year based on the health information you gave us">
+          <div class="progress-bar progress-bar-warning progress-bar-striped" style="width: <%= (likely_percentage.floor) %>%" data-toggle="tooltip" title="Estimated Out-of-Pocket: The amount you’re likely to spend on medical services this year based on the health information you gave us">
             <%= number_to_currency((likely-premium), precision: 0) %>
           </div>
         </div>
         <div class="progress">
-          <div class="progress-bar progress-bar-danger progress-bar-striped" style="width: <%= maximum_percentage.floor %>%" data-toggle="tooltip" title="Maximum cost: the most you could pay in one year with this plan">
+          <div class="progress-bar progress-bar-danger progress-bar-striped" style="width: <%= maximum_percentage.floor %>%" data-toggle="tooltip" title="Maximum Cost: The most you could pay in a year. Your annual premium plus you’re the highest possible out of pocket cost for your insurance plan">
             <%= number_to_currency(maximum, precision: 0) %>
           </div>
         </div>
@@ -93,6 +93,6 @@
     </div>
   </div>
   <div class="panel-footer">
-    <a class="clear btn-block btn btn-trans btn-small">Compare 3 Lowest Plans</a>
+    <a class="clear btn-block btn btn-trans btn-small">Compare These Plans</a>
   </div>
 </div>

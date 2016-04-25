@@ -80,6 +80,7 @@ Rails.application.routes.draw do
     resources :plan_shoppings, :only => [:show] do
       member do
         get 'plans'
+        get 'smart_plans'
         get 'receipt'
         get 'print_waiver'
         post 'checkout'
@@ -177,6 +178,7 @@ Rails.application.routes.draw do
         post 'match'
       end
     end
+    resources
     resources :inboxes, only: [:new, :create, :show, :destroy]
     resources :employer_profiles do
       get 'new'
