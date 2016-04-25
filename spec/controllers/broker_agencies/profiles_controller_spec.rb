@@ -282,6 +282,29 @@ RSpec.describe BrokerAgencies::ProfilesController do
     end
   end
 
+  describe "GET assign" do
+    let(:general_agency_profile) { FactoryGirl.create(:general_agency_profile) }
+    let(:broker_role) { FactoryGirl.create(:broker_role) }
+    let(:person) { broker_role.person }
+    let(:user) { FactoryGirl.create(:user, person: person, roles: ['broker']) }
+    before :each do
+      sign_in user
+      xhr :get, :assign, id: broker_agency_profile.id, format: :js
+    end
+
+    it "should return http success" do
+      expect(response).to have_http_status(:success)
+    end
+
+    it "should get general_agency_profiles" do
+      expect(assigns(:general_agency_profiles)).to eq GeneralAgencyProfile.all_by_broker_role(broker_role)
+    end
+
+    it "should get employers" do
+      expect(assigns(:employers)).to eq Organization.by_broker_agency_profile(broker_agency_profile.id).map(&:employer_profile).first(20)
+    end
+  end
+
   describe "GET assign_history" do
     let(:general_agency_profile) { FactoryGirl.create(:general_agency_profile) }
     let(:broker_role) { FactoryGirl.create(:broker_role) }
@@ -354,7 +377,7 @@ RSpec.describe BrokerAgencies::ProfilesController do
     it "should set default_general_agency_profile" do
       sign_in user
       xhr :post, :set_default_ga, id: broker_agency_profile.id, general_agency_profile_id: general_agency_profile.id, format: :js
-      expect(assigns(:broker_agency_profile).default_general_agency_profile).to eq general_agency_profile 
+      expect(assigns(:broker_agency_profile).default_general_agency_profile).to eq general_agency_profile
     end
 
     it "should clear default general_agency_profile" do
@@ -369,7 +392,7 @@ RSpec.describe BrokerAgencies::ProfilesController do
 
     it "should call update_ga_for_employers" do
       sign_in user
-      expect(controller).to receive(:update_ga_for_employers)
+      expect(controller).to receive(:notify)
       xhr :post, :set_default_ga, id: broker_agency_profile.id, general_agency_profile_id: general_agency_profile.id, format: :js
     end
   end
