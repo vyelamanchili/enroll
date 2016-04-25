@@ -181,6 +181,14 @@ class Insured::PlanShoppingsController < ApplicationController
   def smart_plans
     @sort = "Custom Filter"
     @multiplyer = params[:multiplyer].to_i
+    case @multiplyer
+    when 1
+      @multiplyer = 1.33
+    when 2
+      @multiplyer = 1.5
+    when 3
+      @multiplyer = 2
+    end
     @hbx_enrollment = HbxEnrollment.find(params[:hbx_enrollment])
     smart_plans = []
     params[:plans].each do |plan|
