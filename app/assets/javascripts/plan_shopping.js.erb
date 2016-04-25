@@ -143,6 +143,7 @@ function maybeAddComparisonPlan(cb) {
 	}
 	if (plansToCompareArray.length > 1) {
     data_uri = $('a.compare-uri').data('uri');
+    $('.compare-plans-footer').not(':visible').remove();
     $('.content.plan_shoppings').after('<div class="module compare-plans-footer container-fluid dn"><div class="container"><div class="col-xs-6 col-xs-offset-3"><a href="javascript:void(0);" class="btn-block btn btn-trans btn-small compare-selected-plans-link", data-uri="'+data_uri+'">Compare Selected Plans</a></div></div></div>')
 		$(".compare-plans-footer").slideDown();
 	} else {
