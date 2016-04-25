@@ -100,6 +100,12 @@ class HbxEnrollment
   field :review_status, type: String, default: "incomplete"
   field :special_verification_period, type: DateTime
 
+
+  # An external enrollment is one which we keep for recording purposes,
+  # but did not originate with the exchange.  'External' enrollments
+  # should not be transmitted to carriers nor reported in metrics.
+  field :external_enrollment, type: Boolean, default: false
+
   associated_with_one :benefit_group, :benefit_group_id, "BenefitGroup"
   associated_with_one :benefit_group_assignment, :benefit_group_assignment_id, "BenefitGroupAssignment"
   associated_with_one :employee_role, :employee_role_id, "EmployeeRole"
