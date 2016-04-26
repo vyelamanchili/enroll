@@ -1,8 +1,8 @@
 namespace :update_employer do
   desc "update planyear for employer profile so that employer is valid"
   task :plan_year => :environment do
-  	Organization.where(employer_profile: {:$exists => true}).each{|org|org.employer_profile.plan_years.each{|py| py.benefit_groups.each{|bg|bg.unset(:_type)}}};nil
-    eps = EmployerProfile.all.select {|ep| !ep.valid?}
+  	Organization.not.where(employer_profile: nil).no_timeout.each{|org|org.employer_profile.plan_years.each{|py| py.benefit_groups.each{|bg|bg.unset(:_type)}}};nil
+    eps = EmployerProfile.all.no_timeout.select {|ep| !ep.valid?}
     puts "There are #{eps.count} remaining invalid employer profiles"
     eps.each do |ep|
       ep.plan_years.each do |plan_year|
