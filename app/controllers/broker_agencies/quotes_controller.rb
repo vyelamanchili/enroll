@@ -1,11 +1,11 @@
 class BrokerAgencies::QuotesController < ApplicationController
 
   before_action :find_quote , :only => [:destroy ,:show, :delete_member, :delete_household, :publish_quote, :view_published_quote]
-  before_action :format_dateparams  , :only => [:update,:create]
+  before_action :format_date_params  , :only => [:update,:create]
   before_action :employee_relationship_map
 
   def view_published_quote
-    
+
   end
 
   def publish_quote
@@ -114,7 +114,6 @@ class BrokerAgencies::QuotesController < ApplicationController
 
     update_params = quote_params
     insert_params = quote_params
-
 
     update_params[:quote_households_attributes] = update_params[:quote_households_attributes].select {|k,v| update_params[:quote_households_attributes][k][:id].present?}
     insert_params[:quote_households_attributes] = insert_params[:quote_households_attributes].select {|k,v| insert_params[:quote_households_attributes][k][:id].blank?}
@@ -277,11 +276,13 @@ private
                                                                       :employee_relationship,:_delete ] ] )
  end
 
- def format_dateparams
+ def format_date_params
   params[:quote][:start_on] =  Date.strptime(params[:quote][:start_on],"%m/%d/%Y") if params[:quote][:start_on]
-  if params[:quote][:quote_households_attributes] && params[:quote][:quote_households_attributes][:quote_members_attributes]
-    params[:quote][:quote_households_attributes][:quote_members_attributes].each do |member_attribute|
-      member_attribute[:dob] = Date.strptime(member_attribute[:dob],"%m/%d/%Y") if member_attribute[:dob]
+  if params[:quote][:quote_households_attributes]
+    params[:quote][:quote_households_attributes].values.each do |household_attribute|
+      unless household_attribute.nil?
+        household_attribute[:quote_members_attributes].values.map { |m| m[:dob] = Date.strptime(m[:dob],"%m/%d/%Y") unless m[:dob] && m[:dob].blank?}
+      end
     end
   end
  end

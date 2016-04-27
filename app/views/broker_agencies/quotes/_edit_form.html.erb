@@ -61,6 +61,7 @@ var counter= 1000;
 $(".uidatepicker").datepicker();
 var date_handler = function() {
 	    $(this).datepicker();
+			$(this).datepicker({ dateFormat: 'dd/mm/yyyy' });
 	    $(this).datepicker("show");
 	};
 
