@@ -395,6 +395,66 @@ describe HbxEnrollment, dbclean: :after_all do
       end
     end
 
+    context "waive_coverage_by_benefit_group_assignment" do
+      before :all do
+        @enrollment4 = household.create_hbx_enrollment_from(
+          employee_role: mikes_employee_role,
+          coverage_household: coverage_household,
+          benefit_group: mikes_benefit_group,
+          benefit_group_assignment: @mikes_benefit_group_assignments
+        )
+        @enrollment4.save
+        @enrollment5 = household.create_hbx_enrollment_from(
+          employee_role: mikes_employee_role,
+          coverage_household: coverage_household,
+          benefit_group: mikes_benefit_group,
+          benefit_group_assignment: @mikes_benefit_group_assignments
+        )
+        @enrollment5.save
+        @enrollment4.waive_coverage_by_benefit_group_assignment("start a new job")
+        @enrollment5.reload
+      end
+
+      it "enrollment4 should be inactive" do
+        expect(@enrollment4.aasm_state).to eq "inactive"
+      end
+
+      it "enrollment4 should get waiver_reason" do
+        expect(@enrollment4.waiver_reason).to eq "start a new job"
+      end
+
+      it "enrollment5 should be inactive" do
+        expect(@enrollment5.aasm_state).to eq "inactive"
+      end
+
+      it "enrollment5 should get waiver_reason" do
+        expect(@enrollment5.waiver_reason).to eq "start a new job"
+      end
+    end
+
+    context "find_by_benefit_group_assignments" do
+      before :all do
+        3.times.each do
+          enrollment = household.create_hbx_enrollment_from(
+            employee_role: mikes_employee_role,
+            coverage_household: coverage_household,
+            benefit_group: mikes_benefit_group,
+            benefit_group_assignment: @mikes_benefit_group_assignments
+          )
+          enrollment.save
+        end
+      end
+
+      it "should find more than 3 hbx_enrollments" do
+        expect(HbxEnrollment.find_by_benefit_group_assignments([@mikes_benefit_group_assignments]).count).to be >= 3
+      end
+
+      it "should return empty array without params" do
+        expect(HbxEnrollment.find_by_benefit_group_assignments().count).to eq 0
+        expect(HbxEnrollment.find_by_benefit_group_assignments()).to eq []
+      end
+    end
+
     #context "find_by_benefit_group_assignments" do
     #  before :all do
     #    3.times.each do
@@ -1028,8 +1088,18 @@ describe HbxEnrollment, dbclean: :after_each do
 
     context 'with QLE' do
 
-      let(:qle_date) { effective_date + 15.days }
-      let(:qualifying_life_event_kind) { FactoryGirl.create(:qualifying_life_event_kind)}
+    let(:qle_date) { effective_date + 15.days }
+    let(:qualifying_life_event_kind) { FactoryGirl.create(:qualifying_life_event_kind)}
+    let(:user) { instance_double("User", :primary_family => test_family, :person => person) }
+    let(:qle) { FactoryGirl.create(:qualifying_life_event_kind) }
+    let(:test_family) { FactoryGirl.build(:family, :with_primary_family_member) }
+    let(:person) { shop_family.primary_family_member.person }
+    let(:published_plan_year)  { FactoryGirl.build(:plan_year, aasm_state: :published)}
+    let(:employer_profile) { FactoryGirl.create(:employer_profile) }
+    let(:employee_role) { FactoryGirl.create(:employee_role, employer_profile: employer_profile, person: person, census_employee: census_employee ) }
+    let(:employee_role_id) { employee_role.id }
+    let(:new_census_employee) { FactoryGirl.create(:census_employee, first_name: 'John', last_name: 'Smith', dob: '1966-10-10'.to_date, ssn: '123456789', hired_on: middle_of_prev_year, created_at: Date.new(calender_year, 5, 10), updated_at: Date.new(calender_year, 5, 10)) }
+          
 
       let(:special_enrollment_period) {
         special_enrollment = shop_family.special_enrollment_periods.build({
