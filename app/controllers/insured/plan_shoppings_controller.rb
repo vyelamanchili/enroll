@@ -143,11 +143,21 @@ class Insured::PlanShoppingsController < ApplicationController
   def show
     set_plans_by(hbx_enrollment_id: params.require(:id))
     @multiplyer = params[:rating].to_i
+    case @multiplyer
+    when 1
+      @multiplyer = 1.33
+    when 2
+      @multiplyer = 1.5
+    when 3
+      @multiplyer = 2
+    end
     @sort = params[:sort]
     @plans.each do |plan|
         plan.assign_attributes({ :estimated_out_of_pocket => (plan.total_employee_cost*@multiplyer) })
       end
+    @plans = @plans.sort_by(&:estimated_out_of_pocket).sort{|a,b| b.csr_variant_id <=> a.csr_variant_id}
     @plan = @plans.first
+
     set_consumer_bookmark_url(family_account_path) if params[:market_kind] == 'individual'
     set_employee_bookmark_url(family_account_path) if params[:market_kind] == 'shop'
     hbx_enrollment_id = params.require(:id)
@@ -171,6 +181,7 @@ class Insured::PlanShoppingsController < ApplicationController
     @waivable = @hbx_enrollment.try(:can_complete_shopping?)
     @max_total_employee_cost = thousand_ceil(@plans.map(&:total_employee_cost).map(&:to_f).max)
     @max_deductible = thousand_ceil(@plans.map(&:deductible).map {|d| d.is_a?(String) ? d.gsub(/[$,]/, '').to_i : 0}.max)
+
   end
 
   def set_elected_aptc
@@ -179,16 +190,8 @@ class Insured::PlanShoppingsController < ApplicationController
   end
 
   def smart_plans
-    @sort = "Custom Filter"
-    @multiplyer = params[:multiplyer].to_i
-    case @multiplyer
-    when 1
-      @multiplyer = 1.33
-    when 2
-      @multiplyer = 1.5
-    when 3
-      @multiplyer = 2
-    end
+    @sort = params[:sort_by]
+    @multiplyer = params[:multiplyer].to_f
     @hbx_enrollment = HbxEnrollment.find(params[:hbx_enrollment])
     smart_plans = []
     params[:plans].each do |plan|
@@ -203,15 +206,7 @@ class Insured::PlanShoppingsController < ApplicationController
   end
 
   def plans
-    @multiplyer = params[:rating].to_i
-    case @multiplyer
-    when 1
-      @multiplyer = 1.33
-    when 2
-      @multiplyer = 1.5
-    when 3
-      @multiplyer = 2
-    end
+    @multiplyer = params[:rating].to_f
     @sort = params[:sort]
 
     set_consumer_bookmark_url(family_account_path)

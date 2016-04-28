@@ -1,4 +1,4 @@
-<div class="panel panel-default">
+<div class="panel panel-default" data-sort-by="<%= @sort %>">
   <div class="panel-heading">
     <h4>
       Your Annual Plan Costs - Lowest Plans by <%= "#{@sort}".humanize.titleize || "Likely Cost" %>
@@ -26,7 +26,7 @@
           </div>
           <div class="col-xs-3">
             <div class="row">
-              <span data-toggle="tooltip" title="Estimated out-of-pocket cost: The amount you’re likely to spend on medical services this year based on the health information you gave us. This amount doesn’t include your monthly premium.">
+              <span data-toggle="tooltip" title="Maximum Cost: The most you could pay in a year. Your annual premium plus you’re the highest possible out of pocket cost for your insurance plan.">
                 <span class="ball red"></span>
                 <label>Maximum Cost</label>
               </span>
@@ -35,11 +35,6 @@
         </div>
         <br class="clear"/>
         <% maximums = [] %>
-        <!-- <% adjusted_graph = false %>
-        <% cost_below_min = [] %> -->
-
-
-
         <% @plans[0..2].each_with_index do |plan, i| %>
           <% csv = Products::QhpCostShareVariance.find_qhp_cost_share_variances(["#{plan.hios_id}"], @hbx_enrollment.effective_on.year, @hbx_enrollment.coverage_kind).first %>
           <% moop = csv.qhp_maximum_out_of_pockets.where(name: "Maximum Out of Pocket for Medical and Drug EHB Benefits (Total)").last %>
@@ -73,21 +68,23 @@
 
         <% likely_percentage = likely_percentage + premium_percentage >= maximum_percentage ? maximum_percentage - premium_percentage : likely_percentage %>
 
-
-        <h5><%= plan.name %></h5>
+        <h5 data-standard-component-id="<%= plan.hios_id %>"><%= plan.name %></h5>
+        <div class="graph">
         <div class="progress">
-          <div class="progress-bar progress-bar-success progress-bar-striped" style="width: <%= premium_percentage.floor %>%" data-toggle="tooltip" title="Premium: Your 12 monthly payments">
+          <div class="progress-bar progress-bar-success progress-bar-striped" style="width: <%= premium_percentage.floor %>%" data-toggle="tooltip" title="Premium: Your 12 monthly payments.">
             <%= number_to_currency(premium, precision: 0) %>
           </div>
-          <div class="progress-bar progress-bar-warning progress-bar-striped" style="width: <%= (likely_percentage.floor) %>%" data-toggle="tooltip" title="Estimated Out-of-Pocket: The amount you’re likely to spend on medical services this year based on the health information you gave us">
+          <div class="progress-bar progress-bar-warning progress-bar-striped" style="width: <%= (likely_percentage.floor) %>%" data-toggle="tooltip" title="Estimated Out-of-Pocket: The amount you’re likely to spend on medical services this year based on the health information you gave us.">
             <%= number_to_currency((likely-premium), precision: 0) %>
           </div>
         </div>
         <div class="progress">
-          <div class="progress-bar progress-bar-danger progress-bar-striped" style="width: <%= maximum_percentage.floor %>%" data-toggle="tooltip" title="Maximum Cost: The most you could pay in a year. Your annual premium plus you’re the highest possible out of pocket cost for your insurance plan">
+          <div class="progress-bar progress-bar-danger progress-bar-striped" style="width: <%= maximum_percentage.floor %>%" data-toggle="tooltip" title="Maximum Cost: The most you could pay in a year. Your annual premium plus you’re the highest possible out of pocket cost for your insurance plan.">
             <%= number_to_currency(maximum, precision: 0) %>
           </div>
         </div>
+      </div>
+
         <% end %>
       </div>
     </div>

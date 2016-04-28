@@ -13,6 +13,8 @@ class Family
 
   Kinds = %W[unassisted_qhp insurance_assisted_qhp employer_sponsored streamlined_medicaid emergency_medicaid hcr_chip]
   ImmediateFamily = %w{self spouse life_partner child ward foster_child adopted_child stepson_or_stepdaughter}
+  HealthConditions = %w[ ADHD Angina Arthritis_Non-specific Arthritis_Rheumatoid Asthma_Controlled Asthma_Past Asthma_Uncontrolled Back_Pain Breast_Cancer_current Breast_Cancer_previous Bronchitis Colon_Cancer_current Colon_Cancer_previous Coronary_Heart_Disease Diabetes_Controlled Diabetes_Uncontrolled Emphysema Heart_Attack High_Cholesterol Hypertension Joint_Pain Leukemia_current Leukemia_previous Lung_Cancer_current Lung_Cancer_previous Lymph_Cancer_current Lymph_Cancer_previous Migrane Obesity Osteoarthritis Other_Cancer_current Other_Cancer_previous Other_Heart_Problem Pregnancy_High_Risk Pregnancy_Normal Prostate_Cancer_current Prostate_Cancer_previous Stroke ]
+  Doctors = %W[Green Black Blue Red Yellow Pepper Suess Rhadke Orange Brown]
 
   field :hbx_assigned_id, type: Integer
 

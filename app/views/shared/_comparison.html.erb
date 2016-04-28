@@ -14,21 +14,21 @@
         <% end %>
       </tr>
       <tr>
-        <th>
+        <th style="vertical-align: middle;">
           <div class="key">
-            <div class="col-xs-12">
+            <div class="col-xs-12" data-toggle="tooltip" title="Premium: Your 12 monthly payments.">
               <div class="row">
                 <span class="ball green"></span>
                 <label>Maximum</label>
               </div>
             </div>
-            <div class="col-xs-12">
+            <div class="col-xs-12" data-toggle="tooltip" title="Estimated Out-of-Pocket: The amount you’re likely to spend on medical services this year based on the health information you gave us.">
               <div class="row">
                 <span class="ball"></span>
                 <label>Likely Cost</label>
               </div>
             </div>
-            <div class="col-xs-12">
+            <div class="col-xs-12" data-toggle="tooltip" title="Maximum Cost: The most you could pay in a year. Your annual premium plus you’re the highest possible out of pocket cost for your insurance plan.">
               <div class="row">
                 <span class="ball red"></span>
                 <label>Premium</label>
@@ -37,12 +37,7 @@
           </div>
         </th>
           <% maximums = [] %>
-          <% adjusted_graph = false %>
-          <% cost_below_min = [] %>
-
           <% qhps.each do |qhp|%>
-
-
             <% @plans[0..2].each_with_index do |plan, i| %>
               <% csv = Products::QhpCostShareVariance.find_qhp_cost_share_variances(["#{qhp.plan.hios_id}"], @hbx_enrollment.effective_on.year, @hbx_enrollment.coverage_kind).first %>
               <% moop = csv.qhp_maximum_out_of_pockets.where(name: "Maximum Out of Pocket for Medical and Drug EHB Benefits (Total)").last %>
@@ -55,20 +50,16 @@
               <% end %>
               <% maximums << maximum %>
             <% end %>
-
           <% end %>
-          <% maximums = maximums.sort_by(&:to_i).reverse %>
 
+          <% maximums = maximums.sort_by(&:to_i).reverse %>
           <% qhps.each do |qhp|%>
             <th colspan="2" style="text-align: center; vertical-align:middle; border: none;">
-
-              <div style="height: 100px; margin-bottom: 20px; <% if qhps.count == 2 %>margin-left: 20px;<% end %>">
-
-
+              <div style="height: 160px; <% if qhps.count == 2 %> margin-top: -50px; margin-bottom: 40px;<% end %>">
                 <% csv = Products::QhpCostShareVariance.find_qhp_cost_share_variances(["#{qhp.plan.hios_id}"], @hbx_enrollment.effective_on.year, @hbx_enrollment.coverage_kind).first %>
                 <% moop = csv.qhp_maximum_out_of_pockets.where(name: "Maximum Out of Pocket for Medical and Drug EHB Benefits (Total)").last %>
                 <% premium = current_cost(qhp[:total_employee_cost]*12, qhp.plan.ehb, nil, 'shopping', qhp.plan.can_use_aptc?) %>
-                <% likely = premium*1.33 %>
+                <% likely = premium*@multiplyer %>
                 <% if @person.primary_family.active_family_members.count > 1 %>
                 <% maximum = moop.in_network_tier_1_individual_amount.gsub(/[$,]/, '').to_f + premium %>
                 <% else %>
@@ -78,38 +69,27 @@
 
                 <% premium_percentage = (premium / total) * 100 %>
                 <% likely_percentage = ((likely - premium)/total)*100 %>
-                <% maximum_percentage = ((maximum - likely )/total)*100 %>
+                <% maximum_percentage = (maximum/total)*100 %>
 
-                <% costs = [premium_percentage, likely_percentage, maximum_percentage] %>
-                <% costs.each do |cost| %>
-                  <% if cost <= 7.5 %>
-                    <% adjusted_graph = true %>
-                    <% cost = 7.5 - cost %>
-                    <% cost_below_min << cost %>
-                  <% end %>
-                <% end %>
+                <% likely_percentage = likely_percentage + premium_percentage >= maximum_percentage ? maximum_percentage - premium_percentage : likely_percentage %>
 
-                <% if cost_below_min.present? %>
-                  <% difference = cost_below_min.sort_by(&:to_i).reverse.first %>
-                  <% total = (total - (difference*3)) %>
-                  <% premium_percentage = ((premium / total) * 100).round(2).to_s[0..3] %>
-                  <% likely_percentage = (((likely - premium)/total)*100).round(2).to_s[0..3] %>
-                  <% maximum_percentage = (((maximum - likely )/total)*100).round(2).to_s[0..3] %>
-                <% end %>
-
-                  <div class="progress">
-                    <div class="progress-bar progress-bar-success progress-bar-striped" style="width: <%= premium_percentage %>%">
-                      <span><%= number_to_currency(premium, precision: 0) %></span>
-                    </div>
-                    <div class="progress-bar progress-bar-warning progress-bar-striped" style="width: <%= likely_percentage %>%">
-                      <span><%= number_to_currency(likely, precision: 0) %></span>
-                    </div>
-                    <div class="progress-bar progress-bar-danger progress-bar-striped" style="width: <%= maximum_percentage %>%">
-                      <span><%= number_to_currency(maximum, precision: 0) %></span>
-                    </div>
+                <div class="graph">
+                <div class="progress">
+                  <div class="progress-bar progress-bar-success progress-bar-striped" style="width: <%= premium_percentage.floor %>%">
+                    <span><%= number_to_currency(premium, precision: 0) %></span>
+                  </div>
+                  <div class="progress-bar progress-bar-warning progress-bar-striped" style="width: <%= (likely_percentage.floor) %>%">
+                    <span><%= number_to_currency((likely-premium), precision: 0) %></span>
                   </div>
                 </div>
-        </th>
+                <div class="progress">
+                  <div class="progress-bar progress-bar-danger progress-bar-striped" style="width: <%= maximum_percentage.floor %>%">
+                    <span><%= number_to_currency(maximum, precision: 0) %></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </th>
           <% end %>
       </tr>
       <tr>
@@ -128,41 +108,13 @@
         <% end %>
       </tr>
       <tr>
-        <th>Your Premium Cost</th>
+        <th>Your Monthly Premium Cost</th>
         <% qhps.each do |qhp|%>
         <% premium = current_cost(qhp[:total_employee_cost], qhp.plan.ehb, nil, 'shopping', qhp.plan.can_use_aptc?) %>
           <th colspan="2" class="row-title" style="text-align: center; vertical-align:middle; border: none; padding: 0;"><%=number_to_currency(premium) %>/month</th>
         <% end %>
       </tr>
-      <tr>
-        <th>Your Premium Cost for One Year</th>
-        <% qhps.each do |qhp|%>
-        <% premium = current_cost(qhp[:total_employee_cost]*12, qhp.plan.ehb, nil, 'shopping', qhp.plan.can_use_aptc?) %>
-          <th colspan="2" class="row-title" style="font-size: 16px; text-align: center; vertical-align:middle; border: none; padding: 0;"><%=number_to_currency((premium)) %></th>
-        <% end %>
-      </tr>
-      <tr>
-        <th>Likely Total Cost for One Year</th>
-        <% qhps.each do |qhp|%>
-        <% premium = current_cost(qhp[:total_employee_cost]*12, qhp.plan.ehb, nil, 'shopping', qhp.plan.can_use_aptc?) %>
-        <% likely = premium*1.33 %>
-          <th colspan="2" class="row-title" style="font-size: 16px; text-align: center; vertical-align:middle; border: none; padding: 0;"><%=number_to_currency(likely) %></th>
-        <% end %>
-      </tr>
-      <tr>
-        <th>Maximum Cost for One Year</th>
-        <% qhps.each do |qhp|%>
-        <% csv = Products::QhpCostShareVariance.find_qhp_cost_share_variances(["#{qhp.plan.hios_id}"], 2016, "health").first %>
-        <% moop = csv.qhp_maximum_out_of_pockets.where(name: "Maximum Out of Pocket for Medical and Drug EHB Benefits (Total)").last %>
-        <% premium = current_cost(qhp[:total_employee_cost]*12, qhp.plan.ehb, nil, 'shopping', qhp.plan.can_use_aptc?) %>
-        <% if @person.primary_family.active_family_members.count > 1 %>
-          <% maximum = moop.in_network_tier_1_individual_amount.gsub(/[$,]/, '').to_f + premium %>
-        <% else %>
-          <% maximum = moop.in_network_tier_1_family_amount.gsub(/[$,]/, '').to_f + premium %>
-        <% end %>
-          <th colspan="2" class="row-title" style="font-size: 16px; text-align: center; vertical-align:middle; border: none; padding: 0;"><%=number_to_currency(maximum) %></th>
-        <% end %>
-      </tr>
+
       <tr>
         <th></th>
         <% qhps.each do |qhp|%>

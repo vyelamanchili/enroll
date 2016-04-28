@@ -7,12 +7,3 @@ if ( <%= @plans.count %> == 1 ) {
 $('.smart-plans').fadeIn('slow', function() {
 });
 $('#plans').slideDown();
-$('.smart-plans .btn-trans').on('click', function() {
-  $('#plans .plan-row').each(function(i, p) {
-    plans = $('#plans .plan-row').length
-    if ( i < 3 ) {
-      $(p).find('.checkbox label').trigger('click');
-    }
-  });
-  $('.compare-selected-plans-link ').trigger('click');
-});

@@ -2,6 +2,7 @@
 
   function update() {
     if ( $('.plan-row:visible').length > 0 ) {
+      var sort_by = $('.module.smart-plans .panel-default').data('sort-by');
       $('.smart-plans').html("<br/><br/><br/><span class='text-block text-center col-xs-12'><i class='fa fa-spinner fa-spin fa-2x' style='color: #007bc4;'></i><br/><h4 class='text-center'>Loading plans...</h4></span><br class='clear'/>");
       plans = []
       $('.plan-row:visible').each(function(index, plan) {
@@ -13,15 +14,20 @@
       url = "/insured/plan_shoppings/smart_plans"
       multiplyer = $('#select_plan_wrapper').data('rating');
       hbx_enrollment = $('#select_plan_wrapper').data('hbx-enrollment');
-
       $.ajax({
         url: url,
         type: "GET",
         data: {
           "plans": plans,
           "multiplyer": multiplyer,
-          "hbx_enrollment": hbx_enrollment
-        }
+          "hbx_enrollment": hbx_enrollment,
+          "sort_by": sort_by
+        },
+        success: function(data) {
+          var heading_text = $('.smart-plans .panel-heading h4');
+          heading_text.append("[Custom Filter]");
+          heading_text.css({'fontSize': '15px'});
+      }
       });
     } else {
       $('.smart-plans').html("<br/><br/><br/><span class='text-block text-center col-xs-12'><br/><h4 class='text-center'>No Plans</h4></span><br class='clear'/>");
@@ -154,17 +160,18 @@ function maybeAddComparisonPlan(cb) {
 function doPlanComparison(action_uri) {
 	$.ajax({
 		type: "GET",
-	url: action_uri,
-	dataType: 'script',
-	data: {
-		"standard_component_ids": plansToCompareArray,"hbx_enrollment_id": hbx, "active_year": active_year, "enrollment_kind": enrollment_kind,
-    "change_plan": change_plan
-	}
+  	url: action_uri,
+  	dataType: 'script',
+  	data: {
+  		"standard_component_ids": plansToCompareArray,"hbx_enrollment_id": hbx, "active_year": active_year, "enrollment_kind": enrollment_kind,
+      "change_plan": change_plan
+  	}
 	});
 }
 //
 // maybe we don't need this plan sort function anymore anymore (04/8/2016)
 function applyPlanSort(sort_by){
+  console.log(123)
   var plandivs = $('#all-plans #plans .plan-row');
   plandivs.sort(function(a, b){
     if (sort_by == "plan-metal-premium" || sort_by == "plan-metal-deductible"){
@@ -217,6 +224,32 @@ $(function() {
 		}
   });
 
+  $(document).on('click', '.smart-plans .panel-footer a', function(){
+    standard_component_ids = []
+    hbx = $('#select_plan_wrapper').data('hbx-enrollment');
+    active_year = $('#select_plan_wrapper').data('plan-year');
+    enrollment_kind = $('#select_plan_wrapper').data('coverage_kind');
+    change_plan = $('#select_plan_wrapper').data('change_plan') || "";
+
+    $('.smart-plans .panel-body h5').each(function() {
+      standard_component_ids.push($(this).data('standard-component-id'))
+    });
+    var base_url = $('a.compare-uri').data('uri');
+
+    $.ajax({
+      type: "GET",
+      url: base_url,
+      dataType: 'script',
+      data: {
+        "standard_component_ids": standard_component_ids,
+        "hbx_enrollment_id": hbx,
+        "active_year": active_year,
+        "enrollment_kind": enrollment_kind,
+        "change_plan": change_plan
+      }
+    });
+  });
+
   $(document).on('change', '.select-plan-for-comparison', function(){
 		maybeAddComparisonPlan(this);
   });
@@ -244,6 +277,7 @@ $(function() {
   });
 
   $(document).on('click', '.all-filters-row .apply-btn', function(){
+
 		applyPlanFilters();
 
     if ($('.aptc').length > 0){
@@ -274,7 +308,11 @@ $(function() {
     $(".filter-sidebar input[type='text'].plan-metal-deductible-to-selection-filter").val($('#max_deductible').val());
     $(".filter-sidebar select.plan-carrier-selection-filter").prop('selectedIndex', 0).selectric('refresh');
     $(".filter-sidebar select.plan-hsa-eligibility-selection-filter").prop('selectedIndex', 0).selectric('refresh');
-		applyPlanFilters();
+    var sort_text = $(".module.smart-plans .panel-default").data("sort-by").split('_').join(' ');
+    var $heading_text = $('.smart-plans .panel-heading h4');
+    $heading_text.html('Your Annual Plan Costs - Lowest Plans by '+ '<span style="text-transform: capitalize;">'+sort_text+'</span>');
+    $heading_text.css({'fontSize': '18px'});
+    applyPlanFilters();
   });
 
 // this code has been replaced by the ajax pattern on (4/8/2016), it can probably be deleted

@@ -75,9 +75,34 @@ $primary-bold: 600;
 			}
 		}
 	}
-	
 	&.health_analytics {
+		.doctors {
+			.my-doctors {
+				.my-doctor {
+					border: solid 1px $primary-color;
+					border-radius: 4px;
+					font-size: 12px;
+					padding: 0.5%;
+					margin-right: 1%;
+					margin-bottom: 1%;
+					display: inline-block;
+					span {
+						padding-left: 3px;
+						white-space: nowrap;
+						display: inline-block;
+						.fa {
+							margin: 0 3px;
+							cursor: pointer;
+						}
+					}
+				}
+			}
+		}
+		.typeahead {
+			background-color: #fff !important;
+		}
 		.overall-health {
+
 			.panel-body {
 				padding: 25px 15px 0;
 			}
@@ -87,7 +112,6 @@ $primary-bold: 600;
 				background: none;
 			}
 		}
-
 		&.visits-estimate {
 			.btn-trans {
 				margin: auto;

@@ -106,21 +106,21 @@
             </div>
             <div class="col-xs-12 col-sm-4 col-md-4">
               <ul class="list-group">
-                <li class="list-group-item list-group-item-success">Premium Cost:
+                <li class="list-group-item list-group-item-success" data-toggle="tooltip" title="Monthly Premium: The amount you must pay for insurance each month, even if you don’t go to the doctor.">Premium Cost:
                   <% if (@hbx_enrollment.present? && @hbx_enrollment.coverage_kind == 'health') || @plan.coverage_kind == 'health' %>
                   <%= number_to_currency(current_cost(@plan.total_employee_cost, @plan.ehb, @hbx_enrollment, @source, @plan.can_use_aptc?)*12) %>
                   <% else %>
                   <%= number_to_currency(@plan.total_employee_cost*12) %>
                   <% end %>
                 </li>
-                <li class="list-group-item list-group-item-warning">Likely Estimated Cost:
+                <li class="list-group-item list-group-item-warning" data-toggle="tooltip" title="Estimated out-of-pocket cost: The amount you’re likely to spend on medical services this year based on the health information you gave us. This amount doesn’t include your monthly premium.">Estimated Out Of Pocket:
                   <% if (@hbx_enrollment.present? && @hbx_enrollment.coverage_kind == 'health') || @plan.coverage_kind == 'health' %>
                   <%= number_to_currency(current_cost(@plan.total_employee_cost, @plan.ehb, @hbx_enrollment, @source, @plan.can_use_aptc?)*1.3) %>
                   <% else %>
                   <%= number_to_currency(@plan.total_employee_cost*1.3) %>
                   <% end %>
                 </li>
-                <li class="list-group-item list-group-item-danger">Maximum Estimated Cost:
+                <li class="list-group-item list-group-item-danger" data-toggle="tooltip" title="Maximum Cost: The most you could pay in a year. Your annual premium plus you’re the highest possible out of pocket cost for your insurance plan.">Maximum Cost:
                   <% if (@hbx_enrollment.present? && @hbx_enrollment.coverage_kind == 'health') || @plan.coverage_kind == 'health' %>
                   <%= number_to_currency(maximum) %>
                   <% else %>

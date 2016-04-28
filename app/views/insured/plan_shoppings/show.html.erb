@@ -4,7 +4,7 @@
 <%= render "insured/plan_shoppings/detail_modal" %>
 <div id= 'message_form'></div>
 <div class="container" id="plan_shoppings_show_form">
-  <div id="select_plan_wrapper" data-hbx-enrollment="<%= @hbx_enrollment.id %>" data-rating="<%= @multiplyer%>">
+  <div id="select_plan_wrapper" data-change-plan="<%= @change_plan %>" data-hbx-enrollment="<%= @hbx_enrollment.id %>" data-plan-year="<%= @hbx_enrollment.effective_on.year %>" data-coverage-kind="<%= @hbx_enrollment.coverage_kind %>" data-rating="<%= @multiplyer%>">
     <div class="row">
       <div class="col-lg-9 col-md-9 col-sm-9 col-xs-12">
         <div class="ct-1">
@@ -38,7 +38,7 @@
                 </div>
                 <div class="module smart-plans">
                 </div>
-                    <a href="javascript:void(0);" style="display: none;" class="btn-block btn btn-trans btn-small compare-uri", data-uri="<%= comparison_products_plans_path(market_kind: @market_kind, coverage_kind: @coverage_kind) %>">
+                    <a href="javascript:void(0);" style="display: none;" class="btn-block btn btn-trans btn-small compare-uri", data-uri="<%= comparison_products_plans_path(market_kind: @market_kind, coverage_kind: @coverage_kind, rating: @multiplyer) %>">
                       COMPARE SELECTED PLANS
                     </a>
                 <div id="plans" class="module">
@@ -103,8 +103,7 @@
         <% csv = Products::QhpCostShareVariance.find_qhp_cost_share_variances(["#{@plan.hios_id}"], @hbx_enrollment.effective_on.year, @hbx_enrollment.coverage_kind).first %>
         <% moop = csv.qhp_maximum_out_of_pockets.where(name: "Maximum Out of Pocket for Medical and Drug EHB Benefits (Total)").last %>
         <% premium = (current_cost(@plan.total_employee_cost*12, @plan.ehb, nil, 'shopping', @plan.can_use_aptc?)) %>
-        <% likely = (premium*1.33) %>
-        <% likely_cost = (premium*1.33) - premium %>
+        <% likely = premium*@multiplyer %>
         <% if @person.primary_family.active_family_members.count > 1 %>
         <% maximum = moop.in_network_tier_1_individual_amount.gsub(/[$,]/, '').to_f + premium %>
         <% else %>
@@ -122,18 +121,19 @@
         <% premium_percentage = premium_percentage.round %>
         <% likely_percentage = (likely_percentage.round) - 0.125 %>
         <% maximum_percentage = maximum_percentage.round %>
-
-        <div class="progress">
-          <div class="progress-bar progress-bar-success progress-bar-striped active" style="width: 0%;" data-toggle="tooltip" title="Premium: Your 12 monthly payments">
-            <%= number_to_currency(premium, precision: 0) %>
+        <div class="graph">
+          <div class="progress">
+            <div class="progress-bar progress-bar-success progress-bar-striped active" style="width: 0%;" data-toggle="tooltip" title="Premium: Your 12 monthly payments">
+              <%= number_to_currency(premium, precision: 0) %>
+            </div>
+            <div class="dn progress-bar progress-bar-warning progress-bar-striped" style="width: 0%;" data-toggle="tooltip" title="Estimated Out-of-Pocket: The amount you’re likely to spend on medical services this year based on the health information you gave us">
+              <%= number_to_currency((likely-premium), precision: 0) %>
+            </div>
           </div>
-          <div class="dn progress-bar progress-bar-warning progress-bar-striped" style="width: 0%;" data-toggle="tooltip" title="Estimated Out-of-Pocket: The amount you’re likely to spend on medical services this year based on the health information you gave us">
-            <%= number_to_currency(likely_cost, precision: 0) %>
-          </div>
-        </div>
-        <div class="dn progress progress-max">
-          <div class="progress-bar progress-bar-danger progress-bar-striped active" style="width: 0%" data-toggle="tooltip" title="Maximum Cost: The most you could pay in a year. Your annual premium plus you’re the highest possible out of pocket cost for your insurance plan">
-            <%= number_to_currency(maximum, precision: 0) %>
+          <div class="dn progress progress-max">
+            <div class="progress-bar progress-bar-danger progress-bar-striped active" style="width: 0%" data-toggle="tooltip" title="Maximum Cost: The most you could pay in a year. Your annual premium plus you’re the highest possible out of pocket cost for your insurance plan">
+              <%= number_to_currency(maximum, precision: 0) %>
+            </div>
           </div>
         </div>
         <div class="premium-text fade">
@@ -203,36 +203,36 @@ $(document).ready(function() {
   <% if @hbx_enrollment.coverage_kind == "health" && @hbx_enrollment.is_shop? %>
     $('#howPlanShoppingWorksModal').on('shown.bs.modal', function () {
       $('#howPlanShoppingWorksModal .modal-body').slideDown(400, function() {
-          $(this).closest('.modal').find('.premium-text').animate({opacity: 1}, 1250, function() {
+        var $modal = $(this).closest('.modal');
+          $modal.find('.premium-text').animate({opacity: 1}, 1250, function() {
             $('#howPlanShoppingWorksModal .modal-body .continue.premium.fade').animate({opacity: 1}, 400);
             $('.continue.premium.fade').on('click', function() {
               $('#howPlanShoppingWorksModal .modal-body .continue.premium.fade').animate({opacity: 0}, 400);
-              $(this).closest('.modal').find('.progress-bar-warning').show();
-              $(this).closest('.modal').find('.progress-bar-success').removeClass('active');
-              $(this).closest('.modal').find('.premium-text').hide();
-              $(this).closest('.modal').find('.estimated-out-of-pocket-text').show();
-              $(this).closest('.modal').find('.estimated-out-of-pocket-text').animate({opacity: 1}, 1250);
+              $modal.find('.progress-bar-warning').show();
+              $modal.find('.progress-bar-success').removeClass('active');
+              $modal.find('.premium-text').hide();
+              $modal.find('.estimated-out-of-pocket-text').show();
+              $modal.find('.estimated-out-of-pocket-text').animate({opacity: 1}, 1250);
               $('#howPlanShoppingWorksModal .modal-body .continue.premium.fade').addClass('estimated-out-of-pocket');
               $('#howPlanShoppingWorksModal .modal-body .continue.premium.fade.estimated-out-of-pocket').removeClass('premium');
               $('#howPlanShoppingWorksModal .modal-body .continue.fade.estimated-out-of-pocket').on('click', function() {
                 $('#howPlanShoppingWorksModal .modal-body .continue.fade.estimated-out-of-pocket').animate({opacity: 0}, 400, function() {
                 });
-                $(this).closest('.modal').find('.estimated-out-of-pocket-text').hide();
-                $(this).closest('.modal').find('.maximum-cost-text').show();
-                $(this).closest('.modal').find('.estimated-out-of-pocket-text').removeClass('active');
-                $(this).closest('.modal').find('.maximum-cost-text').animate({opacity: 1}, 1250, function() {
-                  $(this).closest('.modal').find('.progress-max').slideDown('400');
-
+                $modal.find('.estimated-out-of-pocket-text').hide();
+                $modal.find('.maximum-cost-text').show();
+                $modal.find('.progress-bar-warning').removeClass('active');
+                  $modal.find('.progress:first').addClass('top-progress');
+                  $modal.find('.progress:last').addClass('bottom-progress');
+                  $modal.find('.progress-max').slideDown('400');
                   $("#howPlanShoppingWorksModal .progress-bar-danger").animate({
                       width: "<%= maximum_percentage %>%"
-                  }, 1250, function() {
+                  }, 1250, function() {} );
+                  $modal.find('.maximum-cost-text').animate({opacity: 1}, 1250, function() {
                     $('#howPlanShoppingWorksModal .modal-body .continue.fade.estimated-out-of-pocket span').text("Okay, Thanks!");
                     $('#howPlanShoppingWorksModal .modal-body .continue.fade.estimated-out-of-pocket').animate({opacity: 1}, 400);
                     $('#howPlanShoppingWorksModal .modal-body .continue.fade.estimated-out-of-pocket').removeClass('estimated-out-of-pocket fade continue');
                     $('#howPlanShoppingWorksModal .modal-body span.btn-trans').attr('data-dismiss', 'modal');
-
-                  } );
-                });
+                  });
 
               });
               $("#howPlanShoppingWorksModal .progress-bar-warning").addClass('active').animate({
@@ -262,6 +262,7 @@ $(document).ready(function() {
   <% end %>
 
   $('.sort-plans a').on('click', function() {
+    $('.reset-btn').trigger('click');
     $('.smart-plans').html("<br/><br/><br/><span class='text-block text-center col-xs-12'><i class='fa fa-spinner fa-spin fa-2x' style='color: #007bc4;'></i><br/><h4 class='text-center'>Loading plans...</h4></span><br class='clear'/>");
     $('#plans, .compare-selected-plans-link').hide();
   });

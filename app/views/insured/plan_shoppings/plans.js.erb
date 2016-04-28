@@ -3,15 +3,6 @@ $('#plans').html("<%= escape_javascript(render partial: "insured/plan_shoppings/
   $('.smart-plans').html("<%= escape_javascript(render partial: "insured/plan_shoppings/smart_plans", locals: {plans: @plans}) %>")
   $('.smart-plans, #plans').fadeIn('slow', function() {
   });
-  $('.smart-plans .btn-trans').on('click', function() {
-    $('#plans .plan-row').each(function(i, p) {
-      plans = $('#plans .plan-row').length
-      if ( i < 3 ) {
-        $(p).find('.checkbox label').trigger('click');
-      }
-    });
-    $('.compare-selected-plans-link ').trigger('click');
-  });
 <% else %>
   $('#plans').fadeIn('slow');
   $('.smart-plans').remove();

@@ -6,7 +6,6 @@
 <br/>
 <%= render :partial => 'insured/health_analytics/analytics_submit_column' %>
 <% end %>
-
 <h1 class="darkblue">Health - Tell us about your family's Health</h1>
 <div class="row">
   <p class="col-xs-10">
@@ -93,136 +92,18 @@
           <h4 class="modal-title">Add Health Conditions</h4>
         </div>
         <div class="modal-body">
+          <% Family::HealthConditions.each do |health_condition| %>
           <div class="checkbox">
             <label>
-              <%= check_box_tag 'asdas' %>
-              <%= label_tag 'asdas' do %>
+              <%= check_box_tag 'health_condition' %>
+              <%= label_tag 'health_condition' do %>
               <i class="fa fa-check-square-o fa-2x"></i>
               <i class="fa fa-square-o fa-2x"></i>
               <% end %>
-              <span>ADHD</span>
+              <span><%= health_condition.humanize.titleize %></span>
             </label>
           </div>
-          <div class="checkbox">
-            <label>
-              <%= check_box_tag 'vf' %>
-              <%= label_tag 'vf' do %>
-              <i class="fa fa-check-square-o fa-2x"></i>
-              <i class="fa fa-square-o fa-2x"></i>
-              <% end %>
-              <span>Angina</span>
-            </label>
-          </div>
-          <div class="checkbox">
-            <label>
-              <%= check_box_tag 'sd' %>
-              <%= label_tag 'sd' do %>
-              <i class="fa fa-check-square-o fa-2x"></i>
-              <i class="fa fa-square-o fa-2x"></i>
-              <% end %>
-              <span>Arthritis Non-specific</span>
-            </label>
-          </div>
-          <div class="checkbox">
-            <label>
-              <%= check_box_tag 'fg' %>
-              <%= label_tag 'fg' do %>
-              <i class="fa fa-check-square-o fa-2x"></i>
-              <i class="fa fa-square-o fa-2x"></i>
-              <% end %>
-              <span>Arthritis Rheumatoid</span>
-            </label>
-          </div>
-          <div class="checkbox">
-            <label>
-              <%= check_box_tag 'w' %>
-              <%= label_tag 'w' do %>
-              <i class="fa fa-check-square-o fa-2x"></i>
-              <i class="fa fa-square-o fa-2x"></i>
-              <% end %>
-              <span>Asthma Controlled</span>
-            </label>
-          </div>
-          <div class="checkbox">
-            <label>
-              <%= check_box_tag 'iu' %>
-              <%= label_tag 'iu' do %>
-              <i class="fa fa-check-square-o fa-2x"></i>
-              <i class="fa fa-square-o fa-2x"></i>
-              <% end %>
-              <span>Asthma Past</span>
-            </label>
-          </div>
-          <div class="checkbox">
-            <label>
-              <%= check_box_tag 're' %>
-              <%= label_tag 're' do %>
-              <i class="fa fa-check-square-o fa-2x"></i>
-              <i class="fa fa-square-o fa-2x"></i>
-              <% end %>
-              <span>Asthma Uncontrolled</span>
-            </label>
-          </div>
-          <div class="checkbox">
-            <label>
-              <%= check_box_tag 'rr' %>
-              <%= label_tag 'rr' do %>
-              <i class="fa fa-check-square-o fa-2x"></i>
-              <i class="fa fa-square-o fa-2x"></i>
-              <% end %>
-              <span>Back Pain</span>
-            </label>
-          </div>
-          <div class="checkbox">
-            <label>
-              <%= check_box_tag 'rer' %>
-              <%= label_tag 'rer' do %>
-              <i class="fa fa-check-square-o fa-2x"></i>
-              <i class="fa fa-square-o fa-2x"></i>
-              <% end %>
-              <span>Breat Cancer Current</span>
-            </label>
-          </div>
-          <div class="checkbox">
-            <label>
-              <%= check_box_tag '4r' %>
-              <%= label_tag '4r' do %>
-              <i class="fa fa-check-square-o fa-2x"></i>
-              <i class="fa fa-square-o fa-2x"></i>
-              <% end %>
-              <span>Breast Cancer Previous</span>
-            </label>
-          </div>
-          <div class="checkbox">
-            <label>
-              <%= check_box_tag 'tr' %>
-              <%= label_tag 'tr' do %>
-              <i class="fa fa-check-square-o fa-2x"></i>
-              <i class="fa fa-square-o fa-2x"></i>
-              <% end %>
-              <span>Bronchitis</span>
-            </label>
-          </div>
-          <div class="checkbox">
-            <label>
-              <%= check_box_tag 'rr' %>
-              <%= label_tag 'rr' do %>
-              <i class="fa fa-check-square-o fa-2x"></i>
-              <i class="fa fa-square-o fa-2x"></i>
-              <% end %>
-              <span>Colon Cancer Current</span>
-            </label>
-          </div>
-          <div class="checkbox">
-            <label>
-              <%= check_box_tag 'rzzr' %>
-              <%= label_tag 'rzzr' do %>
-              <i class="fa fa-check-square-o fa-2x"></i>
-              <i class="fa fa-square-o fa-2x"></i>
-              <% end %>
-              <span>Colon Cancer Previous</span>
-            </label>
-          </div>
+          <% end %>
 
         </div>
         <div class="modal-footer">
@@ -326,6 +207,7 @@
       </div>
       <div class="panel-body">
         <p>Some insurance plans let you see doctors outside their network, but it's usually much more expensive.</p>
+        <p class="my-doctors"></p>
         <input class="typeahead" placeholder="Add A Doctor" type="text">
       </div>
     </div>
@@ -367,45 +249,7 @@
       }
     })
 
-    function addMedications(thisObj) {
-      modal_id = thisObj.attr('id');
-      if ( thisObj.find('[placeholder="Add A Prescription Name"]:first').val().length > 0 ) {
-        medication = thisObj.find('[placeholder="Add A Prescription Name"]:first').val();
-        family_member = thisObj.closest('.family-member');
-        if ( family_member.find('.medications .panel-body:first a span').length == 1 ) {
-          family_member.find('.medications .panel-body').append(" and ");
-          family_member.find('.medications .panel-body').append('<span>'+medication+'</span>');
-        }
-        else if ( thisObj.find('.medications .panel-body:first a span').length >= 2 ) {
-          family_member.find(".medications .panel-body a:contains(' (Edit)')").remove();
-          family_member.find('.medications .panel-body').append('<span>'+medication+'</span>');
-          medications = family_member.find('.medications .panel-body:first').find('span').clone();
-          family_member.find('.medications .panel-body').html("");
-          $.each(medications, function (i, val) {
-            if ( i == 0 ) {
-              family_member.find('.medications .panel-body').append(val);
-            }
-            else if ( i+1 == medications.length ) {
-              family_member.find('.medications .panel-body').append(", and ");
-              family_member.find('.medications .panel-body').append(val);
-            } else {
-              family_member.find('.medications .panel-body').append(", ");
-              family_member.find('.medications .panel-body').append(val);
-            }
-          });
 
-        } else {
-          family_member.find('.medications .panel-body').html("");
-          family_member.find('.medications .panel-body').append('<span>'+medication+'</span>');
-        }
-        family_member.find(".medications .panel-body a:contains(' (Edit)')").remove();
-        family_member.find('.medications .panel-body span').wrap("<a data-target=#"+modal_id+" data-toggle='modal'></a>")
-        family_member.find('.medications .panel-body').append("<a data-target=#"+modal_id+" data-toggle='modal'> (Edit)</a>")
-
-      }
-      $('#'+modal_id+' input[type="text"], #'+modal_id+' input[type="number"]').val("");
-
-    }
 
     $('.modal-footer .btn-primary').on('click', function () {
       if ($(this).text() == "Add Health Conditions") {
@@ -441,7 +285,7 @@
         }
       } else if ($(this).text() == "Add Medications") {
         $('#healthMedications').unbind('hidden');
-        addMedications($(this).closest('.modal'));
+        Household.addMedications($(this).closest('.modal'));
       }
     });
     $('.modal-footer .btn-trans').on('click', function() {
@@ -496,14 +340,428 @@
       };
     };
 
-    var states = ['Dr. Green', 'Dr. Black', 'Dr. Blue', 'Dr. Red', 'Dr. Yellow', 'Dr. Pepper', 'Dr. Suess', 'Dr. Rhadke', 'Dr. Orange', 'Dr. Brown'];
     var drugs = ['Tylenol', 'Abelcet', '', 'Habitrol', 'Pacerone', 'Rabavert'];
+    var doctors_list = [{
+        name: "FLOYD MEACHUM DO",
+        address: "3900 Cambridge St Ste 102, Las Vegas, NV 89119 Clark",
+        specialty: "Family Practice"
+    },
+    {
+        name: "BRIAN LEE MD",
+        address: "2310 Paseo Del Prado, Las Vegas, NV 89102 Clark",
+        specialty: "Internal Medicine"
+    },
+    {
+      name: "AJAY KUMAR NELLUTLA",
+      address: "3201 S Maryland Pkwy Ste 100, Las Vegas, NV 89109 Clark",
+      specialty: "Internal Medicine"
+    },
+    {
+      name: "VISHWESHWAR RANGA MD",
+      address: "3201 S Maryland Pkwy Ste 100, Las Vegas, NV 89109 Clark",
+      specialty: "Internal Medicine"
+    },
+    {
+      name: "ROBERT MUSNI MD",
+      address: "3201 S Maryland Pkwy Ste 400, Las Vegas, NV 89109 Clark",
+      specialty: "Family Practice"
+    },
+    {
+      name: "MONA BAMBHA MD",
+      address: "3201 S Maryland Pkwy Ste 400, Las Vegas, NV 89109 Clark",
+      specialty: "Internal Medicine"
+    },
+    {
+      name: "VICTOR ALMUFDI MD",
+      address: "3121 S Maryland Pkwy Ste 101, Las Vegas, NV 89109 Clark",
+      specialty: "Internal Medicine"
+    },
+    {
+      name: "BEATRIZ ANG ERMOCILLA MD",
+      address: "3121 S Maryland Pkwy Ste 101, Las Vegas, NV 89109 Clark",
+      specialty: "Family Practice"
+    },
+    {
+      name: "WILLIAM VON TOBEL MD",
+      address: "3121 S Maryland Pkwy Ste 101, Las Vegas, NV 89109 Clark",
+      specialty: "Family Practice"
+    },
+    {
+      name: "CARLOS ERMOCILLA MD",
+      address: "3121 S Maryland Pkwy Ste 101, Las Vegas, NV 89109 Clark",
+      specialty: "Family Practice"
+    },
+    {
+      name: "MAHFOUD BEAJOW MD",
+      address: "3006 S Maryland Pkwy Ste 400, Las Vegas, NV 89109 Clark",
+      specialty: "Internal Medicine"
+    },
+    {
+      name: "JAVAID ANWAR MD",
+      address: "530 E Saint Louis Ave, Las Vegas, NV 89104 Clark",
+      specialty: "Internal Medicine"
+    },
+    {
+      name: "WILLIAM ALVEAR MD",
+      address: "2870 S Maryland Pkwy Ste 120, Las Vegas, NV 89109 Clark",
+      specialty: "Internal Medicine"
+    },
+    {
+      name: "ROMUALDO ARAGON MD",
+      address: "4415 W Flamingo Rd, Las Vegas, NV 89103 Clark",
+      specialty: "Family Practice"
+    },
+    {
+      name: "ROBERT MUSNI MD",
+      address: "Po Box 453020, Las Vegas, NV 89154 Clark",
+      specialty: "Family Practice"
+    },
+    {
+      name: "ADAM PASTERNAK DO",
+      address: "1621 E Flamingo Rd Ste 17B, Las Vegas, NV 89119 Clark",
+      specialty: "Internal Medicine"
+    },
+    {
+      name: "ALVIN LIN MD",
+      address: "1621 E Flamingo Rd Ste 16B, Las Vegas, NV 89119 Clark",
+      specialty: "Internal Medicine"
+    },
+    {
+      name: "ROSEMARY NOWINS",
+      address: "1641 E Flamingo Rd Ste 10, Las Vegas, NV 89119 Clark",
+      specialty: "Internal Medicine"
+    },
+    {
+      name: "ROSNER LUSS MD",
+      address: "4880 Wynn Rd, Las Vegas, NV 89103 Clark",
+      specialty: "Family Practice"
+    },
+    {
+      name: "SYED HUSSAIN MD",
+      address: "4880 Wynn Rd, Las Vegas, NV 89103 Clark",
+      specialty: "Family Practice"
+    },
+    {
+      name: "THOMAS CLAY DO",
+      address: "4880 Wynn Rd, Las Vegas, NV 89103 Clark",
+      specialty: "Family Practice"
+    },
+    {
+      name: "OLAYINKA ALONGE MD",
+      address: "4880 Wynn Rd, Las Vegas, NV 89103 Clark",
+      specialty: "Family Practice"
+    },
+    {
+      name: "DIANE LEVIN DO",
+      address: "4880 Wynn Rd, Las Vegas, NV 89103 Clark",
+      specialty: "Internal Medicine"
+    },
+    {
+      name: "PETER CHU MD",
+      address: "4880 Wynn Rd, Las Vegas, NV 89103 Clark",
+      specialty: "Family Practice"
+    },
+    {
+      name: "REZA BERJIS MD",
+      address: "4880 Wynn Rd, Las Vegas, NV 89103 Clark",
+      specialty: "Family Practice"
+    },
+    {
+      name: "IRFAN TAHIR MD",
+      address: "1900 E Desert Inn Rd, Las Vegas, NV 89169 Clark",
+      specialty: "Family Practice"
+    },
+    {
+      name: "ZIMA PAKZAD MD",
+      address: "1707 W Charleston Blvd Ste 230, Las Vegas, NV 89102 Clark",
+      specialty: "General Practice"
+    },
+    {
+      name: "VERONICA LINDO MD",
+      address: "1707 W Charleston Blvd Ste 230, Las Vegas, NV 89102 Clark",
+      specialty: "Internal Medicine, Hematology, & Medical Oncology"
+    },
+    {
+      name: "MARK BURROFF DO",
+      address: "1707 W Charleston Blvd Ste 230, Las Vegas, NV 89102 Clark",
+      specialty: "Internal Medicine"
+    },
+    {
+      name: "CHRISTOPHER CRUZ",
+      address: "1707 W Charleston Blvd Ste 230, Las Vegas, NV 89102 Clark",
+      specialty: "Internal Medicine"
+    },
+    {
+      name: "BADRUNNISA HANIF MD",
+      address: "1707 W Charleston Blvd Ste 230, Las Vegas, NV 89102 Clark",
+      specialty: "Internal Medicine"
+    },
+    {
+      name: "DEEPA MOCHERLA MD",
+      address: "1707 W Charleston Blvd Ste 230, Las Vegas, NV 89102 Clark",
+      specialty: "Internal Medicine"
+    },
+    {
+      name: "KARISHMA BHARDWAJ MD",
+      address: "1707 W Charleston Blvd Ste 230, Las Vegas, NV 89102 Clark",
+      specialty: "Internal Medicine"
+    },
+    {
+      name: "JOHN VARRAS MD",
+      address: "1707 W Charleston Blvd Ste 230, Las Vegas, NV 89102 Clark",
+      specialty: "Internal Medicine"
+    },
+    {
+      name: "SHAMS MISTRY MD",
+      address: "1707 W Charleston Blvd Ste 230, Las Vegas, NV 89102 Clark",
+      specialty: "Internal Medicine"
+    },
+    {
+      name: "THOMAS TSAI MD",
+      address: "1707 W Charleston Blvd Ste 230, Las Vegas, NV 89102 Clark",
+      specialty: "Internal Medicine"
+    },
+    {
+      name: "ZUBIN DAMANIA MD",
+      address: "1707 W Charleston Blvd Ste 230, Las Vegas, NV 89102 Clark",
+      specialty: "Internal Medicine"
+    },
+    {
+      name: "MOHAMMAD JARADAT MD",
+      address: "1707 W Charleston Blvd Ste 230, Las Vegas, NV 89102 Clark",
+      specialty: "Internal Medicine"
+    },
+    {
+      name: "MISTI SONG MD",
+      address: "2300 W Charleston Blvd Ste 265, Las Vegas, NV 89102 Clark",
+      specialty: "Family Practice, HIV/AIDS Specialist"
+    },
+    {
+      name: "NAZIA KHAN MD",
+      address: "2400 W Charleston Blvd, Las Vegas, NV 89102 Clark",
+      specialty: "Family Practice"
+    },
+    {
+      name: "ALTAF DAWOOD MD",
+      address: "4270 S Decatur Blvd Ste A1A, Las Vegas, NV 89103 Clark",
+      specialty: "Family Practice"
+    },
+    {
+      name: "RANJIT MAKAR MD",
+      address: "4270 S Decatur Blvd Ste A1A, Las Vegas, NV 89103 Clark",
+      specialty: "Internal Medicine, Nephrology"
+    },
+    {
+      name: "SANDHYA WAHI GURURAJ MD",
+      address: "4270 S Decatur Blvd Ste A1A, Las Vegas, NV 89103 Clark",
+      specialty: "Family Practice"
+    },
+    {
+      name: "JERRY CADE MD",
+      address: "4270 S Decatur Blvd Ste A1A, Las Vegas, NV 89103 Clark",
+      specialty: "Family Practice"
+    },
+    {
+      name: "CARLOS ANAYA MD",
+      address: "2121 E Flamingo Rd Ste 202, Las Vegas, NV 89119 Clark",
+      specialty: "Internal Medicine"
+    },
+    {
+      name: "RAYMOND NICHOLL MD",
+      address: "2909 W Charleston Blvd, Las Vegas, NV 89102 Clark",
+      specialty: "Family Practice"
+    },
+    {
+      name: "DIPTI SHAH MD",
+      address: "2909 W Charleston Blvd, Las Vegas, NV 89102 Clark",
+      specialty: "Internal Medicine"
+    },
+    {
+      name: "ROBERT KAPLAN DO",
+      address: "2909 W Charleston Blvd, Las Vegas, NV 89102 Clark",
+      specialty: "Internal Medicine"
+    },
+    {
+      name: "FRANCIS JIMENEZ MD",
+      address: "4275 Burnham Ave Ste 270, Las Vegas, NV 89119 Clark",
+      specialty: "Internal Medicine"
+    },
+    {
+      name: "LANCE MAYOR MD",
+      address: "4275 Burnham Ave Ste 255, Las Vegas, NV 89119 Clark",
+      specialty: "Internal Medicine"
+    },
+    {
+      name: "KOFI SARFO MD",
+      address: "4275 Burnham Ave Ste 340, Las Vegas, NV 89119 Clark",
+      specialty: "Family Practice"
+    },
+    {
+      name: "TOM TRAN MD",
+      address: "4275 Burnham Ave Ste 340, Las Vegas, NV 89119 Clark",
+      specialty: "Internal Medicine"
+    },
+    {
+      name: "MICHAEL JACOBS MD",
+      address: "4275 Burnham Ave Ste 340, Las Vegas, NV 89119 Clark",
+      specialty: "Internal Medicine"
+    },
+    {
+      name: "MARIJA KRSTIC MD",
+      address: "4275 Burnham Ave Ste 255, Las Vegas, NV 89119 Clark",
+      specialty: "Internal Medicine"
+    },
+    {
+      name: "MARIJA KRSTIC MD",
+      address: "4275 Burnham Ave Ste 340, Las Vegas, NV 89119 Clark",
+      specialty: "Family Practice"
+    },
+    {
+      name: "TODD DUKES DO",
+      address: "4275 Burnham Ave Ste 340, Las Vegas, NV 89119 Clark",
+      specialty: "Family Practice"
+    },
+    {
+      name: "FERDINAND TAN MD",
+      address: "4275 Burnham Ave Ste 255, Las Vegas, NV 89119 Clark",
+      specialty: "Internal Medicine"
+    },
+    {
+      name: "HUGH BURT MD",
+      address: "3131 W Charleston Blvd Ste 150, Las Vegas, NV 89102 Clark",
+      specialty: "Family Practice"
+    },
+    {
+      name: "AFI BRUCE MD",
+      address: "2010 Goldring Ave Ste 308, Las Vegas, NV 89106 Clark",
+      specialty: "Internal Medicine"
+    },
+    {
+      name: "JOHN HOU MD",
+      address: "2010 Goldring Ave Ste 100, Las Vegas, NV 89106 Clark",
+      specialty: "Internal Medicine"
+    },
+    {
+      name: "EVANGELINA SNOW MD",
+      address: "2010 Goldring Ave Ste 100, Las Vegas, NV 89106 Clark",
+      specialty: "Internal Medicine"
+    },
+    {
+      name: "GRANT DAWSON MD",
+      address: "2010 Goldring Ave Ste 100, Las Vegas, NV 89106 Clark",
+      specialty: "Internal Medicine"
+    },
+    {
+      name: "MARK PEREZ MD",
+      address: "2020 Goldring Ave Ste 502, Las Vegas, NV 89106 Clark",
+      specialty: "Internal Medicine"
+    },
+    {
+      name: "MUHAMMAD AHMED MD",
+      address: "2020 Goldring Ave # 308, Las Vegas, NV 89106 Clark",
+      specialty: "Internal Medicine"
+    },
+    {
+      name: "SALIMA HASSANALI DO",
+      address: "2225 E Flamingo Rd Ste 105, Las Vegas, NV 89119 Clark",
+      specialty: "Family Practice"
+    },
+    {
+      name: "VICTOR DELEON MD",
+      address: "1701 Bearden Dr Ste 200, Las Vegas, NV 89106 Clark",
+      specialty: "Internal Medicine, Physical Medicine and Rehab"
+    },
+    {
+      name: "RICARDO VELAZQUEZ MD",
+      address: "1701 Bearden Dr Ste 200, Las Vegas, NV 89106 Clark",
+      specialty: "Internal Medicine, Physical Medicine and Rehab"
+    },
+    {
+      name: "MARK MCKENZIE MD",
+      address: "1712 Bearden Dr, Las Vegas, NV 89106 Clark",
+      specialty: "Family Practice"
+    },
+    {
+      name: "DEAN MILNE DO",
+      address: "701 Shadow Ln Ste 200, Las Vegas, NV 89106 Clark",
+      specialty: "Internal Medicine"
+    },
+    {
+      name: "LUIS SANCHEZ MD",
+      address: "700 Slvrdo Rnch Bl 140, Las Vegas, NV 89183 Clark",
+      specialty: "Internal Medicine"
+    },
+    {
+      name: "AHMED MOHAMED MD",
+      address: "700 Slvrdo Rnch Bl 140, Las Vegas, NV 89183 Clark",
+      specialty: "Family Practice"
+    },
+    {
+      name: "CHARLES MCSWAIN DO",
+      address: "3301 W Charleston Blvd, Las Vegas, NV 89102 Clark",
+      specialty: "Internal Medicine"
+    },
+    {
+      name: "DOLUE EZEANOLUE MD",
+      address: "3309 W Charleston Blvd, Las Vegas, NV 89102 Clark",
+      specialty: "Internal Medicine"
+    },
+    {
+      name: "ALAFURO ORUENE MD",
+      address: "3309 W Charleston Blvd, Las Vegas, NV 89102 Clark",
+      specialty: "Internal Medicine"
+    },
+    {
+      name: "AMIR NICKNAM MD",
+      address: "3650 S Eastern Ave Ste 230, Las Vegas, NV 89169 Clark",
+      specialty: "Internal Medicine"
+    },
+    {
+      name: "PAUL MCHUGH MD",
+      address: "3599 S Eastern Ave, Las Vegas, NV 89169 Clark",
+      specialty: "Internal Medicine, Glaucoma"
+    },
+    {
+      name: "KEVIN PRINCE MD",
+      address: "4500 W Oakey Blvd, Las Vegas, NV 89102 Clark",
+      specialty: "Internal Medicine"
+    },
+    {
+      name: "BEHZAD KERMANI MD",
+      address: "4500 W Oakey Blvd, Las Vegas, NV 89102 Clark",
+      specialty: "Family Practice"
+    },
+    {
+      name: "TENG ONG MD",
+      address: "1300 S Maryland Pkwy, Las Vegas, NV 89104 Clark",
+      specialty: "Internal Medicine"
+    }
+
+ ];
+
+
+
+    var doctors = new Bloodhound({
+        datumTokenizer: function (data) {
+            return Bloodhound.tokenizers.whitespace(data.name);
+        },
+        queryTokenizer: Bloodhound.tokenizers.whitespace,
+        local: doctors_list
+    });
+
+    doctors.initialize();
 
     $('.doctors .typeahead').typeahead({
-      hint: true, highlight: true, minLength: 1
+        highlight: true
     }, {
-      name: 'states',
-      source: substringMatcher(states)
+        name: 'titles',
+        displayKey: 'name',
+        source: doctors.ttAdapter(),
+        templates: {
+          suggestion: function (data) {
+              return '<p><strong>' + data.name +'</strong> ('+data.specialty+')'+'<br/>'+ data.address +'<br/>'+'';
+          }
+        }
     });
 
     $('.healthMedications .typeahead').typeahead({
@@ -513,9 +771,13 @@
       source: substringMatcher(drugs)
     });
 
-    $('.healthMedications .typeahead').on('blur', function () {
+    $('.doctors .typeahead').on('typeahead:selected', function(event, item) {
+      Household.selectDoctor(event, item, $(this));
+    })
+
+    $('.healthMedications .typeahead').on('typeahead:selected', function(event, item) {
       $(this).closest('.modal').find('.collapse').collapse('show');
-    });
+    })
 
   });
 </script>

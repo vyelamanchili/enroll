@@ -9,7 +9,7 @@ class Products::QhpController < ApplicationController
   def comparison
     params.permit("standard_component_ids", :hbx_enrollment_id)
     found_params = params["standard_component_ids"].map { |str| str[0..13] }
-
+    @multiplyer = params[:rating].to_f
     @standard_component_ids = params[:standard_component_ids]
     @hbx_enrollment_id = params[:hbx_enrollment_id]
     @active_year = params[:active_year]
