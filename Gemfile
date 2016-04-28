@@ -11,7 +11,7 @@ gem 'rails', '4.2.3'
 gem 'uglifier', '>= 1.3.0'
 # Use CoffeeScript for .coffee assets and views
 gem 'coffee-rails', '~> 4.1.0'
-# See https://github.com/sstephenson/execjs#readme for more supported runtimes 
+# See https://github.com/sstephenson/execjs#readme for more supported runtimes
 gem 'therubyracer', platforms: :ruby
 
 # Use jquery as the JavaScript library
@@ -90,7 +90,8 @@ gem 'bootstrap-slider-rails', '6.0.17'
 
 gem 'prawn', '~> 0.11.1'
 gem 'virtus'
-gem 'wkhtmltopdf-binary-edge', '~> 0.12.3.0'
+gem 'wkhtmltopdf-binary-edge', '0.12.3.0'
+
 gem 'wicked_pdf', '1.0.4'
 
 # provide recaptcha services
