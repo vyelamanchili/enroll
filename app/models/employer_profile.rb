@@ -8,6 +8,7 @@ class EmployerProfile
   include AASM
   include Acapi::Notifiers
   extend Acapi::Notifiers
+  include StateTransitionPublisher
 
   embedded_in :organization
 
@@ -49,6 +50,7 @@ class EmployerProfile
   embeds_many :general_agency_accounts, cascade_callbacks: true, validate: true
 
   embeds_many :workflow_state_transitions, as: :transitional
+  embeds_many :documents, as: :documentable
 
   accepts_nested_attributes_for :plan_years, :inbox, :employer_profile_account, :broker_agency_accounts, :general_agency_accounts
 
@@ -649,6 +651,12 @@ class EmployerProfile
 
   def notify_binder_paid
     notify(BINDER_PREMIUM_PAID_EVENT_NAME, {:employer_id => self.hbx_id})
+  end
+
+  def self.by_hbx_id(an_hbx_id)
+    org = Organization.where(hbx_id: an_hbx_id, employer_profile: {"$exists" => true})
+    return nil unless org.any?
+    org.first.employer_profile
   end
 
 private

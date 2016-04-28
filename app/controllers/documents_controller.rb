@@ -13,6 +13,33 @@ class DocumentsController < ApplicationController
   def update_individual
     @person.consumer_role.authorize_residency! verification_attr
     @person.consumer_role.authorize_lawful_presence! verification_attr
+      respond_to do |format|
+      format.html { redirect_to :back }
+    end
+  end
+
+  def authorized_download
+    begin
+      model = params[:model].camelize
+      model_id = params[:model_id]
+      relation = params[:relation]
+      relation_id = params[:relation_id]
+      model_object = Object.const_get(model).find(model_id)
+      documents = model_object.send(relation.to_sym)
+      if authorized_to_download?(model_object, documents, relation_id)
+        uri = documents.find(relation_id).identifier
+        send_data Aws::S3Storage.find(uri), get_options(params)
+      else
+       raise "Sorry! You are not authorized to download this document."
+      end
+    rescue => e
+      redirect_to(:back, :flash => {error: e.message})
+    end
+  end
+
+  def consumer_role_status
+    docs_page_filter
+    search_box
     respond_to do |format|
       format.html { redirect_to :back }
     end
@@ -139,5 +166,10 @@ class DocumentsController < ApplicationController
        :vlp_authority => "hbx",
        :citizen_status => params[:citizenship]
                    })
+  end
+
+  def authorized_to_download?(owner, documents, document_id)
+    return true
+    owner.user.has_hbx_staff_role? || documents.find(document_id).present?
   end
 end

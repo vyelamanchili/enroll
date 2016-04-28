@@ -1,14 +1,16 @@
-class IvlPdfNotice < Notice
+class IvlNotice < Notice
 
   def initialize(options ={})
     super
   end
 
-  def create
+  def deliver
+    build
     generate_pdf_notice
     attach_blank_page
     attach_dchl_rights
     prepend_envelope
+    upload_and_send_secure_message
   end
 
   def prepend_envelope

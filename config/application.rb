@@ -34,7 +34,7 @@ module Enroll
     # config.active_record.raise_in_transactional_callbacks = true
     config.assets.enabled = true
     config.assets.paths << "#{Rails.root}/app/assets/info"
-    
+
     I18n::Backend::Simple.send(:include, I18n::Backend::Fallbacks)
     config.i18n.fallbacks = {'es' => 'en'}
     config.paths.add "app/api", glob: "**/*.rb"
@@ -49,6 +49,7 @@ module Enroll
       config.acapi.add_async_subscription("Subscribers::LocalResidency")
       config.acapi.add_async_subscription("Subscribers::FamilyApplicationCompleted")
       config.acapi.add_async_subscription("Subscribers::DefaultGaChanged")
+      config.acapi.add_async_subscription("Subscribers::NotificationSubscriber")
     end
   end
 end
