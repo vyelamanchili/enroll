@@ -42,7 +42,7 @@
               <% csv = Products::QhpCostShareVariance.find_qhp_cost_share_variances(["#{qhp.plan.hios_id}"], @hbx_enrollment.effective_on.year, @hbx_enrollment.coverage_kind).first %>
               <% moop = csv.qhp_maximum_out_of_pockets.where(name: "Maximum Out of Pocket for Medical and Drug EHB Benefits (Total)").last %>
               <% premium = current_cost(qhp[:total_employee_cost]*12, qhp.plan.ehb, nil, 'shopping', qhp.plan.can_use_aptc?) %>
-              <% likely = premium*1.33 %>
+              <% likely = premium*@multiplyer %>
               <% if @person.primary_family.active_family_members.count > 1 %>
               <% maximum = moop.in_network_tier_1_individual_amount.gsub(/[$,]/, '').to_f + premium %>
               <% else %>
@@ -67,20 +67,21 @@
                 <% end %>
                 <% total = maximums.first %>
 
-                <% premium_percentage = (premium / total) * 100 %>
-                <% likely_percentage = ((likely - premium)/total)*100 %>
+                <% premium_percentage = (premium/total) * 100 %>
+                <% likely_percentage = (likely/total)*100 %>
                 <% maximum_percentage = (maximum/total)*100 %>
 
-                <% likely_percentage = likely_percentage + premium_percentage >= maximum_percentage ? maximum_percentage - premium_percentage : likely_percentage %>
+                <% likely_percentage = likely_percentage >= maximum_percentage ? maximum_percentage - premium_percentage : likely_percentage %>
 
                 <div class="graph">
                   <div class="progress progress-bar-vertical">
+                    <div class="progress-bar progress-bar-warning progress-bar-striped" style="height: <%= (likely_percentage.floor) %>%" data-toggle="tooltip" title="Estimated Out-of-Pocket: The amount you’re likely to spend on medical services this year based on the health information you gave us.">
+                      <%= number_to_currency((likely-premium), precision: 0) %>
+                    </div>
                     <div class="progress-bar progress-bar-success progress-bar-striped" style="height: <%= premium_percentage.floor %>%" data-toggle="tooltip" title="Premium: Your 12 monthly payments.">
                       <%= number_to_currency(premium, precision: 0) %>
                     </div>
-                  <div class="progress-bar progress-bar-warning progress-bar-striped" style="height: <%= (likely_percentage.floor) %>%" data-toggle="tooltip" title="Estimated Out-of-Pocket: The amount you’re likely to spend on medical services this year based on the health information you gave us.">
-                    <%= number_to_currency((likely-premium), precision: 0) %>
-                  </div>
+
 
                 </div>
                 <div class="progress progress-bar-vertical">
