@@ -11,7 +11,7 @@ namespace :dashboard do
       rand(1..10).times.each do |j|
         time = Time.at(rand(min_start_at..max_end_at))
         Analytics::AggregateEvent.increment_time( 
-                                                 topic: topic,
+                                                 subject: topic,
                                                  moment: time
                                                 ) 
         puts "#{topic}: at #{time.to_s}"
