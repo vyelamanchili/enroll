@@ -112,9 +112,15 @@ function applyPlanFilters() {
   ];
   combineAllPlanSelectors(all_selectors);
   $("strong#plans-count").text($(".plan-row:visible").length);
+  $('.select-plan-for-comparison:checked').not(':visible').each( function() {
+    $(this).removeProp('checked');
+  });
+  var $footer = $('.compare-plans-footer:visible');
+  $footer.remove();
+  plansToCompareArray = [];
 }
 
-var plansToCompareArray = new Array();
+plansToCompareArray = new Array();
 var hbx;
 var active_year;
 var enrollment_kind;

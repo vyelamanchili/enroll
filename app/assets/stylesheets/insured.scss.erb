@@ -42,32 +42,49 @@ $primary-color: #007bc4;
 
   }
   .graph {
-    transform: rotate(-90deg);
-    .progress {
-      margin-bottom: 0;
-      height: 50px;
-      max-height: 100%;
-      width: 160px;
+    width:100px;
+    margin: auto;
+    .progress-bar-vertical {
+      width: 50px;
+      min-height: 140px;
+      display: flex;
+      align-items: flex-end;
+      float: left;
+      position: relative;
+      overflow: visible;
       .tooltip {
-        transform: rotate(90deg);
-      }
-      .progress-bar {
-        position: relative;
-        span {
-          display: block;
-          text-align: center;
-          margin-top:15px;
-          transform: rotate(90deg);
-        }
+        width: 200px !important;
       }
     }
+    .progress {
+      margin-bottom: 0;
+    }
+    .progress-bar {
+      position:absolute;
+      bottom: 0;
+    }
+
+    .progress-bar-vertical .progress-bar {
+      width: 100%;
+      height: 0;
+      -webkit-transition: height 0.6s ease;
+      -o-transition: height 0.6s ease;
+      transition: height 0.6s ease;
+    }
+
     .progress:first-of-type {
-      border-bottom-left-radius: 0;
+      border-top-right-radius: 0;
       border-bottom-right-radius: 0;
+      .progress-bar {
+        border-bottom-left-radius: 4px;
+      }
     }
     .progress:last-of-type {
       border-top-left-radius: 0;
-      border-top-right-radius: 0;
+      border-bottom-left-radius: 0;
+      .progress-bar {
+        border-bottom-right-radius: 4px;
+      }
     }
     .progress-bar-striped {
       background-size: auto;

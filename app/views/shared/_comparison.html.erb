@@ -19,19 +19,19 @@
             <div class="col-xs-12" data-toggle="tooltip" title="Premium: Your 12 monthly payments.">
               <div class="row">
                 <span class="ball green"></span>
-                <label>Maximum</label>
+                <label>Premium</label>
               </div>
             </div>
             <div class="col-xs-12" data-toggle="tooltip" title="Estimated Out-of-Pocket: The amount you’re likely to spend on medical services this year based on the health information you gave us.">
               <div class="row">
                 <span class="ball"></span>
-                <label>Likely Cost</label>
+                <label>Estimated Out of Pocket</label>
               </div>
             </div>
             <div class="col-xs-12" data-toggle="tooltip" title="Maximum Cost: The most you could pay in a year. Your annual premium plus you’re the highest possible out of pocket cost for your insurance plan.">
               <div class="row">
                 <span class="ball red"></span>
-                <label>Premium</label>
+                <label>Maximum Cost</label>
               </div>
             </div>
           </div>
@@ -55,7 +55,7 @@
           <% maximums = maximums.sort_by(&:to_i).reverse %>
           <% qhps.each do |qhp|%>
             <th colspan="2" style="text-align: center; vertical-align:middle; border: none;">
-              <div style="height: 160px; <% if qhps.count == 2 %> margin-top: -50px; margin-bottom: 40px;<% end %>">
+              <div>
                 <% csv = Products::QhpCostShareVariance.find_qhp_cost_share_variances(["#{qhp.plan.hios_id}"], @hbx_enrollment.effective_on.year, @hbx_enrollment.coverage_kind).first %>
                 <% moop = csv.qhp_maximum_out_of_pockets.where(name: "Maximum Out of Pocket for Medical and Drug EHB Benefits (Total)").last %>
                 <% premium = current_cost(qhp[:total_employee_cost]*12, qhp.plan.ehb, nil, 'shopping', qhp.plan.can_use_aptc?) %>
@@ -74,20 +74,22 @@
                 <% likely_percentage = likely_percentage + premium_percentage >= maximum_percentage ? maximum_percentage - premium_percentage : likely_percentage %>
 
                 <div class="graph">
-                <div class="progress">
-                  <div class="progress-bar progress-bar-success progress-bar-striped" style="width: <%= premium_percentage.floor %>%">
-                    <span><%= number_to_currency(premium, precision: 0) %></span>
+                  <div class="progress progress-bar-vertical">
+                    <div class="progress-bar progress-bar-success progress-bar-striped" style="height: <%= premium_percentage.floor %>%" data-toggle="tooltip" title="Premium: Your 12 monthly payments.">
+                      <%= number_to_currency(premium, precision: 0) %>
+                    </div>
+                  <div class="progress-bar progress-bar-warning progress-bar-striped" style="height: <%= (likely_percentage.floor) %>%" data-toggle="tooltip" title="Estimated Out-of-Pocket: The amount you’re likely to spend on medical services this year based on the health information you gave us.">
+                    <%= number_to_currency((likely-premium), precision: 0) %>
                   </div>
-                  <div class="progress-bar progress-bar-warning progress-bar-striped" style="width: <%= (likely_percentage.floor) %>%">
-                    <span><%= number_to_currency((likely-premium), precision: 0) %></span>
-                  </div>
+
                 </div>
-                <div class="progress">
-                  <div class="progress-bar progress-bar-danger progress-bar-striped" style="width: <%= maximum_percentage.floor %>%">
-                    <span><%= number_to_currency(maximum, precision: 0) %></span>
+                <div class="progress progress-bar-vertical">
+                  <div class="progress-bar progress-bar-danger progress-bar-striped" style="height: <%= maximum_percentage.floor %>%" data-toggle="tooltip" title="Maximum Cost: The most you could pay in a year. Your annual premium plus you’re the highest possible out of pocket cost for your insurance plan.">
+                    <%= number_to_currency(maximum, precision: 0) %>
                   </div>
                 </div>
               </div>
+              <br class="clear"/><br/>
             </div>
           </th>
           <% end %>
