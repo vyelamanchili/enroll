@@ -4,7 +4,7 @@ namespace :employers do
   desc "Export employers to csv."
   # Usage rake employers:export
   task :export => [:environment] do
-    employers = Organization.limit(10).where("employer_profile" => {"$exists" => true}).map(&:employer_profile)
+    employers = Organization.where("employer_profile" => {"$exists" => true}).map(&:employer_profile)
 
     FILE_PATH = Rails.root.join "employer_export.csv"
 
