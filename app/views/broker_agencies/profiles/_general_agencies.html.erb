@@ -11,6 +11,7 @@
           <%= @notice %>
         </div>
       <% end %>
+
       <% if @broker_agency_profile.default_general_agency_profile.present? %>
         <p><%= @broker_agency_profile.default_general_agency_profile.try(:legal_name) %> - this is your default GA, to change your default GA click "Select Default GA" under your desired agency.</p>
       <% else %>
