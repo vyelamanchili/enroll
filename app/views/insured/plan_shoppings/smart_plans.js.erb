@@ -1,9 +1,17 @@
-$('.smart-plans').html("<%= escape_javascript(render partial: "insured/plan_shoppings/smart_plans", locals: {plans: @plans, hbx_enrollment: @hbx_enrollment, multiplyer: @multiplyer}) %>");
+var $smart_plans = $('.smart-plans');
+$smart_plans.html("<%= escape_javascript(render partial: "insured/plan_shoppings/smart_plans", locals: {plans: @plans, hbx_enrollment: @hbx_enrollment, multiplyer: @multiplyer}) %>");
 if ( <%= @plans.count %> == 1 ) {
-  $('.smart-plans .panel-footer').hide();
+  $smart_plans.find('.panel-footer').hide();
 } else {
-  $('.smart-plans .panel-footer').show();
+  $smart_plans.find('.panel-footer').show();
 }
-$('.smart-plans').fadeIn('slow', function() {
+$smart_plans.fadeIn('slow', function() {
 });
 $('#plans').slideDown();
+
+$smart_plans.find('.progress-bar-striped').on('hover', function() {
+  alert('a2sd');
+
+}, function() {
+  alert('asd');
+});

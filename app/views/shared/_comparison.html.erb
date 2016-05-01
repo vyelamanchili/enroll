@@ -6,7 +6,6 @@
     <table class="table bordered compare-table", border = "1", style="font-size:11px;" >
       <tr>
         <th class="row-title">Plans</th>
-
         <% qhps.each do |qhp|%>
           <th colspan="2" style="text-align: center; vertical-align:middle; border: none; padding: 0;">
             <%= display_carrier_logo(qhp.plan.carrier_profile.organization.legal_name, {width: 80}) %>
@@ -18,19 +17,19 @@
           <div class="key">
             <div class="col-xs-12">
               <div class="row">
-                <span class="ball green"></span>
+                <span class="ball green progress-bar-success progress-bar-striped"></span>
                 <label>Premium</label>
               </div>
             </div>
             <div class="col-xs-12">
               <div class="row">
-                <span class="ball"></span>
+                <span class="ball progress-bar-warning progress-bar-striped"></span>
                 <label>Estimated Out of Pocket</label>
               </div>
             </div>
             <div class="col-xs-12">
               <div class="row">
-                <span class="ball red"></span>
+                <span class="ball red progress-bar-danger progress-bar-striped"></span>
                 <label>Maximum Cost</label>
               </div>
             </div>

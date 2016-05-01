@@ -26,3 +26,9 @@ $(document).ready(function(){
     };
   }
 });
+
+$('.smart-plans:first').find('.progress-bar-striped').hover(function() {
+  $(this).addClass('active');
+}, function() {
+  $(this).removeClass('active');
+})
