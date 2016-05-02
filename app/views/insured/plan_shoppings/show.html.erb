@@ -25,7 +25,7 @@
                     <div class="btn-group" role="group" id='sort_by_shop'>
                       <%= link_to 'Premium', plans_insured_plan_shopping_path(id: @hbx_enrollment.id, change_plan: @change_plan, market_kind: @market_kind, coverage_kind: @coverage_kind, enrollment_kind: @enrollment_kind, sort: 'premium', rating: @multiplyer ), remote: true, class: "btn btn-default" %>
                       <%= link_to 'Estimated Out-of-Pocket', plans_insured_plan_shopping_path(id: @hbx_enrollment.id, change_plan: @change_plan, market_kind: @market_kind, coverage_kind: @coverage_kind, enrollment_kind: @enrollment_kind, sort: 'estimated_out_of_pocket', rating: @multiplyer ), remote: true, class: "btn btn-default active" %>
-                      <%= link_to 'Maximum Cost', plans_insured_plan_shopping_path(id: @hbx_enrollment.id, change_plan: @change_plan, market_kind: @market_kind, coverage_kind: @coverage_kind, enrollment_kind: @enrollment_kind, sort: 'maximum_cost', rating: @multiplyer ), remote: true, class: "btn btn-default" %>
+                      <%= link_to 'Worst Case', plans_insured_plan_shopping_path(id: @hbx_enrollment.id, change_plan: @change_plan, market_kind: @market_kind, coverage_kind: @coverage_kind, enrollment_kind: @enrollment_kind, sort: 'maximum_cost', rating: @multiplyer ), remote: true, class: "btn btn-default" %>
                     </div>
                   <% else %>
                     <div class="btn-group" role="group" id='sort_by'>
@@ -73,27 +73,6 @@
     </div>
   </div>
 </div>
-
-<div class="modal fade" id="shoppingTermsModal">
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title">What You Pay</h4>
-      </div>
-      <div class="modal-body">
-        <strong>Monthly Premium:</strong> The amount you must pay for insurance each month, even if you don’t go to the doctor.<br/><br/>
-        <strong>Annual Premium:</strong> 12 monthly payments. The amount you must pay for insurance for the year, even if you don’t go to the doctor.<br/><br/>
-        <strong>Estimated out-of-pocket costs:</strong> The amount you’re likely to spend on medical services this year based on the health information you gave us. This amount doesn’t include your monthly premium.<br/><br/>
-        <strong>Likely total cost for one year:</strong> This is your monthly premium plus our estimate of your likely out-of-pocket costs for one year.<br/><br/>
-        <strong>Maximum cost for one  year:</strong> The most you could pay in a year. This is your monthly premium plus the highest possible out-of-pocket cost for your insurance plan. This amount does not include services the plan doesn’t cover, like out-of-network care, experimental treatments, or ling-term nursing care.<br/><br/>
-      </div>
-      <div class="modal-footer">
-        <a class="btn btn-trans" data-dismiss="modal">Close</a>
-      </div>
-    </div><!-- /.modal-content -->
-  </div><!-- /.modal-dialog -->
-</div><!-- /.modal -->
 <% if @hbx_enrollment.coverage_kind == "health" && @hbx_enrollment.is_shop? %>
   <%= render partial: 'how_plan_shopping_works_modal' %>
 <% end %>

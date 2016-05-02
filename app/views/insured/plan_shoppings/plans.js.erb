@@ -26,9 +26,10 @@ $(document).ready(function(){
     };
   }
 });
-
+var $smart_plans = $('.smart-plans');
 $('.smart-plans:first').find('.progress-bar-striped').hover(function() {
   $(this).addClass('active');
 }, function() {
   $(this).removeClass('active');
 })
+SmartPlans.applyBadges();
