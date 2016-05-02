@@ -401,7 +401,7 @@ When(/^.+ completes? the matched employee form for (.*)$/) do |named_person|
   wait_for_ajax(10)
   #find("#person_addresses_attributes_0_address_1", :wait => 10).click
   find("#person_addresses_attributes_0_address_1").trigger('click')
-  find("#person_addresses_attributes_0_address_2").click
+  find("#person_addresses_attributes_0_address_2").trigger('click')
   find("#person_addresses_attributes_0_city").click
   find("#person_addresses_attributes_0_zip").click
 
