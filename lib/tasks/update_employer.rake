@@ -29,7 +29,6 @@ namespace :update_employer do
     # Both of these cases will fail the validation and the Organization.save will fail.
     invalid_orgs.each do |org|
       office_locations = org.office_locations
-      puts " *** FOUND ORGANIZATION WITHOUT ANY OFFICE LOCATION, ASK BUSINESS TO UPDATE A PRIMARY OFFICE LOCATION FOR : #{org.legal_name} " if office_locations.blank?
       if office_locations.present?
         office_locations.each do |off_loc|
           if off_loc.address.blank?
@@ -37,6 +36,8 @@ namespace :update_employer do
             org.office_locations.where(id: off_loc.id).first.delete
           end
         end
+      else
+         puts " *** FOUND ORGANIZATION WITHOUT ANY OFFICE LOCATION, ASK BUSINESS TO UPDATE A PRIMARY OFFICE LOCATION FOR : #{org.legal_name} "
       end  
     end
 
