@@ -184,7 +184,8 @@ class Organization
     Rails.cache.fetch("carrier-names-at-#{TimeKeeper.date_of_record.year}", expires_in: 2.hour) do
       Organization.exists(carrier_profile: true).inject({}) do |carrier_names, org|
         carrier_names[org.carrier_profile.id.to_s] = org.carrier_profile.legal_name if Plan.valid_shop_health_plans("carrier", org.carrier_profile.id).present?
-        carrier_names.select{|id,carrier| NEVADA_CARRIER_NAMES.include?(carrier) }
+        carrier_names
+        # carrier_names.select{|id,carrier| NEVADA_CARRIER_NAMES.include?(carrier) }
       end
     end
   end
@@ -194,7 +195,8 @@ class Organization
       Organization.exists(carrier_profile: true).inject({}) do |carrier_names, org|
 
         carrier_names[org.carrier_profile.id.to_s] = org.carrier_profile.legal_name if Plan.valid_shop_dental_plans("carrier", org.carrier_profile.id, 2016).present?
-        carrier_names.select{|id,carrier| NEVADA_CARRIER_NAMES.include?(carrier) }
+        carrier_names
+        # carrier_names.select{|id,carrier| NEVADA_CARRIER_NAMES.include?(carrier) }
       end
     end
   end
@@ -203,7 +205,8 @@ class Organization
     Rails.cache.fetch("carrier-names-filters-at-#{TimeKeeper.date_of_record.year}", expires_in: 2.hour) do
       Organization.exists(carrier_profile: true).inject({}) do |carrier_names, org|
         carrier_names[org.carrier_profile.id.to_s] = org.carrier_profile.legal_name
-        carrier_names.select{|id,carrier| NEVADA_CARRIER_NAMES.include?(carrier) }
+        carrier_names
+        # carrier_names.select{|id,carrier| NEVADA_CARRIER_NAMES.include?(carrier) }
       end
     end
   end
