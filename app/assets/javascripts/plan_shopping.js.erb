@@ -315,8 +315,9 @@ $(function() {
         }
       });
     };
-
-    SmartPlans.update();
+    if ( $('#sort_by_shop').length ) {
+      SmartPlans.update();
+    }
   });
 
 
@@ -329,10 +330,12 @@ $(function() {
     $(".filter-sidebar input[type='text'].plan-metal-deductible-to-selection-filter").val($('#max_deductible').val());
     $(".filter-sidebar select.plan-carrier-selection-filter").prop('selectedIndex', 0).selectric('refresh');
     $(".filter-sidebar select.plan-hsa-eligibility-selection-filter").prop('selectedIndex', 0).selectric('refresh');
-    var sort_text = $(".module.smart-plans .panel-default").data("sort-by").split('_').join(' ');
-    var $heading_text = $('.smart-plans .panel-heading h4');
-    $heading_text.html('Top 3 Picks - by Lowest '+ '<span style="text-transform: capitalize;">'+sort_text+'</span>');
-    $heading_text.css({'fontSize': '18px'});
+    if ( $('#sort_by_shop').length ) {
+      var sort_text = $(".module.smart-plans .panel-default").data("sort-by").split('_').join(' ');
+      var $heading_text = $('.smart-plans .panel-heading h4');
+      $heading_text.html('Top 3 Picks - by Lowest '+ '<span style="text-transform: capitalize;">'+sort_text+'</span>');
+      $heading_text.css({'fontSize': '18px'});
+    };
     applyPlanFilters();
   });
 

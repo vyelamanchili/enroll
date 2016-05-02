@@ -26,6 +26,8 @@ $(document).ready(function(){
     };
   }
 });
+<% if @hbx_enrollment.kind == "employer_sponsored" && @hbx_enrollment.coverage_kind == "health" %>
+
 var $smart_plans = $('.smart-plans');
 $('.smart-plans:first').find('.progress-bar-striped').hover(function() {
   $(this).addClass('active');
@@ -33,3 +35,4 @@ $('.smart-plans:first').find('.progress-bar-striped').hover(function() {
   $(this).removeClass('active');
 })
 SmartPlans.applyBadges();
+<% end %>
