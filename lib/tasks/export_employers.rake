@@ -82,7 +82,7 @@ namespace :employers do
 
                   broker_agency_account = get_broker_agency_account(employer.broker_agency_accounts, plan_year)
                   if broker_agency_account.present?
-                    row += [broker_agency_account.broker_agency_profile.primary_broker_role.npn, broker_agency_account.broker_agency_profile.legal_name]
+                    row += [broker_agency_account.broker_agency_profile.corporate_npn, broker_agency_account.broker_agency_profile.legal_name]
                     if broker_agency_account.broker_agency_profile.primary_broker_role.present?
                       row += [broker_agency_account.broker_agency_profile.primary_broker_role.person.first_name + " " + broker_agency_account.broker_agency_profile.primary_broker_role.person.last_name]
                       row += [broker_agency_account.broker_agency_profile.primary_broker_role.npn]
