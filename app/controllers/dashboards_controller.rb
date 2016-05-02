@@ -55,18 +55,18 @@ class DashboardsController < ApplicationController
 
     case @type
     when 'Day'
-      @reports = Analytics::AggregateEvent.subject_count_daily(begin_on: begin_on, end_on: end_on)
+      @reports = Analytics::AggregateEvent.subjects_count_daily(begin_on: begin_on, end_on: end_on)
       @title = "Today (#{begin_on.to_s})"
       @reports_for_drilldown_options = Analytics::Dimensions::Daily.options
     when 'Week'
-      @reports = Analytics::AggregateEvent.subject_count_weekly(begin_on: begin_on, end_on: end_on)
+      @reports = Analytics::AggregateEvent.subjects_count_weekly(begin_on: begin_on, end_on: end_on)
       @title = "#{TimeKeeper.date_of_record.beginning_of_week.to_s} - #{TimeKeeper.datetime_of_record.to_s}"
       @reports_for_drilldown_options = Analytics::Dimensions::Weekly.options
     when 'Month'
-      @reports = Analytics::AggregateEvent.subject_count_monthly(begin_on: begin_on, end_on: end_on)
+      @reports = Analytics::AggregateEvent.subjects_count_monthly(begin_on: begin_on, end_on: end_on)
       @reports_for_drilldown_options = Analytics::Dimensions::Monthly.options
     when 'Year'
-      @reports = Analytics::AggregateEvent.subject_count_monthly(begin_on: begin_on, end_on: end_on)
+      @reports = Analytics::AggregateEvent.subjects_count_monthly(begin_on: begin_on, end_on: end_on)
       @reports_for_chart = group_by_subject_for_year(@reports)
       @reports_for_drilldown = group_by_month_for_year(@reports)
       @reports_for_drilldown_options = @reports.map{|r| "#{r.year}-#{r.month}"}.uniq
@@ -82,7 +82,7 @@ class DashboardsController < ApplicationController
     if params[:date].length > 5
       year,month = params[:date].split('-')
       @begin_on = params[:current]
-      @reports = Analytics::Dimensions::Monthly.where(site: 'dchbx', year: year, month: month).to_a
+      @reports = Analytics::Dimensions::Monthly.where(year: year, month: month).to_a
       @title = params[:date]
       @reports_for_drilldown_options = Analytics::Dimensions::Monthly.options
     elsif params[:date].present? and params[:date].start_with?("d")
@@ -95,7 +95,7 @@ class DashboardsController < ApplicationController
       end
       end_on = begin_on.end_of_day
       @begin_on = begin_on
-      @reports = Analytics::AggregateEvent.subject_count_daily(begin_on: begin_on, end_on: end_on)
+      @reports = Analytics::AggregateEvent.subjects_count_daily(begin_on: begin_on, end_on: end_on)
       @title = begin_on.to_s
       @reports_for_drilldown_options = Analytics::Dimensions::Daily.options
     else

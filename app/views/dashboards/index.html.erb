@@ -23,7 +23,7 @@
       if(picker == undefined) {
         send_data = {}
       } else {
-        send_data = {start_on: picker.startDate.format('MM/DD/YYYY'), end_on: picker.endDate.format('MM/DD/YYYY')}
+        send_data = {begin_on: picker.startDate.format('MM/DD/YYYY'), end_on: picker.endDate.format('MM/DD/YYYY')}
       }
       $.ajax({
         type: 'GET',

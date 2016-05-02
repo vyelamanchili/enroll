@@ -43,7 +43,7 @@
       </span>
     </div>
     <div class="col-xs-6 col-sm-3 col-md-6" id='chart_2'>
-      <%= hidden_field_tag 'start_on', @start_on.to_s %>
+      <%= hidden_field_tag 'begin_on', @begin_on.to_s %>
       <div id="dashboard_chart_2" style: "height:400px"> </div>
       <h4>System</h4>
       <span class="text-muted">1D | 1W | 1M | 1Y </span>
@@ -76,7 +76,7 @@
                   events: {
                     click: function () {
                       console.log('Category: ' + this.category + ', value: ' + this.y + ', name: ' + this.series.name);
-                      var send_data = {date: this.category, current: $("input#start_on").val()};
+                      var send_data = {date: this.category, current: $("input#begin_on").val()};
                       console.log(send_data);
                       $.ajax({
                         type: 'GET',
