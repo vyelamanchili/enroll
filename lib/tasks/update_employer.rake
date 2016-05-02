@@ -19,4 +19,28 @@ namespace :update_employer do
     end
     invalid2 = orgs.all.select{|org| bad=!org.valid?; puts org.legal_name if bad; bad}
   end
-end
+
+  
+  desc "delete all nil addresses for office locations"
+  task :delete_nil_addresses => :environment do
+    
+    invalid_orgs = Organization.where("office_locations.address" => nil).all
+    # The invalid_orgs list can be of the following types:  1. with a nil or blank[] office_locations, 2. with a nil address for some office_location. 
+    # Both of these cases will fail the validation and the Organization.save will fail.
+    invalid_orgs.each do |org|
+      office_locations = org.office_locations
+      puts " *** FOUND ORGANIZATION WITHOUT ANY OFFICE LOCATION, ASK BUSINESS TO UPDATE A PRIMARY OFFICE LOCATION FOR : #{org.legal_name} " if office_locations.blank?
+      if office_locations.present?
+        office_locations.each do |off_loc|
+          if off_loc.address.blank?
+            puts "This is a bad office_location with no address => ID : (#{off_loc.id}) of #{org.legal_name}. This office_location will be deleted to make the organization valid."
+            org.office_locations.where(id: off_loc.id).first.delete
+          end
+        end
+      end  
+    end
+
+  end
+
+
+end 
