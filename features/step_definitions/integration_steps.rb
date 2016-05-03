@@ -402,8 +402,8 @@ When(/^.+ completes? the matched employee form for (.*)$/) do |named_person|
   #find("#person_addresses_attributes_0_address_1", :wait => 10).click
   find("#person_addresses_attributes_0_address_1").trigger('click')
   find("#person_addresses_attributes_0_address_2").trigger('click')
-  find("#person_addresses_attributes_0_city").click
-  find("#person_addresses_attributes_0_zip").click
+  find("#person_addresses_attributes_0_city").trigger('click')
+  find("#person_addresses_attributes_0_zip").trigger('click')
 
   fill_in "person[phones_attributes][0][full_phone_number]", :with => person[:home_phone]
 
