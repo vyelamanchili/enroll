@@ -405,12 +405,11 @@ class Person
   end
 
   def work_email_or_best
-    email = emails && (emails.detect { |adr| adr.kind == "work" } || emails.first)
+    email = emails.detect { |adr| adr.kind == "work" } || emails.first
     (email && email.address) || (user && user.email)
   end
 
   def work_phone_or_best
-    return nil unless phones
     best_phone  = work_phone || mobile_phone || home_phone
     best_phone ? best_phone.full_phone_number : nil
   end
