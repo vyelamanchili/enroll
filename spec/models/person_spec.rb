@@ -985,7 +985,6 @@ describe Person do
                                           employee_role_id: employee_role.id,
                                           is_active: true
                                        )}
-
       it 'returns true if person has an active enrollment.' do
         allow(person).to receive(:primary_family).and_return(primary_family)
         allow(primary_family).to receive(:enrollments).and_return([active_enrollment])
@@ -999,7 +998,6 @@ describe Person do
                                           employee_role_id: employee_role.id,
                                           is_active: false
                                        )}
-
       it 'returns false if person does not have any active enrollment.' do
         allow(person).to receive(:primary_family).and_return(primary_family)
         allow(primary_family).to receive(:enrollments).and_return([inactive_enrollment])

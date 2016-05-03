@@ -10,7 +10,6 @@ class Announcement
   field :end_date, type: Date
   field :audiences, type: Array, default: []
 
-
   validates_presence_of :content, :start_date, :end_date
   validate :must_have_audiences
   validate :date_checks
