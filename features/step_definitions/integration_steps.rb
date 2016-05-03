@@ -605,7 +605,7 @@ When(/^.+ clicks? on the add employee button$/) do
 end
 
 When(/^(?:(?!General).)+ clicks? on the ((?:(?!General|Staff).)+) tab$/) do |tab_name|
-  find(:xpath, "//li[contains(., '#{tab_name}')]").click
+  find(:xpath, "//li[contains(., '#{tab_name}')]", :wait => 10).click
 end
 
 When(/^.+ clicks? on the tab for (.+)$/) do |tab_name|
