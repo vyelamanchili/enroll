@@ -69,6 +69,23 @@ RSpec.describe Exchanges::AnnouncementsController do
         expect(flash[:notice]).to eq "Create Announcement Successful."
       end
     end
+
+    context "with invalid params" do
+      let(:invalid_announcement_params) { {announcement: {content: 'msg', start_date: '2016-3-1', end_date: '2016-10-1'}} }
+      before :each do
+        allow(user).to receive(:has_hbx_staff_role?).and_return true
+        sign_in user
+        post :create, invalid_announcement_params
+      end
+
+      it "should render template" do
+        expect(response).to render_template("index")
+      end
+
+      it "should get announcements" do
+        expect(assigns(:announcements)).to eq Announcement.current
+      end
+    end
   end
 
   describe "DELETE destroy" do
