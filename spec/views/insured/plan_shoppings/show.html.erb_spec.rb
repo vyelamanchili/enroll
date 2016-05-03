@@ -60,6 +60,8 @@ RSpec.describe "insured/show" do
   end
 
   it 'should not identify Broker control in the header when signed in as Consumer' do
+    FactoryGirl.create(:consumer_role, person: consumer_user.person)
+    allow(consumer_user).to receive(:identity_verified_date).and_return(true)
     sign_in consumer_user
 
 

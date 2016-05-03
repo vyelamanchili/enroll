@@ -189,7 +189,8 @@ class User
   end
 
   def has_consumer_role?
-    has_role?(:consumer)
+    #has_role?(:consumer)
+    person && person.consumer_role
   end
 
   def has_employer_staff_role?
