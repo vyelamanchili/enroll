@@ -120,7 +120,7 @@
                   <%= number_to_currency(@plan.total_employee_cost*1.3) %>
                   <% end %>
                 </li>
-                <li class="list-group-item list-group-item-danger" data-toggle="tooltip" title="Worst Case: The most you could pay in a year. Your annual premium plus you’re the highest possible out of pocket cost for your insurance plan.">Worst Case:
+                <li class="list-group-item list-group-item-danger" data-toggle="tooltip" title="Worst Case: The most you could pay in a year. Your annual premium plus the highest possible out of pocket cost for your insurance plan.">Worst Case:
                   <% if (@hbx_enrollment.present? && @hbx_enrollment.coverage_kind == 'health') || @plan.coverage_kind == 'health' %>
                   <%= number_to_currency(maximum) %>
                   <% else %>

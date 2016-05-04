@@ -6,6 +6,7 @@
 <br/>
 <%= render :partial => 'insured/health_analytics/analytics_submit_column' %>
 <% end %>
+
 <h1 class="darkblue">Health - Tell us about your family's Health</h1>
 <div class="row">
   <p class="col-xs-10">
@@ -95,8 +96,8 @@
           <% Family::HealthConditions.each do |health_condition| %>
           <div class="checkbox">
             <label>
-              <%= check_box_tag 'health_condition' %>
-              <%= label_tag 'health_condition' do %>
+              <%= check_box_tag health_condition %>
+              <%= label_tag health_condition do %>
               <i class="fa fa-check-square-o fa-2x"></i>
               <i class="fa fa-square-o fa-2x"></i>
               <% end %>
@@ -289,7 +290,7 @@
       }
     });
     $('.modal-footer .btn-trans').on('click', function() {
-      if ( $(this).text() == "Close" ) {
+      if ( $(this).text() == "Remove" ) {
         $('#healthMedications').unbind('hidden');
       }
     });
