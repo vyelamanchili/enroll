@@ -1,6 +1,7 @@
 class Products::QhpController < ApplicationController
   include ContentType
   include Aptc
+  include ApplicationHelper
   include Acapi::Notifiers
   extend Acapi::Notifiers
   before_action :set_current_person, only: [:comparison, :summary]
@@ -32,6 +33,27 @@ class Products::QhpController < ApplicationController
       end
 
     end
+
+    if @market_kind == 'employer_sponsored' && @coverage_kind == 'health'
+      @qhps.each do |qhp|
+        csv = Products::QhpCostShareVariance.find_qhp_cost_share_variances(["#{qhp.plan.hios_id}"], 2016, "health").first
+        moop = csv.qhp_maximum_out_of_pockets.where(name: "Maximum Out of Pocket for Medical and Drug EHB Benefits (Total)").last
+        premium = current_cost(qhp[:total_employee_cost]*12, qhp.plan.ehb, nil, 'shopping', qhp.plan.can_use_aptc?)
+
+        if @person.primary_family.active_family_members.count > 1
+          maximum_out_of_pocket = moop.in_network_tier_1_individual_amount.gsub(/[$,]/, '').to_f + premium
+          qhp.assign_attributes({ :maximum_out_of_pocket => maximum_out_of_pocket })
+        else
+          maximum_out_of_pocket = moop.in_network_tier_1_family_amount.gsub(/[$,]/, '').to_f + premium
+          qhp.assign_attributes({ :maximum_out_of_pocket => maximum_out_of_pocket })
+        end
+
+      end
+      @qhps = @qhps.sort_by(&:maximum_out_of_pocket)
+    end
+  end
+
+    if @hbx_enrollment_id
     respond_to do |format|
       format.html
       format.js

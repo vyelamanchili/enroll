@@ -9,6 +9,7 @@ class Products::QhpCostShareVariance
   field :plan_marketing_name, type: String
   field :metal_level, type: String
   field :csr_variation_type, type: String
+  field :maximum_out_of_pocket, type: String
 
   field :issuer_actuarial_value, type: String
   field :av_calculator_output_number, type: String
