@@ -51,7 +51,6 @@ class Products::QhpController < ApplicationController
       end
       @qhps = @qhps.sort_by(&:maximum_out_of_pocket)
     end
-  end
 
     respond_to do |format|
       format.html
