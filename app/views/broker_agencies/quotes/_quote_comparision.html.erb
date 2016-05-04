@@ -33,13 +33,13 @@
     <tr class='publish' id='publish_<%=@quote_results[k][:plan_id]%>'>
       <td class="quote_detail_results"><%= k %></td>
       <td class="quote_detail_results text-center"><div class='btn'>
-        $<%= v["reference_plan_cost"] %>
+        $<%= v["reference_plan_cost"].ceil %>
       </div></td>
       <td class="quote_detail_results text-center"><div class='btn'>
-        $<%= v[:single_carrier]["lowest_cost_plan_cost"] %> / $<%= v["reference_plan_cost"] %> / $<%= v[:single_carrier]["highest_cost_plan_cost"] %>
+        $<%= v[:single_carrier]["lowest_cost_plan_cost"].ceil %> / $<%= v["reference_plan_cost"].ceil %> / $<%= v[:single_carrier]["highest_cost_plan_cost"].ceil %>
         </div></td>
       <td class="quote_detail_results text-center"><div class='btn'>
-        $<%= v[:metal_level]["lowest_cost_plan_cost"] %> / $<%= v["reference_plan_cost"] %> / $<%= v[:metal_level]["highest_cost_plan_cost"] %>
+        $<%= v[:metal_level]["lowest_cost_plan_cost"].ceil %> / $<%= v["reference_plan_cost"].ceil %> / $<%= v[:metal_level]["highest_cost_plan_cost"].ceil %>
         </div></td>
     </tr>
     <% end %>
@@ -56,8 +56,8 @@
     <% @quote_results.each do |qr| %>
       <td width="350" colspan="3" class="quote_detail_plan_header">
         <%= qr[0] %><br>
-        <span  class="btn btn-info btn-sm">$<%= qr[1][:total_employee_cost] %></span>
-        <span  class="btn btn-danger btn-sm">$<%= qr[1][:total_employer_cost] %></span>
+        <span  class="btn btn-info btn-sm">$<%= qr[1][:total_employee_cost].ceil %></span>
+        <span  class="btn btn-danger btn-sm">$<%= qr[1][:total_employer_cost].ceil %></span>
       </td>
     <% end %>
     </tr>

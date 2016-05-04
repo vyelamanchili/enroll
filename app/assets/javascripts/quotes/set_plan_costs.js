@@ -14,7 +14,7 @@ function set_plan_costs() {
      plan_button = "[value='" + plan_id + "']"
      window.plan_button = plan_button
      employee_cost_div = $(plan_button).parent().children()[1]
-     $(employee_cost_div).html(premium)
+     $(employee_cost_div).html(Math.ceil(parseFloat(premium)))
 
     }
 
