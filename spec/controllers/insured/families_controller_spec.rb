@@ -522,9 +522,9 @@ RSpec.describe Insured::FamiliesController do
       end
     end
 
-    context "delete delete_consumer_broker" do 
+    context "delete delete_consumer_broker" do
       let(:family) {FactoryGirl.build(:family)}
-      before :each do 
+      before :each do
         family.broker_agency_accounts = [
           FactoryGirl.build(:broker_agency_account, family: family)
         ]
@@ -532,7 +532,7 @@ RSpec.describe Insured::FamiliesController do
         delete :delete_consumer_broker , :id => family.id
       end
 
-      it "should delete consumer broker" do 
+      it "should delete consumer broker" do
         expect(response).to have_http_status(:redirect)
         expect(family.current_broker_agency).to be nil
       end
