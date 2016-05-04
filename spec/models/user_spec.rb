@@ -226,6 +226,7 @@ describe User do
 
     it "when visit families/home" do
       user.roles = ['employee', 'consumer']
+      allow(user).to receive(:has_consumer_role?).and_return true
       expect(user.get_announcements_by_roles_and_portal("dc.org/families/home")).to eq "Announcement:<br/>msg for Employee<br/>msg for IVL"
     end
 
@@ -236,6 +237,7 @@ describe User do
 
     it "when consumer_role" do
       user.roles = ['consumer']
+      allow(user).to receive(:has_consumer_role?).and_return true
       expect(user.get_announcements_by_roles_and_portal("dc.org/consumer")).to eq "Announcement:<br/>msg for IVL"
     end
 
@@ -258,6 +260,7 @@ describe User do
 
       it "with consumer portal" do
         user.roles = ['consumer', 'broker']
+        allow(user).to receive(:has_consumer_role?).and_return true
         expect(user.get_announcements_by_roles_and_portal("dc.org/consumer_role")).to eq "Announcement:<br/>msg for IVL"
       end
 
