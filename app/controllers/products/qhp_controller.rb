@@ -53,7 +53,6 @@ class Products::QhpController < ApplicationController
     end
   end
 
-    if @hbx_enrollment_id
     respond_to do |format|
       format.html
       format.js
