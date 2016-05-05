@@ -20,12 +20,15 @@ namespace :seed do
     p_json.each do |b_rec|
       thr = Thread.new do
         plan = b_rec['plan'] || {}
+        start_on = DateTime.iso8601(b_rec['policy_start_on']['$date']) rescue ''
+        family_created_at = DateTime.iso8601(b_rec['family_created_at']['$date']) rescue ''
+        purchased_at = DateTime.iso8601(b_rec['policy_purchased_at']['$date']) rescue ''
 
         PolicyStatistic.create(
-          oid: b_rec['_id']['$oid'],
-          start_on: DateTime.iso8601(b_rec['policy_start_on']['$date']),
-          family_created_at: DateTime.iso8601(b_rec['family_created_at']['$date']),
-          purchased_at: DateTime.iso8601(b_rec['policy_purchased_at']['$date']),
+          oid: (b_rec['_id']['$oid'] rescue ''),
+          start_on: start_on,
+          family_created_at: family_created_at,
+          purchased_at: purchased_at,
           member_count: b_rec['member_count'],
           enrollment_kind: b_rec['enrollment_kind'],
           aasm_state: b_rec['aasm_state'],
