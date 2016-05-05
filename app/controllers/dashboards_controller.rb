@@ -6,18 +6,21 @@ class DashboardsController < ApplicationController
     @begin_on = TimeKeeper.date_of_record.last_month
     @title = "Week-to-date, starting: #{@begin_on.to_s}"
 
-    subjects = ["IVL Enrollment - Submitted At", "SHOP Enrollment - Submitted At"]
-    @reports  = Analytics::AggregateEvent.subjects_count_weekly(subjects: subjects, begin_on: @begin_on)
+    #subjects = ["IVL Enrollment - Submitted At", "SHOP Enrollment - Submitted At"]
+    @reports  = Analytics::AggregateEvent.subjects_count_weekly(begin_on: @begin_on)
 
     @reports_for_chart = @reports.map {|r| {name: r.subject.split(/ - submitted at/i).first.humanize, y: r.amount}}
     @reports_for_drilldown_options = Analytics::Dimensions::Weekly.options
     @reports_for_drilldown = @reports.map {|r| {name: r.subject.split(/ - submitted at/i).first.humanize, data: r.sum}}
+
+    @title_for_policy = "Individual Market - Household Size - Metal Level Count"
+    @reports_for_policy_options, @reports_for_policy = PolicyStatistic.report_for_chart
   end
 
   def stock
     @title = "#{Date.new(2015,11,1).to_s} - #{TimeKeeper.datetime_of_record.to_s}"
-    subjects = ["IVL Enrollment - Submitted At", "SHOP Enrollment - Submitted At"]
-    @reports  = Analytics::AggregateEvent.subjects_count_monthly(subjects: subjects, begin_on: @begin_on)
+    #subjects = ["IVL Enrollment - Submitted At", "SHOP Enrollment - Submitted At"]
+    @reports  = Analytics::AggregateEvent.subjects_count_monthly(begin_on: @begin_on)
     @reports_for_stock = group_by_subject(@reports)
   end
 

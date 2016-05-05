@@ -117,3 +117,32 @@
       </tbody>
     </table>
   </div>
+
+
+<div id="policy_chart" style: "height:400px"> </div>
+<script type="text/javascript">
+  $(function () { 
+    $('#policy_chart').highcharts({
+      chart: {
+        type: 'column'
+      },
+      title: {
+        text: "<%= @title_for_policy %>"
+      },
+      //subtitle: {
+      //  text: 'As of 4/30/2016'
+      //},
+      xAxis: {
+        categories: <%= raw @reports_for_policy_options.to_json %>,
+        title: {text: 'Household Size'}
+      },
+      yAxis: {
+        min: 0,
+        title: {
+          text: 'Policy Count'
+        }
+      },
+      series: <%= raw @reports_for_policy.to_json %>,
+    });
+  });
+</script>

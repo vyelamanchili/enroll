@@ -29,6 +29,8 @@ gem 'jbuilder', '~> 2.0'
 # JS graph API
 gem 'highstock-rails', '~> 2.1', '>= 2.1.10'
 
+gem 'yajl-ruby', require: 'yajl'
+
 # bundle exec rake doc:rails generates the API under doc/api.
 gem 'sdoc', '~> 0.4.0', group: :doc
 gem 'less-rails-bootstrap', '~> 3.3.1.0'
