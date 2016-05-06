@@ -1,8 +1,7 @@
 $('#plans').html("<%= escape_javascript(render partial: "insured/plan_shoppings/plan_details", locals: {plans: @plans}) %>")
 <% if @hbx_enrollment.kind == "employer_sponsored" && @hbx_enrollment.coverage_kind == "health" %>
   $('.smart-plans').html("<%= escape_javascript(render partial: "insured/plan_shoppings/smart_plans", locals: {plans: @plans}) %>")
-  $('.smart-plans, #plans').fadeIn('slow', function() {
-  });
+  $('.smart-plans, #plans').fadeIn('slow', function() {});
 <% else %>
   $('#plans').fadeIn('slow', function() {
   });

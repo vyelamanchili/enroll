@@ -40,13 +40,13 @@
     var $plan_rows = $('#plans').find('.plan-row:visible');
     var active_sort = $('#sort_by_shop .active').text();
     var active_sort = active_sort.replace(/[_-]/g, " ").toLowerCase().replace(/ /g,"_");
-    $('.icon .fa-star').addClass(active_sort);
+    $('.icon .fa-stack').addClass(active_sort);
     var sort = $('.smart-plans').find('.panel-default').data('sort-by') || active_sort;
     var $heading_text = $('.smart-plans .panel-heading h4').text();
     $plan_rows.find('.col-xs-1 .icon').html("");
     $plan_rows.each( function (index) {
       if ( index <= 2 ) {
-        var custom = ($('.module.all-filters-row input:checked').length > 0) ? "[Custom Filter]" : "";
+        var custom = ($('.module.all-filters-row input:checked').length > 0 || $('.module.all-filters-row select').find('option:first:not(":selected")').length > 0) ? "[Custom Filter]" : "";
         if ( index == 0 ) {
           $(this).find('.icon').html('<strong data-placement=\"bottom\" data-toggle=\"tooltip\" title=\"'+$heading_text+' '+custom+'\"><span class=\"fa-stack fa-lg\"><i class="fa fa-star '+sort+'\" aria-hidden=\"true\"></i><i class=\"fa fa-stack-1x number\"><strong>'+ (index+1) +'</strong></i></span></strong>');
         } else {
