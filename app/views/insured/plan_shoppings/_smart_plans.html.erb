@@ -1,8 +1,6 @@
 <div class="module smart-plan">
-
 <div class="panel panel-default" data-sort-by="<%= @sort %>">
   <div class="panel-heading">
-
     <div class="row">
       <div class="col-xs-1">
         <div class='icon'>
@@ -59,7 +57,6 @@
           <% csv = Products::QhpCostShareVariance.find_qhp_cost_share_variances(["#{plan.hios_id}"], @hbx_enrollment.effective_on.year, @hbx_enrollment.coverage_kind).first %>
           <% moop = csv.qhp_maximum_out_of_pockets.where(name: "Maximum Out of Pocket for Medical and Drug EHB Benefits (Total)").last %>
           <% premium = current_cost(plan.total_employee_cost*12, plan.ehb, nil, 'shopping', plan.can_use_aptc?) %>
-          <% likely = premium*@multiplyer %>
           <% if @person.primary_family.active_family_members.count > 1 %>
           <% maximum = moop.in_network_tier_1_individual_amount.gsub(/[$,]/, '').to_f + premium %>
           <% else %>
@@ -73,34 +70,38 @@
         <% csv = Products::QhpCostShareVariance.find_qhp_cost_share_variances(["#{plan.hios_id}"], @hbx_enrollment.effective_on.year, @hbx_enrollment.coverage_kind).first %>
         <% moop = csv.qhp_maximum_out_of_pockets.where(name: "Maximum Out of Pocket for Medical and Drug EHB Benefits (Total)").last %>
         <% premium = current_cost(plan.total_employee_cost*12, plan.ehb, nil, 'shopping', plan.can_use_aptc?) %>
-        <% likely = premium*@multiplyer %>
         <% if @person.primary_family.active_family_members.count > 1 %>
         <% maximum = moop.in_network_tier_1_individual_amount.gsub(/[$,]/, '').to_f + premium %>
         <% else %>
         <% maximum = moop.in_network_tier_1_family_amount.gsub(/[$,]/, '').to_f + premium %>
         <% end %>
-        <% total = maximums.first %>
 
+        <% if @multiplier == 3 %>
+          <% likely = (((plan.deductible.gsub(/[$,]/, '').to_i/maximum)*premium)*2) + premium %>
+        <% elsif @multiplier == 2 %>
+          <% likely = (((plan.deductible.gsub(/[$,]/, '').to_i/maximum)*premium)) + premium %>
+        <% else %>
+          <% likely = maximum %>
+        <% end %>
+
+        <% total = maximums.first %>
         <% premium_percentage = (premium / total) * 100 %>
         <% likely_percentage = ((likely - premium)/total)*100 %>
         <% maximum_percentage = (maximum/total)*100 %>
-
-
-        <% likely_percentage = likely_percentage + premium_percentage >= maximum_percentage ? maximum_percentage - premium_percentage : likely_percentage %>
+        <% likely = likely > maximum ? maximum : likely if @multiplier != 1 %>
 
         <div class="row">
           <div class="col-xs-1">
             <div class='icon'>
                 <strong>
                   <span class="fa-stack fa-lg <%= @sort %>">
-                    <i class="fa fa-star" aria-hidden="true"></i>
+                    <i class="fa fa-star fa-spin" aria-hidden="true"></i>
                     <i class="fa fa-stack-1x number"><strong><%= i+1 %></strong></i>
                   </span>
                 </strong>
             </div>
           </div>
           <div class="col-xs-10">
-
           <h5 data-standard-component-id="<%= plan.hios_id %>">
             <strong>
               <%= plan.name %>
@@ -108,25 +109,23 @@
           </h5>
           <div class="graph">
           <div class="progress">
-            <div class="progress-bar progress-bar-success progress-bar-striped" style="width: <%= premium_percentage.floor %>%" data-toggle="tooltip" title="Premium: Your 12 monthly payments.">
+            <div class="progress-bar progress-bar-success progress-bar-striped" style="width: <%= premium_percentage %>%" data-toggle="tooltip" title="Premium: Your 12 monthly payments.">
               <%= number_to_currency(premium, precision: 0) %>
             </div>
-            <div class="progress-bar progress-bar-warning progress-bar-striped" style="width: <%= (likely_percentage.floor) %>%" data-toggle="tooltip" title="Estimated Out-of-Pocket: The amount you’re likely to spend on medical services this year based on the health information you gave us.">
-              <%= number_to_currency((likely-premium), precision: 0) %>
+            <div class="progress-bar progress-bar-warning progress-bar-striped" style="width: <%= likely_percentage %>%" data-toggle="tooltip" title="Estimated Out-of-Pocket: The amount you’re likely to spend on medical services this year based on the health information you gave us.">
+              <%= number_to_currency(likely-premium, precision: 0) %>
             </div>
           </div>
           <div class="progress">
-            <div class="progress-bar progress-bar-danger progress-bar-striped" style="width: <%= maximum_percentage.floor %>%" data-toggle="tooltip" title="Worst Case: The most you could pay in a year. Your annual premium plus the highest possible out of pocket cost for your insurance plan.">
+            <div class="progress-bar progress-bar-danger progress-bar-striped" style="width: <%= maximum_percentage %>%" data-toggle="tooltip" title="Worst Case: The most you could pay in a year. Your annual premium plus the highest possible out of pocket cost for your insurance plan.">
               <%= number_to_currency(maximum, precision: 0) %>
             </div>
           </div>
         </div>
       </div>
     </div>
-
-        <% end %>
-      </div>
-
+  <% end %>
+</div>
   <div class="panel-footer">
     <a class="clear btn-block btn btn-trans btn-small">Compare These Plans</a>
   </div>

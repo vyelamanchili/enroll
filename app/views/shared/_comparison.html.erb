@@ -2,7 +2,7 @@
   <div id="printArea">
     <h1> Choose Plan - Compare Selected Plans </h1>
     <h4> Each plan is different. Make sure you understand the differences so you can find the right plan to meet your needs and budget. </h4>
-    <%= render "shared/plan_shoppings/more_plan_details" %>
+    <%= render "shared/plan_shoppings/more_plan_details", limited_plans: @limited_plans %>
     <table class="table bordered compare-table", border = "1", style="font-size:11px;" >
       <tr>
         <th class="row-title">Plans</th>
@@ -16,19 +16,19 @@
         <th style="vertical-align: middle;">
           <div class="key">
             <div class="col-xs-12">
-              <div class="row">
+              <div class="row" data-toggle="tooltip" title="Estimated Out-of-Pocket: The amount you’re likely to spend on medical services this year based on the health information you gave us.">
                 <span class="ball green progress-bar-success progress-bar-striped"></span>
                 <label>Premium</label>
               </div>
             </div>
             <div class="col-xs-12">
-              <div class="row">
+              <div class="row" data-toggle="tooltip" title="Premium: Your 12 monthly payments.">
                 <span class="ball progress-bar-warning progress-bar-striped"></span>
                 <label>Estimated Out of Pocket</label>
               </div>
             </div>
             <div class="col-xs-12">
-              <div class="row">
+              <div class="row" data-toggle="tooltip" title="Worst Case: The most you could pay in a year. Your annual premium plus the highest possible out of pocket cost for your insurance plan.">
                 <span class="ball red progress-bar-danger progress-bar-striped"></span>
                 <label>Worst Case</label>
               </div>
@@ -41,7 +41,6 @@
               <% csv = Products::QhpCostShareVariance.find_qhp_cost_share_variances(["#{qhp.plan.hios_id}"], @hbx_enrollment.effective_on.year, @hbx_enrollment.coverage_kind).first %>
               <% moop = csv.qhp_maximum_out_of_pockets.where(name: "Maximum Out of Pocket for Medical and Drug EHB Benefits (Total)").last %>
               <% premium = current_cost(qhp[:total_employee_cost]*12, qhp.plan.ehb, nil, 'shopping', qhp.plan.can_use_aptc?) %>
-              <% likely = premium*@multiplyer %>
               <% if @person.primary_family.active_family_members.count > 1 %>
               <% maximum = moop.in_network_tier_1_individual_amount.gsub(/[$,]/, '').to_f + premium %>
               <% else %>
@@ -58,51 +57,57 @@
                 <% csv = Products::QhpCostShareVariance.find_qhp_cost_share_variances(["#{qhp.plan.hios_id}"], @hbx_enrollment.effective_on.year, @hbx_enrollment.coverage_kind).first %>
                 <% moop = csv.qhp_maximum_out_of_pockets.where(name: "Maximum Out of Pocket for Medical and Drug EHB Benefits (Total)").last %>
                 <% premium = current_cost(qhp[:total_employee_cost]*12, qhp.plan.ehb, nil, 'shopping', qhp.plan.can_use_aptc?) %>
-                <% likely = premium*@multiplyer %>
                 <% if @person.primary_family.active_family_members.count > 1 %>
                 <% maximum = moop.in_network_tier_1_individual_amount.gsub(/[$,]/, '').to_f + premium %>
                 <% else %>
                 <% maximum = moop.in_network_tier_1_family_amount.gsub(/[$,]/, '').to_f + premium %>
                 <% end %>
-                <% total = maximums.first %>
 
+                <% if @multiplier == 3 %>
+                  <% likely = (((qhp.plan.deductible.gsub(/[$,]/, '').to_i/maximum)*premium)*2) + premium %>
+                <% elsif @multiplier == 2 %>
+                  <% likely = (((qhp.plan.deductible.gsub(/[$,]/, '').to_i/maximum)*premium)) + premium %>
+                <% else %>
+                  <% likely = maximum %>
+                <% end %>
+
+                <% total = maximums.first %>
                 <% premium_percentage = (premium/total) * 100 %>
                 <% likely_percentage = (likely/total)*100 %>
                 <% maximum_percentage = (maximum/total)*100 %>
-
-                <% likely_percentage = likely_percentage >= maximum_percentage ? maximum_percentage - premium_percentage : likely_percentage %>
+                <% likely_percentage = maximum_percentage if @multiplier == 1 %>
+                <% likely = likely > maximum ? maximum : likely if @multiplier != 1 %>
 
                 <div class="graph">
                   <div class="progress progress-bar-vertical">
-                    <div class="progress-bar progress-bar-warning progress-bar-striped" style="height: <%= (likely_percentage.floor) %>%" data-toggle="tooltip" title="Estimated Out-of-Pocket: The amount you’re likely to spend on medical services this year based on the health information you gave us.">
+                    <div class="progress-bar progress-bar-warning progress-bar-striped" style="height: <%= likely_percentage.floor %>%" data-toggle="tooltip" title="Estimated Out-of-Pocket: The amount you’re likely to spend on medical services this year based on the health information you gave us.">
                       <%= number_to_currency((likely-premium), precision: 0) %>
                     </div>
                     <div class="progress-bar progress-bar-success progress-bar-striped" style="height: <%= premium_percentage.floor %>%" data-toggle="tooltip" title="Premium: Your 12 monthly payments.">
                       <%= number_to_currency(premium, precision: 0) %>
                     </div>
-
-
-                </div>
-                <div class="progress progress-bar-vertical">
-                  <div class="progress-bar progress-bar-danger progress-bar-striped" style="height: <%= maximum_percentage.floor %>%" data-toggle="tooltip" title="Worst Case: The most you could pay in a year. Your annual premium plus the highest possible out of pocket cost for your insurance plan.">
-                    <%= number_to_currency(maximum, precision: 0) %>
+                  </div>
+                  <div class="progress progress-bar-vertical">
+                    <div class="progress-bar progress-bar-danger progress-bar-striped" style="height: <%= maximum_percentage.floor %>%" data-toggle="tooltip" title="Worst Case: The most you could pay in a year. Your annual premium plus the highest possible out of pocket cost for your insurance plan.">
+                      <%= number_to_currency(maximum, precision: 0) %>
+                    </div>
                   </div>
                 </div>
-              </div>
-              <br class="clear"/><br/>
+              <br class="clear"/>
+              <br/>
             </div>
           </th>
           <% end %>
-      </tr>
-      <tr>
-        <th>
-        </th>
+        </tr>
+        <tr>
+          <th>
+          </th>
         <% qhps.each do |qhp|%>
           <th colspan="2" style="text-align: center; vertical-align:middle; border: none; padding: 0;" class="ttc fourteen blue"><%= qhp.plan.name %></th>
         <% end %>
-      </tr>
-      <tr>
-        <th></th>
+        </tr>
+        <tr>
+          <th></th>
         <% qhps.each do |qhp|%>
           <th class="fourteen lg" colspan="2" style="text-align: center; vertical-align:middle; border: none; padding: 0;"><span class="<%= qhp.plan.metal_level.humanize.downcase %>-icon"><%= display_dental_metal_level qhp.plan %></span> &nbsp;&#149;&nbsp;
           <%= qhp.plan.plan_type.upcase %>

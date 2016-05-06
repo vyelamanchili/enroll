@@ -309,11 +309,12 @@
     $('#continue').on('click', function () {
       rating = $('input.slider:first').data('value');
       if ( rating < 50 ) {
-        rating = 3
-      } else if ( rating == 50 ) {
-        rating = 2
-      } else if ( rating > 50 ) {
-        rating = 1
+        rating = 3;
+      } else {
+        rating = 2;
+      }
+      if ( $('input#Pregnancy_High_Risk:first').prop("checked") == true ) {
+        rating = 1;
       }
       window.location = "<%= estimate_insured_health_analytics_path(id: @hbx_enrollment) %>&rating="+rating
     })

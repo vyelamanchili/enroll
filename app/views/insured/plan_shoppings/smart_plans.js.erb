@@ -1,5 +1,5 @@
 var $smart_plans = $('.smart-plans');
-$smart_plans.html("<%= escape_javascript(render partial: "insured/plan_shoppings/smart_plans", locals: {plans: @plans, hbx_enrollment: @hbx_enrollment, multiplyer: @multiplyer}) %>");
+$smart_plans.html("<%= escape_javascript(render partial: "insured/plan_shoppings/smart_plans", locals: {plans: @plans, hbx_enrollment: @hbx_enrollment, multiplier: @multiplier}) %>");
 if ( <%= @plans.count %> == 1 ) {
   $smart_plans.find('.panel-footer').hide();
 } else {

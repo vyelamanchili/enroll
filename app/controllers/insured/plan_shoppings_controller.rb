@@ -155,21 +155,10 @@ class Insured::PlanShoppingsController < ApplicationController
 
   def show
     set_plans_by(hbx_enrollment_id: params.require(:id))
-    @multiplyer = params[:rating].to_i
-    case @multiplyer
-    when 1
-      @multiplyer = 1.33
-    when 2
-      @multiplyer = 1.5
-    when 3
-      @multiplyer = 2
-    end
+    @multiplier = params[:rating].to_i
+    set_multiplier(@multiplier)
     @sort = params[:sort]
-    @plans.each do |plan|
-        plan.assign_attributes({ :estimated_out_of_pocket => (plan.total_employee_cost*@multiplyer) })
-      end
-    @plans = @plans.sort_by(&:estimated_out_of_pocket).sort{|a,b| b.csr_variant_id <=> a.csr_variant_id}
-    @plan = @plans.first
+    get_modal_plan(@plans, @multiplier)
 
     set_consumer_bookmark_url(family_account_path) if params[:market_kind] == 'individual'
     set_employee_bookmark_url(family_account_path) if params[:market_kind] == 'shop'
@@ -189,12 +178,12 @@ class Insured::PlanShoppingsController < ApplicationController
       session[:max_aptc] = 0
       session[:elected_aptc] = 0
     end
-
     @carriers = @carrier_names_map.values
     @waivable = @hbx_enrollment.try(:can_complete_shopping?)
     @max_total_employee_cost = thousand_ceil(@plans.map(&:total_employee_cost).map(&:to_f).max)
     @max_deductible = thousand_ceil(@plans.map(&:deductible).map {|d| d.is_a?(String) ? d.gsub(/[$,]/, '').to_i : 0}.max)
-
+    setup_removal(@plans)
+    remove_invalid_plans(@plans)
   end
 
   def set_elected_aptc
@@ -204,7 +193,7 @@ class Insured::PlanShoppingsController < ApplicationController
 
   def smart_plans
     @sort = params[:sort_by]
-    @multiplyer = params[:multiplyer].to_f
+    @multiplier = params[:multiplier].to_f
     @hbx_enrollment = HbxEnrollment.find(params[:hbx_enrollment])
     smart_plans = []
     params[:plans].each do |plan|
@@ -219,40 +208,12 @@ class Insured::PlanShoppingsController < ApplicationController
   end
 
   def plans
-    @multiplyer = params[:rating].to_f
+    @multiplier = params[:rating].to_i
     @sort = params[:sort]
-
     set_consumer_bookmark_url(family_account_path)
-
     set_plans_by(hbx_enrollment_id: params.require(:id)) unless params[:smart_plans] == "smart_plans"
     if params[:sort].present?
-    case @sort
-      when 'premium'
-        @plans = @plans.sort_by(&:total_employee_cost).sort{|a,b| b.csr_variant_id <=> a.csr_variant_id}
-      when 'estimated_out_of_pocket'
-        @plans.each do |plan|
-            plan.assign_attributes({ :estimated_out_of_pocket => (plan.total_employee_cost*@multiplyer) })
-          end
-        @plans = @plans.sort_by(&:estimated_out_of_pocket).sort{|a,b| b.csr_variant_id <=> a.csr_variant_id}
-      when 'maximum_cost'
-        @plans.each do |plan|
-          moop = maximum_out_of_pocket(plan)
-          premium = current_cost(plan.total_employee_cost*12, plan.ehb, nil, 'shopping', plan.can_use_aptc?)
-
-          if @person.primary_family.active_family_members.count > 1
-            maximum_out_of_pocket = moop.in_network_tier_1_individual_amount.gsub(/[$,]/, '').to_f + premium
-            plan.assign_attributes({ :maximum_out_of_pocket => maximum_out_of_pocket })
-          else
-            maximum_out_of_pocket = moop.in_network_tier_1_family_amount.gsub(/[$,]/, '').to_f + premium
-            plan.assign_attributes({ :maximum_out_of_pocket => maximum_out_of_pocket })
-          end
-        end
-        @plans = @plans.sort_by(&:maximum_out_of_pocket).sort{|a,b| b.csr_variant_id <=> a.csr_variant_id}
-      end
-      @plan_hsa_status = Products::Qhp.plan_hsa_status_map(@plans)
-      respond_to do |format|
-        format.js { render 'insured/plan_shoppings/plans.js.erb' }
-      end
+      sort_by_sort(@sort, @plans, @multiplier)
     else
       @plans = @plans.sort_by(&:total_employee_cost).sort{|a,b| b.csr_variant_id <=> a.csr_variant_id}
       if @person.primary_family.active_household.latest_active_tax_household.present?
@@ -264,7 +225,12 @@ class Insured::PlanShoppingsController < ApplicationController
       else
         @plans = @plans.partition{ |a| @enrolled_hbx_enrollment_plan_ids.include?(a[:id]) }.flatten
       end
-      @plan_hsa_status = Products::Qhp.plan_hsa_status_map(@plans)
+    end
+
+    @plan_hsa_status = Products::Qhp.plan_hsa_status_map(@plans)
+
+    respond_to do |format|
+      format.js { render 'insured/plan_shoppings/plans.js.erb' }
     end
     @change_plan = params[:change_plan].present? ? params[:change_plan] : ''
     @enrollment_kind = params[:enrollment_kind].present? ? params[:enrollment_kind] : ''
@@ -272,8 +238,98 @@ class Insured::PlanShoppingsController < ApplicationController
 
   private
 
+
+  def set_multiplier(multiplier)
+    case multiplier
+    when 1
+      @multiplier = 1
+    when 2
+      @multiplier = 2
+    when 3
+      @multiplier = 3
+    end
+  end
+
+  def setup_removal(plans)
+    plans.each do |plan|
+      moop = maximum_out_of_pocket(plan)
+      premium = current_cost(plan.total_employee_cost*12, plan.ehb, nil, 'shopping', plan.can_use_aptc?)
+      if @person.primary_family.active_family_members.count > 1
+        maximum_out_of_pocket = moop.in_network_tier_1_individual_amount.gsub(/[$,]/, '').to_f
+        maximum_out_of_pocket = maximum_out_of_pocket == 0.0 ? 0.0 : maximum_out_of_pocket + premium
+        plan.assign_attributes({ :maximum_out_of_pocket => maximum_out_of_pocket })
+      else
+        maximum_out_of_pocket = moop.in_network_tier_1_family_amount.gsub(/[$,]/, '').to_f
+        maximum_out_of_pocket = maximum_out_of_pocket == 0.0 ? 0.0 : maximum_out_of_pocket + premium
+        plan.assign_attributes({ :maximum_out_of_pocket => maximum_out_of_pocket })
+      end
+    end
+  end
+
+  def set_likely_cost(plan, multiplier)
+    moop = maximum_out_of_pocket(plan)
+    premium = current_cost(plan.total_employee_cost*12, plan.ehb, nil, 'shopping', plan.can_use_aptc?)
+
+    if @person.primary_family.active_family_members.count > 1
+      maximum = moop.in_network_tier_1_individual_amount.gsub(/[$,]/, '').to_f + premium
+    else
+      maximum = moop.in_network_tier_1_family_amount.gsub(/[$,]/, '').to_f + premium
+    end
+
+    case multiplier
+    when 3
+      likely = (((plan.deductible.gsub(/[$,]/, '').to_i/maximum)*premium)*2) + premium
+    when 2
+      likely = (((plan.deductible.gsub(/[$,]/, '').to_i/maximum)*premium)) + premium
+    else
+      likely = maximum
+    end
+    likely = likely > maximum ? maximum : likely
+  end
+
+  def remove_invalid_plans(plans)
+    @plans = plans.select { |p| p.total_employee_cost != 0.0 }
+    puts @plans.count
+    @plans = @plans.select { |p| p.deductible.gsub(/[$,]/, '').to_i != 0 }
+    puts @plans.count
+    @plans = @plans.select { |p| p.maximum_out_of_pocket != 0.0 }
+    puts @plans.count
+    puts "----------"
+
+  end
+
+  def sort_by_sort(sort, plans, multiplier)
+    @plans = setup_removal(plans)
+
+    case sort
+      when 'premium'
+        remove_invalid_plans(@plans)
+        @plans = @plans.sort_by(&:total_employee_cost).sort{|a,b| b.csr_variant_id <=> a.csr_variant_id}
+      when 'estimated_out_of_pocket'
+        @plans.each do |plan|
+          plan.assign_attributes({:estimated_out_of_pocket => set_likely_cost(plan, multiplier) })
+        end
+        remove_invalid_plans(@plans)
+        @plans = @plans.sort_by(&:estimated_out_of_pocket).sort{|a,b| b.csr_variant_id <=> a.csr_variant_id}
+      when 'maximum_cost'
+        remove_invalid_plans(@plans)
+        @plans = @plans.sort_by(&:maximum_out_of_pocket).sort{|a,b| b.csr_variant_id <=> a.csr_variant_id}
+    end
+  end
+
+  def get_modal_plan(plans, multiplier)
+    @multiplier = multiplier
+    @plans = setup_removal(plans)
+    @plans.each do |plan|
+      plan.assign_attributes({:estimated_out_of_pocket => set_likely_cost(plan, multiplier) })
+    end
+    remove_invalid_plans(@plans)
+    plans = plans.sort_by(&:estimated_out_of_pocket).sort{|a,b| b.csr_variant_id <=> a.csr_variant_id}
+    @plan = plans.first
+  end
+
   def maximum_out_of_pocket(plan)
-    csv = Products::QhpCostShareVariance.find_qhp_cost_share_variances(["#{plan.hios_id}"], 2016, "health").first
+    csv = Products::QhpCostShareVariance.find_qhp_cost_share_variances(["#{plan.hios_id}"], plan.active_year, "health").first
     moop = csv.qhp_maximum_out_of_pockets.where(name: "Maximum Out of Pocket for Medical and Drug EHB Benefits (Total)").last
   end
 

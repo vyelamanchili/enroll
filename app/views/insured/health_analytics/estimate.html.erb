@@ -14,11 +14,15 @@
   <div class="row">
 <div class="panel panel-default visits-estimate-table">
   <div class="table-responsive">
+    <% @m%>
     <table class="table table-striped table-hover table-sm">
       <tbody>
         <tr>
           <td>
-            <%= 2*@multiplyer %>
+            <%= 2*@multiplier unless @multiplier == 1 %>
+            <% if @multiplier == 1 %>
+            1
+            <% end %>
           </td>
           <td>
             Well visit (checkups) with your primary care doctor
@@ -26,7 +30,10 @@
         </tr>
         <tr>
           <td>
-            <%= 1*@multiplyer %>
+            <%= 1*@multiplier unless @multiplier == 1 %>
+            <% if @multiplier == 1 %>
+            4
+            <% end %>
           </td>
           <td>
             Sick visits or follow up with your primary care doctor
@@ -34,7 +41,10 @@
         </tr>
         <tr>
           <td>
-            <%= 2*@multiplyer %>
+            <%= 2*@multiplier unless @multiplier == 1 %>
+            <% if @multiplier == 1 %>
+            20
+            <% end %>
           </td>
           <td>
             Visits with a specialist (like an OB/GYN or dermatologist)
@@ -42,7 +52,10 @@
         </tr>
         <tr>
           <td>
-            <%= (0.35*@multiplyer).floor %>
+            <%= (0.35*@multiplier).floor unless @multiplier == 1 %>
+            <% if @multiplier == 1 %>
+            0
+            <% end %>
           </td>
           <td>
             Urgent Care
@@ -50,7 +63,10 @@
         </tr>
         <tr>
           <td>
-            <%= (0.35*@multiplyer).floor %>
+            <%= (0.35*@multiplier).floor unless @multiplier == 1 %>
+            <% if @multiplier == 1 %>
+            0
+            <% end %>
           </td>
           <td>
             Mental health visits (like for counseling)
@@ -58,7 +74,10 @@
         </tr>
         <tr>
           <td>
-            <%= (0.35*@multiplyer).floor %>
+            <%= (0.35*@multiplier).floor unless @multiplier == 1 %>
+            <% if @multiplier == 1 %>
+            1
+            <% end %>
           </td>
           <td>
             Chiropractor visits
@@ -66,7 +85,10 @@
         </tr>
         <tr>
           <td>
-            <%= 2*@multiplyer %>
+            <%= 2*@multiplier unless @multiplier == 1 %>
+            <% if @multiplier == 1 %>
+            10
+            <% end %>
           </td>
           <td>
             Lab tests (like a blood test)
@@ -74,7 +96,10 @@
         </tr>
         <tr>
           <td>
-            <%= (0.35*@multiplyer).floor %>
+            <%= (0.35*@multiplier).floor unless @multiplier == 1 %>
+            <% if @multiplier == 1 %>
+            2
+            <% end %>
           </td>
           <td>
             Imaging test (like an MRI or CT scan)
@@ -82,7 +107,10 @@
         </tr>
         <tr>
           <td>
-            <%= (0.35*@multiplyer).floor %>
+            <%= (0.35*@multiplier).floor unless @multiplier == 1 %>
+            <% if @multiplier == 1 %>
+            0
+            <% end %>
           </td>
           <td>
             X-Ray
@@ -90,7 +118,10 @@
         </tr>
         <tr>
           <td>
-            <%= (0.35*@multiplyer).floor %>
+            <%= (0.35*@multiplier).floor unless @multiplier == 1 %>
+            <% if @multiplier == 1 %>
+            0
+            <% end %>
           </td>
           <td>
             Rehabilitation visits (like for physical therapy)
@@ -98,7 +129,10 @@
         </tr>
         <tr>
           <td>
-            <%= (0.35*@multiplyer).floor %>
+            <%= (0.35*@multiplier).floor unless @multiplier == 1 %>
+            <% if @multiplier == 1 %>
+            0
+            <% end %>
           </td>
           <td>
             Outpatient (day) surgeries
@@ -106,7 +140,10 @@
         </tr>
         <tr>
           <td>
-            <%= (0.35*@multiplyer).floor %>
+            <%= (0.35*@multiplier).floor unless @multiplier == 1 %>
+            <% if @multiplier == 1 %>
+            1
+            <% end %>
           </td>
           <td>
             Emergency room visits
@@ -114,7 +151,10 @@
         </tr>
         <tr>
           <td>
-            <%= (0.35*@multiplyer).floor %>
+            <%= (0.35*@multiplier).floor unless @multiplier == 1 %>
+            <% if @multiplier == 1 %>
+            1
+            <% end %>
           </td>
           <td>
             Hospitalization
@@ -133,14 +173,14 @@
 <script>
 $(document).ready(function () {
   $('#continue').on('click', function () {
-    window.location = "/insured/plan_shoppings/<%= @hbx_enrollment %>?sort=estimated_out_of_pocket&rating=<%=@multiplyer%>"
+    window.location = "/insured/plan_shoppings/<%= @hbx_enrollment %>?sort=estimated_out_of_pocket&rating=<%=@multiplier%>"
   })
 
   $('.visits-estimate .btn-trans').on('click', function() {
     values = $('table tr').find('td:first')
     $.each( values, function( i, val ) {
       td_values = $(this).text();
-      $(this).html("<input type='number' value='"+ td_values*<%=@multiplyer%> +"'/>");
+      $(this).html("<input type='number' value='"+ td_values*<%=@multiplier%> +"'/>");
     });
   });
 });

@@ -12,14 +12,14 @@
       });
       $('#plans').hide();
       url = "/insured/plan_shoppings/smart_plans"
-      multiplyer = $('#select_plan_wrapper').data('rating');
+      multiplier = $('#select_plan_wrapper').data('rating');
       hbx_enrollment = $('#select_plan_wrapper').data('hbx-enrollment');
       $.ajax({
         url: url,
         type: "GET",
         data: {
           "plans": plans,
-          "multiplyer": multiplyer,
+          "multiplier": multiplier,
           "hbx_enrollment": hbx_enrollment,
           "sort_by": sort_by
         },
@@ -56,10 +56,16 @@
       }
     });
   }
-  // explicitly return public methods when this object is instantiated
+  function spinStars() {
+    $('.smart-plans .fa-star').addClass('fa-spin');
+    setInterval(function(){
+      $('.fa-star.fa-spin:first').removeClass('fa-spin');
+    }, 750);
+  }
   return {
       update : update,
-      applyBadges : applyBadges
+      applyBadges : applyBadges,
+      spinStars : spinStars
     };
   } )( window );
 
@@ -188,13 +194,15 @@ function maybeAddComparisonPlan(cb) {
 }
 
 function doPlanComparison(action_uri) {
+  var limited_plans = $('#plans-count:first').text();
+  alert(action_uri);
 	$.ajax({
 		type: "GET",
   	url: action_uri,
   	dataType: 'script',
   	data: {
   		"standard_component_ids": plansToCompareArray,"hbx_enrollment_id": hbx, "active_year": active_year, "enrollment_kind": enrollment_kind,
-      "change_plan": change_plan
+      "change_plan": change_plan, "limited_plans": limited_plans
   	}
 	});
 }
@@ -265,6 +273,7 @@ $(function() {
       standard_component_ids.push($(this).data('standard-component-id'))
     });
     var base_url = $('a.compare-uri').data('uri');
+    var limited_plans = $('#plans-count:first').text();
 
     $.ajax({
       type: "GET",
@@ -275,7 +284,9 @@ $(function() {
         "hbx_enrollment_id": hbx,
         "active_year": active_year,
         "enrollment_kind": enrollment_kind,
-        "change_plan": change_plan
+        "change_plan": change_plan,
+        "limited_plans": limited_plans
+
       }
     });
   });
@@ -345,7 +356,10 @@ $(function() {
       $heading_text.css({'fontSize': '18px'});
     };
     applyPlanFilters();
-    SmartPlans.applyBadges();
+    if ( $('#sort_by_shop').length ) {
+      SmartPlans.applyBadges();
+    }
+
   });
 
 // this code has been replaced by the ajax pattern on (4/8/2016), it can probably be deleted

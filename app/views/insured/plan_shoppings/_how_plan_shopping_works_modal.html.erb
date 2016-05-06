@@ -6,18 +6,25 @@
         <% csv = Products::QhpCostShareVariance.find_qhp_cost_share_variances(["#{@plan.hios_id}"], @hbx_enrollment.effective_on.year, @hbx_enrollment.coverage_kind).first %>
         <% moop = csv.qhp_maximum_out_of_pockets.where(name: "Maximum Out of Pocket for Medical and Drug EHB Benefits (Total)").last %>
         <% premium = (current_cost(@plan.total_employee_cost*12, @plan.ehb, nil, 'shopping', @plan.can_use_aptc?)) %>
-        <% likely = premium*@multiplyer %>
         <% if @person.primary_family.active_family_members.count > 1 %>
         <% maximum = moop.in_network_tier_1_individual_amount.gsub(/[$,]/, '').to_f + premium %>
         <% else %>
         <% maximum = moop.in_network_tier_1_family_amount.gsub(/[$,]/, '').to_f + premium %>
         <% end %>
         <% total = maximum %>
+        <% if @multiplier == 3 %>
+          <% likely = (((@plan.deductible.gsub(/[$,]/, '').to_i/maximum)*premium)*2) + premium %>
+        <% elsif @multiplier == 2 %>
+          <% likely = (((@plan.deductible.gsub(/[$,]/, '').to_i/maximum)*premium)) + premium %>
+        <% else %>
+          <% likely = maximum %>
+        <% end %>
 
         <% premium_percentage = (premium / total) * 100 %>
         <% likely_percentage = ((likely - premium)/total)*100 %>
         <% maximum_percentage = (maximum/total)*100 %>
         <% likely_percentage = likely_percentage + premium_percentage >= maximum_percentage ? maximum_percentage - premium_percentage : likely_percentage %>
+        <% likely = likely > maximum ? maximum : likely if @multiplier != 1 %>
 
         <% premium_percentage = premium_percentage.round %>
         <% likely_percentage = (likely_percentage.round) - 0.125 %>
@@ -143,5 +150,8 @@
       });
     });
     $('#howPlanShoppingWorksModal').modal('show');
+    $('#howPlanShoppingWorksModal').on('hidden.bs.modal', function () {
+      SmartPlans.spinStars();
+    })
   });
 </script>
