@@ -13,6 +13,12 @@ namespace :employers do
         office_location.is_primary?
       end
     end
+    
+    def get_mail_location(organization)
+      organization.office_locations.detect do |office_location|
+        office_location.address.present? && office_location.address.kind == "mailing"
+      end
+    end
 
     def get_broker_agency_account(broker_agency_accounts, plan_year)
       broker_agency_account = broker_agency_accounts.detect do |broker_agency_account|
@@ -27,12 +33,12 @@ namespace :employers do
 
     CSV.open(FILE_PATH, "w") do |csv|
 
-      headers = %w(employer.legal_name employer.dba employer.fein employer.hbx_id employer.entity_kind employer.sic_code
+      headers = %w(employer.legal_name employer.dba employer.fein employer.hbx_id employer.entity_kind employer.sic_code employer_profile.profile_source
                                 office_location.is_primary office_location.address.address_1 office_location.address.address_2
-                                office_location.address.city office_location.address.state office_location.address.zip
+                                office_location.address.city office_location.address.state office_location.address.zip mailing_location.address_1 mailing_location.address_2 mailing_location.city mailing_location.state mailing_location.zip
                                 office_location.phone.full_phone_number staff.name staff.phone staff.email
-                                relationship_benefit.relationship relationship_benefit.premium_pct
-                                relationship_benefit.offered benefit_group.title, benefit_group.plan_option_kind
+                                employee offered spouce offered domestic_partner offered child_under_26 offered child_26_and_over
+                                offered benefit_group.title, benefit_group.plan_option_kind
                                 benefit_group.carrier_for_elected_plan benefit_group.metal_level_for_elected_plan benefit_group.single_plan_type?
                                 benefit_group.reference_plan.name benefit_group.effective_on_kind benefit_group.effective_on_offset
                                 plan_year.start_on plan_year.end_on plan_year.open_enrollment_start_on plan_year.open_enrollment_end_on
@@ -40,14 +46,20 @@ namespace :employers do
                                 broker.name broker.npn)
       csv << headers
 
-      employers.each do |employer|
+      employers.each do |employer| 
         begin
           employer_attributes = []
-          employer_attributes += [employer.legal_name, employer.dba, employer.fein, employer.hbx_id, employer.entity_kind, employer.sic_code]
+          employer_attributes += [employer.legal_name, employer.dba, employer.fein, employer.hbx_id, employer.entity_kind, employer.sic_code, employer.profile_source]
           office_location = get_primary_office_location(employer.organization)
           employer_attributes += [office_location.is_primary, office_location.address.address_1, office_location.address.address_2, office_location.address.city,
                                   office_location.address.state, office_location.address.zip]
-
+          mailing_location = get_mail_location(employer.organization)
+          
+          if mailing_location.present?
+            employer_attributes += [mailing_location.address.address_1, mailing_location.address.address_2, mailing_location.address.city, mailing_location.address.state, mailing_location.address.zip]
+          else
+            employer_attributes += ["", "", "", "", ""]
+          end
           if office_location.phone.present?
             employer_attributes += [office_location.phone.full_phone_number]
           else
@@ -66,14 +78,16 @@ namespace :employers do
           else
             employer_attributes += ["", "", ""]
           end
-          employer.plan_years.each do |plan_year|
+
+          employer.plan_years.each_with_index do |plan_year, i|
+
             plan_year.benefit_groups.each do |benefit_group|
-              benefit_group.relationship_benefits.each do |relationship_benefit|
+              #benefit_group.relationship_benefits.each do |relationship_benefit|
                 row = []
 
                 begin
-                  row += [relationship_benefit.relationship, relationship_benefit.premium_pct,
-                          relationship_benefit.offered]
+                  row += [benefit_group.relationship_benefits[0].premium_pct.try(:to_f).try(:round), benefit_group.relationship_benefits[0].offered, benefit_group.relationship_benefits[1].premium_pct.try(:to_f).try(:round), benefit_group.relationship_benefits[1].offered, benefit_group.relationship_benefits[2].premium_pct.try(:to_f).try(:round), benefit_group.relationship_benefits[2].offered, benefit_group.relationship_benefits[3].premium_pct.try(:to_f).try(:round), benefit_group.relationship_benefits[3].offered, benefit_group.relationship_benefits[4].premium_pct.try(:to_f).try(:round), benefit_group.relationship_benefits[4].offered]
+
                   row += [benefit_group.title, benefit_group.plan_option_kind,
                           (benefit_group.plan_option_kind == "single_carrier" ? CarrierProfile.find(benefit_group.reference_plan.carrier_profile_id).abbrev : ''),
                           (benefit_group.plan_option_kind == 'metal_level' ? benefit_group.reference_plan.metal_level : ''), 
@@ -98,9 +112,9 @@ namespace :employers do
                   puts "ERROR: #{employer.legal_name} " + e.message
                   next
                 end
-
-                csv << employer_attributes + row
-              end
+                  csv << employer_attributes + row if i == 0
+                  csv << ['','','','','','','','','','','','','','','','', '', '', '','','',''] + row if i >0 
+                #end
             end
           end
           csv << employer_attributes if employer.plan_years.empty?
