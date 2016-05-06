@@ -158,7 +158,7 @@ class Insured::PlanShoppingsController < ApplicationController
     @multiplier = params[:rating].to_i
     set_multiplier(@multiplier)
     @sort = params[:sort]
-    get_modal_plan(@plans, @multiplier)
+    get_modal_plan(@plans, @multiplier) if @coverage_kind == "health" && @market_kind == "shop"
 
     set_consumer_bookmark_url(family_account_path) if params[:market_kind] == 'individual'
     set_employee_bookmark_url(family_account_path) if params[:market_kind] == 'shop'
@@ -182,8 +182,8 @@ class Insured::PlanShoppingsController < ApplicationController
     @waivable = @hbx_enrollment.try(:can_complete_shopping?)
     @max_total_employee_cost = thousand_ceil(@plans.map(&:total_employee_cost).map(&:to_f).max)
     @max_deductible = thousand_ceil(@plans.map(&:deductible).map {|d| d.is_a?(String) ? d.gsub(/[$,]/, '').to_i : 0}.max)
-    setup_removal(@plans)
-    remove_invalid_plans(@plans)
+    setup_removal(@plans) if @coverage_kind == "health" && @market_kind == "shop"
+    remove_invalid_plans(@plans) if @coverage_kind == "health" && @market_kind == "shop"
   end
 
   def set_elected_aptc

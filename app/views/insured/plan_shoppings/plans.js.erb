@@ -4,6 +4,8 @@ $('#plans').html("<%= escape_javascript(render partial: "insured/plan_shoppings/
   $('.smart-plans, #plans').fadeIn('slow', function() {
   });
 <% else %>
+  $('#plans').fadeIn('slow', function() {
+  });
   $('.smart-plans').remove();
 <% end %>
 height = $('.filter-sidebar').css('height');
