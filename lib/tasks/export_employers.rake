@@ -74,8 +74,10 @@ namespace :employers do
                 begin
                   row += [relationship_benefit.relationship, relationship_benefit.premium_pct,
                           relationship_benefit.offered]
-                  row += [benefit_group.title, benefit_group.plan_option_kind, benefit_group.carrier_for_elected_plan,
-                          benefit_group.metal_level_for_elected_plan, (benefit_group.single_plan_type? ? benefit_group.elected_plans_by_option_kind.name : ""),
+                  row += [benefit_group.title, benefit_group.plan_option_kind,
+                          (benefit_group.plan_option_kind == "single_carrier" ? CarrierProfile.find(benefit_group.reference_plan.carrier_profile_id).abbrev : ''),
+                          (benefit_group.plan_option_kind == 'metal_level' ? benefit_group.reference_plan.metal_level : ''), 
+                          (benefit_group.plan_option_kind == 'single_plan'),
                           benefit_group.reference_plan.name, benefit_group.effective_on_kind, benefit_group.effective_on_offset]
                   row += [plan_year.start_on, plan_year.end_on, plan_year.open_enrollment_start_on, plan_year.open_enrollment_end_on,
                           plan_year.fte_count, plan_year.pte_count, plan_year.msp_count]
