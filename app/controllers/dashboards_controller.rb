@@ -15,6 +15,10 @@ class DashboardsController < ApplicationController
 
     @title_for_policy = "Individual Market - Household Size - Metal Level Count"
     @reports_for_policy_options, @reports_for_policy = PolicyStatistic.report_for_chart
+
+    @reports_for_month_options, @reports_for_month = PolicyStatistic.report_for_chart_by('month')
+    @reports_for_week_options, @reports_for_week = PolicyStatistic.report_for_chart_by('week')
+    @reports_for_day_options, @reports_for_day = PolicyStatistic.report_for_chart_by('day')
   end
 
   def stock
