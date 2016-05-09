@@ -1015,4 +1015,68 @@ describe Person do
       expect(person.agent?).to be_truthy
     end
   end
+
+  describe "#work_email_or_best" do
+    let(:person) {FactoryGirl.create(:person)}
+    let(:w_work) {FactoryGirl.create(:email, kind: 'work', address: 'w_work@dc.gov', person: person)}
+    let(:w_home) {FactoryGirl.create(:email, kind: 'home', address: 'w_home@dc.gov', person: person)}
+
+    it 'just work' do
+      person.emails = [w_work]
+      expect(person.work_email_or_best).to eq 'w_work@dc.gov'
+    end
+
+    it 'work and something else should be work' do
+      person.emails = [w_home, w_work]
+      expect(person.work_email_or_best).to eq 'w_work@dc.gov'
+    end
+
+    it 'no work email uses first available' do
+      person.emails = [w_home]
+      expect(person.work_email_or_best).to eq 'w_home@dc.gov'
+    end
+
+    it 'no emails with user returns user' do
+      person.emails = []
+      person.user = FactoryGirl.create(:user, email: 'fallback@dc.gov')
+      expect(person.work_email_or_best).to eq 'fallback@dc.gov'
+    end
+    it 'no emails and no user returns nil' do
+      person.emails = []
+      expect(person.work_email_or_best).to be_nil
+    end
+  end
+
+  describe "#work_phone_or_best" do
+    let(:person) {FactoryGirl.create(:person)}
+    let(:p_work) {FactoryGirl.create(:phone, kind: 'work',  person: person)}
+    let(:p_home) {FactoryGirl.create(:phone, kind: 'home', person: person)}
+    let(:p_mobile) {FactoryGirl.create(:phone, kind: 'mobile',  person: person)}
+
+    let(:p_fax) {FactoryGirl.create(:phone, kind: 'fax',  person: person)}
+    it 'returns nil if no phones' do
+      person.phones = nil
+      expect(person.work_phone_or_best).to be_nil
+    end
+
+    it 'returns work phone if work phone available' do
+      person.phones = [p_home, p_work]
+      expect(person.work_phone_or_best).to eq p_work.full_phone_number
+    end
+
+    it 'returns nil if fax number' do
+      person.phones = [p_fax]
+      expect(person.work_phone_or_best).to be_nil
+    end
+
+    it 'returns home phone if home number' do
+      person.phones = [p_home]
+      expect(person.work_phone_or_best).to eq p_home.full_phone_number
+    end
+
+    it 'returns mobile phone if mobile number' do
+      person.phones = [p_mobile]
+      expect(person.work_phone_or_best).to eq p_mobile.full_phone_number
+    end
+  end
 end

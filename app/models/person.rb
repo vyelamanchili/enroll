@@ -433,6 +433,11 @@ class Person
     (email && email.address) || (user && user.email)
   end
 
+  def work_phone_or_best
+    best_phone  = work_phone || mobile_phone || home_phone
+    best_phone ? best_phone.full_phone_number : nil
+  end
+
   def work_phone
     phones.detect { |phone| phone.kind == "work" } || main_phone
   end
