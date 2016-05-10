@@ -375,6 +375,8 @@ GEM
     rake (11.1.2)
     rdoc (4.2.2)
       json (~> 1.4)
+    react-bootstrap-rails (0.28.3)
+      rails (>= 3.1)
     react-rails (1.7.0)
       babel-transpiler (>= 0.7.0)
       coffee-script-source (~> 1.8)
@@ -581,6 +583,7 @@ DEPENDENCIES
   pundit (~> 1.0.1)
   rails (= 4.2.3)
   rails-i18n (= 4.0.8)
+  react-bootstrap-rails
   react-rails
   recaptcha (= 1.1.0)
   redis-rails
