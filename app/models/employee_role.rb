@@ -15,7 +15,7 @@ class EmployeeRole
   field :terminated_on, type: Date
   field :is_active, type: Boolean, default: true
   field :bookmark_url, type: String, default: nil
-  field :contact_method, type: String, default: "Only Paper communication"
+  field :contact_method, type: String, default: "Only Electronic communications"
   field :language_preference, type: String, default: "English"
   delegate :hbx_id, to: :person, allow_nil: true
   delegate :ssn, :ssn=, to: :person, allow_nil: true
@@ -99,7 +99,7 @@ class EmployeeRole
     benefit_group.effective_on_for(census_employee.hired_on)
   end
 
-  def can_enroll_as_new_hire?    
+  def can_enroll_as_new_hire?
     census_employee.new_hire_enrollment_period.cover?(TimeKeeper.date_of_record)
   end
 
