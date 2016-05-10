@@ -19,7 +19,7 @@ RSpec.describe "events/employer/updated.haml.erb" do
     let(:employer) { EmployerProfile.new(:organization => organization, :plan_years => [plan_year], :entity_kind => entity_kind) }
 
     before :each do
-      render :template => "events/employers/updated", :locals => { :employer => employer }
+      render :template => "events/employers/updated", :locals => {:employer => employer}
     end
 
     it "should have one plan year" do
@@ -32,38 +32,53 @@ RSpec.describe "events/employer/updated.haml.erb" do
 
     context "with dental plans" do
 
-      let(:benefit_group) {bg = FactoryGirl.create(:benefit_group, plan_year: plan_year);
-                          bg.elected_dental_plans = [FactoryGirl.create(:plan, name: "new dental plan", coverage_kind: 'dental',
-                                                 dental_level: 'high')];
-                          bg}
+      let(:benefit_group) { bg = FactoryGirl.create(:benefit_group, plan_year: plan_year);
+      bg.elected_dental_plans = [FactoryGirl.create(:plan, name: "new dental plan", coverage_kind: 'dental',
+                                                    dental_level: 'high'),
+                                 FactoryGirl.create(:plan, name: "new dental plan2", coverage_kind: 'dental',
+                                                                                              dental_level: 'high')];
+      bg.elected_plans = [FactoryGirl.create(:plan, name: "new health plan", coverage_kind: 'health',
+                                             metal_level: 'silver')];
+      bg.reference_plan_id = bg.elected_plans.first.id
+      bg }
 
-      context "is_offering_dental? is true" do
-        it "shows the dental plan in output" do
+      context "dental_reference_plan for the benefit group is assigned" do
+
+        before(:each) do
           benefit_group.dental_reference_plan_id = benefit_group.elected_dental_plans.first.id
-          plan_year.benefit_groups.first.save!
+          benefit_group.save!
+        end
+
+        it "shows the dental plans and the health plan in xml" do
           render :template => "events/employers/updated", :locals => {:employer => employer}
-          expect(rendered).to include "new dental plan"
+          expect(rendered).to have_xpath("//benefit_group/elected_plans/elected_plan/name",:text => "new health plan")
+          expect(rendered).to have_xpath("//benefit_group/elected_plans/elected_plan/name",:text => "new dental plan")
+          expect(rendered).to have_xpath("//benefit_group/elected_plans/elected_plan/name",:text => "new dental plan2")
         end
       end
 
-
-      context "is_offering_dental? is false" do
-        it "does not show the dental plan in output" do
+      context "dental_reference_plan for the benefit group is not assigned" do
+        before(:each) do
           benefit_group.dental_reference_plan_id = nil
           benefit_group.save!
+        end
+
+        it "will not show the dental plans in xml, only health plans will be shown" do
           render :template => "events/employers/updated", :locals => {:employer => employer}
-          expect(rendered).not_to include "new dental plan"
+          expect(rendered).to have_xpath("//benefit_group/elected_plans/elected_plan/name",:text => "new health plan")
+          expect(rendered).not_to have_xpath("//benefit_group/elected_plans/elected_plan/name",:text => "new dental plan")
+          expect(rendered).not_to have_xpath("//benefit_group/elected_plans/elected_plan/name",:text => "new dental plan2")
         end
       end
     end
 
     context "staff is owner" do
-      let(:staff_and_owner) {FactoryGirl.create(:person)}
+      let(:staff_and_owner) { FactoryGirl.create(:person) }
 
       before do
         allow(employer).to receive(:staff_roles).and_return([staff_and_owner])
         allow(employer).to receive(:owners).and_return([staff_and_owner])
-        render :template => "events/employers/updated", :locals => { :employer => employer }
+        render :template => "events/employers/updated", :locals => {:employer => employer}
       end
 
       it "does not included the contact person twice" do
@@ -85,7 +100,7 @@ RSpec.describe "events/employer/updated.haml.erb" do
       let(:employer) { FactoryGirl.build_stubbed :generative_employer_profile }
 
       before :each do
-        render :template => "events/employers/updated", :locals => { :employer => employer }
+        render :template => "events/employers/updated", :locals => {:employer => employer}
       end
 
       it "should be schema valid" do
