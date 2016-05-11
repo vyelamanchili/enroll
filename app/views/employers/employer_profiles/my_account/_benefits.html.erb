@@ -88,6 +88,8 @@
                     <%= "#{bg.effective_on_kind.humanize}" %>
                   <% elsif bg.effective_on_kind == 'first_of_month' && bg.effective_on_offset == 0 %>
                     First of the month following or coinciding with date of hire
+                  <% elsif bg.effective_on_offset == 1 %>
+                    First of the month following date of hire
                   <% else %>
                     <%= "#{bg.effective_on_kind.humanize} following #{bg.effective_on_offset} days" %>
                   <% end %>
@@ -99,9 +101,9 @@
 
       </div>
 </div>
-    
+
     <div class="panel benefitgroup col-xs-12 referenceplan">
-      
+
       <div class="col-xs-1">
         &nbsp;
       </div>
@@ -112,9 +114,9 @@
         <div>
           <div style="float:right">
             <button id = "showhidebutton" href="#collapse-health-<%=bg.id%>" class="nav-toggle">
-              View Details 
+              View Details
               <a><i class="fa fa-chevron-down fa-lg"></i></a>
-            </button> 
+            </button>
           </div>
           <div style="float:left">
             <% if bg.dental_reference_plan_id.present? %>
@@ -177,9 +179,9 @@
             </td>
           </tr>
         </table>
-      <br class="clear"/> 
+      <br class="clear"/>
 
-    </div>  
+    </div>
     <!-- Health Plan Summary: end -->
 
     <!--Health plan collapsible: starts -->
@@ -242,12 +244,12 @@
           </div>
         </div>
         <!--Health plan Estimated Cost: end-->
-    
+
     </div>
     <!--Health plan collapsible: end -->
 
     <div class="col-xs-1">
-      &nbsp; 
+      &nbsp;
     </div>
 
     <!--Dental Plan Summary: start -->
@@ -258,9 +260,9 @@
           <div>
             <div style="float:right">
               <button id = "showhidebutton" href="#collapse-dental-<%=bg.id%>" class="nav-toggle">
-                  View Details 
+                  View Details
                   <a><i class="fa fa-chevron-down fa-lg"></i></a>
-              </button> 
+              </button>
             </div>
             <div style="float:left">
               <h5 class="bg-title">Dental</h5>
@@ -324,24 +326,24 @@
               </td>
             </tr>
           </table>
-        <br class="clear"/> 
+        <br class="clear"/>
       </div>
 
       <% if bg.elected_dental_plan_ids.count < 13 && bg.elected_dental_plan_ids.count > 1 %>
         <%= render partial: 'shared/custom_dental_offered_plans_modal', locals: { bg: bg } %>
       <% end %>
-  
+
     <% end %>
     <!--Dental Plan Summary: end -->
-  
+
     <br class="clear"/>
 
     <!--Dental plan collapsible: start -->
-    <% if bg.dental_reference_plan_id.present? %> 
+    <% if bg.dental_reference_plan_id.present? %>
       <div id="collapse-dental-<%=bg.id%>" style="display:none">
         <div class="col-xs-1">
             &nbsp;
-        </div> 
+        </div>
 
         <!--Dental Plan Contribution: start -->
         <div class="col-xs-11 package-offering">
@@ -361,7 +363,7 @@
                 <% end %>
             </table>
           </div>
-        </div> 
+        </div>
         <!--Dental Plan Contribution: end -->
 
         <!-- Dental plan Estimated Cost: start -->
@@ -399,11 +401,11 @@
           </div>
         </div>
         <!-- Dental plan Estimated Cost: end -->
-        
+
       </div>
     <%end%>
     <!--Dental plan collapsible: end -->
-    
+
     </div>
 
 
