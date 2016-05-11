@@ -37,6 +37,9 @@ Rails.application.routes.draw do
         get :staff_index
         get :assister_index
         get :request_help
+        get :binder_index
+        get :binder_index_datatable
+        post :binder_paid
         get :verification_index
         get :binder_index
         post :binder_paid
@@ -44,6 +47,7 @@ Rails.application.routes.draw do
       end
 
       member do
+        post :transmit_group_xml
         get :home
         get :inbox
       end

@@ -14,18 +14,15 @@ class Exchanges::HbxProfilesController < ApplicationController
     @hbx_profiles = @organizations.map {|o| o.hbx_profile}
   end
 
-  def binder_index
-    @employers = EmployerProfile.filter_employers_for_binder_paid
-
-    respond_to do |format|
-      format.html { render "employers/employer_profiles/binder_index" }
-      format.js {}
-    end
-  end
-
   def binder_paid
     EmployerProfile.update_status_to_binder_paid(params[:employer_profile_ids])
     flash["notice"] = "Successfully submitted the selected employer(s) for binder paid."
+    redirect_to exchanges_hbx_profiles_root_path
+  end
+
+  def transmit_group_xml
+    HbxProfile.transmit_group_xml(params[:id].split)
+    flash["notice"] = "Successfully transmitted the employer group xml."
     redirect_to exchanges_hbx_profiles_root_path
   end
 
@@ -170,10 +167,48 @@ class Exchanges::HbxProfilesController < ApplicationController
   end
 
   def verification_index
+    @families = Family.by_enrollment_individual_market.where(:'households.hbx_enrollments.aasm_state' => "enrolled_contingent").page(params[:page]).per(15)
     respond_to do |format|
       format.html { render partial: "index_verification" }
       format.js {}
     end
+  end
+
+  def binder_index
+    @organizations = EmployerProfile.filter_employers_for_binder_paid
+
+    respond_to do |format|
+      format.html { render "employers/employer_profiles/binder_index" }
+      format.js {}
+    end
+  end
+
+  def binder_index_datatable
+    dt_query = extract_datatable_parameters
+    organizations = []
+
+    all_organizations = EmployerProfile.filter_employers_for_binder_paid
+
+    if dt_query.search_string.blank?
+      organizations = all_organizations#.map(&:employer_profile)
+      # employers = EmployerProfile.find("57238d89006d7c7c3c00002f")
+    else
+      org_ids = Organization.search(dt_query.search_string).pluck(:id)
+      organizations = all_organizations.where({
+        "id" => {"$in" => org_ids}
+      })
+    end
+
+    @draw = dt_query.draw
+    @total_records = all_organizations.count
+    @records_filtered = organizations.count
+    @organizations = organizations.skip(dt_query.skip).limit(dt_query.take)
+    render
+
+    # respond_to do |format|
+    #   format.html { render "employers/employer_profiles/binder_index" }
+    #   format.js {}
+    # end
   end
 
   def verifications_index_datatable
@@ -192,7 +227,7 @@ class Exchanges::HbxProfilesController < ApplicationController
     @total_records = all_families.count
     @records_filtered = families.count
     @families = families.skip(dt_query.skip).limit(dt_query.take)
-    render 
+    render
   end
 
   def product_index

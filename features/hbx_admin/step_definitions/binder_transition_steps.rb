@@ -21,8 +21,8 @@ And(/^the HBX admin clicks the Binder Transition tab$/) do
   page.find(".title-inline").should have_content("Binder Transition Information")
 end
 
-Then(/^the HBX admin sees a checklist$/) do |checklist|
-  expect(page.find(".eligibility-rule").text).to eq eligibility_criteria(employer.employer_profile).gsub("<br>", " ")
+And(/^the HBX admin sees a checklist$/) do |checklist|
+  expect(page.text).to include eligibility_criteria(employer.employer_profile).gsub("<br>", " ")
 end
 
 When(/^the HBX admin selects the employer to confirm$/) do
@@ -62,11 +62,11 @@ When(/^the DCHBX confirms binder payment has been received by third\-party proce
 end
 
 When(/^the HBX admin has verified new \(initial\) Employer meets minimum participation requirements \((\d+)\/(\d+) rule\)$/) do |arg1, arg2|
-  expect(page.find(".eligibility-rule").text).to include(participation_rule(employer.employer_profile))
+  expect(page.text).to include(eligibility_criteria(employer.employer_profile).gsub("<br>", " "))
 end
 
 When(/^a sufficient number of 'non\-owner' employee\(s\) have enrolled and\/or waived in Employer\-sponsored benefits$/) do
-  expect(page.find(".eligibility-rule").text).to include(non_owner_participation_rule(employer.employer_profile))
+  expect(page.text).to include(non_owner_participation_rule(employer.employer_profile))
 end
 
 Given(/^the employer has remitted the initial binder payment$/) do
@@ -85,4 +85,19 @@ end
 
 Then(/^the HBX\-Admin can utilize the “Transmit EDI” button$/) do
   pending # Write code here that turns the phrase above into concrete actions
+end
+
+Then(/^a button to transmit the Employer's Group XML will be active$/) do
+  step "the HBX admin clicks the Binder Transition tab"
+  expect(page).to have_css(".transmit-group-xml")
+  expect(page).to have_link('Transmit XML')
+end
+
+When(/^the HBX\-Admin clicks the button to transmit the Employer's Group XML$/) do
+  expect(page).to have_css(".transmit-group-xml")
+  page.find(".transmit-group-xml").click
+end
+
+Then(/^the appropriate XML file is generated and transmitted$/) do
+  expect(page).to have_css(".alert-notice", text: "Successfully transmitted the employer group xml.")
 end
