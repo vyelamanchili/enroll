@@ -8,7 +8,7 @@
   %fein= employer.fein.strip
   %office_locations
     = render :partial => "events/organizations/office_location", :collection => employer.organization.office_locations
-  - pocs = (employer.owners.to_a + employer.staff_roles.to_a).uniq
+  - pocs = employer.staff_roles.to_a.present? ? employer.staff_roles.to_a : employer.owners.to_a
   - if pocs.any?
     %contacts
       = render :partial => "events/employers/owner_contact", :collection => pocs
