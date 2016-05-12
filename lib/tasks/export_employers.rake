@@ -33,7 +33,7 @@ namespace :employers do
 
     CSV.open(FILE_PATH, "w") do |csv|
 
-      headers = %w(employer.legal_name employer.dba employer.fein employer.hbx_id employer.entity_kind employer.sic_code employer_profile.profile_source
+      headers = %w(employer.legal_name employer.dba employer.fein employer.hbx_id employer.entity_kind employer.sic_code employer_profile.profile_source employer_status
                                 office_location.is_primary office_location.address.address_1 office_location.address.address_2
                                 office_location.address.city office_location.address.state office_location.address.zip mailing_location.address_1 mailing_location.address_2 mailing_location.city mailing_location.state mailing_location.zip
                                 office_location.phone.full_phone_number staff.name staff.phone staff.email
@@ -42,14 +42,14 @@ namespace :employers do
                                 benefit_group.carrier_for_elected_plan benefit_group.metal_level_for_elected_plan benefit_group.single_plan_type?
                                 benefit_group.reference_plan.name benefit_group.effective_on_kind benefit_group.effective_on_offset
                                 plan_year.start_on plan_year.end_on plan_year.open_enrollment_start_on plan_year.open_enrollment_end_on
-                                plan_year.fte_count plan_year.pte_count plan_year.msp_count broker_agency_account.corporate_npn broker_agency_account.legal_name
+                                plan_year.fte_count plan_year.pte_count plan_year.msp_count plan_year.published plan_year.status broker_agency_account.corporate_npn broker_agency_account.legal_name
                                 broker.name broker.npn)
       csv << headers
 
       employers.each do |employer| 
         begin
           employer_attributes = []
-          employer_attributes += [employer.legal_name, employer.dba, employer.fein, employer.hbx_id, employer.entity_kind, employer.sic_code, employer.profile_source]
+          employer_attributes += [employer.legal_name, employer.dba, employer.fein, employer.hbx_id, employer.entity_kind, employer.sic_code, employer.profile_source, employer.aasm_state]
           office_location = get_primary_office_location(employer.organization)
           employer_attributes += [office_location.is_primary, office_location.address.address_1, office_location.address.address_2, office_location.address.city,
                                   office_location.address.state, office_location.address.zip]
@@ -94,7 +94,7 @@ namespace :employers do
                           (benefit_group.plan_option_kind == 'single_plan'),
                           benefit_group.reference_plan.name, benefit_group.effective_on_kind, benefit_group.effective_on_offset]
                   row += [plan_year.start_on, plan_year.end_on, plan_year.open_enrollment_start_on, plan_year.open_enrollment_end_on,
-                          plan_year.fte_count, plan_year.pte_count, plan_year.msp_count]
+                          plan_year.fte_count, plan_year.pte_count, plan_year.msp_count, plan_year.published, plan_year.aasm_state]
 
                   broker_agency_account = get_broker_agency_account(employer.broker_agency_accounts, plan_year)
                   if broker_agency_account.present?
@@ -113,7 +113,7 @@ namespace :employers do
                   next
                 end
                   csv << employer_attributes + row if i == 0
-                  csv << ['','','','','','','','','','','','','','','','', '', '', '','','',''] + row if i >0 
+                  csv << ['','','','','','','','','','','','','','','','', '', '', '','','','', '', ''] + row if i >0 
                 #end
             end
           end
