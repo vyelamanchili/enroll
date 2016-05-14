@@ -200,7 +200,7 @@ class Insured::PlanShoppingsController < ApplicationController
     smart_plans = []
     params[:plans].each do |plan|
       p = Plan.where(id: plan)
-      p = p.collect {|plan| PlanCostDecorator.new(plan, hbx_enrollment, benefit_group, reference_plan)}
+      p = p.collect {|plan| PlanCostDecorator.new(plan, @hbx_enrollment, benefit_group, reference_plan)}
       smart_plans << p.first
     end
     @plans = smart_plans.to_a
