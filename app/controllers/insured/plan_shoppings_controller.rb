@@ -195,10 +195,12 @@ class Insured::PlanShoppingsController < ApplicationController
     @sort = params[:sort_by]
     @multiplier = params[:multiplier].to_f
     @hbx_enrollment = HbxEnrollment.find(params[:hbx_enrollment])
+    benefit_group  = @hbx_enrollment.benefit_group
+    reference_plan = benefit_group.reference_plan
     smart_plans = []
     params[:plans].each do |plan|
       p = Plan.where(id: plan)
-      p = p.collect {|plan| UnassistedPlanCostDecorator.new(plan, @hbx_enrollment)}
+      p = p.collect {|plan| PlanCostDecorator.new(plan, hbx_enrollment, benefit_group, reference_plan)}
       smart_plans << p.first
     end
     @plans = smart_plans.to_a
