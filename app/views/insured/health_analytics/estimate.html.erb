@@ -180,7 +180,7 @@ $(document).ready(function () {
     values = $('table tr').find('td:first')
     $.each( values, function( i, val ) {
       td_values = $(this).text();
-      $(this).html("<input type='number' value='"+ td_values*<%=@multiplier%> +"'/>");
+      $(this).html("<input type='number' value="+td_values+"/>");
     });
   });
 });

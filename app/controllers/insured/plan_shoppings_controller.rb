@@ -326,8 +326,8 @@ class Insured::PlanShoppingsController < ApplicationController
       plan.assign_attributes({:estimated_out_of_pocket => set_likely_cost(plan, multiplier) })
     end
     remove_invalid_plans(@plans)
-    plans = plans.sort_by(&:estimated_out_of_pocket).sort{|a,b| b.csr_variant_id <=> a.csr_variant_id}
-    @plan = plans.first
+    @plans = @plans.sort_by(&:estimated_out_of_pocket).sort{|a,b| b.csr_variant_id <=> a.csr_variant_id}
+    @plan = @plans.first
   end
 
   def maximum_out_of_pocket(plan)

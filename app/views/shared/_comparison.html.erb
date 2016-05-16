@@ -80,15 +80,15 @@
 
                 <div class="graph">
                   <div class="progress progress-bar-vertical">
-                    <div class="progress-bar progress-bar-warning progress-bar-striped" style="height: <%= likely_percentage.floor %>%" data-toggle="tooltip" title="Estimated Out-of-Pocket: The amount you’re likely to spend on medical services this year based on the health information you gave us.">
+                    <div class="progress-bar progress-bar-warning progress-bar-striped" style="height: <%= likely_percentage.floor %>%" data-toggle="tooltip" title="<%= number_to_currency((likely-premium), precision: 0) %>: The amount you’re likely to spend on medical services this year based on the health information you gave us.">
                       <%= number_to_currency((likely-premium), precision: 0) %>
                     </div>
-                    <div class="progress-bar progress-bar-success progress-bar-striped" style="height: <%= premium_percentage.floor %>%" data-toggle="tooltip" title="Premium: Your 12 monthly payments.">
+                    <div class="progress-bar progress-bar-success progress-bar-striped" style="height: <%= premium_percentage.floor %>%" data-toggle="tooltip" title="<%= number_to_currency(premium, precision: 0) %>: Your 12 monthly payments.">
                       <%= number_to_currency(premium, precision: 0) %>
                     </div>
                   </div>
                   <div class="progress progress-bar-vertical">
-                    <div class="progress-bar progress-bar-danger progress-bar-striped" style="height: <%= maximum_percentage.floor %>%" data-toggle="tooltip" title="Worst Case: The most you could pay in a year. Your annual premium plus the highest possible out of pocket cost for your insurance plan.">
+                    <div class="progress-bar progress-bar-danger progress-bar-striped" style="height: <%= maximum_percentage.floor %>%" data-toggle="tooltip" title="<%= number_to_currency(maximum, precision: 0) %>: The most you could pay in a year. Your annual premium plus the highest possible out of pocket cost for your insurance plan.">
                       <%= number_to_currency(maximum, precision: 0) %>
                     </div>
                   </div>

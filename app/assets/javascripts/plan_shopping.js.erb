@@ -60,7 +60,7 @@
     $('.smart-plans .fa-star').addClass('fa-spin');
     setInterval(function(){
       $('.fa-star.fa-spin:first').removeClass('fa-spin');
-    }, 750);
+    }, 625);
   }
   return {
       update : update,
@@ -195,7 +195,6 @@ function maybeAddComparisonPlan(cb) {
 
 function doPlanComparison(action_uri) {
   var limited_plans = $('#plans-count:first').text();
-  alert(action_uri);
 	$.ajax({
 		type: "GET",
   	url: action_uri,
