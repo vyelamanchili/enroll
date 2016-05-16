@@ -45,6 +45,14 @@ class DocumentsController < ApplicationController
     end
   end
 
+  def update_individual
+    @person.consumer_role.authorize_residency! verification_attr
+    @person.consumer_role.authorize_lawful_presence! verification_attr
+    respond_to do |format|
+      format.html { redirect_to :back }
+    end
+  end
+
   def update_verification_type
     v_type = params[:verification_type]
     if v_type == "Social Security Number"
@@ -180,6 +188,11 @@ class DocumentsController < ApplicationController
     person.verification_types.all?{ |type| is_type_verified?(person, type) }
   end
 
+  def authorized_to_download?(owner, documents, document_id)
+    return true
+    owner.user.has_hbx_staff_role? || documents.find(document_id).present?
+  end
+
   def is_type_verified?(person, type)
     if type == 'Social Security Number'
       person.consumer_role.ssn_verified?
@@ -202,10 +215,5 @@ class DocumentsController < ApplicationController
        :verified_at => Time.now,
        :authority => "hbx"
                    })
-  end
-
-  def authorized_to_download?(owner, documents, document_id)
-    return true
-    owner.user.has_hbx_staff_role? || documents.find(document_id).present?
   end
 end
