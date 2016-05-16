@@ -7,7 +7,7 @@ class Insured::PlanShoppingsController < ApplicationController
   include Acapi::Notifiers
   extend Acapi::Notifiers
   include Aptc
-  before_action :set_current_person, :only => [:receipt, :thankyou, :waive, :show, :plans, :checkout]
+  before_action :set_current_person, :only => [:receipt, :thankyou, :waive, :show, :plans, :smart_plans, :checkout]
   before_action :set_kind_for_market_and_coverage, only: [:thankyou, :show, :plans, :checkout, :receipt]
 
   def checkout
@@ -114,9 +114,22 @@ class Insured::PlanShoppingsController < ApplicationController
     hbx_enrollment = HbxEnrollment.find(params.require(:id))
     waiver_reason = params[:waiver_reason]
 
-    if hbx_enrollment.may_waive_coverage? && waiver_reason.present? && hbx_enrollment.valid?
-      hbx_enrollment.update_current(aasm_state: "inactive", waiver_reason: waiver_reason)
-      hbx_enrollment.propogate_waiver
+    # Create a new hbx_enrollment for the waived enrollment.
+    unless hbx_enrollment.shopping?
+      employee_role = @person.employee_roles.active.last if employee_role.blank? and @person.has_active_employee_role?
+      coverage_household = @person.primary_family.active_household.immediate_family_coverage_household
+      waived_enrollment =  coverage_household.household.new_hbx_enrollment_from(employee_role: employee_role, coverage_household: coverage_household, benefit_group: nil, benefit_group_assignment: nil, qle: (@change_plan == 'change_by_qle' or @enrollment_kind == 'sep'))
+
+      waived_enrollment.generate_hbx_signature
+
+      if waived_enrollment.save!
+        hbx_enrollment = waived_enrollment
+        hbx_enrollment.household.reload # Make sure we reload the household to reflect the newly created HbxEnrollment
+      end
+    end
+
+    if hbx_enrollment.may_waive_coverage? and waiver_reason.present? and hbx_enrollment.valid?
+      hbx_enrollment.waive_coverage_by_benefit_group_assignment(waiver_reason)
       redirect_to print_waiver_insured_plan_shopping_path(hbx_enrollment), notice: "Waive Coverage Successful"
     else
       redirect_to new_insured_group_selection_path(person_id: @person.id, change_plan: 'change_plan', hbx_enrollment_id: hbx_enrollment.id), alert: "Waive Coverage Failed"
@@ -141,7 +154,12 @@ class Insured::PlanShoppingsController < ApplicationController
   end
 
   def show
+    set_plans_by(hbx_enrollment_id: params.require(:id))
+    @multiplier = params[:rating].to_i
+    set_multiplier(@multiplier)
     @sort = params[:sort]
+    get_modal_plan(@plans, @multiplier) if @coverage_kind == "health" && @market_kind == "shop"
+
     set_consumer_bookmark_url(family_account_path) if params[:market_kind] == 'individual'
     set_employee_bookmark_url(family_account_path) if params[:market_kind] == 'shop'
     hbx_enrollment_id = params.require(:id)
@@ -160,11 +178,12 @@ class Insured::PlanShoppingsController < ApplicationController
       session[:max_aptc] = 0
       session[:elected_aptc] = 0
     end
-
     @carriers = @carrier_names_map.values
     @waivable = @hbx_enrollment.try(:can_complete_shopping?)
     @max_total_employee_cost = thousand_ceil(@plans.map(&:total_employee_cost).map(&:to_f).max)
     @max_deductible = thousand_ceil(@plans.map(&:deductible).map {|d| d.is_a?(String) ? d.gsub(/[$,]/, '').to_i : 0}.max)
+    setup_removal(@plans) if @coverage_kind == "health" && @market_kind == "shop"
+    remove_invalid_plans(@plans) if @coverage_kind == "health" && @market_kind == "shop"
   end
 
   def set_elected_aptc
@@ -172,40 +191,48 @@ class Insured::PlanShoppingsController < ApplicationController
     render json: 'ok'
   end
 
+  def smart_plans
+    @sort = params[:sort_by]
+    @multiplier = params[:multiplier].to_f
+    @hbx_enrollment = HbxEnrollment.find(params[:hbx_enrollment])
+    benefit_group  = @hbx_enrollment.benefit_group
+    reference_plan = benefit_group.reference_plan
+    smart_plans = []
+    params[:plans].each do |plan|
+      p = Plan.where(id: plan)
+      p = p.collect {|plan| PlanCostDecorator.new(plan, @hbx_enrollment, benefit_group, reference_plan)}
+      smart_plans << p.first
+    end
+    @plans = smart_plans.to_a
+    respond_to do |format|
+      format.js { render 'insured/plan_shoppings/smart_plans.js.erb' }
+    end
+  end
+
   def plans
+    @multiplier = params[:rating].to_i
     @sort = params[:sort]
     set_consumer_bookmark_url(family_account_path)
-    set_plans_by(hbx_enrollment_id: params.require(:id))
+    set_plans_by(hbx_enrollment_id: params.require(:id)) unless params[:smart_plans] == "smart_plans"
     if params[:sort].present?
-    case @sort
-      when 'premium'
-        @plans = @plans.sort_by(&:total_employee_cost).sort{|a,b| b.csr_variant_id <=> a.csr_variant_id}
-      when 'likely_cost'
-        @plans.each do |plan|
-            plan.assign_attributes({ :likely_cost => (plan.total_employee_cost*1.33) })
-          end
-        @plans = @plans.sort_by(&:likely_cost).sort{|a,b| b.csr_variant_id <=> a.csr_variant_id}
-      when 'maximum_cost'
-        @plans.each do |plan|
-          moop = maximum_out_of_pocket(plan)
-          if @person.primary_family.active_family_members.count > 1
-            maximum_out_of_pocket = moop.in_network_tier_1_individual_amount.gsub(/[$,]/, '').to_f
-            plan.assign_attributes({ :maximum_out_of_pocket => maximum_out_of_pocket })
-          else
-            maximum_out_of_pocket = moop.in_network_tier_1_family_amount.gsub(/[$,]/, '').to_f
-            plan.assign_attributes({ :maximum_out_of_pocket => maximum_out_of_pocket })
-          end
-        end
-        @plans = @plans.sort_by(&:maximum_out_of_pocket).sort{|a,b| b.csr_variant_id <=> a.csr_variant_id}
-      end
-      @plan_hsa_status = Products::Qhp.plan_hsa_status_map(@plans)
-      respond_to do |format|
-        format.js { render 'insured/plan_shoppings/plans.js.erb' }
-      end
+      sort_by_sort(@sort, @plans, @multiplier)
     else
       @plans = @plans.sort_by(&:total_employee_cost).sort{|a,b| b.csr_variant_id <=> a.csr_variant_id}
-      @plans = @plans.partition{ |a| @enrolled_hbx_enrollment_plan_ids.include?(a[:id]) }.flatten
-      @plan_hsa_status = Products::Qhp.plan_hsa_status_map(@plans)
+      if @person.primary_family.active_household.latest_active_tax_household.present?
+        if is_eligibility_determined_and_not_csr_100?(@person)
+          sort_for_csr(@plans)
+        else
+          @plans = @plans.partition{ |a| @enrolled_hbx_enrollment_plan_ids.include?(a[:id]) }.flatten
+        end
+      else
+        @plans = @plans.partition{ |a| @enrolled_hbx_enrollment_plan_ids.include?(a[:id]) }.flatten
+      end
+    end
+
+    @plan_hsa_status = Products::Qhp.plan_hsa_status_map(@plans)
+
+    respond_to do |format|
+      format.js { render 'insured/plan_shoppings/plans.js.erb' }
     end
     @change_plan = params[:change_plan].present? ? params[:change_plan] : ''
     @enrollment_kind = params[:enrollment_kind].present? ? params[:enrollment_kind] : ''
@@ -213,13 +240,118 @@ class Insured::PlanShoppingsController < ApplicationController
 
   private
 
+
+  def set_multiplier(multiplier)
+    case multiplier
+    when 1
+      @multiplier = 1
+    when 2
+      @multiplier = 2
+    when 3
+      @multiplier = 3
+    end
+  end
+
+  def setup_removal(plans)
+    plans.each do |plan|
+      moop = maximum_out_of_pocket(plan)
+      premium = current_cost(plan.total_employee_cost*12, plan.ehb, nil, 'shopping', plan.can_use_aptc?)
+      if @person.primary_family.active_family_members.count > 1
+        maximum_out_of_pocket = moop.in_network_tier_1_individual_amount.gsub(/[$,]/, '').to_f
+        maximum_out_of_pocket = maximum_out_of_pocket == 0.0 ? 0.0 : maximum_out_of_pocket + premium
+        plan.assign_attributes({ :maximum_out_of_pocket => maximum_out_of_pocket })
+      else
+        maximum_out_of_pocket = moop.in_network_tier_1_family_amount.gsub(/[$,]/, '').to_f
+        maximum_out_of_pocket = maximum_out_of_pocket == 0.0 ? 0.0 : maximum_out_of_pocket + premium
+        plan.assign_attributes({ :maximum_out_of_pocket => maximum_out_of_pocket })
+      end
+    end
+  end
+
+  def set_likely_cost(plan, multiplier)
+    moop = maximum_out_of_pocket(plan)
+    premium = current_cost(plan.total_employee_cost*12, plan.ehb, nil, 'shopping', plan.can_use_aptc?)
+
+    if @person.primary_family.active_family_members.count > 1
+      maximum = moop.in_network_tier_1_individual_amount.gsub(/[$,]/, '').to_f + premium
+    else
+      maximum = moop.in_network_tier_1_family_amount.gsub(/[$,]/, '').to_f + premium
+    end
+
+    case multiplier
+    when 3
+      likely = (((plan.deductible.gsub(/[$,]/, '').to_i/maximum)*premium)*2) + premium
+    when 2
+      likely = (((plan.deductible.gsub(/[$,]/, '').to_i/maximum)*premium)) + premium
+    else
+      likely = maximum
+    end
+    likely = likely > maximum ? maximum : likely
+  end
+
+  def remove_invalid_plans(plans)
+    @plans = plans.select { |p| p.total_employee_cost != 0.0 }
+    puts @plans.count
+    @plans = @plans.select { |p| p.deductible.gsub(/[$,]/, '').to_i != 0 }
+    puts @plans.count
+    @plans = @plans.select { |p| p.maximum_out_of_pocket != 0.0 }
+    puts @plans.count
+    puts "----------"
+
+  end
+
+  def sort_by_sort(sort, plans, multiplier)
+    @plans = setup_removal(plans)
+
+    case sort
+      when 'premium'
+        remove_invalid_plans(@plans)
+        @plans = @plans.sort_by(&:total_employee_cost).sort{|a,b| b.csr_variant_id <=> a.csr_variant_id}
+      when 'estimated_out_of_pocket'
+        @plans.each do |plan|
+          plan.assign_attributes({:estimated_out_of_pocket => set_likely_cost(plan, multiplier) })
+        end
+        remove_invalid_plans(@plans)
+        @plans = @plans.sort_by(&:estimated_out_of_pocket).sort{|a,b| b.csr_variant_id <=> a.csr_variant_id}
+      when 'maximum_cost'
+        remove_invalid_plans(@plans)
+        @plans = @plans.sort_by(&:maximum_out_of_pocket).sort{|a,b| b.csr_variant_id <=> a.csr_variant_id}
+    end
+  end
+
+  def get_modal_plan(plans, multiplier)
+    @multiplier = multiplier
+    @plans = setup_removal(plans)
+    @plans.each do |plan|
+      plan.assign_attributes({:estimated_out_of_pocket => set_likely_cost(plan, multiplier) })
+    end
+    remove_invalid_plans(@plans)
+    plans = plans.sort_by(&:estimated_out_of_pocket).sort{|a,b| b.csr_variant_id <=> a.csr_variant_id}
+    @plan = plans.first
+  end
+
   def maximum_out_of_pocket(plan)
-    csv = Products::QhpCostShareVariance.find_qhp_cost_share_variances(["#{plan.hios_id}"], 2016, "health").first
+    csv = Products::QhpCostShareVariance.find_qhp_cost_share_variances(["#{plan.hios_id}"], plan.active_year, "health").first
     moop = csv.qhp_maximum_out_of_pockets.where(name: "Maximum Out of Pocket for Medical and Drug EHB Benefits (Total)").last
   end
 
+  def sort_for_csr(plans)
+    silver_plans, non_silver_plans = plans.partition{|a| a.metal_level == "silver"}
+    standard_plans, non_standard_plans = silver_plans.partition{|a| a.is_standard_plan == true}
+    @plans = standard_plans + non_standard_plans + non_silver_plans
+  end
+
+  def is_eligibility_determined_and_not_csr_100?(person)
+    csr_eligibility_kind = person.primary_family.active_household.latest_active_tax_household.current_csr_eligibility_kind
+    if (EligibilityDetermination::CSR_KINDS.include? "#{csr_eligibility_kind}") && ("#{csr_eligibility_kind}" != "csr_100")
+      return true
+    else
+      return false
+    end
+  end
+
   def send_receipt_emails
-    # UserMailer.plan_shopping_completed(@person.user, @person.hbx_id).deliver_now
+    UserMailer.plan_shopping_completed(@person.user, @person.hbx_id).deliver_now
     UserMailer.generic_consumer_welcome(@person.first_name, @person.hbx_id, @person.emails.first.address).deliver_now
     body = render_to_string 'user_mailer/secure_purchase_confirmation.html.erb', layout: false
     from_provider = HbxProfile.current_hbx

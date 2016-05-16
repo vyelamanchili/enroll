@@ -1,15 +1,17 @@
 class Products::QhpController < ApplicationController
   include ContentType
   include Aptc
+  include ApplicationHelper
   include Acapi::Notifiers
   extend Acapi::Notifiers
   before_action :set_current_person, only: [:comparison, :summary]
   before_action :set_kind_for_market_and_coverage, only: [:comparison, :summary]
 
   def comparison
+    @limited_plans = params[:limited_plans]
     params.permit("standard_component_ids", :hbx_enrollment_id)
     found_params = params["standard_component_ids"].map { |str| str[0..13] }
-
+    @multiplier = params[:rating].to_f
     @standard_component_ids = params[:standard_component_ids]
     @hbx_enrollment_id = params[:hbx_enrollment_id]
     @active_year = params[:active_year]
@@ -32,6 +34,11 @@ class Products::QhpController < ApplicationController
       end
 
     end
+
+    if @market_kind == 'employer_sponsored' && @coverage_kind == 'health'
+      sort_by_maximum_out_of_pocket(@qhps)
+    end
+
     respond_to do |format|
       format.html
       format.js
@@ -69,6 +76,22 @@ class Products::QhpController < ApplicationController
 
   private
 
+  def sort_by_maximum_out_of_pocket(qhps)
+    qhps.each do |qhp|
+      csv = Products::QhpCostShareVariance.find_qhp_cost_share_variances(["#{qhp.plan.hios_id}"], 2016, "health").first
+      moop = csv.qhp_maximum_out_of_pockets.where(name: "Maximum Out of Pocket for Medical and Drug EHB Benefits (Total)").last
+      premium = current_cost(qhp[:total_employee_cost]*12, qhp.plan.ehb, nil, 'shopping', qhp.plan.can_use_aptc?)
+
+      if @person.primary_family.active_family_members.count > 1
+        maximum_out_of_pocket = moop.in_network_tier_1_individual_amount.gsub(/[$,]/, '').to_f + premium
+        qhp.assign_attributes({ :maximum_out_of_pocket => maximum_out_of_pocket })
+      else
+        maximum_out_of_pocket = moop.in_network_tier_1_family_amount.gsub(/[$,]/, '').to_f + premium
+        qhp.assign_attributes({ :maximum_out_of_pocket => maximum_out_of_pocket })
+      end
+    end
+    @qhps = qhps.sort_by(&:maximum_out_of_pocket)
+  end
 
   def set_kind_for_market_and_coverage
     @new_params = params.permit(:standard_component_id, :hbx_enrollment_id)

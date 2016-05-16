@@ -24,18 +24,42 @@
  *= require new
  *= require text_styles
  *= require brokers
+ *= require modals
  *= require modules
  *= require insured
  *= require sprites
  *= require modules
+ *= require modals
  *= require states
  *= require layouts
  *= require bootstrap-slider
+ *= require dataTables/bootstrap/3/jquery.dataTables.bootstrap
  *= require_self
  */
  .module.application {
    &.loading {}
  }
+ .registrations {
+   .actions {
+     .btn {
+       margin-left: auto;
+       margin-right: auto;
+       margin: 0 auto;
+       display: block;
+       margin-bottom: 5px;
+     }
+     span {
+       display: block;
+       text-align: center;
+     }
+
+   }
+   .email-help {
+     font-size: 14px;
+   }
+
+ }
+
 .clear {
   clear: both;
 }
@@ -73,6 +97,17 @@
  .m-center {
    margin: auto;
  }
+ .dir {
+  margin-top: 0;
+}
+.view-more {
+  white-space: nowrap;
+}
+img {
+ &.full-width {
+   width: 100%;
+ }
+}
  .modal-body-swap {
    position: relative;
    padding: 15px;

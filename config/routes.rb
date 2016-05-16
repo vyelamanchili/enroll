@@ -28,6 +28,7 @@ Rails.application.routes.draw do
         get :family_index
         get :employer_index
         get :broker_agency_index
+        get :general_agency_index
         get :issuer_index
         get :product_index
         get :configuration
@@ -78,6 +79,8 @@ Rails.application.routes.draw do
     get 'verification_documents/download/:key', to: 'verification_documents#download'
 
     resources :plan_shoppings, :only => [:show] do
+      get 'smart_plans', on: :collection
+
       member do
         get 'plans'
         get 'receipt'
@@ -101,6 +104,7 @@ Rails.application.routes.draw do
       get 'new'
       member do
         post 'unblock'
+        delete 'delete_consumer_broker'
       end
 
       collection do
@@ -130,6 +134,7 @@ Rails.application.routes.draw do
       get :search, on: :collection
       get :privacy, on: :collection
       post :match, on: :collection
+      post :build, on: :collection
       get :ridp_agreement, on: :collection
       get :immigration_document_options, on: :collection
       ##get :privacy, on: :collection
@@ -177,6 +182,7 @@ Rails.application.routes.draw do
         post 'match'
       end
     end
+    resources
     resources :inboxes, only: [:new, :create, :show, :destroy]
     resources :employer_profiles do
       get 'new'
@@ -228,7 +234,7 @@ Rails.application.routes.draw do
   end
 
   # match 'thank_you', to: 'broker_roles#thank_you', via: [:get]
-  match 'broker_registration', to: 'broker_agencies/broker_roles#new_broker', via: [:get]
+  match 'broker_registration', to: 'broker_agencies/broker_roles#new_broker_agency', via: [:get]
 
   namespace :carriers do
     resources :carrier_profiles do
@@ -249,6 +255,15 @@ Rails.application.routes.draw do
         get :messages
         get :staff_index
         get :agency_messages
+        get :assign_history
+      end
+      member do
+        get :general_agency_index
+        get :manage_employers
+        post :clear_assign_for_employer
+        get :assign
+        post :update_assign
+        post :set_default_ga
       end
 
       resources :applicants
@@ -261,6 +276,34 @@ Rails.application.routes.draw do
         get :new_broker_agency
         get :search_broker_agency
       end
+      member do
+        get :favorite
+      end
+    end
+  end
+
+  match 'general_agency_registration', to: 'general_agencies/profiles#new_agency', via: [:get]
+  namespace :general_agencies do
+    root 'profiles#new'
+    resources :profiles do
+      collection do
+        get :new_agency_staff
+        get :search_general_agency
+        get :new_agency
+        get :messages
+        get :agency_messages
+        get :inbox
+        get :edit_staff
+        post :update_staff
+      end
+      member do
+        get :employers
+        get :families
+        get :staffs
+      end
+    end
+    resources :inboxes, only: [:new, :create, :show, :destroy] do
+      get :msg_to_portal
     end
   end
 

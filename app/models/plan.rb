@@ -49,7 +49,6 @@ class Plan
   field :family_deductible, type: String
   field :maximum_out_of_pocket, type: Float
   field :estimated_out_of_pocket, type: Float
-  field :likely_cost, type: Float
 
   field :nationwide, type: Boolean # Nationwide
   field :dc_in_network, type: Boolean # DC In-Network or not

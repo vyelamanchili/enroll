@@ -17,6 +17,14 @@ When(/^\w+ visits? the Insured portal outside of open enrollment$/) do
   screenshot("individual_start")
 end
 
+And(/Individual asks how to make an email account$/) do
+
+  @browser.button(class: /interaction-click-control-create-account/).wait_until_present
+  @browser.a(text: /Don't have an email account?/).fire_event("onclick")
+  @browser.element(class: /modal/).wait_until_present
+  @browser.element(class: /interaction-click-control-×/).fire_event("onclick")
+end
+
 Then(/Individual creates HBX account$/) do
   click_button 'Create account'
   fill_in "user[email]", :with => (@u.email :email)
@@ -144,22 +152,32 @@ And(/Individual again clicks on add member button/) do
   find(:xpath, '//label[@for="indian_tribe_member_no"]').click
   find(:xpath, '//label[@for="radio_incarcerated_no"]').click
 
+  #testing
+  screenshot("added member")
   click_button "Confirm Member"
 end
 
 
 And(/I click on continue button on household info form/) do
+  screenshot("line 161")
   click_link "Continue"
 end
 
-When(/I click on continue button on group selection page during a sep/) do
+When(/^I click on continue button on group selection page during a sep$/) do
   click_button "CONTINUE"
 end
 
-And(/I click on continue button on group selection page/) do
+And(/^I click on continue button on group selection page$/) do
   #TODO This some group selection nonsense
-  click_link "Continue" #Get
-  click_button "CONTINUE" #Post
+  #wait_for_ajax(2,2)
+  screenshot("test1")
+  #click_link "Continue" #Get
+  click_button "CONTINUE"
+  screenshot("test2")
+  wait_for_ajax
+  find(:xpath, '//*[@id="btn-continue"]').trigger('click')
+  #click_button "Continue" #Post
+  screenshot("test3")
   #Goes off the see the wizard at /I select three plans to compare/ for now
 end
 
@@ -181,12 +199,12 @@ And(/I click on continue button to go to the individual home page/) do
 end
 
 And(/I should see the individual home page/) do
-  expect(page).to have_content "My DC Health Link"
+  expect(page).to have_content "My #{Settings.site.short_name}"
   screenshot("my_account")
   # something funky about these tabs in JS
   # click_link "Documents"
   # click_link "Manage Family"
-  # click_link "My DC Health Link"
+  # click_link "My #{Settings.site.short_name}"
 end
 
 Then(/^Individual edits a dependents address$/) do
@@ -478,7 +496,7 @@ Then(/Aptc user should see aptc amount on receipt page/) do
 end
 
 Then(/Aptc user should see aptc amount on individual home page/) do
-  @browser.h1(text: /My DC Health Link/).wait_until_present
+  @browser.h1(text: /My #{Settings.site.short_name}/).wait_until_present
   expect(@browser.strong(text: "$20.00").visible?).to be_truthy
   expect(@browser.label(text: /APTC AMOUNT/).visible?).to be_truthy
   screenshot("aptc_ivl_home")

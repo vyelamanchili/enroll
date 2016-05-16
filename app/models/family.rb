@@ -13,6 +13,8 @@ class Family
 
   Kinds = %W[unassisted_qhp insurance_assisted_qhp employer_sponsored streamlined_medicaid emergency_medicaid hcr_chip]
   ImmediateFamily = %w{self spouse life_partner child ward foster_child adopted_child stepson_or_stepdaughter}
+  HealthConditions = %w[ ADHD Angina Arthritis_Non-specific Arthritis_Rheumatoid Asthma_Controlled Asthma_Past Asthma_Uncontrolled Back_Pain Breast_Cancer_current Breast_Cancer_previous Bronchitis Colon_Cancer_current Colon_Cancer_previous Coronary_Heart_Disease Diabetes_Controlled Diabetes_Uncontrolled Emphysema Heart_Attack High_Cholesterol Hypertension Joint_Pain Leukemia_current Leukemia_previous Lung_Cancer_current Lung_Cancer_previous Lymph_Cancer_current Lymph_Cancer_previous Migrane Obesity Osteoarthritis Other_Cancer_current Other_Cancer_previous Other_Heart_Problem Pregnancy_High_Risk Pregnancy_Normal Prostate_Cancer_current Prostate_Cancer_previous Stroke ]
+  Doctors = %W[Green Black Blue Red Yellow Pepper Suess Rhadke Orange Brown]
 
   field :hbx_assigned_id, type: Integer
 
@@ -29,6 +31,7 @@ class Family
   field :status, type: String, default: "" # for aptc block
 
   before_save :clear_blank_fields
+  after_save :generate_family_search
 
   belongs_to  :person
 
@@ -42,8 +45,9 @@ class Family
   embeds_many :irs_groups, cascade_callbacks: true
   embeds_many :households, cascade_callbacks: true, :before_add => :reset_active_household
   embeds_many :broker_agency_accounts
+  embeds_many :general_agency_accounts
 
-  accepts_nested_attributes_for :special_enrollment_periods, :family_members, :irs_groups, :households, :broker_agency_accounts
+  accepts_nested_attributes_for :special_enrollment_periods, :family_members, :irs_groups, :households, :broker_agency_accounts, :general_agency_accounts
 
   index({person_id: 1})
   index({e_case_id: 1}, { sparse: true })
@@ -112,7 +116,7 @@ class Family
   scope :all_tax_households,                  ->{ exists(:"households.tax_households" => true) }
   scope :by_writing_agent_id,                 ->(broker_id){ where(broker_agency_accounts: {:$elemMatch=> {writing_agent_id: broker_id, is_active: true}})}
   scope :by_broker_agency_profile_id,         -> (broker_agency_profile_id) { where(broker_agency_accounts: {:$elemMatch=> {broker_agency_profile_id: broker_agency_profile_id, is_active: true}})}
-
+  scope :by_general_agency_profile_id,         -> (general_agency_profile_id) { where(general_agency_accounts: {:$elemMatch=> {general_agency_profile_id: general_agency_profile_id, aasm_state: "active"}})}
   scope :all_assistance_applying,       ->{ unscoped.exists(:"households.tax_households.eligibility_determinations" => true).order(
                                                    :"households.tax_households.eligibility_determinations.determined_at".desc) }
 
@@ -544,7 +548,7 @@ class Family
       {"$match" => {'_id' => self._id}},
       {"$unwind" => '$households'},
       {"$unwind" => '$households.hbx_enrollments'},
-      {"$match" => {"aasm_state" => {"$ne" => 'inactive'} }},
+      {"$match" => {"households.hbx_enrollments.aasm_state" => {"$ne" => 'inactive'} }},
       {"$sort" => {"households.hbx_enrollments.submitted_at" => -1 }},
       {"$group" => {'_id' => {
                   'year' => { "$year" => '$households.hbx_enrollments.effective_on'},
@@ -552,25 +556,34 @@ class Family
                   'day' => { "$dayOfMonth" => '$households.hbx_enrollments.effective_on'},
                   'subscriber_id' => '$households.hbx_enrollments.enrollment_signature',
                   'provider_id'   => '$households.hbx_enrollments.carrier_profile_id',
-                  'state' => '$households.hbx_enrollments.aasm_state', 'market' => '$households.hbx_enrollments.kind', 'coverage_kind' => '$households.hbx_enrollments.coverage_kind'}, "hbx_enrollment" => { "$first" => '$households.hbx_enrollments'}}},
+                  'state' => '$households.hbx_enrollments.aasm_state',
+                  'market' => '$households.hbx_enrollments.kind',
+                  'coverage_kind' => '$households.hbx_enrollments.coverage_kind'},
+                  "hbx_enrollment" => { "$first" => '$households.hbx_enrollments'}}},
       {"$project" => {'hbx_enrollment._id' => 1, '_id' => 1}}
       ],
       :allow_disk_use => true)
   end
 
   def waivers_for_display
-    self.collection.aggregate([
+    Family.collection.aggregate([
       {"$match" => {'_id' => self._id}},
       {"$unwind" => '$households'},
       {"$unwind" => '$households.hbx_enrollments'},
       {"$match" => {'households.hbx_enrollments.aasm_state' => 'inactive'}},
       {"$sort" => {"households.hbx_enrollments.submitted_at" => -1 }},
-      {"$group" => {'_id' => {'year' => { "$year" => '$households.hbx_enrollments.effective_on'},'state' => '$households.hbx_enrollments.aasm_state', 'kind' => '$households.hbx_enrollments.kind', 'coverage_kind' => '$households.hbx_enrollments.coverage_kind'}, "hbx_enrollment" => { "$first" => '$households.hbx_enrollments'}}},
+      {"$group" => {'_id' => {'year' => { "$year" => '$households.hbx_enrollments.effective_on'},
+                    'state' => '$households.hbx_enrollments.aasm_state',
+                    'kind' => '$households.hbx_enrollments.kind',
+                    'coverage_kind' => '$households.hbx_enrollments.coverage_kind'}, "hbx_enrollment" => { "$first" => '$households.hbx_enrollments'}}},
       {"$project" => {'hbx_enrollment._id' => 1, '_id' => 0}}
       ],
       :allow_disk_use => true)
   end
 
+  def generate_family_search
+    ::MapReduce::FamilySearchForFamily.populate_for(self)
+  end
 private
   def build_household
     if households.size == 0

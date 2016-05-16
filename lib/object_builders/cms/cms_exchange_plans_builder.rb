@@ -263,6 +263,7 @@ class CmsExchangePlansBuilder < CmsParentBuilder
       nationwide: nationwide,
       dc_in_network: dc_in_network,
       plan_type: @plan[@headers["plan_type"]].downcase,
+      dental_level: @plan[@headers["dental_only_plan"]].downcase == "yes" ? @plan[@headers["metal_level"]].downcase : ""
     }
   end
 

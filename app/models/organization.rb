@@ -67,14 +67,17 @@ class Organization
 
   scope :all_employers_by_plan_year_start_on,   ->(start_on){ unscoped.where(:"employer_profile.plan_years.start_on" => start_on) }
 
+  scope :by_general_agency_profile, -> (general_agency_profile_id) { where(:'employer_profile.general_agency_accounts' => {:$elemMatch => { aasm_state: "active", general_agency_profile_id: general_agency_profile_id } }) }
+
   embeds_many :office_locations, cascade_callbacks: true, validate: true
 
   embeds_one :employer_profile, cascade_callbacks: true, validate: true
   embeds_one :broker_agency_profile, cascade_callbacks: true, validate: true
+  embeds_one :general_agency_profile, cascade_callbacks: true, validate: true
   embeds_one :carrier_profile, cascade_callbacks: true, validate: true
   embeds_one :hbx_profile, cascade_callbacks: true, validate: true
 
-  accepts_nested_attributes_for :office_locations, :employer_profile, :broker_agency_profile, :carrier_profile, :hbx_profile
+  accepts_nested_attributes_for :office_locations, :employer_profile, :broker_agency_profile, :carrier_profile, :hbx_profile, :general_agency_profile
 
   validates_presence_of :legal_name, :fein, :office_locations #, :updated_by
 
@@ -134,6 +137,7 @@ class Organization
   }
 
   scope :has_broker_agency_profile, ->{ exists(broker_agency_profile: true) }
+  scope :has_general_agency_profile, ->{ exists(general_agency_profile: true) }
   scope :by_broker_agency_profile, -> (broker_agency_profile_id) {where(:'employer_profile.broker_agency_accounts' => {:$elemMatch => { is_active: true, broker_agency_profile_id: broker_agency_profile_id } }) }
   scope :by_broker_role, -> (broker_role_id)                     {where(:'employer_profile.broker_agency_accounts' => {:$elemMatch => { is_active: true, writing_agent_id: broker_role_id                   } })}
 
@@ -159,6 +163,10 @@ class Organization
     office_locations.detect(&:is_primary?)
   end
 
+  def self.search_by_general_agency(search_content)
+    Organization.has_general_agency_profile.or({legal_name: /#{search_content}/i}, {"fein" => /#{search_content}/i})
+  end
+
   def self.default_search_order
     [[:legal_name, 1]]
   end
@@ -176,7 +184,8 @@ class Organization
     Rails.cache.fetch("carrier-names-at-#{TimeKeeper.date_of_record.year}", expires_in: 2.hour) do
       Organization.exists(carrier_profile: true).inject({}) do |carrier_names, org|
         carrier_names[org.carrier_profile.id.to_s] = org.carrier_profile.legal_name if Plan.valid_shop_health_plans("carrier", org.carrier_profile.id).present?
-        carrier_names.select{|id,carrier| NEVADA_CARRIER_NAMES.include?(carrier) }
+        carrier_names
+        # carrier_names.select{|id,carrier| NEVADA_CARRIER_NAMES.include?(carrier) }
       end
     end
   end
@@ -186,7 +195,8 @@ class Organization
       Organization.exists(carrier_profile: true).inject({}) do |carrier_names, org|
 
         carrier_names[org.carrier_profile.id.to_s] = org.carrier_profile.legal_name if Plan.valid_shop_dental_plans("carrier", org.carrier_profile.id, 2016).present?
-        carrier_names.select{|id,carrier| NEVADA_CARRIER_NAMES.include?(carrier) }
+        carrier_names
+        # carrier_names.select{|id,carrier| NEVADA_CARRIER_NAMES.include?(carrier) }
       end
     end
   end
@@ -195,7 +205,8 @@ class Organization
     Rails.cache.fetch("carrier-names-filters-at-#{TimeKeeper.date_of_record.year}", expires_in: 2.hour) do
       Organization.exists(carrier_profile: true).inject({}) do |carrier_names, org|
         carrier_names[org.carrier_profile.id.to_s] = org.carrier_profile.legal_name
-        carrier_names.select{|id,carrier| NEVADA_CARRIER_NAMES.include?(carrier) }
+        carrier_names
+        # carrier_names.select{|id,carrier| NEVADA_CARRIER_NAMES.include?(carrier) }
       end
     end
   end

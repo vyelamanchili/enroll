@@ -1,9 +1,82 @@
-function hidePlanTabs() {
-  $(".all-filters-row").hide();
-  $("ul[role='tablist'] li[role='presentation']").each(function(idx, ele) {
-    $(ele).removeClass("active");
-  });
-}
+  var SmartPlans = ( function( window, undefined ) {
+
+  function update() {
+    if ( $('.plan-row:visible').length > 0 ) {
+      var sort_by = $('.module.smart-plans .panel-default').data('sort-by');
+      $('.smart-plans').html("<br/><br/><br/><span class='text-block text-center col-xs-12'><i class='fa fa-spinner fa-spin fa-2x' style='color: #007bc4;'></i><br/><h4 class='text-center'>Loading plans...</h4></span><br class='clear'/>");
+      plans = []
+      $('.plan-row:visible').each(function(index, plan) {
+        if ( index <= 2 ) {
+          plans.push($(this).data('plan-id'));
+        }
+      });
+      $('#plans').hide();
+      url = "/insured/plan_shoppings/smart_plans"
+      multiplier = $('#select_plan_wrapper').data('rating');
+      hbx_enrollment = $('#select_plan_wrapper').data('hbx-enrollment');
+      $.ajax({
+        url: url,
+        type: "GET",
+        data: {
+          "plans": plans,
+          "multiplier": multiplier,
+          "hbx_enrollment": hbx_enrollment,
+          "sort_by": sort_by
+        },
+        success: function(data) {
+          var heading_text = $('.smart-plans .panel-heading h4');
+          heading_text.append("[Custom Filter]");
+          $('.smart-plans .panel-heading h4').css({fontSize: '16px'});
+      }
+      });
+      SmartPlans.applyBadges();
+
+    } else {
+      $('.smart-plans').html("<br/><br/><br/><span class='text-block text-center col-xs-12'><br/><h4 class='text-center'>No Plans</h4></span><br class='clear'/>");
+    }
+  }
+  function applyBadges() {
+    $('#plans').find('.plan-row .col-xs-1 .icon').html("");
+    var $plan_rows = $('#plans').find('.plan-row:visible');
+    var active_sort = $('#sort_by_shop .active').text();
+    var active_sort = active_sort.replace(/[_-]/g, " ").toLowerCase().replace(/ /g,"_");
+    $('.icon .fa-stack').addClass(active_sort);
+    var sort = $('.smart-plans').find('.panel-default').data('sort-by') || active_sort;
+    var $heading_text = $('.smart-plans .panel-heading h4').text();
+    $plan_rows.find('.col-xs-1 .icon').html("");
+    $plan_rows.each( function (index) {
+      if ( index <= 2 ) {
+        var custom = ($('.module.all-filters-row input:checked').length > 0 || $('.module.all-filters-row select').find('option:first:not(":selected")').length > 0) ? "[Custom Filter]" : "";
+        if ( index == 0 ) {
+          $(this).find('.icon').html('<strong data-placement=\"bottom\" data-toggle=\"tooltip\" title=\"'+$heading_text+' '+custom+'\"><span class=\"fa-stack fa-lg\"><i class="fa fa-star '+sort+'\" aria-hidden=\"true\"></i><i class=\"fa fa-stack-1x number\"><strong>'+ (index+1) +'</strong></i></span></strong>');
+        } else {
+          $(this).find('.icon').html('<strong data-toggle=\"tooltip\" title=\"'+$heading_text+' '+custom+'\"><span class=\"fa-stack fa-lg\"><i class="fa fa-star '+sort+'\" aria-hidden=\"true\"></i><i class=\"fa fa-stack-1x number\"><strong>'+ (index+1) +'</strong></i></span></strong>');
+        }
+        $('[data-toggle="tooltip"]').tooltip();
+      }
+    });
+  }
+  function spinStars() {
+    $('.smart-plans .fa-star').addClass('fa-spin');
+    setInterval(function(){
+      $('.fa-star.fa-spin:first').removeClass('fa-spin');
+    }, 750);
+  }
+  return {
+      update : update,
+      applyBadges : applyBadges,
+      spinStars : spinStars
+    };
+  } )( window );
+
+  //  example usage
+  function hidePlanTabs() {
+    $(".all-filters-row").hide();
+    $("ul[role='tablist'] li[role='presentation']").each(function(idx, ele) {
+      $(ele).removeClass("active");
+    });
+
+  }
 
 function combineAllPlanSelectors(planSelectors) {
   var selectors = [];
@@ -69,9 +142,15 @@ function applyPlanFilters() {
   ];
   combineAllPlanSelectors(all_selectors);
   $("strong#plans-count").text($(".plan-row:visible").length);
+  $('.select-plan-for-comparison:checked').not(':visible').each( function() {
+    $(this).removeProp('checked');
+  });
+  var $footer = $('.compare-plans-footer:visible');
+  $footer.remove();
+  plansToCompareArray = [];
 }
 
-var plansToCompareArray = new Array();
+plansToCompareArray = new Array();
 var hbx;
 var active_year;
 var enrollment_kind;
@@ -105,26 +184,32 @@ function maybeAddComparisonPlan(cb) {
 		plansToCompareArray = tmpArray;
 	}
 	if (plansToCompareArray.length > 1) {
-		$(".compare-selected-plans-link").show();
+    data_uri = $('a.compare-uri').data('uri');
+    $('.compare-plans-footer').not(':visible').remove();
+    $('.content.plan_shoppings').after('<div class="module compare-plans-footer container-fluid dn"><div class="container"><div class="col-xs-6 col-xs-offset-3"><a href="javascript:void(0);" class="btn-block btn btn-trans btn-small compare-selected-plans-link", data-uri="'+data_uri+'">Compare Selected Plans</a></div></div></div>')
+		$(".compare-plans-footer").slideDown();
 	} else {
-		$(".compare-selected-plans-link").hide();
+		$(".compare-plans-footer").slideUp();
 	}
 }
 
 function doPlanComparison(action_uri) {
+  var limited_plans = $('#plans-count:first').text();
+  alert(action_uri);
 	$.ajax({
 		type: "GET",
-	url: action_uri,
-	dataType: 'script',
-	data: {
-		"standard_component_ids": plansToCompareArray,"hbx_enrollment_id": hbx, "active_year": active_year, "enrollment_kind": enrollment_kind,
-    "change_plan": change_plan
-	}
+  	url: action_uri,
+  	dataType: 'script',
+  	data: {
+  		"standard_component_ids": plansToCompareArray,"hbx_enrollment_id": hbx, "active_year": active_year, "enrollment_kind": enrollment_kind,
+      "change_plan": change_plan, "limited_plans": limited_plans
+  	}
 	});
 }
 //
 // maybe we don't need this plan sort function anymore anymore (04/8/2016)
 function applyPlanSort(sort_by){
+  console.log(123)
   var plandivs = $('#all-plans #plans .plan-row');
   plandivs.sort(function(a, b){
     if (sort_by == "plan-metal-premium" || sort_by == "plan-metal-deductible"){
@@ -177,6 +262,35 @@ $(function() {
 		}
   });
 
+  $(document).on('click', '.smart-plans .panel-footer a', function(){
+    standard_component_ids = []
+    hbx = $('#select_plan_wrapper').data('hbx-enrollment');
+    active_year = $('#select_plan_wrapper').data('plan-year');
+    enrollment_kind = $('#select_plan_wrapper').data('coverage_kind');
+    change_plan = $('#select_plan_wrapper').data('change_plan') || "";
+
+    $('.smart-plans .panel-body h5').each(function() {
+      standard_component_ids.push($(this).data('standard-component-id'))
+    });
+    var base_url = $('a.compare-uri').data('uri');
+    var limited_plans = $('#plans-count:first').text();
+
+    $.ajax({
+      type: "GET",
+      url: base_url,
+      dataType: 'script',
+      data: {
+        "standard_component_ids": standard_component_ids,
+        "hbx_enrollment_id": hbx,
+        "active_year": active_year,
+        "enrollment_kind": enrollment_kind,
+        "change_plan": change_plan,
+        "limited_plans": limited_plans
+
+      }
+    });
+  });
+
   $(document).on('change', '.select-plan-for-comparison', function(){
 		maybeAddComparisonPlan(this);
   });
@@ -204,6 +318,7 @@ $(function() {
   });
 
   $(document).on('click', '.all-filters-row .apply-btn', function(){
+
 		applyPlanFilters();
 
     if ($('.aptc').length > 0){
@@ -219,7 +334,12 @@ $(function() {
         }
       });
     };
+    if ( $('#sort_by_shop').length ) {
+      SmartPlans.update();
+    }
   });
+
+
 
   $(document).on('click', '.all-filters-row .reset-btn', function(){
     $(".filter-sidebar input[type='checkbox']").attr("checked", false);
@@ -229,7 +349,17 @@ $(function() {
     $(".filter-sidebar input[type='text'].plan-metal-deductible-to-selection-filter").val($('#max_deductible').val());
     $(".filter-sidebar select.plan-carrier-selection-filter").prop('selectedIndex', 0).selectric('refresh');
     $(".filter-sidebar select.plan-hsa-eligibility-selection-filter").prop('selectedIndex', 0).selectric('refresh');
-		applyPlanFilters();
+    if ( $('#sort_by_shop').length ) {
+      var sort_text = $(".module.smart-plans .panel-default").data("sort-by").split('_').join(' ');
+      var $heading_text = $('.smart-plans .panel-heading h4');
+      $heading_text.html('Top 3 Picks - by Lowest '+ '<span style="text-transform: capitalize;">'+sort_text+'</span>');
+      $heading_text.css({'fontSize': '18px'});
+    };
+    applyPlanFilters();
+    if ( $('#sort_by_shop').length ) {
+      SmartPlans.applyBadges();
+    }
+
   });
 
 // this code has been replaced by the ajax pattern on (4/8/2016), it can probably be deleted
