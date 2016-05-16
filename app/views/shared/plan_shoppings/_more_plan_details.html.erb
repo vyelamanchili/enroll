@@ -1,13 +1,6 @@
 <div class="module shopping-data">
-<p class="pull-left">
-  <% if @market_kind == 'shop' && @coverage_kind == 'health' %>
-    <span class="ttu lg twelve">Employer: </span>
-    <strong>
-      <%= @benefit_group.try(:plan_year).try(:employer_profile).try(:legal_name) %>
-    </strong> &nbsp;&nbsp;
-  <% end %>
-  <span class="ttu lg twelve">Plans:</span>
-
+<span class="ttu lg twelve">Plans:</span>
+&nbsp;
 <strong id='plans-count'><%= @limited_plans || @plans.count %></strong>
   <br/>
   <div class="pull-left">
@@ -20,9 +13,6 @@
     <strong><%= @benefit_group.try(:plan_year).try(:employer_profile).try(:legal_name) %></strong>
     &nbsp;&nbsp;
     <% end %>
-    <span class="ttu lg twelve">Plans:</span>
-    &nbsp;
-    <strong id='plans-count'><%= @plans.count %></strong>
   </div>
   <br/>
 </div>

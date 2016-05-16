@@ -57,7 +57,6 @@ class Insured::PlanShoppingsController < ApplicationController
     end
     @change_plan = params[:change_plan].present? ? params[:change_plan] : ''
     @enrollment_kind = params[:enrollment_kind].present? ? params[:enrollment_kind] : ''
-
     send_receipt_emails if @person.emails.first
   end
 
@@ -351,8 +350,9 @@ class Insured::PlanShoppingsController < ApplicationController
   end
 
   def send_receipt_emails
-    UserMailer.plan_shopping_completed(@person.user, @person.hbx_id).deliver_now
-    UserMailer.generic_consumer_welcome(@person.first_name, @person.hbx_id, @person.emails.first.address).deliver_now
+    debugger
+    UserMailer.plan_shopping_completed(@person.user, @person.hbx_id, @person.emails.last.address).deliver_now
+    UserMailer.generic_consumer_welcome(@person.first_name, @person.hbx_id, @person.emails.last.address).deliver_now
     body = render_to_string 'user_mailer/secure_purchase_confirmation.html.erb', layout: false
     from_provider = HbxProfile.current_hbx
     message_params = {
