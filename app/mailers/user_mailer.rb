@@ -6,9 +6,9 @@ class UserMailer < ApplicationMailer
     end
   end
 
-  def plan_shopping_completed(user, hbx_enrollment, plan_decorator)
+  def plan_shopping_completed(user, hbx_enrollment)
     mail({to: user.email, subject: "Your #{Settings.site.short_name} Enrollment Confirmation"}) do |format|
-      format.html { render "plan_shopping_completed", :locals => { :user => user, :enrollment => hbx_enrollment, :plan_decorator => plan_decorator } }
+      format.html { render "plan_shopping_completed", :locals => { :user => user, :enrollment => hbx_enrollment } }
     end
   end
 
