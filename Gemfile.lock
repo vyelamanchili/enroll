@@ -217,7 +217,7 @@ GEM
       multi_json (~> 1.2)
     jmespath (1.2.4)
       json_pure (>= 1.8.1)
-    jquery-datatables-rails (3.3.0)
+    jquery-datatables-rails (3.4.0)
       actionpack (>= 3.1)
       jquery-rails
       railties (>= 3.1)
@@ -291,7 +291,7 @@ GEM
     mongoid-versioning (2.0.0)
       activesupport (~> 4.0)
       mongoid (>= 4.0.0, <= 6.0.0)
-    multi_json (1.11.3)
+    multi_json (1.12.0)
     multi_test (0.1.2)
     net-scp (1.2.1)
       net-ssh (>= 2.6.5)
@@ -541,7 +541,7 @@ DEPENDENCIES
   forgery
   haml
   jbuilder (~> 2.0)
-  jquery-datatables-rails (~> 3.3.0)
+  jquery-datatables-rails (= 3.4.0)
   jquery-rails (= 4.0.5)
   jquery-turbolinks
   jquery-ui-rails
