@@ -38,6 +38,11 @@ RSpec.describe "employers/employer_profiles/my_account/_benefits.html.erb" do
       expect(rendered).to have_selector("p", text: "#{plan_year.start_on.to_date.to_formatted_s(:long_ordinal)} - #{plan_year.end_on.to_date.to_formatted_s(:long_ordinal)}")
     end
 
+    it "should display the benfit group description" do
+      render "employers/employer_profiles/my_account/benefits"
+      expect(rendered).to have_selector("h5", text: "my first benefit group")
+    end
+
     it "should display a link to custom dental plans modal" do
       render "employers/employer_profiles/my_account/benefits"
       expect(rendered).to have_selector("a", text: "View Plans")

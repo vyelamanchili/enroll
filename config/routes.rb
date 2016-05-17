@@ -179,7 +179,7 @@ Rails.application.routes.draw do
         get :approve
       end
     end
-    
+
     #TODO REFACTOR
     resources :people do
       collection do
@@ -195,6 +195,9 @@ Rails.application.routes.draw do
       get 'consumer_override'
       get 'bulk_employee_upload_form'
       post 'bulk_employee_upload'
+      member do 
+        get "download_invoice"
+      end
       collection do
         get 'welcome'
         get 'search'
@@ -213,6 +216,7 @@ Rails.application.routes.draw do
         post 'force_publish'
         get 'search_reference_plan', on: :collection
         post 'make_default_benefit_group'
+        post 'delete_benefit_group'
         get 'calc_employer_contributions', on: :collection
         get 'calc_offered_plan_contributions', on: :collection
         get 'employee_costs', on: :collection
