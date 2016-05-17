@@ -121,7 +121,7 @@ RSpec.describe Employers::EmployerProfilesController do
       expect(response).to have_http_status(:success)
       expect(response).to render_template("show")
     end
-    
+
     it "should get default status" do
       xhr :get,:show_profile, {employer_profile_id: employer_profile.id.to_s, tab: 'employees'}
       expect(assigns(:status)).to eq "active"
@@ -199,7 +199,7 @@ RSpec.describe Employers::EmployerProfilesController do
         allow(EmployerProfile).to receive(:find).and_return(employer_profile)
         allow(employer_profile).to receive(:show_plan_year).and_return(plan_year)
         allow(employer_profile).to receive(:enrollments_for_billing).and_return([hbx_enrollment])
-  
+
         sign_in(user)
       end
 
@@ -217,6 +217,7 @@ RSpec.describe Employers::EmployerProfilesController do
 
       it "should get announcement" do
         FactoryGirl.create(:announcement, content: "msg for Employer", audiences: ['Employer'])
+        allow(employer_profile).to receive_message_chain(:organization ,:documents).and_return([])
         allow(user).to receive(:person).and_return(person)
         allow(user).to receive(:has_employer_staff_role?).and_return true
         get :show, id: employer_profile.id, tab: "home"
