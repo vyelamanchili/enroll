@@ -152,6 +152,7 @@ RSpec.describe ConsumerRolesHelper, :type => :helper do
       end
     end
   end
+<<<<<<< HEAD
 
   context "show_consumer_role_state" do
     let(:consumer_role) {FactoryGirl.build(:consumer_role)}
@@ -190,4 +191,6 @@ RSpec.describe ConsumerRolesHelper, :type => :helper do
       end
     end
   end
+=======
+>>>>>>> master
 end
