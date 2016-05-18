@@ -152,7 +152,7 @@ class BrokerAgencies::ProfilesController < ApplicationController
 
   def general_agency_index
     @broker_role = current_user.person.broker_role || nil
-    @general_agency_profiles = GeneralAgencyProfile.all_by_broker_role(@broker_role)
+    @general_agency_profiles = GeneralAgencyProfile.all_by_broker_role(@broker_role, approved_only: true)
   end
 
   def set_default_ga
@@ -218,9 +218,14 @@ class BrokerAgencies::ProfilesController < ApplicationController
             send_general_agency_assign_msg(general_agency_profile, employer_profile, 'Hire')
           end
         end
-        employers # calling this method as the latest copy of objects are needed.
         flash.now[:notice] ="Assign successful."
-        render "update_assign" and return
+        if params["from_assign"] == "true"
+          assign # calling this method as the latest copy of objects are needed.
+          render "assign" and return
+        else
+          employers # calling this method as the latest copy of objects are needed.
+          render "update_assign" and return
+        end
       end
     elsif params["commit"].try(:downcase) == "clear assignment"
       params[:employer_ids].each do |employer_id|
