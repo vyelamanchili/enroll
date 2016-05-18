@@ -4,7 +4,7 @@ namespace :employers do
   desc "Export employers to csv."
   # Usage rake employers:export
   task :export => [:environment] do
-    employers = Organization.no_timeout.where("employer_profile" => {"$exists" => true}).limit(50).map(&:employer_profile)
+    employers = Organization.no_timeout.where("employer_profile" => {"$exists" => true}).map(&:employer_profile)
 
     FILE_PATH = Rails.root.join "employer_export.csv"
 
@@ -42,7 +42,7 @@ namespace :employers do
                                 benefit_group.carrier_for_elected_plan benefit_group.metal_level_for_elected_plan benefit_group.single_plan_type?
                                 benefit_group.reference_plan.name benefit_group.effective_on_kind benefit_group.effective_on_offset
                                 plan_year.start_on plan_year.end_on plan_year.open_enrollment_start_on plan_year.open_enrollment_end_on
-                                plan_year.fte_count plan_year.pte_count plan_year.msp_count plan_year.published broker_agency_account.corporate_npn broker_agency_account.legal_name
+                                plan_year.fte_count plan_year.pte_count plan_year.msp_count plan_year.status plan_year.publish_date broker_agency_account.corporate_npn broker_agency_account.legal_name
                                 broker.name broker.npn)
       csv << headers
 
@@ -94,7 +94,7 @@ namespace :employers do
                           (benefit_group.plan_option_kind == 'single_plan'),
                           benefit_group.reference_plan.name, benefit_group.effective_on_kind, benefit_group.effective_on_offset]
                   row += [plan_year.start_on, plan_year.end_on, plan_year.open_enrollment_start_on, plan_year.open_enrollment_end_on,
-                          plan_year.fte_count, plan_year.pte_count, plan_year.msp_count, plan_year.aasm_state]
+                          plan_year.fte_count, plan_year.pte_count, plan_year.msp_count, plan_year.aasm_state, plan_year.workflow_state_transitions.last.transition_at]
 
                   broker_agency_account = get_broker_agency_account(employer.broker_agency_accounts, plan_year)
                   if broker_agency_account.present?
@@ -113,7 +113,7 @@ namespace :employers do
                   next
                 end
                   csv << employer_attributes + row if i == 0
-                  csv << ['','','','','','','','','','','','','','','','', '', '', '','','',''] + row if i >0 
+                  csv << ['','','','','','','','','','','','','','','','', '', '', '','','','',''] + row if i >0 
                 #end
             end
           end
