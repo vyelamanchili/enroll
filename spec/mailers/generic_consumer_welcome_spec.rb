@@ -15,7 +15,7 @@ RSpec.describe UserMailer do
     end
 
     it "should have subject of #{Settings.site.short_name}" do
-      expect(email.subject).to match(/DC HealthLink/)
+      expect(email.subject).to match(/#{Settings.site.short_name}/)
     end
 
     it 'should have body text' do

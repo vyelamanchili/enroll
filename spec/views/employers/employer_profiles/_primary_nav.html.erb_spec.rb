@@ -2,7 +2,7 @@ require "rails_helper"
 
 RSpec.describe "employers/employer_profiles/_primary_nav AS BROKER" do
   let(:employer_profile) { FactoryGirl.create(:employer_profile) }
-  let(:person) { FactoryGirl.create(:person, :first_name=>'fred', :last_name=>'flintstone'  )} 
+  let(:person) { FactoryGirl.create(:person, :first_name=>'fred', :last_name=>'flintstone'  )}
   let(:current_user) { FactoryGirl.create(:user, :roles => ['broker_agency_staff'], :person => person) }
   before :each do
     @employer_profile = employer_profile
@@ -17,8 +17,8 @@ RSpec.describe "employers/employer_profiles/_primary_nav AS BROKER" do
     #allow(current_user.person.broker_role).to receive('broker_agency_profile_id').and_return(88)
     #allow(current_user).to receive("has_broker_agency_staff_role?").and_return(true)
     render "employers/employer_profiles/primary_nav", active_tab: "home"
-    expect(rendered).to have_selector('a', text: /my dc health link/i)
-    expect(rendered).to match(/li.*class.*active.*my dc health link/mi)
+    expect(rendered).to have_selector('a', text: /my #{Settings.site.short_name}/i)
+    expect(rendered).to match(/li.*class.*active.*my #{Settings.site.short_name}/mi)
     expect(rendered).to match(/tab=employees/)
     expect(rendered).to match(/tab=benefits/)
     expect(rendered).to match(/tab=documents/)
@@ -35,7 +35,7 @@ end
 
 RSpec.describe "employers/employer_profiles/_primary_nav AS GeneralAgency" do
   let(:employer_profile) { FactoryGirl.create(:employer_profile) }
-  let(:person) { FactoryGirl.create(:person, :first_name=>'fred', :last_name=>'flintstone'  )} 
+  let(:person) { FactoryGirl.create(:person, :first_name=>'fred', :last_name=>'flintstone'  )}
   let(:current_user) { FactoryGirl.create(:user, :roles => ['general_agency_staff'], :person => person) }
   before :each do
     general_agency = FactoryGirl.create :general_agency, legal_name: 'Zooxy', general_agency_traits: :with_staff
@@ -50,8 +50,8 @@ RSpec.describe "employers/employer_profiles/_primary_nav AS GeneralAgency" do
     #allow(current_user.person.broker_role).to receive('broker_agency_profile_id').and_return(88)
     #allow(current_user).to receive("has_broker_agency_staff_role?").and_return(true)
     render "employers/employer_profiles/primary_nav", active_tab: "home"
-    expect(rendered).to have_selector('a', text: /my dc health link/i)
-    expect(rendered).to match(/li.*class.*active.*my dc health link/mi)
+    expect(rendered).to have_selector('a', text: /#{Settings.site.short_name}/i)
+    expect(rendered).to match(/li.*class.*active.*#{Settings.site.short_name}/mi)
     expect(rendered).to match(/tab=employees/)
     expect(rendered).to match(/tab=benefits/)
     expect(rendered).to match(/tab=documents/)
@@ -78,7 +78,7 @@ RSpec.describe "employers/employer_profiles/_primary_nav AS EMPLOYER" do
     #allow(current_user.person.broker_role).to receive('broker_agency_profile_id').and_return(88)
     render "employers/employer_profiles/primary_nav", active_tab: "brokers"
     expect(rendered).to match(/tab=inbox/)
-  end 
+  end
 
   it "should display different tabs for Employer" do
     #allow(current_user.person.broker_role).to receive('broker_agency_profile_id').and_return(88)

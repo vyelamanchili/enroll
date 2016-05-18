@@ -7,9 +7,10 @@ describe "shared/_comparison.html.erb" do
   let(:mock_member){ instance_double("HbxEnrollmentMember",primary_relationship: "self:#{random_value}", person: mock_person, is_subscriber: true)}
   let(:mock_organization){ instance_double("Oganization", hbx_id: "3241251524", legal_name: "ACME Agency", dba: "Acme", fein: "034267010")}
   let(:mock_carrier_profile) { instance_double("CarrierProfile", :dba => "a carrier name", :legal_name => "name", :organization => mock_organization) }
-  let(:mock_hbx_enrollment) { instance_double("HbxEnrollment", :hbx_enrollment_members => [mock_member, mock_member], :id => "3241251524", plan: mock_plan) }
+  let(:mock_hbx_enrollment) { instance_double("HbxEnrollment", :hbx_enrollment_members => [mock_member, mock_member], :id => "3241251524", effective_on: TimeKeeper.date_of_record, coverage_kind: 'health', plan: mock_plan) }
   let(:mock_plan) { double("Plan",
       :active_year => 2016,
+      :hios_id => "12-675849",
       :name => "A Plan Name",
       :carrier_profile_id => "a carrier profile id",
       :carrier_profile => mock_carrier_profile,
@@ -40,6 +41,7 @@ describe "shared/_comparison.html.erb" do
     allow(mock_person).to receive(:primary_family).and_return(mock_family)
     allow(mock_person).to receive(:has_consumer_role?).and_return(false)
     allow(mock_family).to receive(:enrolled_hbx_enrollments).and_return([mock_hbx_enrollment])
+    allow(mock_hbx_enrollment).to receive(:is_shop?).and_return(false)
     assign(:visit_types, [])
     assign :plan, mock_plan
     assign :person, mock_person

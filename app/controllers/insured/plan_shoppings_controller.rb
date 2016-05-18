@@ -57,7 +57,7 @@ class Insured::PlanShoppingsController < ApplicationController
     end
     @change_plan = params[:change_plan].present? ? params[:change_plan] : ''
     @enrollment_kind = params[:enrollment_kind].present? ? params[:enrollment_kind] : ''
-    send_receipt_emails if @person.user.email.present?
+    send_receipt_emails if @person.work_email_or_best.present?
   end
 
   def thankyou
@@ -213,6 +213,7 @@ class Insured::PlanShoppingsController < ApplicationController
     @sort = params[:sort]
     set_consumer_bookmark_url(family_account_path)
     set_plans_by(hbx_enrollment_id: params.require(:id)) unless params[:smart_plans] == "smart_plans"
+
     if params[:sort].present?
       sort_by_sort(@sort, @plans, @multiplier)
     else
@@ -319,6 +320,7 @@ class Insured::PlanShoppingsController < ApplicationController
   end
 
   def get_modal_plan(plans, multiplier)
+
     @multiplier = multiplier
     @plans = setup_removal(plans)
     @plans.each do |plan|
@@ -350,8 +352,8 @@ class Insured::PlanShoppingsController < ApplicationController
   end
 
   def send_receipt_emails
-    UserMailer.plan_shopping_completed(@person.user, @person.hbx_id).deliver_now
-    UserMailer.generic_consumer_welcome(@person.first_name, @person.hbx_id, @person.user.email).deliver_now
+    UserMailer.plan_shopping_completed(@person.user, @person.hbx_id, @person.work_email_or_best).deliver_now
+    UserMailer.generic_consumer_welcome(@person.first_name, @person.hbx_id, @person.work_email_or_best).deliver_now
     body = render_to_string 'user_mailer/secure_purchase_confirmation.html.erb', layout: false
     from_provider = HbxProfile.current_hbx
     message_params = {

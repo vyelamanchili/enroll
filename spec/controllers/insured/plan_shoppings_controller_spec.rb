@@ -253,13 +253,20 @@ RSpec.describe Insured::PlanShoppingsController, :type => :controller do
   end
 
   context "GET show" do
-    let(:plan1) {double("Plan1", id: '10', deductible: '$10', total_employee_cost: 1000, carrier_profile_id: '12345')}
-    let(:plan2) {double("Plan2", id: '11', deductible: '$20', total_employee_cost: 2000, carrier_profile_id: '12346')}
-    let(:plan3) {double("Plan3", id: '12', deductible: '$30', total_employee_cost: 3000, carrier_profile_id: '12347')}
+    let(:plan1) {double("Plan1", id: '10', deductible: '$10', total_employee_cost: 1000, carrier_profile_id: '12345', hios_id: "12-123123", active_year: TimeKeeper.date_of_record.year )}
+    let(:plan2) {double("Plan2", id: '11', deductible: '$20', total_employee_cost: 2000, carrier_profile_id: '12346', hios_id: "12-123123", active_year: TimeKeeper.date_of_record.year )}
+    let(:plan3) {double("Plan3", id: '12', deductible: '$30', total_employee_cost: 3000, carrier_profile_id: '12347', hios_id: "12-123123", active_year: TimeKeeper.date_of_record.year )}
     let(:plans) {[plan1, plan2, plan3]}
     let(:coverage_kind){"health"}
 
     before :each do
+      controller.stub(:setup_removal).and_return([plan1])
+      controller.stub(:maximum_out_of_pocket).and_return(7456)
+      controller.stub(:setup_removal).and_return([plan1])
+      controller.stub(:set_likely_cost).and_return(543)
+      controller.stub(:get_modal_plan).and_return([plan1])
+      controller.stub(:remove_invalid_plans).and_return([plan1])
+      
       allow(HbxEnrollment).to receive(:find).with("hbx_id").and_return(hbx_enrollment)
       allow(hbx_enrollment).to receive(:benefit_group).and_return(benefit_group)
       allow(benefit_group).to receive(:reference_plan).and_return(reference_plan)

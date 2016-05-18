@@ -16,6 +16,6 @@ RSpec.describe "insured/employee_roles/no_match.html.haml" do
     expect(rendered).to have_selector("input[type='radio']", count: 2)
 
     expect(rendered).to have_selector('strong', text: 'No employer plan found.')
-    expect(rendered).to have_selector('div', text: "Check your personal information and try again OR contact DC Health Link's Customer Care Center: #{Settings.contact_center.phone_number}.")
+    expect(rendered).to have_selector('div', text: "Check your personal information and try again OR contact " + Settings.contact_center.name + ": " + Settings.contact_center.phone_number)
   end
 end

@@ -12,6 +12,7 @@
         </th>
         <% end %>
       </tr>
+      <% if @hbx_enrollment.is_shop? && @hbx_enrollment.coverage_kind == "health" %>
       <tr>
         <th style="vertical-align: middle;">
           <div class="key">
@@ -99,6 +100,7 @@
           </th>
           <% end %>
         </tr>
+        <% end %>
         <tr>
           <th>
           </th>
@@ -117,8 +119,12 @@
       <tr>
         <th>Your Monthly Premium Cost</th>
         <% qhps.each do |qhp|%>
-        <% premium = current_cost(qhp[:total_employee_cost], qhp.plan.ehb, nil, 'shopping', qhp.plan.can_use_aptc?) %>
-          <th colspan="2" class="row-title" style="text-align: center; vertical-align:middle; border: none; padding: 0;"><%=number_to_currency(premium) %>/month</th>
+          <% if @hbx_enrollment.is_shop? && @hbx_enrollment.coverage_kind == "health" %>
+          <% premium = current_cost(qhp[:total_employee_cost], qhp.plan.ehb, nil, 'shopping', qhp.plan.can_use_aptc?) %>
+            <th colspan="2" class="row-title" style="text-align: center; vertical-align:middle; border: none; padding: 0;"><%=number_to_currency(premium) %>/month</th>
+          <% else %>
+            <th colspan="2" class="row-title" style="text-align: center; vertical-align:middle; border: none; padding: 0;"><%=number_to_currency(qhp[:total_employee_cost]) + " / month" %></th>
+          <% end %>
         <% end %>
       </tr>
 

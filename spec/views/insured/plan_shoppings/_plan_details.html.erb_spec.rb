@@ -30,7 +30,9 @@ RSpec.describe "insured/plan_shoppings/_plan_details.html.erb", :dbclean => :aft
     instance_double(
       "HbxEnrollment", id: "hbx enrollment id",
       hbx_enrollment_members: hbx_enrollment_members,
-      plan: plan
+      plan: plan,
+      coverage_kind: 'health',
+      kind: 'employer_sponsored'
     )
   end
 
@@ -43,13 +45,15 @@ RSpec.describe "insured/plan_shoppings/_plan_details.html.erb", :dbclean => :aft
       assign(:enrolled_hbx_enrollment_plan_ids, [plan.id])
       assign(:carrier_names_map, {})
       assign(:person, person)
+      assign(:plans, [plan, plan])
+      allow(hbx_enrollment).to receive(:is_shop?).and_return(false)
       allow(plan).to receive(:total_employee_cost).and_return 100
       allow(plan).to receive(:is_csr?).and_return false
       family = person.primary_family
       active_household = family.households.first
       tax_household = FactoryGirl.create(:tax_household, household: active_household )
       eligibility_determination = FactoryGirl.create(:eligibility_determination, tax_household: tax_household )
-      render "insured/plan_shoppings/plan_details", plan: plan
+      render partial: "insured/plan_shoppings/plan_details", locals: { plan: plan }
     end
 
     it "should display the main menu" do
@@ -96,8 +100,10 @@ RSpec.describe "insured/plan_shoppings/_plan_details.html.erb", :dbclean => :aft
       assign(:hbx_enrollment, hbx_enrollment)
       assign(:enrolled_hbx_enrollment_plan_ids, [plan.id])
       assign(:carrier_names_map, {})
+      assign(:plans, [plan, plan])
       allow(plan).to receive(:total_employee_cost).and_return 100
       allow(plan).to receive(:is_csr?).and_return true
+      allow(hbx_enrollment).to receive(:is_shop?).and_return(false)
       allow(view).to receive(:current_cost).and_return(52)
       family = person.primary_family
       active_household = family.households.first
@@ -148,6 +154,8 @@ RSpec.describe "insured/plan_shoppings/_plan_details.html.erb", :dbclean => :aft
       assign(:hbx_enrollment, hbx_enrollment)
       assign(:enrolled_hbx_enrollment_plan_ids, [plan.id])
       assign(:carrier_names_map, {})
+      assign(:plans, [plan, plan])
+      allow(hbx_enrollment).to receive(:is_shop?).and_return(false)
       allow(plan).to receive(:total_employee_cost).and_return 100
       allow(plan).to receive(:is_csr?).and_return false
       allow(plan).to receive(:coverage_kind).and_return('dental')
@@ -171,6 +179,8 @@ context "with tax household and eligibility determination of csr_94" do
     assign(:hbx_enrollment, hbx_enrollment)
     assign(:enrolled_hbx_enrollment_plan_ids, [plan.id])
     assign(:carrier_names_map, {})
+    assign(:plans, [plan, plan])
+    allow(hbx_enrollment).to receive(:is_shop?).and_return(false)
     allow(plan).to receive(:total_employee_cost).and_return 100
     allow(plan).to receive(:is_csr?).and_return false
       family = person.primary_family
@@ -195,6 +205,8 @@ context "with tax household and eligibility determination of csr_94" do
       assign(:hbx_enrollment, hbx_enrollment)
       assign(:enrolled_hbx_enrollment_plan_ids, [plan.id])
       assign(:carrier_names_map, {})
+      assign(:plans, [plan, plan])
+      allow(hbx_enrollment).to receive(:is_shop?).and_return(false)
       allow(plan).to receive(:total_employee_cost).and_return 100
       allow(plan).to receive(:is_csr?).and_return false
       family = person.primary_family

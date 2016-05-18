@@ -34,6 +34,7 @@ describe "shared/_summary.html.erb" do
     Caches::MongoidCache.release(CarrierProfile)
     allow(person).to receive(:primary_family).and_return(family)
     allow(family).to receive(:enrolled_hbx_enrollments).and_return([mock_hbx_enrollment])
+    allow(mock_hbx_enrollment).to receive(:is_shop?).and_return(false)
     assign :person, person
     assign :plan, mock_plan
     assign :hbx_enrollment, mock_hbx_enrollment

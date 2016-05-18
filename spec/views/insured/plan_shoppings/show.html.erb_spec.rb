@@ -95,6 +95,6 @@ RSpec.describe "insured/show" do
     sign_in current_broker_user
     allow(@hbx_enrollment).to receive(:employee_role).and_return(double)
     render :template => "insured/plan_shoppings/show.html.erb"
-    expect(rendered).to have_selector('#plans', text: 'Loading...')
+    expect(rendered).to have_selector('h4', text: 'Loading plans...')
   end
 end
