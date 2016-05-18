@@ -449,3 +449,28 @@ end
 Then /^they should see that employee's details$/ do
   expect(page).to have_content(employees.first.dob.strftime('%m/%d/%Y'))
 end
+
+And /^they click on the terminate employee icon$/ do
+  first('.fa-trash-o').click
+end
+
+Then /^they enter a termination date for the employee$/ do
+  first('.unbrd').find('input.date-picker').click
+  find('#ui-datepicker-div').first('a.ui-state-default').click
+end
+
+When /^the employer clicks the terminate employee button$/ do
+  click_link("Terminate Employee", :match => :first)
+end
+
+Then /^the employer should see the confirm termination modal$/ do
+  expect(find('.modal')).to have_content(TimeKeeper.date_of_record.end_of_month.strftime("%m/%d/%Y"))
+end
+
+When /^the employer clicks the confirm termination button$/ do
+  find('.modal').find('.btn-primary').click
+end
+
+Then /^the employer sees successful termination message$/ do
+  expect(find('.alert')).to have_content('Successfully terminated Census Employee')
+end
