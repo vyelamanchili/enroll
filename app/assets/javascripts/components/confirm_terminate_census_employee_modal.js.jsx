@@ -1,5 +1,14 @@
 var Confirm_terminate_census_employee_modal = React.createClass({
 
+  statics: {
+    confirmTerminateCensusEmployee: function($thisObj, census_employee_id) {
+      if ( $thisObj.closest('tr').find('input').val().length > 0 ) {
+        $('#Confirm_terminate_census_employee_modal-'+census_employee_id).modal("show");
+      } else {
+        alert('Please provide a termination date');
+      }
+    }
+  },
 
   render: function() {
     return (
@@ -28,4 +37,5 @@ var Confirm_terminate_census_employee_modal = React.createClass({
       </div>
     )
   }
+  
 });

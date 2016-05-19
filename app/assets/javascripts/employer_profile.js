@@ -1,5 +1,5 @@
+
 var EmployerProfile = ( function( window, undefined ) {
-<<<<<<< HEAD
   function viewDetails($thisObj) {
     if ( $thisObj.hasClass('view') ) {
       $thisObj.closest('.benefit-package').find('.health-offering, .dental-offering').slideDown();
@@ -42,39 +42,6 @@ var EmployerProfile = ( function( window, undefined ) {
           editvalidated = false;
           return false;
         }
-=======
-
-  function confirmTerminateCensusEmployee($thisObj, census_employee_id) {
-    if ( $thisObj.closest('tr').find('input').val().length > 0 ) {
-      $('#Confirm_terminate_census_employee_modal-'+census_employee_id).modal("show");
-    } else {
-      alert('Please provide a termination date');
-    }
-  }
-
-  return {
-    confirmTerminateCensusEmployee : confirmTerminateCensusEmployee,
-  };
-
-} )( window );
-
-
-$(document).ready(function() {
-  if ('input.typeahead') {
-    var employers = new Bloodhound({
-      datumTokenizer: Bloodhound.tokenizers.obj.whitespace('legal_name'),
-      queryTokenizer: Bloodhound.tokenizers.whitespace,
-      remote: {
-        prepare: function (query, settings) {
-          settings.type = "POST";
-          settings.data = { q: query };
-          return settings;
-        },
-        url: '/employers/search'
-      }
-    });
->>>>>>> cb2b1b8... refs #7357 add react component for confirming termination of census employees
-
     });
     if ( $('#plan_year_start_on').val().substring($('#plan_year_start_on').val().length - 5) == "01-01" ) {
       editvalidatedbgemployeepremiums = true;
