@@ -342,7 +342,6 @@ Rails.application.routes.draw do
   resources :people do #TODO Delete
     get 'select_employer'
     get 'my_account'
-    get 'person_landing'
 
     collection do
       post 'person_confirm'
