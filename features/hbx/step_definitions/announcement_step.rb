@@ -55,7 +55,6 @@ Then(/^Hbx admin should see the future announcement$/) do
 end
 
 Then(/^.+ should see announcement$/) do
-  expect(page).to have_content('Announcement')
   expect(page).to have_content('msg content')
 end
 
