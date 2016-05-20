@@ -93,7 +93,7 @@
                 <div class="enrollment-type info">
                   <p>
                     <label class="bullet-separator"><%= HbxProfile::ShortName %> ID:</label>
-                    <strong><%= hbx_enrollment.hbx_id %></strong>
+		    <strong><%= hbx_enrollment.hbx_id %></strong>
                   </p>
                 </div>
 
@@ -111,6 +111,10 @@
                 </p>
               </div>
               <% end %>
+
+		    <% if current_user.has_hbx_staff_role? %>
+			    <%= link_to "Download Policy CV", view_policy_xml_exchanges_hbx_profile_path(:id => hbx_enrollment.hbx_id, :format => :xml), class: "btn btn-trans", target: "_blank" %>
+	            <% end %>
 
             </div>
             <div class="col-xs-3">

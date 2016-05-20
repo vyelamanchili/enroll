@@ -281,6 +281,11 @@ class Exchanges::HbxProfilesController < ApplicationController
     redirect_to exchanges_hbx_profiles_root_path
   end
 
+  def view_policy_xml
+    policy = HbxEnrollment.by_hbx_id(params[:id]).first
+    render "events/hbx_enrollment/policy", :formats => ["xml"], :locals => { :hbx_enrollment => policy }
+  end
+
 private
   def agent_assistance_messages(params, agent, role)
     if params[:person].present?

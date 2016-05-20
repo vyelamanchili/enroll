@@ -43,6 +43,7 @@ Rails.application.routes.draw do
       member do
         get :home
         get :inbox
+        get :view_policy_xml
       end
 
       # resources :hbx_staff_roles, shallow: true do
