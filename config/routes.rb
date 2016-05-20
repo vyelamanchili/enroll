@@ -20,7 +20,9 @@ Rails.application.routes.draw do
 
   namespace :exchanges do
     resources :inboxes, only: [:show, :destroy]
-    resources :announcements, only: [:index, :create, :destroy]
+    resources :announcements, only: [:index, :create, :destroy] do
+      get :dismiss, on: :collection
+    end
     resources :agents_inboxes, only: [:show, :destroy]
     resources :hbx_profiles do
       root 'hbx_profiles#show'
@@ -196,7 +198,7 @@ Rails.application.routes.draw do
       get 'consumer_override'
       get 'bulk_employee_upload_form'
       post 'bulk_employee_upload'
-      member do 
+      member do
         get "download_invoice"
       end
       collection do

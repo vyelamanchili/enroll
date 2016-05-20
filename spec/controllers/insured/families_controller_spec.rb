@@ -104,6 +104,7 @@ RSpec.describe Insured::FamiliesController do
         allow(person).to receive(:has_active_employee_role?).and_return(true)
         allow(person).to receive(:active_employee_roles).and_return([employee_role])
         allow(family).to receive(:coverage_waived?).and_return(true)
+        sign_in user
         get :home
       end
 
@@ -126,7 +127,7 @@ RSpec.describe Insured::FamiliesController do
       end
 
       it "should get announcement" do
-        expect(flash.now[:warning]).to match /msg for Employee/
+        expect(flash.now[:warning]).to eq ["msg for Employee"]
       end
     end
 
@@ -165,7 +166,7 @@ RSpec.describe Insured::FamiliesController do
       end
 
       context "who has not passed ridp" do
-        let(:user) { FactoryGirl.create(:user) }
+        let(:user) { double(identity_verified?: false, last_portal_visited: '', idp_verified?: false, has_hbx_staff_role?: false, get_announcements_by_roles_and_portal: [""]) }
 
         before do
           allow(user).to receive(:idp_verified?).and_return false

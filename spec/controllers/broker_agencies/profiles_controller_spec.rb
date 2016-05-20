@@ -29,6 +29,7 @@ RSpec.describe BrokerAgencies::ProfilesController do
       allow(user).to receive(:has_broker_role?).and_return true
       allow(user).to receive(:person).and_return(person)
       allow(user).to receive(:has_broker_agency_staff_role?).and_return(true)
+      FactoryGirl.create(:announcement, content: "msg for Broker", audiences: ['Broker'])
       sign_in(user)
     end
 
@@ -43,9 +44,8 @@ RSpec.describe BrokerAgencies::ProfilesController do
     end
 
     it "should get announcement" do
-      FactoryGirl.create(:announcement, content: "msg for Broker", audiences: ['Broker'])
       get :show, id: broker_agency_profile.id
-      expect(flash.now[:warning]).to match /msg for Broker/
+      expect(flash.now[:warning]).to eq ["msg for Broker"]
     end
   end
 
@@ -378,7 +378,7 @@ RSpec.describe BrokerAgencies::ProfilesController do
     let(:person) { broker_role.person }
     let(:user) { FactoryGirl.create(:user, person: person, roles: ['broker']) }
     let(:employer_profile) { FactoryGirl.create(:employer_profile, general_agency_profile: general_agency_profile) }
-    context "when we Assign agency" do 
+    context "when we Assign agency" do
       before :each do
         sign_in user
         xhr :post, :update_assign, id: broker_agency_profile.id, employer_ids: [employer_profile.id], general_agency_id: general_agency_profile.id, type: 'Hire'
@@ -392,7 +392,7 @@ RSpec.describe BrokerAgencies::ProfilesController do
         expect(flash[:notice]).to eq 'Assign successful.'
       end
     end
-    context "when we Unassign agency" do 
+    context "when we Unassign agency" do
       before :each do
         sign_in user
         post :update_assign, id: broker_agency_profile.id, employer_ids: [employer_profile.id], commit: "Clear Assignment"
@@ -406,7 +406,7 @@ RSpec.describe BrokerAgencies::ProfilesController do
         expect(flash[:notice]).to eq 'Unassign successful.'
       end
       it "should update aasm_state" do
-        employer_profile.reload 
+        employer_profile.reload
         expect(employer_profile.general_agency_accounts.first.aasm_state).to eq "inactive"
       end
     end
