@@ -50,6 +50,7 @@ Rails.application.routes.draw do
         post :transmit_group_xml
         get :home
         get :inbox
+        get :view_policy_xml
       end
 
       # resources :hbx_staff_roles, shallow: true do
