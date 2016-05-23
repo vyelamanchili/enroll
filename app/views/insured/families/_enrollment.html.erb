@@ -113,7 +113,7 @@
               <% end %>
 
 		    <% if current_user.try(:has_hbx_staff_role?) %>
-			    <%= link_to "Download Policy CV", view_policy_xml_exchanges_hbx_profile_path(:id => hbx_enrollment.hbx_id, :format => :xml), class: "btn btn-trans", target: "_blank" %>
+			    <%= link_to "View Enrollment CV", view_policy_xml_exchanges_hbx_profile_path(:id => hbx_enrollment.hbx_id, :format => :xml), class: "btn btn-trans", target: "_blank" %>
 	            <% end %>
 
             </div>
