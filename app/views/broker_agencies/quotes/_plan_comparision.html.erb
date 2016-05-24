@@ -1,7 +1,7 @@
 <div class="container-fluid">
   <h3>Plan Comparison Chart</h3>
   <div class="mygrid-wrapper-div">
-   <table class="table bordered compare-table", border = "1", style="font-size:11px;" >
+   <table class="table bordered compare-table", border = "1", style="font-size:11px;" id="compare_plans_table">
         <tr>
           <th class="row-title">Plans</th>
           <% qhps.each do |qhp|%>
@@ -61,7 +61,7 @@
             <th colspan="1"> COINSURANCE </th>
           <% end %>
         </tr>
-        <%= render partial: "shared/plan_shoppings/plan_visit_types" %>
+        <%= render partial: "plan_visit_types", locals: {qhps: qhps} %>
         <tr>
           <th></th>
           <% qhps.each do |qhp|%>
