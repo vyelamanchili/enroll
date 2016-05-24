@@ -41,6 +41,7 @@ Rails.application.routes.draw do
         get :sep_index
         post :sep_index_datatable
         post :add_new_sep
+
       end
 
       member do
@@ -383,6 +384,8 @@ Rails.application.routes.draw do
       get :fed_hub_request
     end
   end
+
+
 
   resources :sep_history, only: [:index]
 
