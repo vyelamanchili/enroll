@@ -106,8 +106,9 @@ module Insured::FamiliesHelper
   end
 
   def display_aasm_state?(aasm_state)
-    if aasm_state == "coverage_selected" || aasm_state == "coverage_canceled" || aasm_state == "coverage_terminated"
-     true
-    end  
-  end  
+    # if aasm_state == "coverage_selected" || aasm_state == "coverage_canceled" || aasm_state == "coverage_terminated"
+    #  true
+    # end 
+    true 
+  end
 end
