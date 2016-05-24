@@ -1,8 +1,6 @@
 class OpmDemoSeed
  
-  class << self 
-
-    def execute
+    def self.execute
       employer_profile, census_employee = seed_congressional_employer
       plan_year = employer_profile.active_plan_year
 
@@ -16,6 +14,9 @@ class OpmDemoSeed
       Forms::FamilyMember.new({"first_name"=>"Jane", "last_name"=>"Smith", "dob"=>"1971-05-01", "ssn"=>"519-20-1029", "no_ssn"=>"0", "relationship"=>"spouse", "gender"=>"female", "family_id"=> family.id}).save
       create_hbx_enrollment(person, census_employee, Date.new(2016,1,1))
 
+      address = person.addresses.first
+      person.addresses = []
+      person.save!
 
       employer_profile, census_employee = seed_renewing_employer
       plan_year = employer_profile.active_plan_year
@@ -29,12 +30,19 @@ class OpmDemoSeed
 
       Forms::FamilyMember.new({"first_name"=>"Catherine", "last_name"=>"Thompson", "dob"=>"1965-1-15", "ssn"=>"566-22-8829", "no_ssn"=>"0", "relationship"=>"spouse", "gender"=>"female", "family_id"=> family.id}).save
       create_hbx_enrollment(person, census_employee, Date.new(2015,7,1))
+
+      address = person.addresses.first
+      person.addresses = []
+      person.save!
     end
 
+  class << self 
     def seed_congressional_employer
       puts "Seeding Congressional Employer.."
       organization = FactoryGirl.create :organization, legal_name: "United States Senate", dba: "United State Senate", fein: "671551122"
       employer_profile = FactoryGirl.create :employer_profile, organization: organization
+
+      create_office_location(organization)
 
       plan_year = FactoryGirl.create(:plan_year,
         start_on: Date.new(2016,1,1),
@@ -59,11 +67,21 @@ class OpmDemoSeed
       return employer_profile, census_employee
     end
 
+    def create_office_location(organization)
+      office_location = OfficeLocation.new(:is_primary => true)
+      office_location.address= Address.new(:address_1 => '609 H St NE', :city => 'Washington', :state => 'DC', :zip => 20002, :kind => 'work')
+      office_location.phone=Phone.new(kind: 'work', area_code: "202", number: "1111112", extension: "2" )
+      organization.office_locations = [office_location]
+      organization.save!
+    end
+
     def seed_renewing_employer
       puts "Seeding Renewing Employer.."
 
       organization = FactoryGirl.create :organization, legal_name: "DC Professionals", dba: "DC Professionals", fein: "671551188"
       employer_profile = FactoryGirl.create :employer_profile, organization: organization
+
+      create_office_location(organization)
 
       plan_year = FactoryGirl.create(:plan_year,
         start_on: Date.new(2015,7,1),
@@ -72,7 +90,7 @@ class OpmDemoSeed
         open_enrollment_end_on: Date.new(2015,6,10),
         employer_profile: employer_profile,
         aasm_state: 'active'
-        )
+      )
 
       benefit_group = build_benefit_group(plan_year, "DC Benefits")
       benefit_group.metal_level_for_elected_plan = 'gold'
@@ -143,7 +161,7 @@ class OpmDemoSeed
     end
 
     def reference_plan(is_congress)
-      is_congress ? BSON::ObjectId('5618551a547265359575db00') : BSON::ObjectId('5453a543791e4bcd33000073')
+      is_congress ? Plan.where(:hios_id => "86052DC0440010-01", :active_year => 2016).first.id : Plan.where(:hios_id => "86052DC0560005-01", :active_year => 2015).first.id
     end
   end
 end
