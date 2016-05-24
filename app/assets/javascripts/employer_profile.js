@@ -497,8 +497,6 @@ function checkAreaCode(textbox) {
   }
   return true;
 }
-<<<<<<< HEAD
-=======
   //toggling of divs that show plan details (view details)
   $('.nav-toggle').click(function(){
     var collapse_content_selector = $(this).attr('href');
@@ -511,4 +509,3 @@ function checkAreaCode(textbox) {
       }
     });
   });
->>>>>>> organizing-assets
