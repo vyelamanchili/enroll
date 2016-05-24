@@ -123,7 +123,7 @@ class OpmDemoSeed
         title: title,
         effective_on_kind: "first_of_month", 
         terminate_on_kind: "end_of_month",
-        plan_option_kind: "single_carrier", 
+        plan_option_kind: (is_congress ? "metal_level" : "single_carrier"), 
         effective_on_offset: 0,
         is_congress: is_congress,
         reference_plan_id: reference_plan(is_congress),
