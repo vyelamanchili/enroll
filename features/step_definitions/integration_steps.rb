@@ -494,7 +494,7 @@ Then(/^.+ should see the plan shopping page with no dependent$/) do
 end
 
 Then(/^.+ should see the plan shopping page with one dependent$/) do
-  expect(page).to have_content("Soren White + 1 Dependent")
+  expect(page).to have_content("Soren White + 1 dependent")
 end
 
 When(/^.+ clicks? continue on the plan shopping welcome page$/) do
