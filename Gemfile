@@ -22,6 +22,7 @@ gem 'maskedinput-rails'
 # Turbolinks makes following links in your web application faster. Read more: https://github.com/rails/turbolinks
 gem 'jquery-turbolinks'
 gem 'turbolinks'
+gem 'react-rails'
 
 # Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
 gem 'jbuilder', '~> 2.0'
@@ -53,7 +54,7 @@ gem 'symmetric-encryption', '~> 3.6.0'
 # Use ActiveModel has_secure_password
 # gem 'bcrypt', '~> 3.1.7'
 
-gem 'acapi', git: "git://github.com/dchbx/acapi.git", branch: 'development'
+gem 'acapi', git: "https://github.com/dchbx/acapi.git", branch: 'development'
 # gem 'acapi', path: "../acapi"
 
 gem 'aasm', '~> 4.0.7'
@@ -90,7 +91,7 @@ gem 'bootstrap-slider-rails', '6.0.17'
 
 gem 'prawn', '~> 0.11.1'
 gem 'virtus'
-gem 'wkhtmltopdf-binary-edge', '~> 0.12.2.1'
+gem 'wkhtmltopdf-binary-edge', '0.12.3.0'
 gem 'wicked_pdf', '1.0.4'
 
 # provide recaptcha services
