@@ -1,8 +1,6 @@
 class Exchanges::HbxProfilesController < ApplicationController
   include DataTablesAdapter
 
-  include DataTablesAdapter
-
   before_action :check_hbx_staff_role, except: [:request_help, :show, :assister_index, :family_index]
   before_action :set_hbx_profile, only: [:edit, :update, :destroy]
   before_action :find_hbx_profile, only: [:employer_index, :broker_agency_index, :inbox, :configuration, :show]
@@ -232,7 +230,6 @@ class Exchanges::HbxProfilesController < ApplicationController
     render
 
   end
-
 
   def broker_agency_index
     @broker_agency_profiles = BrokerAgencyProfile.all

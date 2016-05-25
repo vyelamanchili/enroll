@@ -79,6 +79,7 @@ RSpec.describe Insured::FamiliesHelper, :type => :helper do
       allow(family).to receive(:special_enrollment_periods).and_return(family.special_enrollment_periods)
       expect(helper.admin_permitted_sep_effective_dates(person, qle)).to eq []
     end
+
   end
 
   describe "#show_employer_panel" do
