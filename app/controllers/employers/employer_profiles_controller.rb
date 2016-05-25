@@ -265,9 +265,12 @@ class Employers::EmployerProfilesController < Employers::EmployersController
   end
 
   def sort_plan_years(plans)
+    renewing_states = PlanYear::RENEWING_PUBLISHED_STATE + PlanYear::RENEWING
+    renewing = plans.select { |plan_year| renewing_states.include? plan_year.aasm_state }
     ineligible_plans, active_plans = plans.partition { |plan_year| PlanYear::INELIGIBLE_FOR_EXPORT_STATES.include? plan_year.aasm_state }
+    ineligible_plans = ineligible_plans.select { |plan_year| renewing.exclude? plan_year.aasm_state }
     active_plans = active_plans.partition { |plan_year| PlanYear::PUBLISHED.include? plan_year.aasm_state }.flatten
-    @plan_years = active_plans + ineligible_plans
+    @plan_years = renewing + active_plans + ineligible_plans
   end
 
   def paginate_employees
