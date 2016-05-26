@@ -838,7 +838,7 @@ describe EmployerProfile, "Renewal Queries" do
   end
 end
 
-describe EmployerProfile, "For General Agency" do
+describe EmployerProfile, "For General Agency", dbclean: :after_each do
   let(:employer_profile) { FactoryGirl.create(:employer_profile) }
   let(:general_agency_profile) { FactoryGirl.create(:general_agency_profile) }
   let(:broker_role) { FactoryGirl.create(:broker_role) }

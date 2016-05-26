@@ -291,7 +291,7 @@ RSpec.describe BrokerAgencies::ProfilesController do
     end
   end
 
-  describe "GET assign" do
+  describe "GET assign", dbclean: :after_each do
     let(:general_agency_profile) { FactoryGirl.create(:general_agency_profile) }
     let(:broker_role) { FactoryGirl.create(:broker_role) }
     let(:person) { broker_role.person }
