@@ -90,6 +90,7 @@ class User
 
   field :last_portal_visited, type: String
   field :idp_verified, type: Boolean, default: false
+  field :show_hints, type: Boolean, default: true
 
   index({preferred_language: 1})
   index({approved: 1})

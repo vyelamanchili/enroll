@@ -1,7 +1,101 @@
+$primary-header-text-color: #003260;
+$primary-link-hover: #003260;
+$primary-light-background: #eeeeee;
+$primary-border-radius: 6px;
+$primary-white: #ffffff;
+$primary-bold: 600;
+$primary-black: #5C5C5C;
+$primary-light-weight: 300;
+
+
 .modal {
 	.dependents-list-members {
 		td {
 			text-transform: capitalize;
+		}
+	}
+	&#how-to-employer-portal {
+		.modal-header {
+			border: none;
+		}
+		.modal-body {
+			max-width: 660px;
+			h3 {
+				color: $primary-header-text-color;
+				margin-bottom: 1.25%;
+			}
+			> h4:first-of-type {
+				display: block;
+				max-width: 80%;
+				margin: auto;
+			}
+			.list {
+				margin: 2.5%;
+				a:visited {
+					span {
+						color: $primary-link-hover;
+						text-decoration: underline;
+					}
+				}
+				.col-xs-8 {
+					&:hover {
+						background-color: $primary-light-background;
+						border-radius: $primary-border-radius;
+						span {
+							text-decoration: underline;
+							color: $primary-link-hover;
+						}
+					}
+					display: table;
+
+					&>* {
+						display: table-cell;
+						float: none;
+						vertical-align: middle;
+					}
+					h4 {
+						height: 35px;
+						width: 35px;
+						font-size: 22px;
+						border-radius: $primary-border-radius;
+						color: $primary-white;
+						font-weight: $primary-bold;
+						display: inline-block;
+						white-space: nowrap;
+						i {
+							color: $primary-green;
+							font-size: 36px;
+							margin-left: 2px;
+						}
+					}
+					span {
+						max-width: 70%;
+						padding-left: 3.75%;
+						width: 100%;
+						font-size: 18px;
+						color: $primary-black;
+						text-align: left;
+						font-weight: $primary-light-weight;
+					}
+				}
+			}
+			.btn.col-xs-4 {
+				float: none;
+				margin: 3.75% 0 0;
+			}
+			.hints-switch {
+				margin: 2.5% 0;
+				font-size: 11px;
+				&:hover {
+					.fa {
+						color: $primary-link-hover;
+					}
+				}
+				.fa {
+					color: rgba(0,0,0, 0.2);
+					cursor: pointer;
+				}
+			}
 		}
 	}
 }

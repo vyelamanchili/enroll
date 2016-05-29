@@ -1,5 +1,5 @@
 <div class='hide' id='dchbx_enroll_date_of_record'><%= TimeKeeper.date_of_record.iso8601 %></div>
-  <nav class="navbar navbar-default navbar-static-top">
+  <nav class="navbar navbar-default navbar-static-top module">
     <div class="container">
       <!-- Brand and toggle get grouped for better mobile display -->
       <div class="navbar-header">
@@ -21,6 +21,15 @@
         </ul>
 
         <ul class="nav navbar-nav navbar-right">
+          <% if user_signed_in? %>
+          <li class="hint-switch" title="Helpful Hints: <%= current_user.show_hints == true ? 'On' : 'Off' %>" data-toggle="tooltip" data-placement="bottom">
+            <div>
+              <span>
+                <%= link_to "<i class='fa fa-life-ring' aria-hidden='true'> Helpful Hints?</i>".html_safe, "javascript:void(0);", class: 'hints-switch' %>
+              </span>
+            </div>
+          </li>
+          <% end %>
           <li><a class="call-customer-service" href="tel:<%= Settings.contact_center.phone_number %>">
             <span class="header-text">
               Call Customer Service

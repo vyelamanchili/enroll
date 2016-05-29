@@ -65,6 +65,12 @@ class ApplicationController < ActionController::Base
     yield
   end
 
+  def show_hints
+    current_user.show_hints = !current_user.show_hints
+    current_user.save!
+    render json: nil, status: :ok
+  end
+
   private
     def secure_message(from_provider, to_provider, subject, body)
       message_params = {

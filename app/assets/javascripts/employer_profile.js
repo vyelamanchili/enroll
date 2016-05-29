@@ -227,9 +227,14 @@ var EmployerProfile = ( function( window, undefined ) {
       Freebies.tooltip();
   }
 
+  function showHowToModal() {
+    $('#how-to-employer-portal').modal('show');
+  }
+
   return {
       validateEditPlanYear : validateEditPlanYear,
-      validatePlanYear : validatePlanYear
+      validatePlanYear : validatePlanYear,
+      showHowToModal : showHowToModal
     };
 
 } )( window );

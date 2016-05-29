@@ -1,0 +1,75 @@
+<div class="modal " id="how-to-employer-portal">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
+      <div class="modal-body text-center">
+        <h3 class="no-buffer">What To Do Next ?</h3>
+        <h4 class="no-buffer">Use this portal to configure health care coverage you offer your employees and manange your employee roster</h4>
+        <div class="list">
+          <div class="row">
+            <%= link_to employers_employer_profile_path(@employer_profile.id, :tab=>'employees') do %>
+
+            <div class="col-xs-8 col-xs-offset-2">
+              <% if @employer_profile.census_employees.present? %>
+                <h4><i class="fa fa-check-square-o fa-lg"></i></h4>
+              <% else %>
+                <h4 class="progress-bar-success progress-bar-striped">1</h4>
+              <% end %>
+              <span>Add/Upload your employee roster</span>
+            </div>
+            <% end %>
+
+          </div>
+        <div class="row">
+          <%= link_to new_employers_employer_profile_plan_year_path(@employer_profile.id) do %>
+          <div class="col-xs-8 col-xs-offset-2">
+            <% if @employer_profile.plan_years.present? %>
+              <h4><i class="fa fa-check-square-o fa-lg"></i></h4>
+            <% else %>
+              <h4 class="progress-bar-success progress-bar-striped">2</h4>
+            <% end %>
+            <span>Create a Plan Year</span>
+          </div>
+          <% end %>
+        </div>
+        <div class="row">
+          <%= link_to employers_employer_profile_path(@employer_profile.id, :tab=>'benefits') do %>
+
+            <div class="col-xs-8 col-xs-offset-2">
+              <% if @current_plan_year.present? %>
+                <% published_states = PlanYear::RENEWING_PUBLISHED_STATE + PlanYear::PUBLISHED %>
+                <% if published_states.include? @current_plan_year.aasm_state %>
+                  <h4><i class="fa fa-check-square-o fa-lg"></i></h4>
+                <% else %>
+                  <h4 class="progress-bar-success progress-bar-striped">3</h4>
+                <% end %>
+              <% else %>
+                <h4 class="progress-bar-success progress-bar-striped">3</h4>
+              <% end %>
+            <span>Publish your Plan Year</span>
+
+        </div>
+          <% end %>
+      </div>
+      <div class="row">
+        <div class="btn btn-default col-xs-4 col-xs-offset-4" data-dismiss="modal">
+          Okay, Thanks!
+        </div>
+      </div>
+      <div class="row text-center hints-switch" title="Hide Hints" data-toggle="tooltip">
+          <i class="fa fa-life-ring" aria-hidden="true"> Don't show helpful hints anymore?</i>
+      </div>
+
+    </div>
+    </div>
+  </div>
+</div>
+<script>
+
+  $(document).on('ready page:load', function () {
+    EmployerProfile.showHowToModal();
+  });
+
+</script>

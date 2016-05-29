@@ -13,6 +13,47 @@ var Freebies = ( function( window, undefined ) {
 			$('[data-toggle="tooltip"]').tooltip();
 			// apply datePicker
 			applyJQDatePickers();
+			// toggle hint value and text-align
+			$(document).on('click', '.hints-switch', function() {
+				var navbar_helpful_hints_text = $('.navbar .hints-switch').html();
+				var modal_helpful_hints_text = $('.modal .hints-switch').html();
+				$.ajax({
+					context: this,
+					type: "post",
+					url: "/show_hints",
+					dataType: 'script',
+					beforeSend: function() {
+						$(this).html('<i class="fa fa-spinner fa-spin fa-lg fa-fw"></i>');
+				  }
+				}).done(function (data) {
+					if ( $(this).closest('.modal').length ) {
+						$(this).fadeTo(400, 0, function() {
+							$(this).html('<i class="fa">You will no longer see hints</i>');
+							$(this).css({opacity: 1});
+							var hint_switch = $('.hint-switch');
+							hint_switch.closest('.hint-switch').tooltip('hide')
+							.attr('data-original-title', 'Helpful Hints: Off')
+							.tooltip('fixTitle')
+						})
+					} else {
+						$(this).fadeTo(400, 0, function() {
+							$(this).html(navbar_helpful_hints_text);
+							$(this).css({opacity: 1});
+
+						})
+					}
+					var hint_switch = $(this).closest('.hint-switch');
+					if ( hint_switch.attr('data-original-title') == 'Helpful Hints: Off' ) {
+						hint_switch.closest('.hint-switch').tooltip('hide')
+	          .attr('data-original-title', 'Helpful Hints: On')
+	          .tooltip('fixTitle')
+					} else {
+						hint_switch.closest('.hint-switch').tooltip('hide')
+	          .attr('data-original-title', 'Helpful Hints: Off')
+	          .tooltip('fixTitle')
+					}
+				});
+			});
   }
 
 	function datePicker() {
@@ -42,6 +83,27 @@ var Freebies = ( function( window, undefined ) {
 		$("select[multiple!='multiple']").selectric();
 	}
 
+	function hints() {
+		// toggle hint value and text-align
+		$(document).on('click', '.hints-switch', function() {
+
+			$.ajax({
+				context: this,
+				type: "post",
+				url: "/show_hints",
+				dataType: 'script',
+				beforeSend: function() {
+					$(this).html('<i class="fa fa-spinner fa-spin fa-lg fa-fw"></i>');
+			  }
+			}).done(function (data) {
+    		$(this).fadeTo(400, 0, function() {
+					$(this).html('<i class="fa">You will no longer see hints</i>');
+					$(this).css({opacity: 1});
+				})
+			});
+		});
+	}
+
 	// disabled enter key submitting disabeld forms in firefox -- add this to any element in the page onKeyPress="return disableEnterKey(event)"
 	function disableEnterKey(e) {
 		var key;
@@ -63,7 +125,8 @@ var Freebies = ( function( window, undefined ) {
 			selectric : selectric,
 			disableEnterKey : disableEnterKey,
 			popover : popover,
-			tooltip : tooltip
+			tooltip : tooltip,
+			hints : hints
 	  };
 
 } )( window );
