@@ -89,5 +89,6 @@
     </div>
 
   </div>
+
 </div>
-<%= render partial: 'employers/employer_profiles/how_to_employer_portal_modal' %>
+<%= render partial: 'employers/employer_profiles/how_to_employer_portal_modal' unless @current_plan_year.present? || current_user.show_hints == false %>
