@@ -4,6 +4,9 @@ $primary-black: #333333;
 $primay-active-button-text-color: #ffffff;
 $primary-bold: 600;
 $grayed-out: #b7b7b7;
+$primary-white: #fff;
+$primary-black: #5C5C5C;
+
 .module {
   &.inbox {
     .inboxes {
@@ -98,6 +101,47 @@ $grayed-out: #b7b7b7;
       }
     }
   }
+  &.footer {
+    font-size: 14px;
+    color: $primary-white;
+    background-color: #003260;
+    padding: 15px;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    a {
+      color: $primary-white;
+    }
+    &>.container {
+      display: table;
+      .col-md-6 {
+        display: table-cell;
+        float: none;
+        vertical-align: middle;
+      }
+      .col-md-6:last-of-type {
+        a, span {
+          display: inline-block;
+        }
+        ul {
+          margin: 0;
+        }
+      }
+    }
+  }
+  &.welcome {
+    h1 {
+      color: $primary-black;
+    }
+  }
+  &.signin {
+    .actions {
+      span {
+        margin-top: 2.5%;
+      }
+    }
+  }
   &.update-browser-warning {
     color: #000;
     position: relative;
@@ -120,7 +164,7 @@ $grayed-out: #b7b7b7;
       width: 64px;
       margin: 0 auto 7px;
       text-align: center;
-      background: url(<%= asset_path("images/broswericons_128.png") %>);
+      background: url('<%= asset_path("images/broswericons_128.png") %>');
       &.chrome {
         background-position: left top;
       }
@@ -257,34 +301,7 @@ $grayed-out: #b7b7b7;
 					}
 				}
       }
-    }
-  }
-
-  &.demo-up {
-    border: 0 !important;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    width: 150px;
-    text-overflow: "";
-    border-radius: 15px;
-    padding: 0px;
-    margin: 0px;
-  }
-
-  &.verif-type {
-    margin-right: 20px;
-    list-style-type: none;
-  }
-
-
-	&.modal-footer {
-		.modal-sbc-link {
-			text-align: left;
-			position: relative;
-			.fa.fa-file-pdf-o {
-				margin: 2px auto auto 5px;
-			}
-			tbody {
+      tbody {
 				tr {
 					&.top {
 						&.even {
@@ -318,6 +335,33 @@ $grayed-out: #b7b7b7;
 						}
 					}
 				}
+			}
+    }
+  }
+
+  &.demo-up {
+    border: 0 !important;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    width: 150px;
+    text-overflow: "";
+    border-radius: 15px;
+    padding: 0px;
+    margin: 0px;
+  }
+
+  &.verif-type {
+    margin-right: 20px;
+    list-style-type: none;
+  }
+
+
+	&.modal-footer {
+		.modal-sbc-link {
+			text-align: left;
+			position: relative;
+			.fa.fa-file-pdf-o {
+				margin: 2px auto auto 5px;
 			}
 		}
 	}
