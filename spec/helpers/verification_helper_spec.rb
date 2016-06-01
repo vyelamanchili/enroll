@@ -21,87 +21,85 @@ RSpec.describe VerificationHelper, :type => :helper do
       assign(:person, person)
     end
     context "Social Security Number" do
-      it "returns outstanding status for consumer without state residency" do
+      it "returns outstanding consumer with unverified ssn" do
         expect(helper.verification_type_status("Social Security Number", person)).to eq "outstanding"
       end
 
-      it "returns in review for outstanding with docs" do
+      it "returns in review for unverified with docs" do
         person.consumer_role.vlp_documents << FactoryGirl.build(:vlp_document, :verification_type => "Social Security Number")
         expect(helper.verification_type_status("Social Security Number", person)).to eq "in review"
       end
 
       it "returns verified status for consumer with state residency" do
-        person.consumer_role.ssn_validation = "valid"
+        person.consumer_role.aasm(:ssn_state).current_state = :verified
         expect(helper.verification_type_status("Social Security Number", person)).to eq "verified"
       end
     end
 
-    context "Citizenship and Immigration status" do
-      context "lawful presence determination successful" do
-        let(:lawful_presence_determination) { FactoryGirl.build(:lawful_presence_determination) }
-        it "returns verified status for consumer with state residency" do
-          person.consumer_role.lawful_presence_determination = lawful_presence_determination
-          expect(helper.verification_type_status("Immigration status", person)).to eq "verified"
-        end
+    context "Citizenship" do
+      it "returns outstanding status for consumer without successful verification responce" do
+        person.consumer_role.vlp_documents = []
+        person.consumer_role.aasm(:citizenship_state).current_state = :pending
+        expect(helper.verification_type_status("Citizenship", person)).to eq "outstanding"
       end
-      context "lawful presence determination fails with uploaded docs" do
-        let(:lawful_presence_determination) { FactoryGirl.build(:lawful_presence_determination, aasm_state: "verification_pending") }
-        it "returns verified status for consumer with state residency" do
-          person.consumer_role.vlp_documents << FactoryGirl.build(:vlp_document, :verification_type => "Immigration status")
-          person.consumer_role.lawful_presence_determination = lawful_presence_determination
-          expect(helper.verification_type_status("Immigration status", person)).to eq "in review"
-        end
+      it "returns verified status for consumer with state residency" do
+        person.consumer_role.aasm(:citizenship_state).current_state = :verified
+        expect(helper.verification_type_status("Citizenship", person)).to eq "verified"
       end
-      context "lawful presence determination fails" do
-        let(:lawful_presence_determination) { FactoryGirl.build(:lawful_presence_determination, aasm_state: "verification_pending") }
-        it "returns outstanding status for consumer without successful verification responce" do
-          person.consumer_role.lawful_presence_determination = lawful_presence_determination
-          expect(helper.verification_type_status("Immigration status", person)).to eq "outstanding"
-        end
+      it "returns verified status for consumer with state residency" do
+        person.consumer_role.vlp_documents << FactoryGirl.build(:vlp_document, :verification_type => "Citizenship")
+        expect(helper.verification_type_status("Citizenship", person)).to eq "in review"
+      end
+    end
+
+    context "Immigration status" do
+      it "returns verified status for consumer with state residency" do
+        person.consumer_role.aasm(:immigration_state).current_state = :verified
+        expect(helper.verification_type_status("Immigration status", person)).to eq "verified"
+      end
+      it "returns verified status for consumer with state residency" do
+        person.consumer_role.vlp_documents << FactoryGirl.build(:vlp_document, :verification_type => "Immigration status")
+        expect(helper.verification_type_status("Immigration status", person)).to eq "in review"
+      end
+      it "returns outstanding status for consumer without successful verification responce" do
+        expect(helper.verification_type_status("Immigration status", person)).to eq "outstanding"
       end
     end
   end
 
   describe "#verification_type_class" do
     let(:person) { FactoryGirl.create(:person, :with_consumer_role) }
-    let(:lawful_presence_determination) { FactoryGirl.build(:lawful_presence_determination) }
     before :each do
       assign(:person, person)
     end
     context "verification type status verified" do
       it "returns success SSN verified" do
-        person.consumer_role.ssn_validation = "valid"
+        person.consumer_role.aasm(:ssn_state).current_state = :verified
         expect(helper.verification_type_class("Social Security Number", person)).to eq("success")
       end
 
       it "returns success for Citizenship verified" do
-        person.consumer_role.lawful_presence_determination = lawful_presence_determination
+        person.consumer_role.aasm(:citizenship_state).current_state = :verified
         expect(helper.verification_type_class("Citizenship", person)).to eq("success")
       end
 
       it "returns success for Immigration status verified" do
-        person.consumer_role.lawful_presence_determination = lawful_presence_determination
+        person.consumer_role.aasm(:immigration_state).current_state = :verified
         expect(helper.verification_type_class("Immigration status", person)).to eq("success")
       end
     end
 
     context "verification type status in review" do
-      let(:lawful_presence_determination) { FactoryGirl.build(:lawful_presence_determination, aasm_state: "verification_pending") }
-      before :each do
-        person.consumer_role.is_state_resident = false
-      end
       it "returns success SSN verified" do
         person.consumer_role.vlp_documents << FactoryGirl.build(:vlp_document, :verification_type => "Social Security Number")
         expect(helper.verification_type_class("Social Security Number", person)).to eq("warning")
       end
 
       it "returns success for Citizenship verified" do
-        person.consumer_role.lawful_presence_determination = lawful_presence_determination
         expect(helper.verification_type_class("Citizenship", person)).to eq("warning")
       end
 
       it "returns success for Immigration status verified" do
-        person.consumer_role.lawful_presence_determination = lawful_presence_determination
         person.consumer_role.vlp_documents << FactoryGirl.build(:vlp_document, :verification_type => "Immigration status")
         expect(helper.verification_type_class("Immigration status", person)).to eq("warning")
       end

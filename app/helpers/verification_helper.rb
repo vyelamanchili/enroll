@@ -15,22 +15,16 @@ module VerificationHelper
 
   def verification_type_status(type, member)
      if type == 'Social Security Number'
-       if member.consumer_role.ssn_verified?
-         "verified"
-       elsif member.consumer_role.has_docs_for_type?(type)
-         "in review"
-       else
-         "outstanding"
-       end
-     elsif type == 'Citizenship' || type == 'Immigration status'
-       if member.consumer_role.lawful_presence_authorized?
-         "verified"
-       elsif member.consumer_role.has_docs_for_type?(type)
-         "in review"
-       else
-         "outstanding"
-       end
+       member.consumer_role.ssn_verified? ? "verified" : unverified_kind(type, member)
+     elsif type == 'Citizenship'
+       member.consumer_role.citizenship_verified? ? "verified" : unverified_kind(type, member)
+     elsif type == 'Immigration status'
+       member.consumer_role.immigration_verified? ? "verified" : unverified_kind(type, member)
      end
+  end
+
+  def unverified_kind(type, member)
+    member.consumer_role.has_docs_for_type?(type) ? "in review" :  "outstanding"
   end
 
   def verification_type_class(type, member)

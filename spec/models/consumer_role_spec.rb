@@ -82,303 +82,6 @@ describe ConsumerRole, dbclean: :after_each do
         end
       end
     end
-
-    #context "with invalid arguments  no ssn" do
-    #  let(:consumer_role) { saved_person_no_ssn_invalid.build_consumer_role(valid_params) }
-
-    #  it "should not save" do
-    #    expect(consumer_role.save).to be_falsey
-    #  end
-    #end
-
-    # context "with no is_incarcerated" do
-    #   let(:params) {valid_params.except(:is_incarcerated)}
-
-    #   it "should fail validation " do
-    #     expect(ConsumerRole.create(**params).errors[:is_incarcerated].any?).to be_truthy
-    #   end
-    # end
-
-    # context "with no is_applicant" do
-    #   let(:params) {valid_params.except(:is_applicant)}
-    #   it "should fail validation" do
-    #     expect(ConsumerRole.create(**params).errors[:is_applicant].any?).to be_truthy
-    #   end
-    # end
-
-    # context "with no citizen_status" do
-    #   let(:params) {valid_params.except(:citizen_status)}
-    #   it "should fail validation" do
-    #     expect(ConsumerRole.create(**params).errors[:citizen_status].any?).to be_truthy
-    #   end
-    # end
-
-    # context "with improper citizen_status" do
-    #   let(:params) {valid_params.deep_merge({citizen_status: "test citizen_status"})}
-    #   it "should fail validation with improper citizen_status" do
-    #     expect(ConsumerRole.create(**params).errors[:citizen_status].any?).to be_truthy
-    #     expect(ConsumerRole.create(**params).errors[:citizen_status]).to eq [citizen_error_message]
-
-    #   end
-    # end
-  end
-
-end
-
-shared_examples_for "a ConsumerRole which hasn't left pending verifications" do
-  it "should still be in verifications_pending" do
-    expect(subject.verifications_pending?).to eq true
-  end
-end
-
-describe ConsumerRole, "in the verifications_pending state" do
-  subject { ConsumerRole.new(:aasm_state => :verifications_pending) }
-    before(:each) do
-      allow(CoverageHousehold).to receive(:update_individual_eligibilities_for).with(subject)
-    end
-
-  describe "with residency authorized" do
-    before(:each) do
-      subject.is_state_resident = true
-    end
-    describe "when lawful_presence fails" do
-      let(:mock_lp_denial) { double({ :determined_at => Time.now, :vlp_authority => "ssa" }) }
-      before(:each) do
-        subject.is_state_resident = true
-        subject.deny_lawful_presence(mock_lp_denial)
-      end
-      it "should be in verifications_outstanding" do
-        expect(subject.verifications_outstanding?).to eq true
-      end
-    end
-
-    describe "instructed to start the eligibility process" do
-      let(:person) { Person.new }
-      let(:requested_start_date) { double }
-
-      before(:each) do
-        subject.person = person
-      end
-
-      it "should trigger lawful presence determination only " do
-        expect(subject.lawful_presence_determination).to receive(:start_determination_process).with(requested_start_date)
-        expect(subject).not_to receive(:notify).with(ConsumerRole::RESIDENCY_VERIFICATION_REQUEST_EVENT_NAME, {:person => person})
-        subject.start_individual_market_eligibility!(requested_start_date)
-      end
-    end
-
-  end
-
-  describe "with residency denied" do
-    before(:each) do
-      subject.is_state_resident = false
-    end
-    describe "when lawful_presence fails" do
-      let(:mock_lp_denial) { double({ :determined_at => Time.now, :vlp_authority => "ssa" }) }
-      before(:each) do
-        subject.is_state_resident = true
-        subject.deny_lawful_presence(mock_lp_denial)
-      end
-      it "should be in verifications_outstanding" do
-        expect(subject.verifications_outstanding?).to eq true
-      end
-    end
-  end
-
-  describe "with lawful_presence authorized" do
-    before :each do
-      subject.lawful_presence_determination = LawfulPresenceDetermination.new(
-        :aasm_state => :verification_successful
-      )
-    end
-    describe "when residency fails" do
-      before(:each) do
-        subject.deny_residency
-      end
-      it "should be in verifications_outstanding" do
-        expect(subject.verifications_outstanding?).to eq true
-      end
-    end
-
-    describe "instructed to start the eligibility process" do
-      let(:person) { Person.new }
-      let(:requested_start_date) { double }
-
-      before(:each) do
-        subject.person = person
-      end
-
-      it "should trigger local residency determination only " do
-        expect(subject.lawful_presence_determination).not_to receive(:start_determination_process).with(requested_start_date)
-        expect(subject).to receive(:notify).with(ConsumerRole::RESIDENCY_VERIFICATION_REQUEST_EVENT_NAME, {:person => person})
-        subject.start_individual_market_eligibility!(requested_start_date)
-      end
-    end
-  end
-
-  describe "with lawful_presence failed" do
-    before :each do
-      subject.lawful_presence_determination = LawfulPresenceDetermination.new(
-        :aasm_state => :verification_outstanding
-      )
-    end
-    describe "when residency fails" do
-      before(:each) do
-        subject.deny_residency
-      end
-      it "should be in verifications_outstanding" do
-        expect(subject.verifications_outstanding?).to eq true
-      end
-    end
-  end
-
-  describe "with residency and lawful_presence pending" do
-    describe "instructed to start the eligibility process" do
-      let(:person) { Person.new }
-      let(:requested_start_date) { double }
-
-      before(:each) do
-        subject.person = person
-      end
-
-      it "should trigger both eligibility processes when individual eligibility is triggered" do
-        expect(subject.lawful_presence_determination).to receive(:start_determination_process).with(requested_start_date)
-        expect(subject).to receive(:notify).with(ConsumerRole::RESIDENCY_VERIFICATION_REQUEST_EVENT_NAME, {:person => person})
-        subject.start_individual_market_eligibility!(requested_start_date)
-      end
-    end
-
-    describe "which fails residency" do
-      before(:each) do
-        subject.deny_residency
-      end
-      it_should_behave_like "a ConsumerRole which hasn't left pending verifications"
-    end
-
-    describe "which passes residency" do
-      before(:each) do
-        subject.authorize_residency
-      end
-      it_should_behave_like "a ConsumerRole which hasn't left pending verifications"
-    end
-
-    describe "which fails lawful_presence" do
-      let(:mock_lp_denial) { double({ :determined_at => Time.now, :vlp_authority => "ssa" }) }
-      before(:each) do
-        subject.deny_lawful_presence(mock_lp_denial)
-      end
-      it_should_behave_like "a ConsumerRole which hasn't left pending verifications"
-    end
-
-    describe "which passes lawful_presence" do
-      let(:mock_lp_approval) { double({ :determined_at => Time.now, :vlp_authority => "ssa", :citizen_status => "a mock citizen status" }) }
-      before(:each) do
-        subject.authorize_lawful_presence(mock_lp_approval)
-      end
-      it_should_behave_like "a ConsumerRole which hasn't left pending verifications"
-    end
-
-    describe "when both residency and lawful presence fail" do
-      let(:mock_lp_denial) { double({ :determined_at => Time.now, :vlp_authority => "ssa" }) }
-      before(:each) do
-        subject.deny_residency
-        subject.deny_lawful_presence(mock_lp_denial)
-      end
-
-      it "should be in verifications_outstanding" do
-        expect(subject.verifications_outstanding?).to eq true
-      end
-    end
-
-    describe "when both residency and lawful presence are authorized" do
-      let(:mock_lp_approval) { double({ :determined_at => Time.now, :vlp_authority => "ssa", :citizen_status => "a mock citizen status" }) }
-      before(:each) do
-        subject.authorize_residency
-        subject.authorize_lawful_presence(mock_lp_approval)
-      end
-
-      it "should be fully_verified" do
-        expect(subject.fully_verified?).to eq true
-      end
-    end
-  end
-end
-
-describe ConsumerRole, "in the verifications_outstanding state" do
-  subject { ConsumerRole.new(:aasm_state => :verifications_outstanding, :lawful_presence_determination => lawful_presence_determination, :is_state_resident => state_resident_value) }
-
-  before(:each) do
-    allow(CoverageHousehold).to receive(:update_individual_eligibilities_for).with(subject)
-  end
-
-  describe "with a failed residency, and successful lawful presence" do
-    let(:lawful_presence_determination) {
-      LawfulPresenceDetermination.new(
-        :aasm_state => :verification_successful
-      )
-    }
-    let(:state_resident_value) { false }
-    describe "when residency is authorized" do
-      before :each do
-        subject.authorize_residency
-      end
-      it "should be fully_verified" do
-        expect(subject.fully_verified?).to eq true
-      end
-    end
-  end
-
-  describe "with a successful residency, and failed lawful presence" do
-    let(:lawful_presence_determination) {
-      LawfulPresenceDetermination.new(
-        :aasm_state => :verification_outstanding
-      )
-    }
-    let(:state_resident_value) { true }
-    describe "when lawful_presence is authorized" do
-      let(:mock_lp_approval) { double({ :determined_at => Time.now, :vlp_authority => "ssa", :citizen_status => "a mock citizen status" }) }
-      before(:each) do
-        subject.authorize_lawful_presence(mock_lp_approval)
-      end
-      it "should be fully_verified" do
-        expect(subject.fully_verified?).to eq true
-      end
-    end
-  end
-
-  describe "with a failed residency and failed lawful_presence" do
-    let(:lawful_presence_determination) {
-      LawfulPresenceDetermination.new(
-        :aasm_state => :verification_outstanding
-      )
-    }
-    let(:state_resident_value) { false }
-    describe "when residency is authorized" do
-      it "should be in verifications_outstanding" do
-        expect(subject.verifications_outstanding?).to eq true
-      end
-    end
-    describe "when lawful_presence is authorized" do
-      let(:mock_lp_approval) { double({ :determined_at => Time.now, :vlp_authority => "ssa", :citizen_status => "a mock citizen status" }) }
-      before(:each) do
-        subject.authorize_lawful_presence(mock_lp_approval)
-      end
-      it "should be in verifications_outstanding" do
-        expect(subject.verifications_outstanding?).to eq true
-      end
-    end
-    describe "when both residency and lawful presence are authorized" do
-      let(:mock_lp_approval) { double({ :determined_at => Time.now, :vlp_authority => "ssa", :citizen_status => "a mock citizen status" }) }
-      before(:each) do
-        subject.authorize_residency
-        subject.authorize_lawful_presence(mock_lp_approval)
-      end
-
-      it "should be fully_verified" do
-        expect(subject.fully_verified?).to eq true
-      end
-
-    end
   end
 end
 
@@ -477,68 +180,102 @@ end
 
 context "Verification process and notices" do
   let(:person) { FactoryGirl.create(:person, :with_consumer_role) }
+  let(:consumer) { person.consumer_role }
+  verification_types = [ :ssn, :citizenship, :immigration ]
+  verification_states = [ :pending, :outstanding, :verified ]
   describe "#has_docs_for_type?" do
     before do
-      person.consumer_role.vlp_documents=[]
+      consumer.vlp_documents=[]
     end
     context "vlp exist but document is NOT uploaded" do
       it "returns false for vlp doc without uploaded copy" do
-        person.consumer_role.vlp_documents << FactoryGirl.build(:vlp_document, :identifier => nil )
-        expect(person.consumer_role.has_docs_for_type?("Citizenship")).to be_falsey
+        consumer.vlp_documents << FactoryGirl.build(:vlp_document, :identifier => nil )
+        expect(consumer.has_docs_for_type?("Citizenship")).to be_falsey
       end
       it "returns false for Immigration type" do
-        person.consumer_role.vlp_documents << FactoryGirl.build(:vlp_document, :identifier => nil, :verification_type  => "Immigration type")
-        expect(person.consumer_role.has_docs_for_type?("Immigration type")).to be_falsey
+        consumer.vlp_documents << FactoryGirl.build(:vlp_document, :identifier => nil, :verification_type  => "Immigration type")
+        expect(consumer.has_docs_for_type?("Immigration type")).to be_falsey
       end
     end
     context "vlp with uploaded copy" do
       it "returns true if person has uploaded documents for this type" do
-        person.consumer_role.vlp_documents << FactoryGirl.build(:vlp_document, :identifier => "identifier", :verification_type  => "Citizenship")
-        expect(person.consumer_role.has_docs_for_type?("Citizenship")).to be_truthy
+        consumer.vlp_documents << FactoryGirl.build(:vlp_document, :identifier => "identifier", :verification_type  => "Citizenship")
+        expect(consumer.has_docs_for_type?("Citizenship")).to be_truthy
       end
       it "returns false if person has NO documents for this type" do
-        person.consumer_role.vlp_documents << FactoryGirl.build(:vlp_document, :identifier => "identifier", :verification_type  => "Immigration type")
-        expect(person.consumer_role.has_docs_for_type?("Immigration type")).to be_truthy
+        consumer.vlp_documents << FactoryGirl.build(:vlp_document, :identifier => "identifier", :verification_type  => "Immigration type")
+        expect(consumer.has_docs_for_type?("Immigration type")).to be_truthy
+      end
+    end
+  end
+  describe "#ssn_applied?" do
+    it "returns true if person has SSN verification type" do
+      expect(consumer.ssn_applied?).to be_truthy
+    end
+    it "returns false if person has NO SSN verification type" do
+      person.ssn = nil
+      expect(consumer.ssn_applied?).to be_falsey
+    end
+  end
+  describe "#citizenship_applied?" do
+    it "returns true if person has Citizenship verification type" do
+      expect(consumer.citizenship_applied?).to be_truthy
+    end
+    it "returns false if person has NO Citizenship verification type" do
+      person.us_citizen = nil
+      expect(consumer.citizenship_applied?).to be_falsey
+    end
+  end
+  describe "#immigration_applied?" do
+    it "returns true if person has Immigration verification type" do
+      person.us_citizen = nil
+      expect(consumer.immigration_applied?).to be_truthy
+    end
+    it "returns false if person has NO Immigration verification type" do
+      person.us_citizen = true
+      expect(consumer.immigration_applied?).to be_falsey
+    end
+  end
+
+  verification_types.each do |type|
+    v_type = "Social Security Number" if type == :ssn
+    v_type = 'Citizenship' if type == :citizenship
+    v_type = 'Immigration status' if type == :immigration
+
+    describe "#{type}_verified?" do
+      verification_states.each do |state|
+        it "returns #{ state == :verified } if #{type} has #{state} state" do
+          consumer.aasm("#{type}_state").current_state = state
+          expect(consumer.send("#{type}_verified?")).to eq state == :verified
+        end
+      end
+    end
+
+    describe "#record_transition_info for #{type}" do
+      let(:args) { OpenStruct.new({:verification_type => v_type, :authority => "hbx", :update_reason => "#{type} in Curam"}) }
+      it "updates #{type}_update_info attribute" do
+        consumer.record_transition_info(args)
+        expect(consumer.send("#{type}_update_info")).to be_a Hash
+        expect(consumer.send("#{type}_update_info")).to eq ({ :authority => "hbx", :update_reason => "#{type} in Curam" })
+      end
+    end
+
+    describe "#update_type (#{v_type})" do
+      it "moves #{v_type} verification type to verified status with proper info records" do
+        consumer.update_type(v_type, "Curam")
+        expect(consumer.aasm("#{type}_state").current_state).to eq :verified
       end
     end
   end
 
-  describe "#is_type_outstanding?" do
-    context "Social Security Number" do
-      it "returns true for unverified ssn and NO docs uploaded for this type" do
-        person.consumer_role.ssn_validation = "ne"
-        expect(person.consumer_role.is_type_outstanding?("Social Security Number")).to be_truthy
-      end
-      it "return false if documents uploaded" do
-        person.consumer_role.ssn_validation = "ne"
-        person.consumer_role.vlp_documents << FactoryGirl.build(:vlp_document, :verification_type => "Social Security Number")
-        expect(person.consumer_role.is_type_outstanding?("Social Security Number")).to be_falsey
-      end
-      it "return false for verified ssn" do
-        person.consumer_role.ssn_validation = "valid"
-        expect(person.consumer_role.is_type_outstanding?("Social Security Number")).to be_falsey
-      end
+  describe "#all_types_verified?" do
+    it "returns true if all types are verified" do
+      consumer.aasm(:ssn_state).current_state = :verified
+      consumer.aasm(:citizenship_state).current_state = :verified
+      expect(consumer.all_types_verified?).to be_truthy
     end
-    context "Citizenship" do
-      it "returns true for if lawful_presence fails and No documents for this type" do
-        person.consumer_role.vlp_documents = []
-        expect(person.consumer_role.is_type_outstanding?("Citizenship")).to be_truthy
-      end
-    end
-    context "Immigration status" do
-      it "returns true for if lawful_presence fails and No documents for this type" do
-        expect(person.consumer_role.is_type_outstanding?("Immigration status")).to be_truthy
-      end
-    end
-
-    context "always false if documents uploaded for this type" do
-      types = ["Social Security Number", "Citizenship", "Immigration status"]
-      types.each do |type|
-        it "returns false for #{type} and documents for this type" do
-          person.consumer_role.vlp_documents << FactoryGirl.build(:vlp_document, :verification_type => type)
-          expect(person.consumer_role.is_type_outstanding?(type)).to be_falsey
-        end
-      end
+    it "returns false if any type is not verified" do
+      expect(consumer.all_types_verified?).to be_falsey
     end
   end
 end
