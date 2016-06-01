@@ -1,4 +1,5 @@
 require 'csv'
+require 'prawn/table'
 class Employers::PremiumStatementsController < ApplicationController
   layout "two_column", only: [:show]
   include Employers::PremiumStatementHelper
@@ -13,6 +14,12 @@ class Employers::PremiumStatementsController < ApplicationController
       format.js
       format.csv do
         send_data(csv_for(@hbx_enrollments), type: csv_content_type, filename: "DCHealthLink_Premium_Billing_Report.csv")
+      end
+      format.pdf do
+        filename = File.join(Rails.root, "tmp", "DCHealthLink_Premium_Billing_Report_#{Time.new.to_i}.pdf")
+        pdf_file = @employer_profile.generate_invoice
+        pdf_file.render_file filename
+        send_file  filename, :type => "application/pdf"
       end
     end
   end

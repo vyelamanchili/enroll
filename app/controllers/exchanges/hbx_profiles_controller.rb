@@ -42,6 +42,13 @@ class Exchanges::HbxProfilesController < ApplicationController
   end
 
   def generate_invoice
+
+    @organizations= Organization.where(:id.in => params[:employerId]).all
+    @organizations.each do |org|
+      @employer_invoice = EmployerInvoice.new(org)
+      @employer_invoice.save_and_notify
+    end
+
     respond_to do |format|
       format.js
     end

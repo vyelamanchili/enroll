@@ -142,12 +142,14 @@ class Organization
   scope :all_employers_renewing_published,       ->{ unscoped.any_in(:"employer_profile.plan_years.aasm_state" => PlanYear::RENEWING_PUBLISHED_STATE) }
   scope :all_employers_non_renewing,             ->{ unscoped.any_in(:"employer_profile.plan_years.aasm_state" => PlanYear::PUBLISHED) }
   scope :all_employers_enrolled,                 ->{ unscoped.where(:"employer_profile.plan_years.aasm_state" => "enrolled") }
+  scope :all_employers_not_applicant,             ->{ unscoped.where(:"employer_profile.aasm_state".ne => "applicant") }
+  scope :all_employers_applicant,                 ->{ unscoped.where(:"employer_profile.aasm_state" => "applicant") }
 
   def generate_hbx_id
     write_attribute(:hbx_id, HbxIdGenerator.generate_organization_id) if hbx_id.blank?
   end
 
-  def invoices 
+  def invoices
     documents.select{ |document| document.subject == 'invoice' }
   end
 
@@ -250,9 +252,9 @@ class Organization
   end
 
   def self.invoice_exist?(invoice_date,org)
-    if org.documents.where("date" => invoice_date).count > 0
-      return true
-    end
+    docs =org.documents.where("date" => invoice_date)
+    matching_documents = docs.select {|d| d.title.match(Regexp.new("^#{org.hbx_id}"))}
+    return true if matching_documents.count > 0
   end
 
   def office_location_kinds
