@@ -494,11 +494,15 @@ function limitText(field, maxChar){
 
 //Restricts alphabets and formats phone numbers for Personal Information
 $(document).on('keyup', "#organization_number", function(){
-	if (this.value != this.value.replace(/[^0-9\.]/g, '')) {
-	       this.value = this.value.replace(/[^0-9\.]/g, '');
-	}
+	this.value = this.value.replace(/[^0-9]/g, '');
     limitText(this, 7);
 	$(this).val($(this).val().replace(/(\d{3})\-?(\d{4})/,'$1-$2'));
+});
+
+// Restricts area code to three digits for Personal Information
+$(document).on('keyup', "#organization_area_code", function(){
+	this.value = this.value.replace(/[^0-9]/g, '');
+    limitText(this, 3);
 });
 
   //toggling of divs that show plan details (view details)
