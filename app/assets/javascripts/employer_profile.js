@@ -491,6 +491,7 @@ function limitText(field, maxChar){
         });
     }
 }
+
 //Restricts alphabets and formats phone numbers for Personal Information
 $(document).on('keyup', "#organization_number", function(){
 	if (this.value != this.value.replace(/[^0-9\.]/g, '')) {
