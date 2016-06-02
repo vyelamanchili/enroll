@@ -590,4 +590,16 @@ RSpec.describe Employers::EmployerProfilesController do
   #    expect(response).to be_redirect
   #  end
   #end
+
+  describe "GET export_census_employees" do
+    let(:user) { FactoryGirl.create(:user) }
+    let(:employer_profile) { FactoryGirl.create(:employer_profile) }
+
+   it "should export cvs" do
+     sign_in(user)
+     get :export_census_employees, employer_profile_id: employer_profile, format: :csv
+     expect(response).to have_http_status(:success)
+   end
+
+  end
 end
