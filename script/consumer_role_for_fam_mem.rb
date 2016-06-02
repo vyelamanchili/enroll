@@ -3,10 +3,10 @@
 
 families=Family.all_with_multiple_family_members
 
-broken_family=Family.find("566ebebcfaca145b8900000c")
+@broken_family=Family.find("566ebebcfaca145b8900000c")
 
 families.each do |family|
-  unless family == broken_family do
+  unless family == @broken_family do
     if family.primary_applicant.person.consumer_role.present?
       family.family_members.each do |family_member|
         unless family_member.person.consumer_role.present?
