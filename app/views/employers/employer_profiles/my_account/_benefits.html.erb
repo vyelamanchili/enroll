@@ -5,7 +5,7 @@
     </div>
     <div class="col-xs-4">
       <% if @plan_years.present? && @employer_profile.published_plan_year.blank? %>
-      <%= link_to "Add Plan Year", new_employers_employer_profile_plan_year_path(@employer_profile, tab: 'benefits'), class: "btn btn-default btn-br btn-block", style: "margin-top: 6px;", data: {loading_text: "Loading..."} %>
+        <%= link_to "Add Plan Year", new_employers_employer_profile_plan_year_path(@employer_profile, tab: 'benefits'), class: "btn btn-default btn-block", style: "margin-top: 6px;", data: {loading_text: "Loading..."} %>
       <% end %>
     </div>
     <% unless @employer_profile.plan_years.blank? || @employer_profile.published_plan_year.present? %>
@@ -108,11 +108,11 @@
                 <td>
                   <p>
                     <% if bg.effective_on_offset == 0 %>
-                    First of the month following or coinciding with date of hire
-                  <% elsif bg.effective_on_offset == 1 %>
-                    First of the month following date of hire
-                  <% else %>
-                    <%= "#{bg.effective_on_kind.humanize} following #{bg.effective_on_offset} days" %>
+                      First of the month following or coinciding with date of hire
+                    <% elsif bg.effective_on_offset == 1 %>
+                      First of the month following date of hire
+                    <% else %>
+                      <%= "#{bg.effective_on_kind.humanize} following #{bg.effective_on_offset} days" %>
                     <% end %>
                   </p>
                 </td>
@@ -125,7 +125,6 @@
           <div class="col-xs-1">
             &nbsp;
           </div>
-
           <!-- Health Plan Summary: start -->
           <div class="col-xs-11">
             <% if bg.is_offering_dental? %>
@@ -213,6 +212,7 @@
                   </tr>
                   <% end %>
                 </table>
+              </div>
             </div>
             <!--Health plan contribution: end -->
 
@@ -257,83 +257,82 @@
                 </div>
                 <% end %>
               </div>
+            </div>
             <!--Health plan Estimated Cost: end-->
           </div>
           <!--Health plan collapsible: end -->
 
           <!--Dental Plan Summary: start -->
           <% if bg.is_offering_dental? %>
-
-
-          <div class="dental">
-            <div class="row">
-              <div class="col-xs-6">
-                <h5 class="title no-buffer">Dental</h5>
-              </div>
+            <div class="col-xs-1">
+              &nbsp;
             </div>
-            <table>
-              <tr>
-                <th colspan="2">
-                  <header>Reference Plan</header>
-                </th>
-                <th>
-                  <header>Carrier</header>
-                </th>
-                <th>
-                  <header>Type</header>
-                </th>
-                <th>
-                  <header>Metal Level</header>
-                </th>
-                <th>
-                  <header>Plans By</header>
-                </th>
-              </tr>
-              <tr>
-                <td colspan="2">
-                  <p>
-                    <%= bg.dental_reference_plan.name %>
-                  </p>
-                </td>
-                <td>
-                  <p>
-                    <%= bg.dental_reference_plan.carrier_profile.legal_name %>
-                  </p>
-                </td>
-                <td>
-                  <p>
-                    <%= bg.dental_reference_plan.plan_type.to_s.upcase %>
-                  </p>
-                </td>
-                <td>
-                  <p>
-                    <%= display_dental_metal_level(bg.dental_reference_plan) %>
-                  </p>
-                </td>
-                <td>
-                  <p>
-                    <% if bg.dental_plan_option_kind == "single_carrier" %>
-                    All Plans From A Single Carrier
-                    <% elsif bg.dental_plan_option_kind == "single_plan" %>
-                    <% if bg.elected_dental_plan_ids.count < 13 %>
-                    Custom (<%= bg.elected_dental_plans.count %>
-                    Plans)
-                    <br/>
-                    <%= link_to "View Plans", "", data: {toggle: "modal", target: "#electedDentalPlans_#{bg.id}"} %>
-
-                    <% else %>
-                    All Plans
-                    <% end %>
-                    <% end %>
-                  </p>
-                </td>
-              </tr>
-            </table>
-          </div>
-          <% if bg.elected_dental_plan_ids.count < 13 && bg.elected_dental_plan_ids.count > 1 %>
-          <%= render partial: 'shared/custom_dental_offered_plans_modal', locals: { bg: bg } %>
-          <% end %>
-
+            <div class="col-xs-11 dental">
+              <div class="row">
+                <div class="col-xs-6">
+                  <h5 class="title no-buffer">Dental</h5>
+                </div>
+              </div>
+              <table>
+                <tr>
+                  <th colspan="2">
+                    <header>Reference Plan</header>
+                  </th>
+                  <th>
+                    <header>Carrier</header>
+                  </th>
+                  <th>
+                    <header>Type</header>
+                  </th>
+                  <th>
+                    <header>Metal Level</header>
+                  </th>
+                  <th>
+                    <header>Plans By</header>
+                  </th>
+                </tr>
+                <tr>
+                  <td colspan="2">
+                    <p>
+                      <%= bg.dental_reference_plan.name %>
+                    </p>
+                  </td>
+                  <td>
+                    <p>
+                      <%= bg.dental_reference_plan.carrier_profile.legal_name %>
+                    </p>
+                  </td>
+                  <td>
+                    <p>
+                      <%= bg.dental_reference_plan.plan_type.to_s.upcase %>
+                    </p>
+                  </td>
+                  <td>
+                    <p>
+                      <%= display_dental_metal_level(bg.dental_reference_plan) %>
+                    </p>
+                  </td>
+                  <td>
+                    <p>
+                      <% if bg.dental_plan_option_kind == "single_carrier" %>
+                        All Plans From A Single Carrier
+                      <% elsif bg.dental_plan_option_kind == "single_plan" %>
+                        <% if bg.elected_dental_plan_ids.count < 13 %>
+                            Custom (<%= bg.elected_dental_plans.count %> Plans)
+                            <br/>
+                        <%= link_to "View Plans", "", data: {toggle: "modal", target: "#electedDentalPlans_#{bg.id}"} %>
+                        <% else %>
+                          All Plans
+                        <% end %>
+                      <% end %>
+                    </p>
+                  </td>
+                </tr>
+              </table>
+            </div>
+            <% if bg.elected_dental_plan_ids.count < 13 && bg.elected_dental_plan_ids.count > 1 %>
+              <%= render partial: 'shared/custom_dental_offered_plans_modal', locals: { bg: bg } %>
+            <% end %>
           <% end %>
           <!--Dental Plan Summary: end -->
 
@@ -368,7 +367,11 @@
             <!--Dental Plan Contribution: end -->
 
             <!-- Dental plan Estimated Cost: start -->
-              <div class="est-month">
+            <div class="col-xs-12">
+              <div class="col-xs-1">
+                &nbsp;
+              </div>
+              <div class="est-month col-xs-11">
                 <% if bg.census_employees.present? %>
                 <div class="row">
                   <div class="col-xs-4">
@@ -427,15 +430,13 @@
   </div>
 
     <% end %>
-
     <% else %>
-    <h4>
-      It's time to create a benefits package. Select 'Add Plan Year' to create your first one. Most employers only create one benefits package but you'll have the opportunity to create more than one if you want to offer different benefits to different
-      groups of employees.
-    </h4>
-    <br/>
-    <%= link_to "Add Plan Year", new_employers_employer_profile_plan_year_path(@employer_profile, tab: 'benefits'), class: "btn btn-primary btn-br", data: {loading_text: "Loading..."} %>
-
+      <h4>
+        It's time to create a benefits package. Select 'Add Plan Year' to create your first one. Most employers only create one benefits package but you'll have the opportunity to create more than one if you want to offer different benefits to different
+        groups of employees.
+      </h4>
+      <br/>
+      <%= link_to "Add Plan Year", new_employers_employer_profile_plan_year_path(@employer_profile, tab: 'benefits'), class: "btn btn-primary btn-br", data: {loading_text: "Loading..."} %>
     <% end %>
   </div>
 </div>

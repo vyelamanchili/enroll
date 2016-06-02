@@ -1,6 +1,5 @@
 var EmployerProfile = ( function( window, undefined ) {
 
-
   function viewDetails($thisObj) {
     if ( $thisObj.hasClass('view') ) {
       $thisObj.closest('.benefit-package').find('.health-offering, .dental-offering').slideDown();
@@ -497,15 +496,3 @@ function checkAreaCode(textbox) {
   }
   return true;
 }
-  //toggling of divs that show plan details (view details)
-  $('.nav-toggle').click(function(){
-    var collapse_content_selector = $(this).attr('href');
-    var toggle_switch = $(this);
-    $(collapse_content_selector).slideToggle('fast', function(){
-      if($(this).css('display')=='none'){
-        toggle_switch.html('View Details <i class="fa fa-chevron-down fa-lg">');
-      }else{
-        toggle_switch.html('Hide Details <i class="fa fa-chevron-up fa-lg">');
-      }
-    });
-  });
