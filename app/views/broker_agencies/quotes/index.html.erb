@@ -109,6 +109,6 @@ $(document).on('ready page:load', function () {
     slider_listeners()
     page_load_listeners()
     toggle_plans(<%= raw @quote_criteria %>)
-    $('#compare_plans_table').dragtable();
+    $('#compare_plans_table').dragtable({dragaccept: '.movable'});
 })
 </script>
