@@ -13,7 +13,7 @@ def set_date
   families.each do |family|
     begin
       enrollment = family.active_household.hbx_enrollments.verification_needed.first
-      enrollment.special_verification_period = Date.new(2016, 5, 30) + 95.days
+      enrollment.special_verification_period = Date.new(2016, 9, 9)
       enrollment.save
     rescue => e
       problem_counter +=1
