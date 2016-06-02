@@ -65,6 +65,7 @@
         </div><br>
       
     <% end %>
+<<<<<<< HEAD
   
      <div>
       <% if @person.has_active_consumer_role? %>
@@ -73,10 +74,14 @@
       <%= render 'shared/contact_preferences', {f: f, role: :employee_role} %></br>
       <% end %>
       </div>
+=======
+    <div>
+      <%= render 'shared/contact_preferences', {f: f, role: :consumer_role} %><br>
+    </div>
+>>>>>>> 0b7a8a4122fd1a10a04eb58af85067e99ec82824
 
   <div class="row no-buffer">
-    <button type="submit" class="btn btn-primary hidden"><i class="fa fa-user-plus"></i> Save</button>
-    <span class='btn btn-lg btn-primary' onclick='PersonValidations.manageRequiredValidations($(this));'><i class="fa fa-user-plus"></i> Save</span>
+    <button type="submit" class="btn btn-primary btn-br"><i class="fa fa-user-plus"></i> Save</button>
   </div>
 
 <% end %><br>
