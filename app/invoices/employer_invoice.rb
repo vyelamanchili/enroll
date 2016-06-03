@@ -29,16 +29,31 @@ class EmployerInvoice
 	def save_to_cloud
 		begin
 			Organization.upload_invoice(invoice_absolute_file_path)
+			clear_tmp(invoice_absolute_file_path)
 		rescue Exception => e
 			@errors << "Unable to upload PDF for. #{@organization.hbx_id}"
 		end
 	end
 
 	def send_email_notice
-		subject= "DC Health Link - Invoice Alert" #TODO change the name
+		subject = "Invoice Now Available"
+		body = "Your Renewal invoice is now available in your employer profile under Billing tab. Thank You"
+		message_params = {
+      sender_id: "admins",
+      parent_message_id: @organization.employer_profile.id,
+      from: "admin@admin.com",
+      to: "Employer Mailbox",
+      subject: subject,
+      body: body
+      }
+			create_secure_message message_params, @organization.employer_profile, :inbox
 		@organization.employer_profile.staff_roles.each do |staff_role|
 			UserMailer.employer_invoice_generation_notification(staff_role.user,subject).deliver_now
     end
+  end
+
+  def clear_tmp(file)
+		File.delete(file)
   end
 
 	def save_and_notify
@@ -48,6 +63,14 @@ class EmployerInvoice
 	end
 
 	private 
+
+	def create_secure_message(message_params, inbox_provider, folder)
+    message = Message.new(message_params)
+    message.folder =  Message::FOLDER_TYPES[folder]
+    msg_box = inbox_provider.inbox
+    msg_box.post_message(message)
+    msg_box.save
+  end
 
 	def current_month
 		TimeKeeper.date_of_record.strftime("%b-%Y")
