@@ -86,7 +86,7 @@
             <% else %>
             <tr class="unbrd  remove_<%= census_employee.id %> dn">
               <td class="confirm-terminate-wrapper show_confirm_<%= census_employee.id %>"  colspan="10"  id="enter-date">
-                <%= react_component 'Confirm_terminate_census_employee_modal', { census_employee: census_employee, full_name: "#{census_employee.first_name.titleize} #{census_employee.try(:middle_name).try(:titleize)} #{census_employee.last_name.titleize}", coverage_ends: format_date(TimeKeeper.date_of_record.end_of_month) } %>
+                <%= react_component 'ConfirmTerminateCensusEmployeeModal', { census_employee: census_employee, full_name: "#{census_employee.first_name.titleize} #{census_employee.try(:middle_name).try(:titleize)} #{census_employee.last_name.titleize}", coverage_ends: format_date(TimeKeeper.date_of_record.end_of_month) } %>
                 <div class="confirm-terminate">
 
                   <h5 style="margin-top: 0; margin-bottom: 0;"><strong>Enter termination date to remove <%= name_to_listing(census_employee) %></strong>
@@ -98,7 +98,7 @@
                   <div class="pull-right" style="margin-top: 2px;>
                   <!--<h5>Enter termination date to remove this employee:</h5>-->
                   <i class="fa fa-calendar fa-lg"></i> <input class="text-center date-picker" data-date-min="<%= (census_employee.hired_on - TimeKeeper.date_of_record).to_i + 1 > -60 ? (census_employee.hired_on - TimeKeeper.date_of_record).to_i + 1 : -60 %>d" placeholder="MM/DD/YYYY" type="text">
-                  <a class="terminate terminate-button" onclick="Confirm_terminate_census_employee_modal.confirmTerminateCensusEmployee($(this), '<%= census_employee._id %>');"data-link="<%= employers_employer_profile_census_employee_terminate_path(@employer_profile.id, census_employee.id) %>" href="javascript:;" id="remove_<%= census_employee.id %>" data-census-employee="<%= census_employee._id %>">
+                  <a class="terminate terminate-button" onclick="ConfirmTerminateCensusEmployeeModal.confirmTerminateCensusEmployee($(this), '<%= census_employee._id %>');"data-link="<%= employers_employer_profile_census_employee_terminate_path(@employer_profile.id, census_employee.id) %>" href="javascript:;" id="remove_<%= census_employee.id %>" data-census-employee="<%= census_employee._id %>">
                   Terminate Employee
                   </a>
                   <a class="terminate cancel" style="margin-right: 15px;">Cancel</a>
