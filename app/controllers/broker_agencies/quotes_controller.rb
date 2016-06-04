@@ -144,13 +144,15 @@ class BrokerAgencies::QuotesController < ApplicationController
     standard_component_ids = get_standard_component_ids
     @qhps = Products::QhpCostShareVariance.find_qhp_cost_share_variances(standard_component_ids, active_year, "Health")
     sort_by = params[:sort_by]
+    order = sort_by == session[:sort_by_copay] ? -1 : 1
+    session[:sort_by_copay] = order == 1 ? sort_by : ''
     if sort_by
       sort_by = sort_by.strip
       sort_array = []
       @qhps.each do |qhp|
         sort_array.push( [qhp, get_visit_cost(qhp,sort_by)]  )
       end
-      puts sort_array.sort!{|a,b| a[1] <=> b[1]}
+      sort_array.sort!{|a,b| a[1]*order <=> b[1]*order}
       @qhps = sort_array.map{|item| item[0]}
     end
     render partial: 'plan_comparision', layout: false, locals: {qhps: @qhps}
@@ -349,7 +351,7 @@ private
   end
 
   def dollar_value copay
-    return 0 if copay == 'Not Applicable'
+    return 10000 if copay == 'Not Applicable'
     cost = 0
     cost += 1000 if copay.match(/after deductible/)
     return cost if copay.match(/No charge/)
@@ -358,7 +360,7 @@ private
   end
 
   def get_visit_cost qhp_cost_share_variance, visit_type
-    service_visit = qhp_cost_share_variance.qhp_service_visits.detect{|v| visit_type.match(/#{v.visit_type}/) }
+    service_visit = qhp_cost_share_variance.qhp_service_visits.detect{|v| visit_type == v.visit_type }
     cost = dollar_value service_visit.copay_in_network_tier_1
   end
 end
