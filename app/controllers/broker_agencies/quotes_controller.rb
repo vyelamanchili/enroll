@@ -136,6 +136,25 @@ class BrokerAgencies::QuotesController < ApplicationController
     end
   end
 
+  def plan_comparison
+    puts params
+    active_year = Date.today.year
+    @coverage_kind = "health"
+    @visit_types = @coverage_kind == "health" ? Products::Qhp::VISIT_TYPES : Products::Qhp::DENTAL_VISIT_TYPES
+    standard_component_ids = get_standard_component_ids
+    @qhps = Products::QhpCostShareVariance.find_qhp_cost_share_variances(standard_component_ids, active_year, "Health")
+    sort_by = params[:sort_by]
+    if sort_by
+      sort_by = sort_by.strip
+      sort_array = []
+      @qhps.each do |qhp|
+        sort_array.push( [qhp, get_visit_cost(qhp,sort_by)]  )
+      end
+      puts sort_array.sort!{|a,b| a[1] <=> b[1]}
+      @qhps = sort_array.map{|item| item[0]}
+    end
+    render partial: 'plan_comparision', layout: false, locals: {qhps: @qhps}
+  end
 
   def show
     @quote = Quote.find(params[:id])
@@ -329,5 +348,17 @@ private
     end
   end
 
+  def dollar_value copay
+    return 0 if copay == 'Not Applicable'
+    cost = 0
+    cost += 1000 if copay.match(/after deductible/)
+    return cost if copay.match(/No charge/)
+    dollars = copay.match(/(\d+)/)
+    cost += (dollars && dollars[1]).to_i || 0
+  end
 
+  def get_visit_cost qhp_cost_share_variance, visit_type
+    service_visit = qhp_cost_share_variance.qhp_service_visits.detect{|v| visit_type.match(/#{v.visit_type}/) }
+    cost = dollar_value service_visit.copay_in_network_tier_1
+  end
 end
