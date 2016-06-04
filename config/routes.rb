@@ -275,6 +275,7 @@ Rails.application.routes.draw do
         get :get_quote_info
         get :publish
         get :criteria
+        get :plan_comparison
         get 'published_quote/:id', to: 'quotes#view_published_quote'
       end
       member do
