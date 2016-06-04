@@ -6,7 +6,7 @@
       $.ajax({
         type: "GET",
         url: "/broker_agencies/quotes/plan_comparison",
-        data: {plans: plans, sort_by: sort_by},
+        data: {plans: plans, sort_by: sort_by.substring(0, sort_by.length-2)},
         success: function(response) {
           $('#plan_comparison_frame').html(response);
           compare_plans_listeners();
@@ -17,4 +17,3 @@ compare_plans_listeners = function (){
     $('#compare_plans_table').dragtable({dragaccept: '.movable'});
     $('.cost_sort').on('click', sort_plans);
 }
-    
