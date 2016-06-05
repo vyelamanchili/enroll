@@ -48,6 +48,7 @@ class BrokerAgencies::QuotesController < ApplicationController
       unless @q.nil?
         params['plans'].each do |plan_id|
           p = Plan.find(plan_id)
+
           detailCost = Array.new
           @q.quote_households.each do |hh|
             pcd = PlanCostDecorator.new(p, hh, @q, p)
@@ -59,13 +60,9 @@ class BrokerAgencies::QuotesController < ApplicationController
           @quote_results_summary = @quote_results_summary.sort_by { |k, v| v["reference_plan_cost"] }
           @quote_results = @quote_results.sort_by { |k, v| v[:total_employer_cost] }.to_h
       end
-    elsif !params['plans'].nil? && params['plans'].count > 0 && params["commit"].downcase == "compare plans"
-      @visit_types = @coverage_kind == "health" ? Products::Qhp::VISIT_TYPES : Products::Qhp::DENTAL_VISIT_TYPES
-      standard_component_ids = get_standard_component_ids
-      @qhps = Products::QhpCostShareVariance.find_qhp_cost_share_variances(standard_component_ids, active_year, "Health")
     end
 
-    @display_results = @quote_results.present? || @qhps.present?
+    @display_results = @quote_results.present?
     #else
     #TODO OPTIONAL CACHE/REFACTOR
     @plans.each{|p| @plan_quote_criteria << [p.metal_level, p.carrier_profile.organization.legal_name, p.plan_type,
@@ -137,7 +134,6 @@ class BrokerAgencies::QuotesController < ApplicationController
   end
 
   def plan_comparison
-    puts params
     active_year = Date.today.year
     @coverage_kind = "health"
     @visit_types = @coverage_kind == "health" ? Products::Qhp::VISIT_TYPES : Products::Qhp::DENTAL_VISIT_TYPES
@@ -146,7 +142,7 @@ class BrokerAgencies::QuotesController < ApplicationController
     sort_by = params[:sort_by]
     order = sort_by == session[:sort_by_copay] ? -1 : 1
     session[:sort_by_copay] = order == 1 ? sort_by : ''
-    if sort_by
+    if sort_by && sort_by.length > 0
       sort_by = sort_by.strip
       sort_array = []
       @qhps.each do |qhp|
