@@ -68,13 +68,10 @@
 
       <% end %>
 
-      <%if @qhps%>
         <div class="panel panel-default">
           <div class="panel-collapse collapse in" role="tabpanel" aria-labelledby="compare_costs" id="plan_comparison_frame">
-            <%=render "plan_comparision" , qhps: @qhps %>
           </div>
         </div>
-      <%end%>
 
       <% if @quote_results %>
           <div class="panel panel-default">
@@ -109,6 +106,8 @@ $(document).on('ready page:load', function () {
     slider_listeners()
     page_load_listeners()
     toggle_plans(<%= raw @quote_criteria %>)
-    compare_plans_listeners()
+    $('#PlanComparison').on('click', function(){
+       sort_plans()
+    })
 })
 </script>
