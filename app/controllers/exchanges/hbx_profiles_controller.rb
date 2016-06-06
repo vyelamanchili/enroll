@@ -42,7 +42,6 @@ class Exchanges::HbxProfilesController < ApplicationController
   end
 
   def generate_invoice
-
     @organizations= Organization.where(:id.in => params[:employerId]).all
     @organizations.each do |org|
       @employer_invoice = EmployerInvoice.new(org)
@@ -57,7 +56,7 @@ class Exchanges::HbxProfilesController < ApplicationController
   def employer_invoice
 
     # Dynamic Filter values for upcoming 30, 60, 90 days renewals
-    @next_30_day = TimeKeeper.date_of_record.next_month.beginning_of_month
+    @next_30_day = TimeKeeper.date_of_record.beginning_of_month
     @next_60_day = @next_30_day.next_month
     @next_90_day = @next_60_day.next_month
 
@@ -74,22 +73,33 @@ class Exchanges::HbxProfilesController < ApplicationController
     dt_query = extract_datatable_parameters
     employers = []
 
-    # datatable records with no filter should default to scope "all_employers_renewing_published"
-    all_employers = Organization.where(:employer_profile => {:$exists => 1}).all_employers_renewing_published
+    # datatable records with no filter should default to scope "invoice_view_all"
+    all_employers = Organization.where(:employer_profile => {:$exists => 1}).invoice_view_all
+    employers = all_employers
     is_search = false
 
-    if dt_query.search_string.blank?
+    if !params[:invoice_date_criteria].blank? && params[:invoice_date_criteria] != "All"
+      invoice_date = params[:invoice_date_criteria].split(":")[0]
+      invoice_state = params[:invoice_date_criteria].split(":")[1]
+
+      employers = Organization.where(:employer_profile => {:$exists => 1}).all_employers_by_plan_year_start_on(Date.strptime(invoice_date,"%m/%d/%Y"))
+      if invoice_state == "R"
+        employers = employers.invoice_view_renewing
+      elsif invoice_state == "I"
+        employers = employers.invoice_view_initial
+      end
+      is_search = true
+    end
+
+
+    if dt_query.search_string.blank? && (params[:invoice_date_criteria].blank? || params[:invoice_date_criteria] == "All")
       employers = all_employers
     else
       #this will search on FEIN or Legal Name of an employer
       employer_ids = Organization.where(:employer_profile => {:$exists => 1}).search(dt_query.search_string).pluck(:id)
-      employers = all_employers.where({:id => {"$in" => employer_ids}})
+      employers = employers.where({:id => {"$in" => employer_ids}})
       is_search = true
-    end
 
-    if !params[:criteria].blank? && params[:criteria] != "All"
-      employers = employers.all_employers_by_plan_year_start_on(Date.strptime(params[:criteria],"%m/%d/%Y"))
-      is_search = true
     end
 
     #order records by plan_year.start_on and by legal_name

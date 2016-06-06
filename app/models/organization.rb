@@ -145,6 +145,10 @@ class Organization
   scope :all_employers_not_applicant,             ->{ unscoped.where(:"employer_profile.aasm_state".ne => "applicant") }
   scope :all_employers_applicant,                 ->{ unscoped.where(:"employer_profile.aasm_state" => "applicant") }
 
+  scope :invoice_view_all,                 ->{ unscoped.any_in(:"employer_profile.plan_years.aasm_state" => PlanYear::INVOICE_VIEW_RENEWING + PlanYear::INVOICE_VIEW_INITIAL) }
+  scope :invoice_view_renewing,                 ->{ unscoped.any_in(:"employer_profile.plan_years.aasm_state" => PlanYear::INVOICE_VIEW_RENEWING) }
+  scope :invoice_view_initial,                 ->{ unscoped.any_in(:"employer_profile.plan_years.aasm_state" => PlanYear::INVOICE_VIEW_INITIAL) }
+
   def generate_hbx_id
     write_attribute(:hbx_id, HbxIdGenerator.generate_organization_id) if hbx_id.blank?
   end
