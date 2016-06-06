@@ -65,9 +65,20 @@ class BrokerAgencies::QuotesController < ApplicationController
     @display_results = @quote_results.present?
     #else
     #TODO OPTIONAL CACHE/REFACTOR
-    @plans.each{|p| @plan_quote_criteria << [p.metal_level, p.carrier_profile.organization.legal_name, p.plan_type,
-     p.deductible.gsub(/\$/,'').gsub(/,/,'').to_i, p.id.to_s, p.carrier_profile.abbrev, p.nationwide, p.dc_in_network] if p.deductible.present?
-    }
+    @plans.each do |p| 
+      if p.deductible.present?
+        @plan_quote_criteria << [p.metal_level, 
+                                 p.carrier_profile.organization.legal_name, 
+                                 p.plan_type,
+                                 p.deductible.gsub(/\$/,'').gsub(/,/,'').to_i, 
+                                 p.id.to_s, 
+                                 p.carrier_profile.abbrev, 
+                                 p.nationwide, 
+                                 p.dc_in_network]
+      else                                   
+        log("ERROR: No deductible found for Plan: #{p.name}", {:severity => "error"})
+      end
+    end
     @metals =      @plan_quote_criteria.map{|p| p[0]}.uniq.append('any')
     @carriers =    @plan_quote_criteria.map{|p| [ p[1], p[5] ] }.uniq.append(['any','any'])
     @plan_types =  @plan_quote_criteria.map{|p| p[2]}.uniq.append('any')
