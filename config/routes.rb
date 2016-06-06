@@ -277,6 +277,7 @@ Rails.application.routes.draw do
         get :criteria
         get :plan_comparison
         get 'published_quote/:id', to: 'quotes#view_published_quote'
+        get :export_to_pdf
       end
       member do
         post :download_employee_roster

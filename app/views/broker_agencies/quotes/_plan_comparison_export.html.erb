@@ -1,16 +1,11 @@
-<%= hidden_field_tag 'current_sort', @sort_by  %>
 <div class="container-fluid">
-  <h3>Plan Comparison Chart</h3>
-  <ul>
-    <li> Plans can be rearranged by dragging the company icon </li>
-    <li> Use <i class='fa fa-retweet'></i> to sort by copay </li>
-  </ul>
+  <h3 style='text-align:center'>Plan Comparison Chart</h3>
   <div class="mygrid-wrapper-div">
    <table class="table bordered compare-table", border = "1", style="font-size:11px;" id="compare_plans_table">
         <tr>
           <th class="row-title">Plans</th>
           <% qhps.each do |qhp|%>
-            <th colspan="2" style="text-align: center; vertical-align:middle; border: none; padding: 0;" class='movable'><%= display_carrier_logo(qhp.plan.carrier_profile.organization.legal_name, {width: 80}) %></th>
+            <th colspan="2" style="text-align: center; vertical-align:middle; border: none; padding: 0;" class='movable'><%= display_carrier_logo(qhp.plan.carrier_profile.organization.legal_name, { width: 80, pdf: true }) %></th>
           <% end %>
         </tr>
         <tr>
@@ -72,14 +67,15 @@
           <% qhps.each do |qhp|%>
             <th colspan="2">
               <div class="plan_comparison">
-                <%= render partial: "shared/plan_shoppings/sbc_link", locals: { plan: qhp.plan } %>
+                <% key, bucket = get_key_and_bucket(qhp.plan.sbc_document.identifier) %>
+                <% link_text = qhp.plan.coverage_kind == 'health' ? "Summary of Benefits and Coverage" : 'Plan Summary' %>
+                <%= link_to link_text, root_url + document_download_path(bucket, key) + 
+                                                  "?content_type=application/pdf&filename=#{qhp.plan.name.gsub(/[^0-9a-z]/i,'')}.
+                                                  pdf&disposition=inline" %>
               </div>
             </th>
           <% end %>
         </tr>
     </table>
   </div>
-  <br>
-    <div id='pdf_export_compare_plans' class='btn btn-info'>Export to PDF</div>
-  <br><br>
 </div>
