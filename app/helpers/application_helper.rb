@@ -578,13 +578,4 @@ module ApplicationHelper
     return false if general_agency_profile.blank? || broker_agency_profile.blank?
     broker_agency_profile.default_general_agency_profile == general_agency_profile
   end
-
-  def eligiblity_participation_rule(count)
-    case count
-    when 0
-      return "2/3 Rule Met? : Yes"
-    else
-      return "2. You have 0 non-owner employees on your roster"
-    end
-  end
 end
