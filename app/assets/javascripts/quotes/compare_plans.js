@@ -19,6 +19,7 @@ sort_plans = function(){
         success: function(response) {
           $('#plan_comparison_frame').html(response);
           compare_plans_listeners();
+          export_compare_plans_listener();
           collapse_all()
         }
       })
@@ -26,4 +27,12 @@ sort_plans = function(){
 compare_plans_listeners = function (){
     $('#compare_plans_table').dragtable({dragaccept: '.movable'});
     $('.cost_sort').on('click', sort_plans);
+}
+
+compared_plans_export = function(){
+  $.get('/broker_agencies/quotes/export_to_pdf');
+}
+
+export_compare_plans_listener = function(){
+  $('#pdf_export_compare_plans').on('click', compared_plans_export);
 }

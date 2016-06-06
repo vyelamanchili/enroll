@@ -31,8 +31,8 @@ class BrokerAgencies::QuotesController < ApplicationController
     @coverage_kind = "health"
     #@plans =  Plan.shop_health_by_active_year(active_year)
     @plans = $quote_shop_health_plans
-
-
+    
+    
     @plan_quote_criteria  = []
     @bp_hash = {'employee':50, 'spouse': 0, 'domestic_partner': 0, 'child_under_26': 0, 'child_26_and_over': 0}
     # if !params['plans'].nil? && params['plans'].count > 0
@@ -66,7 +66,7 @@ class BrokerAgencies::QuotesController < ApplicationController
     #else
     #TODO OPTIONAL CACHE/REFACTOR
     @plans.each{|p| @plan_quote_criteria << [p.metal_level, p.carrier_profile.organization.legal_name, p.plan_type,
-     p.deductible.gsub(/\$/,'').gsub(/,/,'').to_i, p.id.to_s, p.carrier_profile.abbrev, p.nationwide, p.dc_in_network]
+     p.deductible.gsub(/\$/,'').gsub(/,/,'').to_i, p.id.to_s, p.carrier_profile.abbrev, p.nationwide, p.dc_in_network] if p.deductible.present?
     }
     @metals =      @plan_quote_criteria.map{|p| p[0]}.uniq.append('any')
     @carriers =    @plan_quote_criteria.map{|p| [ p[1], p[5] ] }.uniq.append(['any','any'])
@@ -139,19 +139,26 @@ class BrokerAgencies::QuotesController < ApplicationController
     @visit_types = @coverage_kind == "health" ? Products::Qhp::VISIT_TYPES : Products::Qhp::DENTAL_VISIT_TYPES
     standard_component_ids = get_standard_component_ids
     @qhps = Products::QhpCostShareVariance.find_qhp_cost_share_variances(standard_component_ids, active_year, "Health")
-    sort_by = params[:sort_by]
-    order = sort_by == session[:sort_by_copay] ? -1 : 1
-    session[:sort_by_copay] = order == 1 ? sort_by : ''
-    if sort_by && sort_by.length > 0
-      sort_by = sort_by.strip
+    @sort_by = params[:sort_by]
+    order = @sort_by == session[:sort_by_copay] ? -1 : 1
+    session[:sort_by_copay] = order == 1 ? @sort_by : ''
+    if @sort_by && @sort_by.length > 0
+      @sort_by = @sort_by.strip
       sort_array = []
       @qhps.each do |qhp|
-        sort_array.push( [qhp, get_visit_cost(qhp,sort_by)]  )
+        sort_array.push( [qhp, get_visit_cost(qhp,@sort_by)]  )
       end
       sort_array.sort!{|a,b| a[1]*order <=> b[1]*order}
       @qhps = sort_array.map{|item| item[0]}
     end
-    render partial: 'plan_comparision', layout: false, locals: {qhps: @qhps}
+    if params[:export_to_pdf]
+      render pdf: 'plan_comparison_export', 
+            template: 'broker_agencies/quotes/_plan_comparison_export.html.erb', 
+            disposition: 'attachment', 
+            locals: { qhps: @qhps }
+    else
+      render partial: 'plan_comparision', layout: false, locals: {qhps: @qhps}
+    end
   end
 
   def show
@@ -271,8 +278,12 @@ class BrokerAgencies::QuotesController < ApplicationController
       render json: []
     end
   end
-
-
+  
+  def export_to_pdf
+    @pdf_url = "/broker_agencies/quotes/plan_comparison?"
+  end
+  
+  
 private
 
   def employee_relationship_map
