@@ -126,16 +126,20 @@
             &nbsp;
           </div>
           <!-- Health Plan Summary: start -->
-          <div class="col-xs-11">
+          <div class="col-xs-11 health">
             <% if bg.is_offering_dental? %>
 
-            <div class="">
+            <div class="row">
+              <div class="col-xs-6">
                 <% if bg.is_offering_dental? %>
                 <h5 class="title no-buffer">Health</h5>
                 <% else %>
                 <h5 class="title no-buffer">&nbsp;</h5>
                 <% end%>
+              </div>
+            </div>
             <% end%>
+
             <table>
               <tr>
                 <th colspan="2">
@@ -192,10 +196,14 @@
           <!-- Health Plan Summary: end -->
 
           <!--Health plan collapsible: starts -->
-          <div class="health-offering <% if !bg.is_offering_dental? %>col-xs-11 col-xs-offset-1<% end %>" style="display:none">
+          <div class="health-offering" style="display:none">
+            <div class="col-xs-1">
+              &nbsp;
+            </div>
 
             <!--Health plan contribution: start-->
-            <div class="package-offering">
+            <div class="col-xs-11 package-offering">
+              <div class="col-xs-12">
                 <table>
                   <tr>
                     <th>Offered</th>
@@ -217,7 +225,11 @@
             <!--Health plan contribution: end -->
 
             <!--Health plan Estimated Cost: start-->
-              <div class="est-month">
+            <div class="col-xs-12">
+              <div class="col-xs-1">
+                &nbsp;
+              </div>
+              <div class="est-month col-xs-11">
                 <% if bg.census_employees.present? %>
                 <div class="row">
                   <div class="col-xs-4">
@@ -267,6 +279,7 @@
             <div class="col-xs-1">
               &nbsp;
             </div>
+
             <div class="col-xs-11 dental">
               <div class="row">
                 <div class="col-xs-6">
@@ -330,12 +343,14 @@
                 </tr>
               </table>
             </div>
+
             <% if bg.elected_dental_plan_ids.count < 13 && bg.elected_dental_plan_ids.count > 1 %>
               <%= render partial: 'shared/custom_dental_offered_plans_modal', locals: { bg: bg } %>
             <% end %>
           <% end %>
           <!--Dental Plan Summary: end -->
 
+          <br class="clear"/>
 
           <!--Dental plan collapsible: start -->
           <% if bg.is_offering_dental? %>
@@ -346,7 +361,8 @@
             </div>
 
             <!--Dental Plan Contribution: start -->
-            <div class="package-offering">
+            <div class="col-xs-11 package-offering">
+              <div class="col-xs-12">
                 <table>
                   <tr>
                     <th>Offered</th>
@@ -363,6 +379,7 @@
                   </tr>
                   <% end %>
                 </table>
+              </div>
             </div>
             <!--Dental Plan Contribution: end -->
 
@@ -405,6 +422,7 @@
                 </div>
                 <% end %>
               </div>
+            </div>
             <!-- Dental plan Estimated Cost: end -->
 
           </div>
@@ -427,7 +445,6 @@
 
     <%= render "employers/plan_years/publish_modal", plan_year: plan_year %>
     <%= render "employers/plan_years/revert_modal", plan_year: plan_year %>
-  </div>
 
     <% end %>
     <% else %>
