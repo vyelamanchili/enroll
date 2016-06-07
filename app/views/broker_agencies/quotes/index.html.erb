@@ -94,14 +94,13 @@ $(document).on('ready page:load', function () {
     }
     var focus_on_compare_table = <%= @display_results %>
     if (focus_on_compare_table) {collapse_all()}
-
     window.select_plans = <%=raw @plan_quote_criteria %>
-    var select_deductible = <%= @max_deductible %>
-    deductible_value = select_deductible
-    plan_count = window.select_plans.length
+    plan_count = Object.keys(window.select_plans).length
+    deductible_value = 6000
 
     window.relationship_benefits = <%= raw @benefit_pcts_json %>
     window.roster_premiums = <%= raw @roster_premiums_json %>
+
     <% if @quotes.count > 0 %> set_plan_costs() <% end %>
     slider_listeners()
     page_load_listeners()
