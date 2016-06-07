@@ -29,25 +29,21 @@ class BrokerAgencies::QuotesController < ApplicationController
     @all_quotes = Quote.where("broker_role_id" => current_user.person.broker_role.id)
     active_year = Date.today.year
     @coverage_kind = "health"
-    #@plans =  Plan.shop_health_by_active_year(active_year)
     @plans = $quote_shop_health_plans
-    
-    
-    @plan_quote_criteria  = []
-    @bp_hash = {'employee':50, 'spouse': 0, 'domestic_partner': 0, 'child_under_26': 0, 'child_26_and_over': 0}
-    # if !params['plans'].nil? && params['plans'].count > 0
 
-    #   @q =  Quote.find(params[:quote]) #Quote.find(Quote.first.id)
-    #   @benefit_pcts = @q.quote_relationship_benefits
-    #   @benefit_pcts.each{|bp| @bp_hash[bp.relationship] = bp.premium_pct}
-    #@q = nil
+    @health_selectors = $quote_shop_health_selectors
+
+    @plan_quote_criteria  = $quote_shop_health_plan_features.to_json
+
+    @bp_hash = {'employee':50, 'spouse': 0, 'domestic_partner': 0, 'child_under_26': 0, 'child_26_and_over': 0}
+
     @q =  Quote.find(params[:quote]) if !params[:quote].nil?#Quote.find(Quote.first.id)
     if !params['plans'].nil? && params['plans'].count > 0 && params["commit"].downcase == "compare costs"
       @quote_results = Hash.new
       @quote_results_summary = Hash.new
       unless @q.nil?
         params['plans'].each do |plan_id|
-          p = Plan.find(plan_id)
+          p = $quote_shop_health_plans.detect{|plan| plan.id.to_s == plan_id}
 
           detailCost = Array.new
           @q.quote_households.each do |hh|
@@ -63,29 +59,7 @@ class BrokerAgencies::QuotesController < ApplicationController
     end
 
     @display_results = @quote_results.present?
-    #else
-    #TODO OPTIONAL CACHE/REFACTOR
-    @plans.each do |p| 
-      if p.deductible.present?
-        @plan_quote_criteria << [p.metal_level, 
-                                 p.carrier_profile.organization.legal_name, 
-                                 p.plan_type,
-                                 p.deductible.gsub(/\$/,'').gsub(/,/,'').to_i, 
-                                 p.id.to_s, 
-                                 p.carrier_profile.abbrev, 
-                                 p.nationwide, 
-                                 p.dc_in_network]
-      else                                   
-        log("ERROR: No deductible found for Plan: #{p.name}", {:severity => "error"})
-      end
-    end
-    @metals =      @plan_quote_criteria.map{|p| p[0]}.uniq.append('any')
-    @carriers =    @plan_quote_criteria.map{|p| [ p[1], p[5] ] }.uniq.append(['any','any'])
-    @plan_types =  @plan_quote_criteria.map{|p| p[2]}.uniq.append('any')
-    @dc_network =  ['true', 'false', 'any']
-    @nationwide =  ['true', 'false', 'any']
-    @select_detail = @plan_quote_criteria.to_json
-    @max_deductible = 6000
+
     quote_on_page = @q || @quotes.first
     @quote_criteria = []
     unless quote_on_page.nil?
@@ -240,16 +214,7 @@ class BrokerAgencies::QuotesController < ApplicationController
     q.quote_relationship_benefits.each {|b|
       b.update_attributes!(premium_pct: benefits[b.relationship])
     }
-
-    @plans =  Plan.shop_health_by_active_year(2016)
-
-    costs= []
-    #@plans.each{ |plan|
-    # TODOJF takes 5 seconds, needs caching.
-    #  costs << [plan.id, q.roster_employee_cost(plan.id) ]
-    #}
-
-    render json:  costs.to_json
+    render json: {}
   end
 
 
