@@ -7,7 +7,7 @@ end
 Plan::REFERENCE_PLAN_METAL_LEVELS.map do |metal_level|
   Plan.valid_shop_health_plans('metal_level', metal_level)
 end
-
+include Acapi::Notifiers
 $quote_shop_health_plans = Plan.shop_health_by_active_year(2016).all.entries
 
 def build_plan_selectors market_kind='shop', coverage_kind='health'

@@ -37,11 +37,24 @@ class BrokerAgencies::QuotesController < ApplicationController
 
     @bp_hash = {'employee':50, 'spouse': 0, 'domestic_partner': 0, 'child_under_26': 0, 'child_26_and_over': 0}
 
+    quote_on_page = @q || @quotes.first
+    @quote_criteria = []
+    unless quote_on_page.nil?
+      quote_on_page.quote_relationship_benefits.each{|bp| @bp_hash[bp.relationship] = bp.premium_pct}
+      roster_premiums = quote_on_page.roster_cost_all_plans
+      @roster_premiums_json = roster_premiums.to_json
+      @quote_criteria = quote_on_page.criteria_for_ui
+    end
+    @benefit_pcts_json = @bp_hash.to_json
+
     @q =  Quote.find(params[:quote]) if !params[:quote].nil?#Quote.find(Quote.first.id)
+
     if !params['plans'].nil? && params['plans'].count > 0 && params["commit"].downcase == "compare costs"
       @quote_results = Hash.new
       @quote_results_summary = Hash.new
       unless @q.nil?
+        @roster_elected_plan_bounds = PlanCostDecoratorQuote.elected_plans_cost_bounds(@plans,
+          @q.quote_relationship_benefits, roster_premiums)
         params['plans'].each do |plan_id|
           p = $quote_shop_health_plans.detect{|plan| plan.id.to_s == plan_id}
 
@@ -50,24 +63,22 @@ class BrokerAgencies::QuotesController < ApplicationController
             pcd = PlanCostDecorator.new(p, hh, @q, p)
             detailCost << pcd.get_family_details_hash.sort_by { |m| [m[:family_id], -m[:age], -m[:employee_contribution]] }
           end
-          @quote_results[p.name] = {:detail => detailCost, :total_employee_cost => @q.roster_employee_cost(p,p), :total_employer_cost => @q.roster_employer_contribution(p,p), plan_id: plan_id}
-          @quote_results_summary[p.name] = @q.cost_by_offerings(p)
+
+          employer_cost = @q.roster_employer_contribution(p,p)
+          @quote_results[p.name] = {:detail => detailCost,
+            :total_employee_cost => @q.roster_employee_cost(p,p),
+            :total_employer_cost => employer_cost,
+            plan_id: plan_id,
+            buy_up: PlanCostDecoratorQuote.buy_up(employer_cost, p.metal_level, @roster_elected_plan_bounds)
+          }
         end
-          @quote_results_summary = @quote_results_summary.sort_by { |k, v| v["reference_plan_cost"] }
-          @quote_results = @quote_results.sort_by { |k, v| v[:total_employer_cost] }.to_h
+        @quote_results = @quote_results.sort_by { |k, v| v[:total_employer_cost] }.to_h
       end
     end
 
     @display_results = @quote_results.present?
 
-    quote_on_page = @q || @quotes.first
-    @quote_criteria = []
-    unless quote_on_page.nil?
-      quote_on_page.quote_relationship_benefits.each{|bp| @bp_hash[bp.relationship] = bp.premium_pct} if
-      @roster_premiums_json = quote_on_page.roster_cost_all_plans.to_json
-      @quote_criteria = quote_on_page.criteria_for_ui
-    end
-    @benefit_pcts_json = @bp_hash.to_json
+
   end
 
   def edit

@@ -29,19 +29,29 @@
       <td class="quote_detail_results_header text-center">Lowest / Reference / Highest</td>
       <td class="quote_detail_results_header text-center">Lowest / Reference / Highest</td>
     </tr>
-    <% @quote_results_summary.each do |k,v| %>
-    <tr class='publish' id='publish_<%=@quote_results[k][:plan_id]%>'>
-      <td class="quote_detail_results" style='white-space:nowrap'><%= k %></td>
-      <td class="quote_detail_results text-center"><div class='btn'>
-        $<%= v["reference_plan_cost"].ceil %>
-      </div></td>
-      <td class="quote_detail_results text-center"><div class='btn'>
-        $<%= v[:single_carrier]["lowest_cost_plan_cost"].ceil %> / $<%= v["reference_plan_cost"].ceil %> / $<%= v[:single_carrier]["highest_cost_plan_cost"].ceil %>
+   <% @quote_results.each do |k,v| %>
+       <% cost =  v[:total_employer_cost].ceil
+          plan = @plans.detect{|plan|plan.name == k}
+          abbrev = CarrierProfile.find(plan.carrier_profile_id).abbrev
+          metal_low = @roster_elected_plan_bounds[:metal_low][plan.metal_level]
+          metal_high = @roster_elected_plan_bounds[:metal_high][plan.metal_level]
+          carrier_low = @roster_elected_plan_bounds[:carrier_low][abbrev]
+          carrier_high = @roster_elected_plan_bounds[:carrier_high][abbrev]
+       %>
+       <tr class='publish' id='publish_<%=@quote_results[k][:plan_id]%>'>
+         <td class="quote_detail_results" style='white-space:nowrap'><%= k %></td>
+         <td class="quote_detail_results text-center">
+            <div class='btn'>
+             $<%= cost %>
+             </div>
+         </td>
+           <td class="quote_detail_results text-center"><div class='btn'>
+        $<%= carrier_low %> / $<%= cost %> / $<%= carrier_high %>
         </div></td>
       <td class="quote_detail_results text-center"><div class='btn'>
-        $<%= v[:metal_level]["lowest_cost_plan_cost"].ceil %> / $<%= v["reference_plan_cost"].ceil %> / $<%= v[:metal_level]["highest_cost_plan_cost"].ceil %>
+        $<%= metal_low %> / $<%= cost %> / $<%= metal_high %>
         </div></td>
-    </tr>
+       </tr>
     <% end %>
   </table>
 
@@ -62,7 +72,7 @@
 
        <span >$<%= qr[1][:total_employer_cost].ceil %></span>
        <br>
-       Buy up to gold <span>500-999</span>
+       <%= qr[1][:buy_up]  %>
         </sm>
    </div>
       </td>
