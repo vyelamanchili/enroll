@@ -38,8 +38,8 @@ def build_plan_features market_kind='shop', coverage_kind='health'
     characteristics['nationwide'] = plan.nationwide
     characteristics['dc_in_network'] = plan.dc_in_network
 
-    if p.deductible_int.present?
-        feature_array << characteristics
+    if plan.deductible_int.present?
+      feature_array << characteristics
     else   
       log("ERROR: No deductible found for Plan: #{p.name}", {:severity => "error"})
     end
