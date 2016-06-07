@@ -2,6 +2,8 @@ require 'csv'
 class Employers::PremiumStatementsController < ApplicationController
   layout "two_column", only: [:show]
   include Employers::PremiumStatementHelper
+  include DataTablesAdapter
+
 
   def show
     @employer_profile = EmployerProfile.find(params.require(:id))
@@ -15,6 +17,18 @@ class Employers::PremiumStatementsController < ApplicationController
         send_data(csv_for(@hbx_enrollments), type: csv_content_type, filename: "DCHealthLink_Premium_Billing_Report.csv")
       end
     end
+  end
+
+  def premium_statements_index_datatable
+    dt_query = extract_datatable_parameters
+    premium_statements = []
+    hbx_enrollments = @employer_profile.enrollments_for_billing(@billing_date)
+
+    @draw = dt_query.draw
+    @total_records = all_families.count
+    @records_filtered = families.count
+    @families = families.skip(dt_query.skip).limit(dt_query.take)
+    render
   end
 
   private

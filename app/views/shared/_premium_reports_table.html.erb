@@ -27,7 +27,16 @@
 
 <script>
   $(document).on('ready page:load', function () {
-    $('.premium-reports-table > .table').DataTable();
+
+    $('.premium-reports-table > .table').DataTable( {
+      "processing": true,
+      "serverSide": true,
+      "ordering" : false,
+      "ajax": {
+        url: "<%= premium_statements_index_datatable_employers_premium_statements_path(:format => :json) %>",
+        type: "GET"
+      }
+    } );
     $('select').selectric();
   });
 </script>
