@@ -39,7 +39,10 @@ When(/^the user clicks Shop for plans button$/) do
 end
 
 Then(/^the user should be able to use their existing SEP$/) do
+  # sleep 1
+  wait_for_ajax
   screenshot "final step"
   #binding.pry
   #expect(@browser.a(text: /Shop with existing SEP/i).visible?).to be_truthy
+  expect(page).to have_content('Shop with existing SEP')
 end
