@@ -1,3 +1,5 @@
+include Acapi::Notifiers
+
 Organization.exists(carrier_profile: true).map do |org|
   Plan.valid_shop_health_plans('carrier', org.carrier_profile.id)
 end
@@ -40,8 +42,8 @@ def build_plan_features market_kind='shop', coverage_kind='health'
 
     if plan.deductible_int.present?
       feature_array << characteristics
-    else   
-      log("ERROR: No deductible found for Plan: #{p.name}", {:severity => "error"})
+    else
+      log("ERROR: No deductible found for Plan: #{p.try(:name)}, ID: #{plan.id}", {:severity => "error"})
     end
   }
   feature_array
