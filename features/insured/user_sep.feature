@@ -1,4 +1,4 @@
-@watir @screenshots
+@screenshots
 Feature: SEP should not be prompted every time the user shops for a new plan
 	
 	Scenario: Users should only have to attest to meeting SEP criteria one time
