@@ -162,10 +162,12 @@ Rails.application.routes.draw do
   namespace :employers do
     post 'search', to: 'employers#search'
     root 'employer_profiles#new'
-    get :premium_statements_index
-    get :premium_statements_index_datatable
 
-    resources :premium_statements, :only => [:show]
+
+    resources :premium_statements, :only => [:show] do
+      get :premium_statements_index
+      get :premium_statements_index_datatable
+    end
 
     resources :employer_staff_roles, :only => [:create, :destroy] do
       member do

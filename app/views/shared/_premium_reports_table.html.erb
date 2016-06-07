@@ -33,7 +33,7 @@
       "serverSide": true,
       "ordering" : false,
       "ajax": {
-        url: "<%= premium_statements_index_datatable_employers_premium_statements_path(:format => :json) %>",
+        url: "<%= employers_premium_statement_premium_statements_index_datatable_path(premium_statement_id: @employer_profile.id, :format => :json) %>",
         type: "GET"
       }
     } );

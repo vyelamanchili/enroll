@@ -20,15 +20,18 @@ class Employers::PremiumStatementsController < ApplicationController
   end
 
   def premium_statements_index_datatable
+
     dt_query = extract_datatable_parameters
     premium_statements = []
+    @employer_profile = EmployerProfile.find(params.require(:premium_statement_id))
+    set_billing_date
     hbx_enrollments = @employer_profile.enrollments_for_billing(@billing_date)
 
     @draw = dt_query.draw
-    @total_records = all_families.count
-    @records_filtered = families.count
-    @families = families.skip(dt_query.skip).limit(dt_query.take)
-    render
+    @total_records = hbx_enrollments.count
+    @records_filtered = hbx_enrollments.count
+    @hbx_enrollments = hbx_enrollments.skip(dt_query.skip).limit(dt_query.take) unless hbx_enrollments.blank?
+    render "premium_statements_index_datatable"
   end
 
   private
