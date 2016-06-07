@@ -369,6 +369,10 @@ class Plan
     (EligibilityDetermination::CSR_KIND_TO_PLAN_VARIANT_MAP.values - [EligibilityDetermination::CSR_KIND_TO_PLAN_VARIANT_MAP.default]).include? csr_variant_id
   end
 
+  def deductible_int
+    (deductible && deductible.gsub(/\$/,'').gsub(/,/,'').to_i) || nil
+  end
+
   class << self
 
     def monthly_premium(plan_year, hios_id, insured_age, coverage_begin_date)
