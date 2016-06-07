@@ -284,7 +284,7 @@ private
   params[:quote][:start_on] =  Date.strptime(params[:quote][:start_on],"%m/%d/%Y") if params[:quote][:start_on]
   if params[:quote][:quote_households_attributes]
     params[:quote][:quote_households_attributes].values.each do |household_attribute|
-      unless household_attribute.nil?
+      if household_attribute[:quote_members_attributes].present?
         household_attribute[:quote_members_attributes].values.map { |m| m[:dob] = Date.strptime(m[:dob],"%m/%d/%Y") unless m[:dob] && m[:dob].blank?}
       end
     end
