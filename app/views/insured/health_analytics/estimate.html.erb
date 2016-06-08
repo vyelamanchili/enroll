@@ -165,7 +165,7 @@
     </table>
   </div>
 </div>
-<a class="btn btn-trans">Edit Estimate</a>
+<a class="btn btn-default">Edit Estimate</a>
 <br class="clear"/>
 </div>
 </div>
@@ -176,7 +176,7 @@ $(document).ready(function () {
     window.location = "/insured/plan_shoppings/<%= @hbx_enrollment %>?sort=estimated_out_of_pocket&rating=<%=@multiplier%>"
   })
 
-  $('.visits-estimate .btn-trans').on('click', function() {
+  $('.visits-estimate .btn-default').on('click', function() {
     values = $('table tr').find('td:first')
     $.each( values, function( i, val ) {
       td_values = $(this).text();

@@ -7,6 +7,7 @@ class Insured::FamiliesController < FamiliesController
   before_action :check_employee_role
 
   def home
+    set_flash_by_announcement
     set_bookmark_url
 
     log("#3717 person_id: #{@person.id}, params: #{params.to_s}, request: #{request.env.inspect}", {:severity => "error"}) if @family.blank?
@@ -118,13 +119,8 @@ class Insured::FamiliesController < FamiliesController
     @sent_box = false
   end
 
-  def documents_index #changed
-    @time_to = Time.now + 90.days
+  def verification
     @family_members = @person.primary_family.family_members.active
-  end
-
-  def document_upload #changed
-    @person_family = @person.primary_family.family_members
   end
 
   def check_qle_date

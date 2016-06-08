@@ -62,7 +62,7 @@
                 have any health conditions?</h4>
             </div>
             <div class="panel-body">
-              <%= link_to "<i class='fa fa-plus'></i> Add Health Conditions".html_safe, "", class: "btn btn-trans btn-br", data: { toggle: 'modal', target: "#healthConditions-#{family_member.id}" } %>
+              <%= link_to "<i class='fa fa-plus'></i> Add Health Conditions".html_safe, "", class: "btn btn-default btn-br", data: { toggle: 'modal', target: "#healthConditions-#{family_member.id}" } %>
             </div>
           </div>
         </div>
@@ -75,7 +75,7 @@
                 take any medications?</h4>
             </div>
             <div class="panel-body">
-              <%= link_to "<i class='fa fa-plus'></i> Add Medications".html_safe, "", class: "btn btn-trans btn-br", data: { toggle: 'modal', target: "#healthMedications-#{family_member.id}" } %>
+              <%= link_to "<i class='fa fa-plus'></i> Add Medications".html_safe, "", class: "btn btn-default btn-br", data: { toggle: 'modal', target: "#healthMedications-#{family_member.id}" } %>
             </div>
           </div>
         </div>
@@ -108,7 +108,7 @@
 
         </div>
         <div class="modal-footer">
-          <a class="btn btn-trans btn-small" data-dismiss="modal">Close</a>
+          <a class="btn btn-default btn-small" data-dismiss="modal">Close</a>
           <a class="btn btn-primary btn-br btn-small mtz" data-dismiss="modal">Add Health Conditions</a>
         </div>
       </div>
@@ -182,7 +182,7 @@
           </div>
         </div>
         <div class="modal-footer">
-          <a class="btn btn-trans btn-small pull-left" data-dismiss="modal">Close</a>
+          <a class="btn btn-default btn-small pull-left" data-dismiss="modal">Close</a>
           <a class="btn btn-primary btn-br btn-small mtz" data-dismiss="modal">Add Medications</a>
         </div>
       </div>
@@ -282,14 +282,14 @@
           modal.closest('.family-member').find('.conditions .panel-body span').wrap("<a data-target=#"+modal_id+" data-toggle='modal'></a>")
           modal.closest('.family-member').find('.conditions .panel-body').append("<a data-target=#"+modal_id+" data-toggle='modal'> (Edit)</a>")
         } else {
-          modal.closest('.family-member').find('.conditions .panel-body').html('<a class="btn btn-trans btn-br interaction-click-control-add-health-conditions" data-toggle="modal" data-target=#'+modal_id+' href=""><i class="fa fa-plus"></i> Add Health Conditions</a>');
+          modal.closest('.family-member').find('.conditions .panel-body').html('<a class="btn btn-default btn-br interaction-click-control-add-health-conditions" data-toggle="modal" data-target=#'+modal_id+' href=""><i class="fa fa-plus"></i> Add Health Conditions</a>');
         }
       } else if ($(this).text() == "Add Medications") {
         $('#healthMedications').unbind('hidden');
         Household.addMedications($(this).closest('.modal'));
       }
     });
-    $('.modal-footer .btn-trans').on('click', function() {
+    $('.modal-footer .btn-default').on('click', function() {
       if ( $(this).text() == "Remove" ) {
         $('#healthMedications').unbind('hidden');
       }
