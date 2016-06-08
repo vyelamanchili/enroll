@@ -1,13 +1,5 @@
 <%= form_for 'renewingER', {url: generate_invoice_exchanges_hbx_profiles_path, method: :post, :remote => true} do |f| %>
 
-<!--<div class="btn-group" data-toggle="buttons" style='max-height: 340px; overflow-y: scroll' id="ERInvoiceFilter-Group">
-       <label class="btn btn-default active"><input name="ERInvoiceFilter"  type="radio" autocomplete="off" value="All" checked="">All</label>
-       <label class="btn btn-default"><input name="ERInvoiceFilter"  type="radio" autocomplete="off" value="<%= @next_30_day.to_s %>"><%= @next_30_day.to_s %></label>
-       <label class="btn btn-default"><input name="ERInvoiceFilter"  type="radio" autocomplete="off" value="<%= @next_60_day.to_s %>"><%= @next_60_day.to_s %></label>
-       <label class="btn btn-default"><input name="ERInvoiceFilter"  type="radio" autocomplete="off" value="<%= @next_90_day.to_s %>"><%= @next_90_day.to_s %></label>
-</div>-->
-
-
 <select id="ERInvoiceFilter-Dropdown">
 <%= options_for_select([
   ['All','All'],
@@ -22,7 +14,7 @@
     <thead>
     <tr>
       <th colspan="6" class="text-center" style="background-color: #f8f8f8;">Employer</th>
-      <th colspan="4" class="text-center" style="background-color: #e8e8e8;">Employee</th>
+      <th colspan="5" class="text-center" style="background-color: #e8e8e8;">Employee</th>
     </tr>
     <tr>
       <th><%= check_box_tag 'ER-Invoice-check-all' %></th>
