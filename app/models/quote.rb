@@ -19,6 +19,7 @@ class Quote
   field :broker_role_id, type: BSON::ObjectId
   field :published_reference_plan, type: BSON::ObjectId
 
+  field :claim_code, type: String, default: ''
   associated_with_one :broker_role, :broker_role_id, "BrokerRole"
 
   associated_with_one :plan, :published_reference_plan, "Plan"
@@ -165,6 +166,16 @@ class Quote
 
 
       self.save
+  end
+
+  def generate_character
+    ascii = rand(36) + 48
+    ascii += 39 if ascii >= 58
+    ascii.chr
+  end
+
+  def employer_claim_code
+     4.times.map{generate_character}.join + '-' + 4.times.map{generate_character}.join
   end
 
   def gen_data

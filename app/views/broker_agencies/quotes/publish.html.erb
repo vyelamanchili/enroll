@@ -30,7 +30,7 @@
   <%= submit_tag "Publish Quote", class: 'btn btn-primary' %>
 <% end %>
 
-
+<h4> Employer Claim Code: &nbsp;<b><%=@quote.claim_code%></b></h4>
 <br>
 
 <p>Your reference plan is highlighted below.</p>
@@ -45,16 +45,16 @@
 			</tr>
 		</th>
 		<tbody>
-<% @plans_offered.each do |p|  %>
+        <% @plans_offered.each do |p|  %>
 			<tr <% if p["plan_id"] == @plan.id.to_s %> class="reference_plan_row" <% end %>>
-					<td class="quote_detail_results text-center">$<%= p["employer_cost"] %></td>
-					<td class="quote_detail_results text-center">$<%= p["employee_cost"] %></td>
-					<td class="quote_detail_results text-center"><%= p["plan_name"] %></td>
-          <td class="quote_detail_results text-center">XXX</td>
+                <td class="quote_detail_results text-center">$<%= p["employer_cost"] %></td>
+                <td class="quote_detail_results text-center">$<%= p["employee_cost"] %></td>
+                <td class="quote_detail_results text-center"><%= p["plan_name"] %></td>
+                <td class="quote_detail_results text-center"><%=p['metal_level'].capitalize%></td>
 			</tr>
-<% end %>
-	</tbody>
-</table>
+        <% end %>
+        </tbody>
+    </table>
 
 		</div>
 	</div>
