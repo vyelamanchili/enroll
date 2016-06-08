@@ -27,6 +27,8 @@ class BrokerAgencies::QuotesController < ApplicationController
   def index
     @quotes = Quote.where("broker_role_id" => current_user.person.broker_role.id, "aasm_state" => "draft")
     @all_quotes = Quote.where("broker_role_id" => current_user.person.broker_role.id)
+    #TODO fix this antipattern, make mongo field default, look at hbx_slug pattern?
+    @all_quotes.each{|q|q.update_attributes(claim_code: q.employer_claim_code) if q.claim_code==''}
     active_year = Date.today.year
     @coverage_kind = "health"
     @plans = $quote_shop_health_plans
