@@ -1,10 +1,14 @@
 require 'csv'
 class Employers::PremiumStatementsController < ApplicationController
   layout "two_column", only: [:show]
+  include Employers::PremiumStatementHelper
+  include DataTablesAdapter
+
 
   def show
     @employer_profile = EmployerProfile.find(params.require(:id))
-    @hbx_enrollments = @employer_profile.enrollments_for_billing
+    set_billing_date
+    @hbx_enrollments = @employer_profile.enrollments_for_billing(@billing_date)
 
     respond_to do |format|
       format.html
@@ -13,6 +17,21 @@ class Employers::PremiumStatementsController < ApplicationController
         send_data(csv_for(@hbx_enrollments), type: csv_content_type, filename: "DCHealthLink_Premium_Billing_Report.csv")
       end
     end
+  end
+
+  def premium_statements_index_datatable
+
+    dt_query = extract_datatable_parameters
+    premium_statements = []
+    @employer_profile = EmployerProfile.find(params.require(:premium_statement_id))
+    set_billing_date
+    hbx_enrollments = @employer_profile.enrollments_for_billing(@billing_date)
+
+    @draw = dt_query.draw
+    @total_records = hbx_enrollments.count
+    @records_filtered = hbx_enrollments.count
+    @hbx_enrollments = hbx_enrollments.skip(dt_query.skip).limit(dt_query.take) unless hbx_enrollments.blank?
+    render "premium_statements_index_datatable"
   end
 
   private
@@ -52,4 +71,11 @@ class Employers::PremiumStatementsController < ApplicationController
     end
   end
 
+  def set_billing_date
+    if params[:billing_date].present?
+      @billing_date = Date.strptime(params[:billing_date], "%m/%d/%Y")
+    else
+      @billing_date = billing_period_options.first[1]
+    end
+  end
 end

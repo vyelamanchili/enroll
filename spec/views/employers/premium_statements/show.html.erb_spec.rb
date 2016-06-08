@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe "employers/premium_statements/show.js.erb" do
+RSpec.describe "employers/premium_statements/show.html.erb" do
   let(:start_on){ TimeKeeper.date_of_record.beginning_of_month }
 
   def new_hbx_enrollment
@@ -54,21 +54,20 @@ describe "employers/premium_statements/show.js.erb" do
     )
   end
 
-  let(:new_plan){ instance_double("Plan", carrier_profile: new_carrier_profile, name: "my plan 100") }
-  let(:new_carrier_profile){ instance_double("CarrierProfile", legal_name: "my legal name") }
-  let(:new_employee_role){ instance_double("EmployeeRole", census_employee: new_census_employee) }
+  let(:new_plan) {instance_double("Plan", carrier_profile: new_carrier_profile, name: "my plan 100")}
+  let(:new_carrier_profile) {instance_double("CarrierProfile", legal_name: "my legal name")}
+  let(:new_employee_role) {instance_double("EmployeeRole", census_employee: new_census_employee)}
   let(:employee_roles) {[new_employee_role, new_employee_role]}
-  let(:hbx_enrollments){ [new_hbx_enrollment]}
-  let(:employer_profile){FactoryGirl.create(:employer_profile)}
-
-  # let(:current_plan_year){ instance_double("PlanYear")}
+  let(:hbx_enrollments) {[new_hbx_enrollment]}
+  let(:employer_profile) {FactoryGirl.create(:employer_profile)}
 
   before :each do
     assign :current_plan_year, current_plan_year
     assign :hbx_enrollments, hbx_enrollments
     assign :employer_profile, employer_profile
     assign :billing_date, TimeKeeper.date_of_record.beginning_of_month
-    render file: "employers/premium_statements/show.js.erb"
+    allow(employer_profile).to receive(:billing_plan_year).and_return([current_plan_year, start_on])
+    render :template => "employers/premium_statements/show.html.erb", locals: { employer_profile: employer_profile }
   end
 
   it "should display billing report of a user" do

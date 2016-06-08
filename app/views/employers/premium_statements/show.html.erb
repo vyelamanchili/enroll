@@ -1,51 +1,64 @@
 <% content_for :navigation do %>
-  <%= render :partial => 'employers/employer_profiles/primary_nav', :locals => {:active_tab=>params[:tab]} %>
+<%= render :partial => 'employers/employer_profiles/primary_nav', :locals => {:active_tab=>params[:tab]} %>
 <% end %>
-<div class="premium-reports-tab">
-  <div class="row no-buffer">
-    <% plan_year, billing_date = @employer_profile.billing_plan_year %>
-    <% if plan_year.present? && billing_date.present? %>
-      <h1>Enrollment Report <%= billing_date.beginning_of_month %> - <%= billing_date.end_of_month %></h1>
-      <span class="text-danger">This is not an invoice.</span>
-    <% end %>
-  </div>
-  <div class="premium-reports-table">
-  <div class="row no-buffer table-responsive">
-    <table>
-      <thead>
-        <tr>
-          <th>Employee Profile</th>
-          <th>Benefit Package</th>
-          <th>Insurance Coverage</th>
-          <th>Cost</th>
 
-          <!-- <th>Employee</th>
-          <th>SSN</th>
-          <th>DOB</th>
-          <th>Hired</th>
-          <th>Benefit Group</th>
-          <th>Type</th>
-          <th>Plan Name</th>
-          <th>Issuer</th>
-          <th>Covered Ct</th>
-          <th>Employer Contribution</th>
-          <th>Employee Premium</th>
-          <th>Total Premium</th> -->
-        </tr>
-      </thead>
-      <tbody>
-        <% if @hbx_enrollments.present? %>
-          <% @hbx_enrollments.each do |hbx_enrollment| %>
-            <%= render "employee_line_item", census_employee: hbx_enrollment.census_employee, enrollment: hbx_enrollment %>
-          <% end %>
-        <% else %>
-          <tr> <td colspan="12" style="text-align: left;">No employees enrolled.</td></tr>
-        <% end %>
-      </tbody>
-    </table>
+<div class="col-xs-12 premium-reports-tab module">
+  <div class="row">
+    <div class="col-xs-12">
+  <div class="col-xs-9">
+    <div class="row">
+      <h1 class="darkblue no-buffer">
+        Enrollment Reports
+      </h1>
+    </div>
   </div>
-</div><br>
-<%= link_to 'Cancel', employers_employer_profile_path(@employer_profile.id, :tab=>'home'), class: 'btn btn-default mz' %>
-  <a class='btn btn-default' data-toggle='modal' data-target='#downloadCsv'>Download</a>
+  <div class="col-xs-3">
+    <div class="row">
+      <div class="selectric-labeled">
+        <span>
+          <strong>
+            Month:
+          </strong>
+        </span>
+        <%= billing_period_dropdown %>
+      </div>
+    </div>
+  </div>
+  </div>
 </div>
-<%= render "download_csv_modal" %>
+<br/>
+  <% plan_year, billing_date = @employer_profile.billing_plan_year %>
+
+  <% if plan_year.present? && billing_date.present? %>
+  <div class="tables premium-reports-table">
+    <%= render partial: 'shared/premium_reports_table' %>
+  </div>
+
+  <% else %>
+    After your employees have enrolled in coverage, your enrollment reports will show here.
+  <% end %>
+
+</div>
+
+<%= link_to 'Cancel', employers_employer_profile_path(@employer_profile.id, :tab=>'home'), class: 'btn btn-trans mz' %>
+<a class='btn btn-trans' data-target='#downloadCsv' data-toggle='modal'>Download</a>
+</div>
+
+<script>
+$(function () {
+  $('[data-toggle="tooltip"]').tooltip();
+  $('#enrollment_report_dropdown').on('change', function () {
+    $('.premium-reports-table').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-2x fa-fw"></i><br/><br/>Loading reports...');
+    $.ajax({
+      type: "GET",
+      url: "/employers/premium_statements/<%= @employer_profile.id%>",
+      data: {
+        billing_date: $('option:selected', this).val()
+      },
+      dataType: "script"
+    }).done(function (data) {
+      $('#loader').addClass('hidden');
+    });
+  });
+});
+</script>
