@@ -1,26 +1,52 @@
-<% person = outstanding_verification_family.primary_applicant.person %>
 [
-"<%= json_escape person.hbx_id %>",
-"<%= json_escape person.first_name%>",
-"<%= json_escape person.last_name %>",
-"<%= documents_count(person) %>",
-<% verification_due_info = capture do %>
-	<%= verification_due_date(outstanding_verification_family) %>
-
-
-	<%= link_to extend_due_date_documents_path(:family_id => outstanding_verification_family.id), method: :put, data: { confirm: "Verification due date will be extended." } do %>
-
-		<br><i class="fa fa-clock-o"></i>&nbsp;extend
-	<% end %>
+<% employee_info = capture do %>
+	<span class="name">
+		<%= census_employee.full_name.try(:titleize) %>
+	</span>
+	<br>
+	<span>
+		DOB: <%= format_date census_employee.dob %>
+	</span>
+	<br>
+	<span>
+		SSN: <%= (number_to_obscured_ssn census_employee.ssn) %>
+	</span>
+	<br>
+	<span>
+		HIRED: <%= format_date census_employee.hired_on %>
+	</span>
 <% end %>
-<%= raw verification_due_info.to_json %>,
-<% review_status_info = capture do %>
-	<%= review_status(outstanding_verification_family) %><br>
-	<% if verification_due_date(outstanding_verification_family) <= TimeKeeper.date_of_record %>
-		<span class="label label-danger">Past Due</span>
-	<% end %>
+"<%= employee_info.to_json %>",
+
+<% benefit_group = capture do %>
+	<span class="benefit-group">
+		<%= enrollment.benefit_group.title.try(:titleize) %>
+	</span>
 <% end %>
-<%= raw review_status_info.to_json %>,
-<%= raw (link_to "Review", show_docs_documents_path(:person_id => person.id, :status => "in review"), class:"btn btn-#{review_button_class(outstanding_verification_family)} btn-xs").to_json %>,
-<%= raw (link_to "Federal Hub Detail", "#", class:"btn btn-default btn-xs").to_json %>
+"<%= benefit_group.to_json %>",
+
+<% enrollment_info = capture do %>
+<span>
+	<span class="coverage-kind"><%= mixed_case(enrollment.coverage_kind) %></span> | # Covered: <%= enrollment.humanized_dependent_summary %>
+</span>
+<br/>
+<span>
+	<%= enrollment.plan.carrier_profile.legal_name %> -- <%= enrollment.plan.name %>
+</span>
+<br/>
+<% end %>
+"<%= enrollment_info.to_json %>",
+
+<% contribution_info = capture do %>
+	<span>
+		Employer Contribution: <%= number_to_currency enrollment.total_employer_contribution %>
+	</span>
+	<br/>
+	<span>
+		Employee Contribution: <%= number_to_currency enrollment.total_employee_cost %>
+	</span>
+	<br/>
+	<strong>Total:</strong> <%= number_to_currency enrollment.total_premium %></td>
+<% end %>
+"<%= contribution_info.to_json %>",
 ]
