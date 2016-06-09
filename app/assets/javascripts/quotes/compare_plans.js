@@ -36,3 +36,10 @@ compared_plans_export = function(){
 export_compare_plans_listener = function(){
   $('#pdf_export_compare_plans').on('click', compared_plans_export);
 }
+
+plan_list = function(){
+  plans = $('.plan_id'); 
+  id_list=[];  
+  $.each(plans, function(plan){ id_list.push(plans[plan].value) })
+  return id_list;
+}
