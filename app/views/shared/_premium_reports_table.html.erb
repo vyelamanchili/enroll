@@ -28,11 +28,14 @@
 <script>
   $(document).on('ready page:load', function () {
 
-    $('.premium-reports-table > .table').DataTable( {
+    premium_reports_datatable = $('.premium-reports-table > .table').DataTable( {
       "processing": true,
       "serverSide": true,
       "ordering" : false,
       "ajax": {
+        data: {
+          billing_date: $('option:selected', this).val()
+        },
         url: "<%= employers_premium_statement_premium_statements_index_datatable_path(premium_statement_id: @employer_profile.id, :format => :json) %>",
         type: "GET"
       }

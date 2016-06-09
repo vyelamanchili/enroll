@@ -17,12 +17,26 @@ div.dataTables_filter label {
 	font-weight: normal;
 	white-space: nowrap;
 	text-align: left;
+	width: 50%;
+	padding: 0 0 0 10px;
 }
 
-div.dataTables_filter input {
-	margin-left: 0.5em;
+div.dataTables_filter label span:first-of-type {
+	width: 100%;
+	max-width: 25%;
 	display: inline-block;
-	width: auto;
+	font-size: 11px;
+	color: #838780;
+	text-transform: uppercase;
+	text-align: left;
+}
+
+
+div.dataTables_filter input {
+	margin-left: initial;
+	display: inline-block;
+	max-width: 75%;
+	width: 100% !important;
 }
 
 div.dataTables_info {

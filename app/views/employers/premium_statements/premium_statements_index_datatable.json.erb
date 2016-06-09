@@ -3,6 +3,6 @@
   "recordsTotal" : <%= @total_records %>,
   "recordsFiltered" : <%= @records_filtered %>,
   "data" : [
-    <%= render partial: "enrollments_for_billing", collection: @hbx_enrollments, spacer_template: "shared/json_array_spacer" %>
+    <%= render partial: "enrollments_for_billing", collection: @hbx_enrollments, as: 'hbx_enrollment', spacer_template: "shared/json_array_spacer" %>
   ]
 }
