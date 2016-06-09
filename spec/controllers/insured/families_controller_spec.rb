@@ -40,8 +40,9 @@ RSpec.describe Insured::FamiliesController do
   let(:hbx_enrollments) { double("HbxEnrollment") }
   let(:user) { FactoryGirl.create(:user) }
   let(:person) { double("Person", id: "test", addresses: [], no_dc_address: false, no_dc_address_reason: "" , has_active_consumer_role?: false) }
-  let(:family) { double("Family", active_household: household) }
+  let(:family) { double("Family", active_household: household, special_enrollment_periods: special_enrollment_periods) }
   let(:household) { double("HouseHold", hbx_enrollments: hbx_enrollments) }
+  let(:special_enrollment_periods) { double(where: [double])}
   let(:addresses) { [double] }
   let(:family_members) { [double("FamilyMember")] }
   let(:employee_roles) { [double("EmployeeRole")] }
