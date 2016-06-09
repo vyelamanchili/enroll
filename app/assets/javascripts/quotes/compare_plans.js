@@ -21,6 +21,7 @@ sort_plans = function(){
           compare_plans_listeners();
           export_compare_plans_listener();
           collapse_all()
+          $('#plan_ids').val(null);
         }
       })
     }

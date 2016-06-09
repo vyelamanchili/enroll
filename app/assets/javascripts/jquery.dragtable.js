@@ -74,7 +74,8 @@
       beforeStart: $.noop,         // returning FALSE will stop the execution chain.
       beforeMoving: $.noop,
       beforeReorganize: $.noop,
-      beforeStop: $.noop
+      beforeStop: $.noop,
+      stashKeys: null
     },
     originalTable: {
       el: null,
@@ -145,7 +146,14 @@
             swapNodes(col1[j], col2[j]);
           }
         }
-      }
+      }if($('#plan_ids').length == 1){
+          plan_ids_container = []
+          $('.plan_id').each(function(){
+            plan_ids_container.push($(this).val());
+          });
+          $('#plan_ids').val($.unique(plan_ids_container))
+          $('#current_sort').val(null);
+        }
     },
     _rearrangeTableBackroundProcessing: function() {
       var _this = this;
