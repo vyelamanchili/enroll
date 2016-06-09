@@ -6,6 +6,8 @@ class Employers::PremiumStatementsController < ApplicationController
 
 
   def show
+
+
     @employer_profile = EmployerProfile.find(params.require(:id))
     set_billing_date
     @hbx_enrollments = @employer_profile.enrollments_for_billing(@billing_date)
@@ -20,12 +22,11 @@ class Employers::PremiumStatementsController < ApplicationController
   end
 
   def premium_statements_index_datatable
-
     dt_query = extract_datatable_parameters
+
     premium_statements = []
     @employer_profile = EmployerProfile.find(params.require(:premium_statement_id))
     set_billing_date
-    @billing_date = @billing_date + 3.months
     hbx_enrollments = @employer_profile.enrollments_for_billing(@billing_date)
 
 
@@ -36,7 +37,7 @@ class Employers::PremiumStatementsController < ApplicationController
     @hbx_enrollments = hbx_enrollments if hbx_enrollments.count <= 1
 
 
-    render "premium_statements_index_datatable", census_employee
+    render "premium_statements_index_datatable"
   end
 
   private

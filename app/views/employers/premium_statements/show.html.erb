@@ -47,17 +47,20 @@
 $(function () {
   $('[data-toggle="tooltip"]').tooltip();
   $('#enrollment_report_dropdown').on('change', function () {
-    $('.premium-reports-table').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-2x fa-fw"></i><br/><br/>Loading reports...');
-    $.ajax({
-      type: "GET",
-      url: "/employers/premium_statements/<%= @employer_profile.id%>",
-      data: {
-        billing_date: $('option:selected', this).val()
-      },
-      dataType: "script"
-    }).done(function (data) {
-      $('#loader').addClass('hidden');
-    });
+      // $('.premium-reports-table').html('<div class="text-center"><i class="fa fa-spinner fa-spin fa-2x fa-fw"></i><br/><br/>Loading reports...');
+      premium_reports_datatable.destroy();
+      premium_reports_datatable = $('.premium-reports-table > .table').DataTable( {
+        "processing": true,
+        "serverSide": true,
+        "ordering" : false,
+        "ajax": {
+          data: {
+            billing_date: $('option:selected', this).val()
+          },
+          url: "<%= employers_premium_statement_premium_statements_index_datatable_path(premium_statement_id: @employer_profile.id, :format => :json) %>",
+          type: "GET"
+        }
+      } );
   });
 });
 </script>
