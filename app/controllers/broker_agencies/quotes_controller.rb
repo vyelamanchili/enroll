@@ -149,7 +149,15 @@ class BrokerAgencies::QuotesController < ApplicationController
       sort_array.sort!{|a,b| a[1]*order <=> b[1]*order}
       @qhps = sort_array.map{|item| item[0]}
     end
-    if params[:export_to_pdf]
+    if params[:export_to_pdf].present?
+      if (plan_keys = params[:plan_keys]).present?
+        @standard_plans = []
+        plan_keys.split(',').each { |plan_key| @standard_plans << Plan.find(plan_key).hios_id }
+        @qhps = []
+        @standard_plans.each { |plan_id| @qhps << Products::QhpCostShareVariance  
+                                                              .find_qhp_cost_share_variances([plan_id], active_year, "Health") }
+        @qhps.flatten!
+      end
       render pdf: 'plan_comparison_export', 
             template: 'broker_agencies/quotes/_plan_comparison_export.html.erb', 
             disposition: 'attachment', 
