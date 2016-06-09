@@ -3,6 +3,7 @@ class BrokerAgencies::QuotesController < ApplicationController
   before_action :find_quote , :only => [:destroy ,:show, :delete_member, :delete_household, :publish_quote, :view_published_quote]
   before_action :format_date_params  , :only => [:update,:create]
   before_action :employee_relationship_map
+  before_action :set_qhp_variables, :only => [:plan_comparison, :download_pdf]
 
   def view_published_quote
 
@@ -132,11 +133,8 @@ class BrokerAgencies::QuotesController < ApplicationController
   end
 
   def plan_comparison
-    active_year = Date.today.year
-    @coverage_kind = "health"
-    @visit_types = @coverage_kind == "health" ? Products::Qhp::VISIT_TYPES : Products::Qhp::DENTAL_VISIT_TYPES
     standard_component_ids = get_standard_component_ids
-    @qhps = Products::QhpCostShareVariance.find_qhp_cost_share_variances(standard_component_ids, active_year, "Health")
+    @qhps = Products::QhpCostShareVariance.find_qhp_cost_share_variances(standard_component_ids, @active_year, "Health")
     @sort_by = params[:sort_by]
     order = @sort_by == session[:sort_by_copay] ? -1 : 1
     session[:sort_by_copay] = order == 1 ? @sort_by : ''
@@ -149,14 +147,7 @@ class BrokerAgencies::QuotesController < ApplicationController
       sort_array.sort!{|a,b| a[1]*order <=> b[1]*order}
       @qhps = sort_array.map{|item| item[0]}
     end
-    if params[:export_to_pdf]
-      render pdf: 'plan_comparison_export', 
-            template: 'broker_agencies/quotes/_plan_comparison_export.html.erb', 
-            disposition: 'attachment', 
-            locals: { qhps: @qhps }
-    else
-      render partial: 'plan_comparision', layout: false, locals: {qhps: @qhps}
-    end
+    render partial: 'plan_comparision', layout: false, locals: {qhps: @qhps}
   end
 
   def show
@@ -269,7 +260,20 @@ class BrokerAgencies::QuotesController < ApplicationController
   end
   
   def export_to_pdf
-    @pdf_url = "/broker_agencies/quotes/plan_comparison?"
+    @pdf_url = "/broker_agencies/quotes/download_pdf?"
+  end
+  
+  def download_pdf
+    @standard_plans = []
+    params[:plan_keys].each { |plan_key| @standard_plans << Plan.find(plan_key).hios_id }
+    @qhps = []
+    @standard_plans.each { |plan_id| @qhps << Products::QhpCostShareVariance  
+                                                            .find_qhp_cost_share_variances([plan_id], Date.today.year, "Health") }
+    @qhps.flatten!
+    render pdf: 'plan_comparison_export', 
+           template: 'broker_agencies/quotes/_plan_comparison_export.html.erb', 
+           disposition: 'attachment', 
+           locals: { qhps: @qhps }
   end
   
   
@@ -358,5 +362,11 @@ private
   def get_visit_cost qhp_cost_share_variance, visit_type
     service_visit = qhp_cost_share_variance.qhp_service_visits.detect{|v| visit_type == v.visit_type }
     cost = dollar_value service_visit.copay_in_network_tier_1
+  end
+  
+  def set_qhp_variables
+    @active_year = Date.today.year
+    @coverage_kind = "health"
+    @visit_types = @coverage_kind == "health" ? Products::Qhp::VISIT_TYPES : Products::Qhp::DENTAL_VISIT_TYPES 
   end
 end
