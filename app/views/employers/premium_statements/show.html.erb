@@ -12,7 +12,7 @@
            <button class="btn btn-lg btn-warning hidden" id="loader">
             <span id="loader" class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></span> Loading...
           </button>
-            <span style="float: right;">Enrollment Report for</span>
+            <span style="float: right; margin-top: 10px;">Select the Coverage Period</span>
           </div>
           <div class="col-xs-4">
             <%= billing_period_dropdown %>
@@ -31,7 +31,7 @@
     <%= render 'show' %>
   </div>
   <br>
-  <%= link_to 'Cancel', employers_employer_profile_path(@employer_profile.id, :tab=>'home'), class: 'btn btn-default mz' %>
+  <%= link_to 'Cancel', employers_employer_profile_path(@employer_profile.id, :tab=>'home'), class: 'btn btn-default' %>
   <a class='btn btn-default' data-toggle='modal' data-target='#downloadCsv'>Download</a>
 </div>
 
