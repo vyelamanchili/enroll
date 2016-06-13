@@ -1,5 +1,5 @@
 <div class="container-fluid">
-  <h2>Quote Cost Comparison Results</h2>
+  <h2>Quote Employer Cost Comparison Results</h2>
 
   <p>Your results are based on your quote <strong><%= @q.quote_name %></strong> effective on <strong><%= @q.start_on %></strong></p>
 
@@ -55,7 +55,7 @@
     <% end %>
   </table>
 
-  <h3>Detailed cost breakdown for selected plans</h3>
+  <h3>Detailed Employer cost breakdown for selected plans:</h3>
   <div class="mygrid-wrapper-div">
     <table class="quote-detail-cost">
     <tr>
@@ -85,8 +85,9 @@
       <td class="quote_detail_results_header">Age</td>
       <% @quote_results.keys.each do |de| %>
 
-        <td class="quote_detail_results_header" style='padding-left: 100px'>Total Premium</td>
+        <td class="quote_detail_results_header" style='padding-left: 100px'>Employer Cost</td>
       <% end %>
+
     </tr>
     <% @quote_results.first[1][:detail].flatten.each_with_index do |qr, index| %>
     <% if index != 0  && @quote_results.first[1][:detail].flatten[index][:family_id] != @quote_results.first[1][:detail].flatten[index-1][:family_id] %>
@@ -104,7 +105,7 @@
           <%= qr[:age] %>
         </td>
         <% @quote_results.keys.each do |de| %>
-          <td class="quote_detail_results"  style='padding-left: 100px'><b><%= @quote_results[de][:detail].flatten[index][:total_premium].round(2) %></b></td>
+          <td class="quote_detail_results"  style='padding-left: 100px'><b><%= @quote_results[de][:total_employer_cost].round(2) %></b></td>
         <% end %>
       </tr>
     <% end %>
