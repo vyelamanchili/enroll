@@ -14,8 +14,10 @@ function plan_test(plan, criteria){
   return result
 }
 function set_plan_counts() {
-    $('#show_plan_criteria_count').text('Plans that meet your criteria: ' + String(window.available_plans))
+    $('#show_plan_criteria_count').text('Plans that meet your criteria: ' + String(window.available_health_plans))
     $('#show_plan_selected_count').text('You have selected ' + String($('.btn.active').size()) +' plans.')
+    $('#show_dental_plan_criteria_count').text('Plans that meet your criteria: ' + '13')
+    $('#show_dental_plan_selected_count').text('You have selected ' + String($('.btn.active').size()) +' plans.')
 }
 function turn_off_criteria() {
     $.each($('#feature-mgmt .active'), function(index,value){ $(value).addClass('criteria').removeClass('active') })
@@ -34,14 +36,44 @@ function toggle_plans(criteria){
      $('#' + criteria[i][0] +' #' + criteria[i][1]).addClass('active')
    }
  }
-  window.available_plans = 0
-  for(var i = 0; i < plan_count; i++) {
-      plan = window.select_plans[i]
+  window.available_health_plans = 0
+  for(var i = 0; i < health_plan_count; i++) {
+      plan = window.select_health_plans[i]
       value = "[value~=" + plan['plan_id'] + "]"
       display = plan_test(plan, criteria) ? 'inline' : 'none'
       $(value).parent().css('display', display)
-      if (display=='inline') {window.available_plans += 1}
-  }
+      if (display=='inline') {window.available_health_plans += 1}
+  }   
+  $('#x-of-plans').html($('#quote-plan-list > label:visible').length);
+  set_plan_counts()
+  $.ajax({
+    type: 'GET',
+    data: {quote_id: $('#quote').val(), criteria_for_ui: JSON.stringify(criteria) },
+    url: '/broker_agencies/quotes/criteria.js'
+  })
+}
+function toggle_dental_plans(criteria){
+  if(criteria.length== 0){
+      $.each($('.dental_plan_selectors'), function() {
+          criteria_type = this.parentNode.id
+          criteria_value = this.id
+          if (criteria_value != 'any') {criteria.push([criteria_type,criteria_value])}
+   })
+ }
+ else{
+    turn_off_criteria()
+   for(var i = 0; i<criteria.length; i++){
+     $('#' + criteria[i][0] +' #' + criteria[i][1]).addClass('active')
+   }
+ }
+  window.available_health_plans = 0
+  for(var i = 0; i < health_plan_count; i++) {
+      plan = window.select_health_plans[i]
+      value = "[value~=" + plan['plan_id'] + "]"
+      display = plan_test(plan, criteria) ? 'inline' : 'none'
+      $(value).parent().css('display', display)
+      if (display=='inline') {window.available_health_plans += 1}
+  }   
   $('#x-of-plans').html($('#quote-plan-list > label:visible').length);
   set_plan_counts()
   $.ajax({

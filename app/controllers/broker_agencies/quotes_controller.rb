@@ -32,11 +32,14 @@ class BrokerAgencies::QuotesController < ApplicationController
     @all_quotes.each{|q|q.update_attributes(claim_code: q.employer_claim_code) if q.claim_code==''}
     active_year = Date.today.year
     @coverage_kind = "health"
-    @plans = $quote_shop_health_plans
+    @health_plans = $quote_shop_health_plans
+    @dental_plans = $quote_shop_dental_plans
 
     @health_selectors = $quote_shop_health_selectors
-
-    @plan_quote_criteria  = $quote_shop_health_plan_features.to_json
+    @health_plan_quote_criteria  = $quote_shop_health_plan_features.to_json
+    
+    @dental_selectors = $quote_shop_dental_selectors
+    dental_plan_quote_criteria  = $quote_shop_dental_plan_features.to_json
 
     @bp_hash = {'employee':50, 'spouse': 0, 'domestic_partner': 0, 'child_under_26': 0, 'child_26_and_over': 0}
 
@@ -56,7 +59,7 @@ class BrokerAgencies::QuotesController < ApplicationController
       @quote_results = Hash.new
       @quote_results_summary = Hash.new
       unless @q.nil?
-        @roster_elected_plan_bounds = PlanCostDecoratorQuote.elected_plans_cost_bounds(@plans,
+        @roster_elected_plan_bounds = PlanCostDecoratorQuote.elected_plans_cost_bounds(@health_plans,
           @q.quote_relationship_benefits, roster_premiums)
         params['plans'].each do |plan_id|
           p = $quote_shop_health_plans.detect{|plan| plan.id.to_s == plan_id}
@@ -368,5 +371,9 @@ private
     @active_year = Date.today.year
     @coverage_kind = "health"
     @visit_types = @coverage_kind == "health" ? Products::Qhp::VISIT_TYPES : Products::Qhp::DENTAL_VISIT_TYPES 
+  end
+  
+  def load_dental_plans
+    
   end
 end
