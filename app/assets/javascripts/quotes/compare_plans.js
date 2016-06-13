@@ -20,7 +20,6 @@ sort_plans = function(){
           $('#plan_comparison_frame').html(response);
           compare_plans_listeners();
           export_compare_plans_listener();
-          collapse_all()
           $('#plan_ids').val(null);
         }
       })
