@@ -5,3 +5,15 @@ Person.all.no_timeout.each do |c|
     p c.consumer_role.bookmark_url
   end
 end
+
+User.all.no_timeout.each do |u|
+  if u.present? && u.present? && u.last_portal_visited.present? && u.last_portal_visited.include?("https://enroll.dchealthlink.com")
+    link = u.last_portal_visited.gsub("https://enroll.dchealthlink.com", '')
+    begin
+      u.update_attributes!(last_portal_visited: link)
+      p u.last_portal_visited
+    rescue
+     puts "user.email #{c.email} has blank oim_id"
+    end
+  end
+end
