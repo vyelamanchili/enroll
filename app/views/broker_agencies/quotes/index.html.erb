@@ -33,7 +33,7 @@
         		<div class="panel-heading" role="tab" id="feature-mgmt-header">
         				<a role="button" data-toggle="collapse" data-parent="#accordion" href="#feature-mgmt" aria-expanded="true" aria-controls="feature-mgmt">
 
-        					<b>Features and cost criteria</b>
+        					<b>Health Features and cost criteria</b>
                   <span class="glyphicon glyphicon-triangle-right" aria-hidden="true"></span>
                   <span style='margin-left: 50px; font-size: 120%;'  id='show_plan_criteria_count'>Plan count</span>
                    <label class='btn btn-normal hide' id='reset_criteria'> Reset Criteria</label>
@@ -51,7 +51,7 @@
               <a role="button">
                     <div data-toggle="collapse" data-parent="#accordion" href="#plan-selection-mgmt"
                     aria-expanded="true" aria-controls="plan-selection-mgmt" style='display: inline; float_left'>
-                      <b>Plan Selection</b>
+                      <b>Health Plan Selection</b>
                       <span class="glyphicon glyphicon-triangle-right" aria-hidden="true"></span>
                       <span style='margin-left: 50px; font-size: 120%;'  id='show_plan_selected_count'>Plan count</span>
                     </div>
@@ -64,6 +64,41 @@
 
         	  </div>
         	</div>
+          <div class="panel panel-default">
+            <div class="panel-heading" role="tab" id="dental-feature-mgmt-header">
+                <a role="button" data-toggle="collapse" data-parent="#accordion" href="#dental-feature-mgmt" aria-expanded="true" aria-controls="dental-feature-mgmt">
+
+                  <b>Dental Features and cost criteria</b>
+                  <span class="glyphicon glyphicon-triangle-right" aria-hidden="true"></span>
+                  <span style='margin-left: 50px; font-size: 120%;'  id='show_dental_plan_criteria_count'>Plan count</span>
+                   <label class='btn btn-normal hide' id='reset_criteria'> Reset Criteria</label>
+                </a>
+            </div>
+            <div id="dental-feature-mgmt" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="">
+
+            <%= render partial: 'my_dental_features' %>
+
+            </div>
+          </div>
+          
+          <div class="panel panel-default">
+            <div class="panel-heading" role="tab" id="dental-plan-selection-mgmt-header">
+              <a role="button">
+                    <div data-toggle="collapse" data-parent="#accordion" href="#dental-plan-selection-mgmt"
+                    aria-expanded="true" aria-controls="dental-plan-selection-mgmt" style='display: inline; float_left'>
+                      <b>Dental Plan Selection</b>
+                      <span class="glyphicon glyphicon-triangle-right" aria-hidden="true"></span>
+                      <span style='margin-left: 50px; font-size: 120%;'  id='show_dental_plan_selected_count'>Plan count</span>
+                    </div>
+                  </a>
+                <label class='btn btn-normal' id='reset_selected'> Reset Selections</label>
+            </div>
+            <div id="dental-plan-selection-mgmt" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="">
+
+              <%= render partial: 'my_dental_plans' %>
+
+            </div>
+          </div>
       <% end %>
 
       <% end %>
@@ -80,7 +115,6 @@
           </div>
         </div>
       <% end %>
-
     </div>
   </div>
 </div>
@@ -94,8 +128,8 @@ $(document).on('ready page:load', function () {
     }
     var focus_on_compare_table = <%= @display_results %>
     if (focus_on_compare_table) {collapse_all()}
-    window.select_plans = <%=raw @plan_quote_criteria %>
-    plan_count = Object.keys(window.select_plans).length
+    window.select_health_plans = <%=raw @health_plan_quote_criteria %>
+    health_plan_count = Object.keys(window.select_health_plans).length
     deductible_value = 6000
 
     window.relationship_benefits = <%= raw @benefit_pcts_json %>

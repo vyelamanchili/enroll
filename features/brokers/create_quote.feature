@@ -10,7 +10,6 @@ Feature: Create Employee Roster
     Then click on QuoteRoster Management
     And click on the New Quote button
     When broker clicks on Add member to this family
-    And the broker enters Family ID
     And broker enters valid information
 
   Scenario: Broker should be able to add employees to the employee roster using Upload Employee Roster button
@@ -30,7 +29,6 @@ Feature: Create Employee Roster
     Then click on QuoteRoster Management
     And click on the New Quote button
     When broker clicks on Add member to this family
-    And the broker enters Family ID
     And broker enters valid information
     When the broker clicks on the Save Quote button
     Then the broker should see a successful message

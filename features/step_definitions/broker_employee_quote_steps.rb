@@ -60,13 +60,9 @@ When(/^broker clicks on Add member to this family$/) do
   click_button 'Add member to this family'
 end
 
-When(/^the broker enters Family ID$/) do
-  fill_in 'quote_households_family_id', with: '2'
-end
-
 When(/^broker enters valid information$/) do
   select "Employee", :from => "select-relationship"
-  fill_in 'date-of-birth', with: '11/11/1991'
+  find(:css, '.uidatepicker:last-child').set('11/11/1991')
 end
 
 When(/^the broker clicks on the Save Quote button$/) do
