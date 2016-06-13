@@ -417,9 +417,9 @@ class EmployerProfile
 
     def organizations_for_force_publish(new_date)
       Organization.where({
-        :'employer_profile.plan_years' => 
+        :'employer_profile.plan_years' =>
         { :$elemMatch => {
-          :start_on => new_date.next_month.beginning_of_month, 
+          :start_on => new_date.next_month.beginning_of_month,
           :aasm_state => 'renewing_draft'
           }}
       })
@@ -455,12 +455,6 @@ class EmployerProfile
         #   employer_enroll_factory.begin
         # end
 
-<<<<<<< HEAD
-        # organizations_for_plan_year_end(new_date).each do |organization|
-        #   employer_enroll_factory.employer_profile = organization.employer_profile
-        #   employer_enroll_factory.end
-        # end
-=======
         organizations_for_plan_year_end(new_date).each do |organization|
           employer_enroll_factory.employer_profile = organization.employer_profile
           employer_enroll_factory.end
@@ -472,7 +466,6 @@ class EmployerProfile
             plan_year.force_publish!
           end
         end
->>>>>>> master
       end
 
       # Employer activities that take place monthly - on first of month
