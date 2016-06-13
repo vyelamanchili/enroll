@@ -31,7 +31,7 @@
     </tr>
    <% @quote_results.each do |k,v| %>
        <% cost =  v[:total_employer_cost].ceil
-          plan = @plans.detect{|plan|plan.name == k}
+          plan = @health_plans.detect{|plan|plan.name == k}
           abbrev = CarrierProfile.find(plan.carrier_profile_id).abbrev
           metal_low = @roster_elected_plan_bounds[:metal_low][plan.metal_level]
           metal_high = @roster_elected_plan_bounds[:metal_high][plan.metal_level]
