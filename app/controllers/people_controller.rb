@@ -203,6 +203,7 @@ class PeopleController < ApplicationController
       redirect_path = family_account_path
     end
 
+
     respond_to do |format|
       if @person.update_attributes(person_params)
         format.html { redirect_to redirect_path, notice: 'Person was successfully updated.' }
@@ -353,7 +354,9 @@ private
       { :addresses_attributes => [:kind, :address_1, :address_2, :city, :state, :zip, :id] },
       { :phones_attributes => [:kind, :full_phone_number, :id] },
       { :emails_attributes => [:kind, :address, :id] },
-      :consumer_role_attributes,
+      { :consumer_role_attributes => [:contact_method, :language_preference, :id]},
+      { :employee_roles_attributes => [:id, :contact_method, :language_preference]},
+
       :first_name,
       :middle_name,
       :last_name,
@@ -371,7 +374,7 @@ private
       {:ethnicity => []},
       :tribal_id,
       :no_dc_address,
-      :no_dc_address_reason,
+      :no_dc_address_reason, 
       :id
     ]
   end
