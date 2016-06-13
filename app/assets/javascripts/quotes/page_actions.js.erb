@@ -17,6 +17,14 @@ function page_load_listeners () {
         toggle_plans([])
         reset_selected_plans()
     })
+    
+    $('.dental_plan_selectors .criteria').on('click',function(){
+        selected=this; sibs = $(selected).siblings();
+        $.each(sibs, function(){ this.className='criteria' }) ;
+        selected.className='active';
+        toggle_plans([])
+        reset_selected_plans()
+    })
 
     $('.plan_buttons .btn').on('click', function() {
         var plan = $(this)
