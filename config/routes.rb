@@ -305,6 +305,8 @@ Rails.application.routes.draw do
         get :publish
         get :criteria
         get :plan_comparison
+        get :health_cost_comparison
+        get :dental_cost_comparison
         get 'published_quote/:id', to: 'quotes#view_published_quote'
         get :export_to_pdf
         get :download_pdf
