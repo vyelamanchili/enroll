@@ -1,4 +1,4 @@
-<div class="container-fluid">
+<div class="container-fluid" style='margin-bottom:5%'>
     <div class='plan_selectors'>
 
         <div  id='carriers' style='width: 148px;'>
@@ -37,12 +37,17 @@
         </div>
     </div>
 
-    <div style='min-width:40px; float:left'>&nbsp;&nbsp;&nbsp;</div>
-    <div style='float:left; width 350px; display: block' >
-        <div><b>Limit maximum deductible 0-$6000</b></div>
-        <input id="ex1" data-slider-id='ex1Slider' type="text" data-slider-min="0" data-slider-max="6000" data-slider-step="1" data-slider-value="6000" style='width:300px'
-          data-slider-ticks="[0, 2000, 4000, 6000]"
-          data-slider-ticks-labels='["$0", "$2000", "$4000", "$6000"]'
-        />
-    </div>
+    
+      <div class='left'>
+      <b>Limit maximum deductible 0-$6000</b>
+        <div class='row'>
+          <div class='col-sm-1'>
+            <%= number_field_tag 'ex1_input', '6000', {  class: "slider_input hidden-param", style: 'margin-top:3%;min-width:75px;' } %>
+          </div>
+          <div class='col-sm-4' style='margin-top:1%;'>
+            <input id="ex1" data-slider-id='ex1Slider' class='slider' type="text" data-slider-min="0" data-slider-max="6000" data-slider-step="1" data-slider-value="6000" style='width:350px;'/>
+          </div>
+            <div style='margin-top:1%;'><span id='ex1_label' class="slide-label" style='margin-left:2%;'>$6000</span></div>
+        </div>
+      </div>
 </div>
