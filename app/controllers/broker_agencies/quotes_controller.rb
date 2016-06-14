@@ -40,25 +40,35 @@ class BrokerAgencies::QuotesController < ApplicationController
     
     @dental_selectors = $quote_shop_dental_selectors
     dental_plan_quote_criteria  = $quote_shop_dental_plan_features.to_json
-
     @bp_hash = {'employee':50, 'spouse': 0, 'domestic_partner': 0, 'child_under_26': 0, 'child_26_and_over': 0}
-
-    quote_on_page = @q || @quotes.first
+    @q =  Quote.find(params[:quote]) if !params[:quote].nil?
+    @quote_on_page = @q || @quotes.first
     @quote_criteria = []
-    unless quote_on_page.nil?
-      quote_on_page.quote_relationship_benefits.each{|bp| @bp_hash[bp.relationship] = bp.premium_pct}
-      roster_premiums = quote_on_page.roster_cost_all_plans
+    unless @quote_on_page.nil?
+      @quote_on_page.quote_relationship_benefits.each{|bp| @bp_hash[bp.relationship] = bp.premium_pct}
+      roster_premiums = @quote_on_page.roster_cost_all_plans
       @roster_premiums_json = roster_premiums.to_json
-      @quote_criteria = quote_on_page.criteria_for_ui
+      @quote_criteria = @quote_on_page.criteria_for_ui
     end
     @benefit_pcts_json = @bp_hash.to_json
+    #temp stuff until publish is fixed
+    @quote = @quote_on_page
+    @plan = @quote.plan
+    if @plan
+      @plans_offered = @quote.cost_for_plans([@plan], @plan).sort_by { |k| [k["employer_cost"], k["employee_cost"]] }
+    else
+      @plans_offered =[]
+    end
 
-    @q =  Quote.find(params[:quote]) if !params[:quote].nil?#Quote.find(Quote.first.id)
 
-    if !params['plans'].nil? && params['plans'].count > 0 && params["commit"].downcase == "compare costs"
+  end
+  def health_cost_comparison
+      @q =  Quote.find(params[:quote])
       @quote_results = Hash.new
       @quote_results_summary = Hash.new
+      @health_plans = $quote_shop_health_plans
       unless @q.nil?
+        roster_premiums = @q.roster_cost_all_plans
         @roster_elected_plan_bounds = PlanCostDecoratorQuote.elected_plans_cost_bounds(@health_plans,
           @q.quote_relationship_benefits, roster_premiums)
         params['plans'].each do |plan_id|
@@ -80,11 +90,12 @@ class BrokerAgencies::QuotesController < ApplicationController
         end
         @quote_results = @quote_results.sort_by { |k, v| v[:total_employer_cost] }.to_h
       end
-    end
+    render partial: 'health_cost_comparison'
+  end
 
-    @display_results = @quote_results.present?
 
-
+  def dental_cost_comparison
+    render partial: 'dental_cost_comparison', layout: false
   end
 
   def edit
@@ -150,23 +161,7 @@ class BrokerAgencies::QuotesController < ApplicationController
       sort_array.sort!{|a,b| a[1]*order <=> b[1]*order}
       @qhps = sort_array.map{|item| item[0]}
     end
-    
-    if params[:export_to_pdf].present?
-      if (plan_keys = params[:plan_keys]).present?
-        @standard_plans = []
-        plan_keys.split(',').each { |plan_key| @standard_plans << Plan.find(plan_key).hios_id }
-        @qhps = []
-        @standard_plans.each { |plan_id| @qhps << Products::QhpCostShareVariance  
-                                                              .find_qhp_cost_share_variances([plan_id], active_year, "Health") }
-        @qhps.flatten!
-      end
-      render pdf: 'plan_comparison_export', 
-            template: 'broker_agencies/quotes/_plan_comparison_export.html.erb', 
-            disposition: 'attachment', 
-            locals: { qhps: @qhps }
-    else
-      render partial: 'plan_comparision', layout: false, locals: {qhps: @qhps}
-    end
+    render partial: 'plan_comparision', layout: false, locals: {qhps: @qhps}
   end
 
   def show
@@ -239,32 +234,47 @@ class BrokerAgencies::QuotesController < ApplicationController
     }
     render json: {}
   end
-
-
   def get_quote_info
-
-    @bp_hash = {}
-    @q =  Quote.find(params[:quote])
-    @q.quote_relationship_benefits.each{|bp| @bp_hash[bp.relationship] = bp.premium_pct}
-    render json: {'relationship_benefits' => @bp_hash, 'roster_premiums' => @q.roster_cost_all_plans, 'criteria' => JSON.parse(@q.criteria_for_ui)}
+    bp_hash = {}
+    q =  Quote.find(params[:quote])
+    summary = {name: q.quote_name,
+     status: q.aasm_state.capitalize,
+     plan_name: q.plan && q.plan.name || 'None',
+     dental_plan_name: q.dental_plan && q.dental_plan.name || 'None',
+   }
+    q.quote_relationship_benefits.each{|bp| bp_hash[bp.relationship] = bp.premium_pct}
+    render json: {'relationship_benefits' => bp_hash, 'roster_premiums' => q.roster_cost_all_plans, 'criteria' => JSON.parse(q.criteria_for_ui), summary: summary}
   end
-
   def publish
     @quote = Quote.find(params[:quote_id])
-    @plan = Plan.find(params[:plan_id][8,100])
-    @elected_plan_choice = ['na', 'Single Plan', 'Single Carrier', 'Metal Level'][params[:elected].to_i]
-    case @elected_plan_choice
-      when 'Single Carrier'
-        @offering_param  = @plan.name
-      when 'Metal Level'
-        @offering_param  = @plan.metal_level.capitalize
-      else
-        @offering_param = ""
+    if params[:plan_id]
+      @plan = Plan.find(params[:plan_id][8,100])
+      @elected_plan_choice = ['na', 'Single Plan', 'Single Carrier', 'Metal Level'][params[:elected].to_i]
+      @quote.plan = @plan
+      @quote.plan_option_kind = @elected_plan_choice
+      @quote.save
+      case @elected_plan_choice
+        when 'Single Carrier'
+          @offering_param  = @plan.name
+        when 'Metal Level'
+          @offering_param  = @plan.metal_level.capitalize
+        else
+          @offering_param = ""
+      end
+      @cost = params[:cost]
+    else 
+      @plan = @quote.plan
+      @elected_plan_choice = @quote.plan_option_kind
     end
+    if @plan
+      @plans_offered = @quote.cost_for_plans([@plan], @plan).sort_by { |k| [k["employer_cost"], k["employee_cost"]] }
+    else
+      @plans_offered = []
+    end 
+    
 
-    @cost = params[:cost]
-    @plans_offered = @quote.cost_for_plans(@quote.plan_by_offerings(@plan, @elected_plan_choice), @plan).sort_by { |k| [k["employer_cost"], k["employee_cost"]] }
 
+    render partial: 'publish'
   end
 
   def criteria

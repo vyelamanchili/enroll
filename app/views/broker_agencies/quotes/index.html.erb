@@ -140,11 +140,7 @@
 <script type="text/javascript">
 
 $(document).on('ready page:load', function () {
-    if(window.matchMedia('handheld').match) {
-      collapse_all()
-    }
-    var focus_on_compare_table = <%= @display_results %>
-    if (focus_on_compare_table) {collapse_all()}
+    collapse_all()
     window.select_health_plans = <%=raw @health_plan_quote_criteria %>
     health_plan_count = Object.keys(window.select_health_plans).length
     deductible_value = 6000
