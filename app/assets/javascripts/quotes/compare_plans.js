@@ -1,4 +1,4 @@
-
+// Reference plans selected for comparison
 selected_plans = function(){
   var plans=[];
   $.each($('.btn.active input'), function(i,item){plans.push( $(item).attr("value"))})
@@ -20,7 +20,7 @@ sort_plans = function(){
           $('#plan_comparison_frame').html(response);
           compare_plans_listeners();
           export_compare_plans_listener();
-          collapse_all()
+          $('#plan_ids').val(null);
         }
       })
     }
@@ -36,7 +36,7 @@ compared_plans_export = function(){
 export_compare_plans_listener = function(){
   $('#pdf_export_compare_plans').on('click', compared_plans_export);
 }
-
+// Plans in order after drag and sort from benefit comparison table
 plan_list = function(){
   plans = $('.plan_id'); 
   id_list=[];  

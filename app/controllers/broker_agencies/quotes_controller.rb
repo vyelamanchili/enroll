@@ -42,7 +42,7 @@ class BrokerAgencies::QuotesController < ApplicationController
     dental_plan_quote_criteria  = $quote_shop_dental_plan_features.to_json
 
     @bp_hash = {'employee':50, 'spouse': 0, 'domestic_partner': 0, 'child_under_26': 0, 'child_26_and_over': 0}
-
+    @q =  Quote.find(params[:quote]) if !params[:quote].nil?
     quote_on_page = @q || @quotes.first
     @quote_criteria = []
     unless quote_on_page.nil?
@@ -53,12 +53,14 @@ class BrokerAgencies::QuotesController < ApplicationController
     end
     @benefit_pcts_json = @bp_hash.to_json
 
-    @q =  Quote.find(params[:quote]) if !params[:quote].nil?#Quote.find(Quote.first.id)
-
-    if !params['plans'].nil? && params['plans'].count > 0 && params["commit"].downcase == "compare costs"
+  end
+  def health_cost_comparison
+      @q =  Quote.find(params[:quote])
       @quote_results = Hash.new
       @quote_results_summary = Hash.new
+      @health_plans = $quote_shop_health_plans
       unless @q.nil?
+        roster_premiums = @q.roster_cost_all_plans
         @roster_elected_plan_bounds = PlanCostDecoratorQuote.elected_plans_cost_bounds(@health_plans,
           @q.quote_relationship_benefits, roster_premiums)
         params['plans'].each do |plan_id|
@@ -80,11 +82,12 @@ class BrokerAgencies::QuotesController < ApplicationController
         end
         @quote_results = @quote_results.sort_by { |k, v| v[:total_employer_cost] }.to_h
       end
-    end
+    render partial: 'health_cost_comparison'
+  end
 
-    @display_results = @quote_results.present?
 
-
+  def dental_cost_comparison
+    render partial: 'dental_cost_comparison', layout: false
   end
 
   def edit

@@ -49,21 +49,28 @@
           <div class="panel panel-default">
         		<div class="panel-heading" role="tab" id="plan-selection-mgmt-header">
               <a role="button">
-                    <div data-toggle="collapse" data-parent="#accordion" href="#plan-selection-mgmt"
+                  <div data-toggle="collapse" data-parent="#accordion" href="#plan-selection-mgmt"
                     aria-expanded="true" aria-controls="plan-selection-mgmt" style='display: inline; float_left'>
                       <b>Health Plan Selection</b>
                       <span class="glyphicon glyphicon-triangle-right" aria-hidden="true"></span>
                       <span style='margin-left: 50px; font-size: 120%;'  id='show_plan_selected_count'>Plan count</span>
-                    </div>
-                  </a>
-                <label class='btn btn-normal' id='reset_selected'> Reset Selections</label>
+                  </div>
+              </a>
+              <label class='btn btn-normal' id='reset_selected'> Reset Selections</label>
         		</div>
         	  <div id="plan-selection-mgmt" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="">
 
             	<%= render partial: 'my_plans' %>
 
+              <div class="panel panel-default">
+            <div class="panel-collapse collapse in" role="tabpanel" aria-labelledby="compare_benefits"  id="plan_comparison_frame">
+              <%= (render "quote_comparision" , quote_results: @quote_results) if @quote_results %>
+            </div>
+          </div>
+
         	  </div>
         	</div>
+
           <div class="panel panel-default">
             <div class="panel-heading" role="tab" id="dental-feature-mgmt-header">
                 <a role="button" data-toggle="collapse" data-parent="#accordion" href="#dental-feature-mgmt" aria-expanded="true" aria-controls="dental-feature-mgmt">
@@ -103,18 +110,28 @@
 
       <% end %>
 
-        <div class="panel panel-default">
-          <div class="panel-collapse collapse in" role="tabpanel" aria-labelledby="compare_costs" id="plan_comparison_frame">
-          </div>
-        </div>
 
-      <% if @quote_results %>
-          <div class="panel panel-default">
-            <div class="panel-collapse collapse in" role="tabpanel" aria-labelledby="compare_benefits">
-           <%=render "quote_comparision" , quote_results: @quote_results %>
-          </div>
+     
+
+    
+
+
+      <div class="panel panel-default">
+        <div class="panel-heading" role="tab" id="publish-quote-header">
+          <a role="button">
+              <div data-toggle="collapse" data-parent="#accordion" href="#publish-quote"
+                aria-expanded="false" aria-controls="publish-quote" style='display: inline; float_left' class='collapsed'>
+                  <b>Quote</b>
+                  <span class="glyphicon glyphicon-triangle-right" aria-hidden="true"></span>
+                  <span style='margin-left: 50px; font-size: 120%;'  id='show_plan_selected_count'>Quote Status: </span>
+              </div>
+          </a>
+          
         </div>
-      <% end %>
+        <div id="publish-quote" class="panel-collapse collapse " role="tabpanel" aria-labelledby="">
+        </div>
+      </div>
+ 
     </div>
   </div>
 </div>
@@ -123,11 +140,7 @@
 <script type="text/javascript">
 
 $(document).on('ready page:load', function () {
-    if(window.matchMedia('handheld').match) {
-      collapse_all()
-    }
-    var focus_on_compare_table = <%= @display_results %>
-    if (focus_on_compare_table) {collapse_all()}
+    collapse_all()
     window.select_health_plans = <%=raw @health_plan_quote_criteria %>
     health_plan_count = Object.keys(window.select_health_plans).length
     deductible_value = 6000
