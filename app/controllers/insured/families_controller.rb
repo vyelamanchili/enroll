@@ -19,8 +19,9 @@ class Insured::FamiliesController < FamiliesController
 
     @waived_enrollment_filter = @family.waivers_for_display
 
-    valid_display_enrollments = Array.new
-    @enrollment_filter.each  { |e| valid_display_enrollments.push e['hbx_enrollment']['_id'] }
+    # valid_display_enrollments = Array.new
+    # @enrollment_filter.each  { |e| valid_display_enrollments.push e['hbx_enrollment']['_id'] }
+
 
     valid_display_waived_enrollments = Array.new
     @waived_enrollment_filter.each  { |e| valid_display_waived_enrollments.push e['hbx_enrollment']['_id'] }
@@ -31,7 +32,8 @@ class Insured::FamiliesController < FamiliesController
     update_changing_hbxs(@hbx_enrollments)
 
     # Filter out enrollments for display only
-    @hbx_enrollments = @hbx_enrollments.reject { |r| !valid_display_enrollments.include? r._id }
+    # @hbx_enrollments = @hbx_enrollments.reject { |r| !valid_display_enrollments.include? r._id }
+    @hbx_enrollments = @hbx_enrollments.reject { |r| !HbxEnrollment::ENROLLED_STATUSES.include? r.aasm_state }
     @waived_hbx_enrollments = @waived_hbx_enrollments.each.reject { |r| !valid_display_waived_enrollments.include? r._id }
 
     hbx_enrollment_kind_and_years = @hbx_enrollments.inject(Hash.new { [] }) do |memo, enrollment|
