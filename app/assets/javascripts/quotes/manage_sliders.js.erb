@@ -33,7 +33,7 @@ function set_relationship_pct(relationship, val) {
 
 $(document).on('keyup', 'input', function() {
   if($(this).val() > 100) {
-    if($(this).attr('id') == 'ex1_input') {
+    if(['ex1_input','ex2_input'].includes($(this).attr('id'))) {
       if($(this).val() > 6000) {
         $(this).val(6000);
       }
@@ -57,7 +57,7 @@ $(document).on('keyup', 'input', function() {
       var mySlider = $(this).closest('div.row').find('input.slider').eq(0);
       mySlider.bootstrapSlider('setValue', hidden);
       mySlider.attr('value', hidden).attr('data-slider-value', hidden);
-      if($(this).attr('id') == 'ex1_input') {
+      if(['ex1_input','ex2_input'].includes($(this).attr('id'))) {
         $(this).closest('div.row').find('.slide-label').eq(0).text("$" + hidden);
       }
       else {
@@ -79,7 +79,7 @@ $(document).on('change', 'input', function(){
     else {
       $(this).on("slideStop", function(slideEvt) {
         $(this).closest('div.row').find('input').eq(0).val(data);
-        if($(this).attr('id') == 'ex1') {
+        if(['ex1','ex2'].includes($(this).attr('id'))) {
           $(this).closest('div.row').find('.slide-label').eq(0).text("$" + data);
         }
         else {
@@ -150,8 +150,8 @@ function slider_listeners () {
       reset_selected_plans();
     })
     $('#ex2').on('slideStop', function(){deductible_value = this.value;
-      toggle_plans([]);
-      reset_selected_plans();
+      toggle_dental_plans([]);
+      reset_selected_dental_plans();
     })
     $('#pct_employee').on('slideStop', function() {
         val =$('#pct_employee').bootstrapSlider('getValue')
