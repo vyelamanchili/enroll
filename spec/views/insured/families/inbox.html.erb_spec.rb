@@ -18,7 +18,7 @@ describe "insured/families/inbox.html.erb" do
       render template: "insured/families/inbox.html.erb"
     end
 
-    it "should match effective_on_kinds" do
+    it "should display the upload notices button" do
       expect(rendered).to match(/upload notices/i)
     end
   end
@@ -29,7 +29,7 @@ describe "insured/families/inbox.html.erb" do
       render template: "insured/families/inbox.html.erb"
     end
 
-    it "should match effective_on_kinds" do
+    it "should not display the upload notices button" do
       expect(rendered).to_not match(/upload notices/i)
     end
   end
