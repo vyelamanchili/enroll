@@ -79,7 +79,7 @@ $(document).on('change', 'input', function(){
     else {
       $(this).on("slideStop", function(slideEvt) {
         $(this).closest('div.row').find('input').eq(0).val(data);
-        if($(this).attr('id') == 'ex1_input') {
+        if($(this).attr('id') == 'ex1') {
           $(this).closest('div.row').find('.slide-label').eq(0).text("$" + data);
         }
         else {

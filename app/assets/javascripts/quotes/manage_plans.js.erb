@@ -95,4 +95,7 @@ function reset_selected_plans(){
       $('#plan-selection-mgmt').addClass('in')
     }, 0)
 }
-
+$(document).on('shown.bs.collapse', '#feature-mgmt', function (e) { 
+  $('#ex1_input').focus() 
+  $('#ex1_input').blur() 
+});
