@@ -31,7 +31,7 @@ function set_relationship_pct(relationship, val) {
   set_plan_costs()
 }
 
-$(document).on('keyup', 'input', function() {
+$(document).on('keyup', 'input.slider_input, input.right_slider_input', function() {
   if($(this).val() > 100) {
     if(['ex1_input','ex2_input'].includes($(this).attr('id'))) {
       if($(this).val() > 6000) {
@@ -67,8 +67,8 @@ $(document).on('keyup', 'input', function() {
   }
 });
 
-$(document).on('change', 'input', function(){
-  if ( $(this).hasClass('slider') ) {
+$(document).on('change', 'input.slider, input.right-slider', function(){
+  if ($(this).hasClass('slider')) {
     var data = $(this).val();
     if ( $(this).hasClass('right-slider') ) {
       $(this).on("slideStop", function(slideEvt) {
