@@ -30,4 +30,14 @@ $primary-bold: 600;
       display: inline-block;
     }
   }
+  .vertically-aligned-row {
+    display: table;
+    width: 100%;
+
+    >* {
+      display: table-cell;
+      float: none;
+      vertical-align: middle;
+    }
+  }
 }
