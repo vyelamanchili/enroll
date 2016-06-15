@@ -250,8 +250,8 @@ class BrokerAgencies::QuotesController < ApplicationController
     end
 
     @cost = params[:cost]
-    @plans_offered = @quote.cost_for_plans(@quote.plan_by_offerings(@plan, @elected_plan_choice), @plan).sort_by { |k| [k["employer_cost"], k["employee_cost"]] }
-
+    @plans_offered = @quote.cost_for_plans([@plan], @plan).sort_by { |k| [k["employer_cost"], k["employee_cost"]] }
+    render partial: 'publish'
   end
 
   def criteria

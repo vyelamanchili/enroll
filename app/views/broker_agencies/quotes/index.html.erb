@@ -3,6 +3,11 @@
     <div class="col-md-12">
         <h2>Broker Quoting Tool</h2>
 
+        <p style='width:50%'> The cost of different plans can be evaluated based on a quote roster.
+            Compare health plans in order to select a reference health plan.  A reference dental plan can be added
+            After a quote is published it can be exported via Employer claim code. 
+        </p>
+
          <input name='employee' value='50' type='hidden'>
          <input name='spouse' value='0' type='hidden'>
          <input name='domestic_partner' value='0' type='hidden'>
@@ -73,7 +78,7 @@
 
           <div class="panel panel-default">
             <div class="panel-heading" role="tab" id="dental-feature-mgmt-header">
-                <a role="button" data-toggle="collapse" data-parent="#accordion" href="#dental-feature-mgmt" aria-expanded="true" aria-controls="dental-feature-mgmt">
+                <a role="button" data-toggle="collapse" data-parent="#accordion" href="#dental-feature-mgmt" aria-expanded="false" aria-controls="dental-feature-mgmt">
 
                   <b>Dental Features and cost criteria</b>
                   <span class="glyphicon glyphicon-triangle-right" aria-hidden="true"></span>
@@ -81,7 +86,7 @@
                    <label class='btn btn-normal hide' id='reset_criteria'> Reset Criteria</label>
                 </a>
             </div>
-            <div id="dental-feature-mgmt" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="">
+            <div id="dental-feature-mgmt" class="panel-collapse collapse" role="tabpanel" aria-labelledby="">
 
             <%= render partial: 'my_dental_features' %>
 
@@ -92,7 +97,7 @@
             <div class="panel-heading" role="tab" id="dental-plan-selection-mgmt-header">
               <a role="button">
                     <div data-toggle="collapse" data-parent="#accordion" href="#dental-plan-selection-mgmt"
-                    aria-expanded="true" aria-controls="dental-plan-selection-mgmt" style='display: inline; float_left'>
+                    aria-expanded="false" aria-controls="dental-plan-selection-mgmt" style='display: inline; float_left'>
                       <b>Dental Plan Selection</b>
                       <span class="glyphicon glyphicon-triangle-right" aria-hidden="true"></span>
                       <span style='margin-left: 50px; font-size: 120%;'  id='show_dental_plan_selected_count'>Plan count</span>
@@ -100,22 +105,14 @@
                   </a>
                 <label class='btn btn-normal' id='reset_selected'> Reset Selections</label>
             </div>
-            <div id="dental-plan-selection-mgmt" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="">
+            <div id="dental-plan-selection-mgmt" class="panel-collapse collapse" role="tabpanel" aria-labelledby="">
 
               <%= render partial: 'my_dental_plans' %>
 
             </div>
           </div>
       <% end %>
-
       <% end %>
-
-
-     
-
-    
-
-
       <div class="panel panel-default">
         <div class="panel-heading" role="tab" id="publish-quote-header">
           <a role="button">
@@ -129,6 +126,7 @@
           
         </div>
         <div id="publish-quote" class="panel-collapse collapse " role="tabpanel" aria-labelledby="">
+          Stuff
         </div>
       </div>
  
