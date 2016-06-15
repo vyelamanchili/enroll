@@ -1,5 +1,7 @@
 class User
   INTERACTIVE_IDENTITY_VERIFICATION_SUCCESS_CODE = "acc"
+  MIN_USERNAME_LENGTH = 8
+  MAX_USERNAME_LENGTH = 60
   include Mongoid::Document
   include Mongoid::Timestamps
   include Acapi::Notifiers
@@ -22,6 +24,10 @@ class User
   def oim_id_rules
     if oim_id.present? && oim_id.match(/[;#%=|+,">< \\\/]/)
       errors.add :oim_id, "cannot contain special charcters ; # % = | + , \" > < \\ \/"
+    elsif oim_id.present? && oim_id.length < MIN_USERNAME_LENGTH
+      errors.add :oim_id, "must be at least #{MIN_USERNAME_LENGTH} characters"
+    elsif oim_id.present? && oim_id.length > MAX_USERNAME_LENGTH
+      errors.add :oim_id, "can NOT exceed #{MAX_USERNAME_LENGTH} characters"
     end
   end
 
@@ -301,7 +307,6 @@ class User
     all.order(:"email".asc).select() {|u| u.person.blank?}
   end
 
-
   def self.send_reset_password_instructions(attributes={})
     recoverable = find_or_initialize_with_errors(reset_password_keys, attributes, :not_found)
     if !recoverable.approved?
@@ -349,6 +354,9 @@ class User
     self.identity_response_code = INTERACTIVE_IDENTITY_VERIFICATION_SUCCESS_CODE
     self.identity_response_description_text = "curam payload"
     self.identity_verified_date = TimeKeeper.date_of_record
+    unless self.oim_id.present?
+      self.oim_id = self.email
+    end
     self.save!
   end
 
