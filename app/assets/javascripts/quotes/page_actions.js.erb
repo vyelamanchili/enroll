@@ -1,14 +1,3 @@
-function collapse_all(){
-  //bootstrapslider labels will have zero width unless the sliders are initially visible before being hidden
-  setTimeout(function(){
-    $('[aria-controls="quote-mgmt"]').attr('aria-expanded', false)
-    $('#quote-mgmt').removeClass('in')
-    $('[aria-controls="feature-mgmt"]').attr('aria-expanded', false)
-    $('#feature-mgmt').removeClass('in')
-    $('[aria-controls="plan-selection-mgmt"]').attr('aria-expanded', false)
-    $('#plan-selection-mgmt').removeClass('in')
-    },0)
-}
 function page_load_listeners () {
     $('.plan_selectors .criteria').on('click',function(){
         selected=this; sibs = $(selected).siblings();
@@ -42,16 +31,6 @@ function page_load_listeners () {
         else {
          $('#show_plan_selected_count').text('You have selected ' + String(adjusted_count) + ' plans.' )
         }
-    })
-    $('.publish td').on('click',
-       function(){
-        td = $(this)
-        quote_id=$('#quote').val()
-        plan_id=td.parent().attr('id')
-        elected=td.index()
-        cost = td.html()
-        params='?quote_id='+quote_id+'&plan_id='+plan_id+'&elected='+String(elected)+'&cost='+cost
-        window.location= '/broker_agencies/quotes/publish.html' + params
     })
     $('#quote').on('change',
        function(){
