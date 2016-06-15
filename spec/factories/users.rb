@@ -45,6 +45,12 @@ FactoryGirl.define do
     roles ["consumer"]
   end
 
+  trait :ridp_verified do
+    after :create do |user|
+      user.ridp_by_payload!
+    end  
+  end  
+
   trait "assister" do
     roles ["assister"]
   end
