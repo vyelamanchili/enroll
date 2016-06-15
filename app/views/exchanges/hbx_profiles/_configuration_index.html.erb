@@ -2,7 +2,7 @@
   <div class="row">
     <h3 class="title-inline">Configuration</h3>
   </div>
-
+  <h4 class="title-inline">Set Date</h3>
   <div class="row input-no-pd">
     <%= link_to 'Announcements', exchanges_announcements_path, {class: 'btn btn-default'} %>
     
@@ -20,5 +20,11 @@
         <td class="hide-on-mobile"><button type="submit" class="btn btn-primary pull-right">Set Current Date</button></td>
       </table>
     <% end %>
+  </div>
+
+  <hr />
+
+  <div class="row input-no-pd">
+     <%= link_to 'Update APTC / CSR', aptc_csr_family_index_exchanges_hbx_profiles_path, class: "btn btn-info", remote: true%>
   </div>
 </div>

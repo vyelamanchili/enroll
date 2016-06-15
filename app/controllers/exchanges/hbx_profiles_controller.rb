@@ -13,7 +13,7 @@ class Exchanges::HbxProfilesController < ApplicationController
   before_action :check_params, only: [:add_new_sep]
 
   def check_params
-    if params[:csl_num].to_s.length < 10 
+    if params[:csl_num].to_s.length < 10
       redirect_to :back, :flash => { error: "SEP not saved. CSL# should be a maximum of 10 digits" }
     end
   end
@@ -502,6 +502,28 @@ class Exchanges::HbxProfilesController < ApplicationController
   def view_policy_xml
     policy = HbxEnrollment.by_hbx_id(params[:id]).first
     render "events/hbx_enrollment/policy", :formats => ["xml"], :locals => { :hbx_enrollment => policy }
+  end
+
+  # Enrollments for APTC / CSR
+  def aptc_csr_family_index
+    raise NotAuthorizedError if !current_user.has_hbx_staff_role?
+    @q = params.permit(:q)[:q]
+    page_string = params.permit(:families_page)[:families_page]
+    page_no = page_string.blank? ? nil : page_string.to_i
+    unless @q.present?
+      @families = Family.all_active_assistance_receiving_for_current_year.page page_no
+      @total = Family.all_active_assistance_receiving_for_current_year.count
+    else
+      person_ids = Person.search(@q).map(&:_id)
+
+      total_families = Family.all_active_assistance_receiving_for_current_year.in("family_members.person_id" => person_ids).entries
+      @total = total_families.count
+      @families = Kaminari.paginate_array(total_families).page page_no
+    end
+    respond_to do |format|
+      #format.html { render "insured/families/aptc_csr_listing" }
+      format.js {}
+    end
   end
 
 private

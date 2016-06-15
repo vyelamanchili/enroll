@@ -578,4 +578,8 @@ module ApplicationHelper
     return false if general_agency_profile.blank? || broker_agency_profile.blank?
     broker_agency_profile.default_general_agency_profile == general_agency_profile
   end
+
+  def primary_member(person_id)
+    Person.find(person_id).try(:primary_family).try(:primary_family_member).try(:person) == Person.find(person_id)
+  end
 end
