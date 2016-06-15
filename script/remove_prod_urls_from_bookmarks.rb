@@ -13,7 +13,7 @@ User.all.no_timeout.each do |u|
       u.update_attributes!(last_portal_visited: link)
       p u.last_portal_visited
     rescue
-     puts "user.email #{c.email} has blank oim_id"
+     puts "user.email #{u.email} has blank oim_id"
     end
   end
 end
