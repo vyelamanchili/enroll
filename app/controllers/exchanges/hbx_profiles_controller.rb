@@ -18,6 +18,8 @@ class Exchanges::HbxProfilesController < ApplicationController
     end
   end
 
+  layout 'single_column'
+
   def index
     @organizations = Organization.exists(hbx_profile: true)
     @hbx_profiles = @organizations.map {|o| o.hbx_profile}
