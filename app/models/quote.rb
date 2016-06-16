@@ -18,13 +18,16 @@ class Quote
   field :start_on, type: Date, default: TimeKeeper.date_of_record.beginning_of_year
   field :broker_role_id, type: BSON::ObjectId
   field :published_reference_plan, type: BSON::ObjectId
+  field :published_dental_reference_plan, type: BSON::ObjectId
 
   field :claim_code, type: String, default: ''
   associated_with_one :broker_role, :broker_role_id, "BrokerRole"
 
   associated_with_one :plan, :published_reference_plan, "Plan"
+  associated_with_one :dental_plan, :published_dental_reference_plan, "Plan"
 
   field :plan_option_kind, type: String, default: "single_carrier"
+  field :dental_plan_option_kind, type: String, default: "single_carrier"
 
   embeds_many :quote_reference_plans, cascade_callbacks: true
   embeds_many :quote_households
