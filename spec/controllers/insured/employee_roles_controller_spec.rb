@@ -335,6 +335,7 @@ RSpec.describe Insured::EmployeeRolesController, :dbclean => :after_each do
       allow(user).to receive(:save!).and_return(true)
       sign_in(user)
       allow(user).to receive(:person).and_return(person)
+      allow(person).to receive(:linked_active_employee_roles).and_return([])
       get :welcome
       expect(response).to have_http_status(:success)
       expect(response).to render_template("welcome")
@@ -346,7 +347,7 @@ RSpec.describe Insured::EmployeeRolesController, :dbclean => :after_each do
       allow(user).to receive(:last_portal_visited=).and_return(family_account_path)
 
       allow(user).to receive(:save!).and_return(true)
-      allow(person).to receive(:employee_roles).and_return([employee_role])
+      allow(person).to receive(:linked_active_employee_roles).and_return([employee_role])
       allow(employee_role).to receive(:bookmark_url).and_return(family_account_path)
       sign_in(user)
       get :welcome
