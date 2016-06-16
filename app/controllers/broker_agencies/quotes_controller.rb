@@ -54,8 +54,11 @@ class BrokerAgencies::QuotesController < ApplicationController
     #temp stuff until publish is fixed
     @quote = @quote_on_page
     @plan = @quote.plan
-    @plans_offered = @quote.cost_for_plans([@plan], @plan).sort_by { |k| [k["employer_cost"], k["employee_cost"]] }
-
+    if @plan
+      @plans_offered = @quote.cost_for_plans([@plan], @plan).sort_by { |k| [k["employer_cost"], k["employee_cost"]] }
+    else
+      @plans_offered =[]
+    end
 
 
   end
