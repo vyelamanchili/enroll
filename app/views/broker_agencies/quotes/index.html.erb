@@ -1,38 +1,28 @@
 <div class="module container broker_quote_tool">
-  <div class="row">
-    <div class="col-md-12">
-        <h2>Broker Quoting Tool</h2>
-
-        <p style='width:50%'> The cost of different plans can be evaluated based on a quote roster.
-            Compare health plans in order to select a reference health plan.  A reference dental plan can be added
-            After a quote is published it can be exported via Employer claim code. 
-        </p>
-
+  <div class="row" class="col-md-12">
          <input name='employee' value='50' type='hidden'>
          <input name='spouse' value='0' type='hidden'>
          <input name='domestic_partner' value='0' type='hidden'>
          <input name='child_under_26' value='0' type='hidden'>
-
+        <p></p>
         <%= form_tag(broker_agencies_quotes_root_path, method: :get) do  %>
 
          <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="false">
          	<div class="panel panel-default">
          		<div class="panel-heading" role="tab" id="quote-mgmt-header">
-         				<a role="button" data-toggle="collapse" data-parent="#accordion" href="#quote-mgmt" aria-expanded="true" aria-controls="quote-mgmt">
+         				<a role="button" data-toggle="collapse" data-parent="#accordion" href="#quote-mgmt" aria-expanded="false" aria-controls="quote-mgmt">
          					<b>Quote/Roster Management</b>
                   <span class="glyphicon glyphicon-triangle-right" aria-hidden="true"></span>
 
          				</a>
          		</div>
-         	  <div id="quote-mgmt" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="">
+         	  <div id="quote-mgmt" class="panel-collapse collapse" role="tabpanel" aria-labelledby="">
 
               <%=render "my_quotes" , quote_results: @quote_results %>
 
          	  </div>
          	</div>
           <br>
-
-
     <% if @quotes.count > 0 %>
         	<div class="panel panel-default">
         		<div class="panel-heading" role="tab" id="feature-mgmt-header">
@@ -45,9 +35,7 @@
         				</a>
         		</div>
         	  <div id="feature-mgmt" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="">
-
             <%= render partial: 'my_features' %>
-
         	  </div>
         	</div>
 
@@ -113,22 +101,7 @@
           </div>
       <% end %>
       <% end %>
-      <div class="panel panel-default">
-        <div class="panel-heading" role="tab" id="publish-quote-header">
-          <a role="button">
-              <div data-toggle="collapse" data-parent="#accordion" href="#publish-quote"
-                aria-expanded="false" aria-controls="publish-quote" style='display: inline; float_left' class='collapsed'>
-                  <b>Quote</b>
-                  <span class="glyphicon glyphicon-triangle-right" aria-hidden="true"></span>
-                  <span style='margin-left: 50px; font-size: 120%;'  id='show_plan_selected_count'>Quote Status: </span>
-              </div>
-          </a>
-          
-        </div>
-        <div id="publish-quote" class="panel-collapse collapse " role="tabpanel" aria-labelledby="">
-          Stuff
-        </div>
-      </div>
+      <%= render partial: 'broker_agencies/quotes/panels/quote' %>
  
     </div>
   </div>
@@ -138,7 +111,6 @@
 <script type="text/javascript">
 
 $(document).on('ready page:load', function () {
-    collapse_all()
     window.select_health_plans = <%=raw @health_plan_quote_criteria %>
     health_plan_count = Object.keys(window.select_health_plans).length
     deductible_value = 6000

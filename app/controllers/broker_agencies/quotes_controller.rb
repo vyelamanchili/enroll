@@ -415,7 +415,7 @@ private
     @visit_types = @coverage_kind == "health" ? Products::Qhp::VISIT_TYPES : Products::Qhp::DENTAL_VISIT_TYPES 
   end
   
-  def load_dental_plans
+def load_dental_plans
     
   end
 end

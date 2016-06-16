@@ -24,7 +24,7 @@
         <table class="table">
           <thead
           <tr>
-            <th>Quote Action</th>
+            <th>Quote Action!!</th>
             <th>Quote Name</th>
             <th>Employer claim code</th>
             <th class="text-right">Family Count</th>
@@ -40,7 +40,7 @@
             if q.aasm_state == 'draft'
              link_to "Edit Quote Info & Roster" , "/broker_agencies/quotes/#{q.id}/edit"
            else
-             link_to "View Published Quote", "/broker_agencies/quotes/published_quote/#{q.id}"
+             link_to "View Published Quote", "#", id: q.id, class: 'view-published'
            end
            %>
          </td>
