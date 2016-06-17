@@ -91,4 +91,19 @@ class UserMailer < ApplicationMailer
     end
   end
 
+  def broker_pending_notification(broker_role,reasons)
+    unchecked_carriers = broker_role.carrier_appointments.select { |k,v| k if v != "true"}
+    subject_sufix = unchecked_carriers.present? ? ", missing carrier appointments" : ", has all carrier appointments"
+    subject_prefix = broker_role.training || broker_role.training == true ? "Completed NAHU Training" : "Needs to Complete NAHU training"
+    subject="#{subject_prefix}#{subject_sufix}"
+    mail({to: broker_role.email_address, subject: subject}) do |format|
+      if broker_role.training && unchecked_carriers.present?
+        format.html { render "broker_pending_completed_training_missing_carrier", :locals => { :applicant_name => broker_role.person.full_name ,:unchecked_carriers => unchecked_carriers}}
+      elsif !broker_role.training && !unchecked_carriers.present?
+        format.html { render "broker_pending_missing_training_completed_carrier", :locals => { :applicant_name => broker_role.person.full_name , :unchecked_carriers => unchecked_carriers}}
+      else
+        format.html { render "broker_pending_missing_training_and_carrier", :locals => { :applicant_name => broker_role.person.full_name , :unchecked_carriers => unchecked_carriers}}
+      end
+    end
+  end
 end
