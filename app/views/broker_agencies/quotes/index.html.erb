@@ -99,8 +99,10 @@
 
             </div>
           </div>
+        </div>
       <% end %>
       <% end %>
+
       <%= render partial: 'broker_agencies/quotes/panels/quote' %>
  
     </div>
@@ -114,16 +116,6 @@ $(document).on('ready page:load', function () {
     window.select_health_plans = <%=raw @health_plan_quote_criteria %>
     health_plan_count = Object.keys(window.select_health_plans).length
     deductible_value = 6000
-
-    window.relationship_benefits = <%= raw @benefit_pcts_json %>
-    window.roster_premiums = <%= raw @roster_premiums_json %>
-
-    <% if @quotes.count > 0 %> set_plan_costs() <% end %>
-    slider_listeners()
-    page_load_listeners()
-    toggle_plans(<%= raw @quote_criteria %>)
-    $('#PlanComparison').on('click', function(){
-       sort_plans()
-    })
+    quote_change("<%= (@quote && @quote.id) || 'No quote' %>")
 })
 </script>

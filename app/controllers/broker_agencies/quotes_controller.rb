@@ -53,15 +53,14 @@ class BrokerAgencies::QuotesController < ApplicationController
     @benefit_pcts_json = @bp_hash.to_json
     #temp stuff until publish is fixed
     @quote = @quote_on_page
-    @plan = @quote.plan
+    @plan = @quote && @quote.plan
     if @plan
       @plans_offered = @quote.cost_for_plans([@plan], @plan).sort_by { |k| [k["employer_cost"], k["employee_cost"]] }
     else
       @plans_offered =[]
     end
-
-
   end
+
   def health_cost_comparison
       @q =  Quote.find(params[:quote])
       @quote_results = Hash.new
@@ -92,7 +91,6 @@ class BrokerAgencies::QuotesController < ApplicationController
       end
     render partial: 'health_cost_comparison'
   end
-
 
   def dental_cost_comparison
     render partial: 'dental_cost_comparison', layout: false
