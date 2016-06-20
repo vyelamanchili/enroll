@@ -7,15 +7,20 @@ class Employers::PlanYearsController < ApplicationController
   def link_from_quote
 
     #sample code
-    q = Quote.where("claim_code" => "enom-e8vo").first
+    q = Quote.where("claim_code" => "gp33-ewcn").first
     py = PlanYear.find(params[:plan_year_id])
     bg = py.benefit_groups.build
     bg.plan_option_kind =  q.plan_option_kind
     bg.title = "Imported from Quote"
+    bg.lowest_cost_plan_id = q.quote_reference_plans.first.lowest_cost_plan_id
+    bg.reference_plan_id = q.quote_reference_plans.first.reference_plan_id
+    bg.highest_cost_plan_id = q.quote_reference_plans.first.highest_cost_plan_id
     #bg.relationship_benefits = q
     bg.relationship_benefits = q.quote_relationship_benefits.map{|x| x.attributes.slice(:offered,:relationship, :premium_pct)}
 
     @i = 1
+
+    binding.pry
 
     # [15] pry(main)> ce1 = CensusEmployee.new("employer_profile_id" => "5766b8133ec0ba6f3400001f", "first_name" => "Dessa", "last_name" => "Schaffert")
     # => #<CensusEmployee _id: 5766bfb13ec0ba7b90000000, created_at: nil, updated_at: nil, first_name: "Dessa", middle_name: nil, last_name: "Schaffert", name_sfx: nil, encrypted_ssn: nil, dob: nil, gender: nil, employee_relationship: "self", employer_assigned_family_id: nil, _type: "CensusEmployee", autocomplete: nil, is_business_owner: false, hired_on: nil, employment_terminated_on: nil, coverage_terminated_on: nil, aasm_state: nil, employer_profile_id: BSON::ObjectId('5766b8133ec0ba6f3400001f'), employee_role_id: nil>
