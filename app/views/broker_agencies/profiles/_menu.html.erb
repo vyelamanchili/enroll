@@ -33,6 +33,7 @@
           Agency Mail
          <% end %>
         </li>
+        <% end %>
         <li role="presentation" id="inbox-tab" <%= menu_tab_class(active_tab, "inbox-tab") %>>
           <%= link_to(messages_broker_agencies_profiles_path(id: @provider), :remote => true, "aria-expanded" => "true", "aria-controls" => "inbox", "role" => "tab") do  %>
           <span class="badge message-unread"><%=begin; @provider.inbox.unread_messages.try(:count); rescue; return 0; end %></span>
@@ -74,10 +75,10 @@
         </li>
         -->
         <li role="presentation" id="inbox-tab" <%= menu_tab_class(active_tab, "inbox-tab") %>>
-         <%= link_to(messages_broker_agencies_profiles_path(id: @provider), :remote => true, "aria-expanded" => "true", "aria-controls" => "inbox", "role" => "tab") do  %>
+          <%= link_to(messages_broker_agencies_profiles_path(id: @provider), :remote => true, "aria-expanded" => "true", "aria-controls" => "inbox", "role" => "tab") do  %>
             <span class="badge message-unread"><%=begin; @provider.inbox.unread_messages.try(:count); rescue; return 0; end %></span>
           Broker Mail
-         <% end %>
+          <% end %>
         </li>
         <div class="nav-right pull-right">
           <% if current_user.has_hbx_staff_role? %>
@@ -88,7 +89,7 @@
             <br/>
             and Premium Tax Credits
           </li>
-           <% end %>
+          <% end %>
         </div>
         <% end %>
       </ul>

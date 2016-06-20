@@ -292,6 +292,30 @@ Rails.application.routes.draw do
         get :favorite
       end
     end
+    resources :quotes do
+      root 'quotes#index'
+      collection do
+        get :upload_employee_roster
+        post :build_employee_roster
+        get :new_household , :format => "js"
+        post :update_benefits
+        post :publish_quote
+        get :get_quote_info
+        get :publish
+        get :criteria
+        get :plan_comparison
+        get :health_cost_comparison
+        get :dental_cost_comparison
+        get 'published_quote/:id', to: 'quotes#view_published_quote'
+        get :export_to_pdf
+        get :download_pdf
+      end
+      member do
+        post :download_employee_roster
+        delete :delete_member
+        delete :delete_household
+      end
+    end
   end
 
   match 'general_agency_registration', to: 'general_agencies/profiles#new_agency', via: [:get]
@@ -316,31 +340,6 @@ Rails.application.routes.draw do
     end
     resources :inboxes, only: [:new, :create, :show, :destroy] do
       get :msg_to_portal
-    end
-
-    resources :quotes do
-      root 'quotes#index'
-      collection do
-        get :upload_employee_roster
-        post :build_employee_roster
-        get :new_household , :format => "js"
-        post :update_benefits
-        post :publish_quote
-        get :get_quote_info
-        get :publish
-        get :criteria
-        get :plan_comparison
-        get :health_cost_comparison
-        get :dental_cost_comparison
-        get 'published_quote/:id', to: 'quotes#view_published_quote'
-        get :export_to_pdf
-        get :download_pdf
-      end
-      member do
-        post :download_employee_roster
-        delete :delete_member
-        delete :delete_household
-      end
     end
 
   end
