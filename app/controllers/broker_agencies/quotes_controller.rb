@@ -9,6 +9,10 @@ class BrokerAgencies::QuotesController < ApplicationController
 
   end
 
+  def download_published_pdf
+
+  end
+
   def publish_quote
     @params = params.inspect
 
@@ -52,16 +56,15 @@ class BrokerAgencies::QuotesController < ApplicationController
     end
     @benefit_pcts_json = @bp_hash.to_json
     #temp stuff until publish is fixed
-    @quote = @quote_on_page
-    @plan = @quote.plan
-    if @plan
-      @plans_offered = @quote.cost_for_plans([@plan], @plan).sort_by { |k| [k["employer_cost"], k["employee_cost"]] }
-    else
-      @plans_offered =[]
-    end
-
-
+    # @quote = @quote_on_page
+    # @plan = @quote.plan
+    # if @plan
+      # @plans_offered = @quote.cost_for_plans([@plan], @plan).sort_by { |k| [k["employer_cost"], k["employee_cost"]] }
+    # else
+      # @plans_offered =[]
+    # end
   end
+
   def health_cost_comparison
       @q =  Quote.find(params[:quote])
       @quote_results = Hash.new
@@ -234,6 +237,7 @@ class BrokerAgencies::QuotesController < ApplicationController
     }
     render json: {}
   end
+
   def get_quote_info
     bp_hash = {}
     q =  Quote.find(params[:quote])
@@ -245,6 +249,7 @@ class BrokerAgencies::QuotesController < ApplicationController
     q.quote_relationship_benefits.each{|bp| bp_hash[bp.relationship] = bp.premium_pct}
     render json: {'relationship_benefits' => bp_hash, 'roster_premiums' => q.roster_cost_all_plans, 'criteria' => JSON.parse(q.criteria_for_ui), summary: summary}
   end
+
   def publish
     @quote = Quote.find(params[:quote_id])
     if params[:plan_id]
@@ -266,15 +271,19 @@ class BrokerAgencies::QuotesController < ApplicationController
       @plan = @quote.plan
       @elected_plan_choice = @quote.plan_option_kind
     end
+
     if @plan
       @plans_offered = @quote.cost_for_plans([@plan], @plan).sort_by { |k| [k["employer_cost"], k["employee_cost"]] }
     else
       @plans_offered = []
     end 
-    
-
-
-    render partial: 'publish'
+    respond_to do |format|
+      format.html {render partial: 'publish' , :locals => { :quote => @quote , :plan => @plan, :plans_offered => @plans_offered, :elected_plan_choice => @elected_plan_choice, :offering_param => @offering_param }}
+      format.pdf do
+          render :pdf => "publised_quote",
+                 :template => "/broker_agencies/quotes/_publish.pdf.erb"
+      end
+    end
   end
 
   def criteria

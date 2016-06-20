@@ -8,54 +8,120 @@
 <p>Please review the information below before publishing your quote. Once the quote is published, no information can be changed.</p>
 
 
-<p>Quote: "<%=@quote.quote_name %>" effective <b><%=@quote.start_on %></b></p>
+<p>Quote: "<%=quote.quote_name %>" effective <b><%=quote.start_on %></b></p>
 
 
-<p>Below is your Employer's Plan offering Spectrum. Your offerings are based on <%= @offering_param %> <%= @elected_plan_choice %>.</p>
+<p>Below is your Employer's Plan offering Spectrum. Your offerings are based on <%= offering_param %> <%= elected_plan_choice %>.</p>
 
-<p>Costs are based on the roster associated with this quote of <b><%= @quote.quote_households.count %></b> families and the following percentage contributions.</p>
+<p>Costs are based on the roster associated with this quote of <b><%= quote.quote_households.count %></b> families and the following percentage contributions.</p>
 
-<% @quote.quote_relationship_benefits.each do|rb| %>
+<% quote.quote_relationship_benefits.each do|rb| %>
 <%=rb.relationship.humanize%> - <%= rb.premium_pct %>%<br>
 <% end %>
 
 <br>
+<div class="panel benefitgroup col-xs-12 referenceplan">
+	<div class="col-xs-1">
+    &nbsp;
+  </div>
+	<div class="col-xs-11">
+		<div style="float:right">
+	    <button  id="showhidebutton" href="#collapse-health" data-toggle="collapse" class="nav-toggle" >
+	      View Details 
+	      <a><i class="fa fa-chevron-down fa-lg"></i></a>
+	    </button> 
+	  </div>
+	</div>
+	<table class="published-quote-table">
+          <tr>
+            <th class="col-md-2 col-xs-2 ">
+              <header>Reference Plan</header>
+            </th>
+            <th class="col-md-2 col-xs-2">
+              <header>Carrier</header>
+            </th>
+            <th class="col-md-2 col-xs-2">
+              <header>Type</header>
+            </th>
+            <th class="col-md-2 col-xs-2">
+              <header>Metal Level</header>
+            </th>
+            <th class="col-md-2 col-xs-2">
+              <header>Plans By</header>
+            </th>
+          </tr>
+          <tr>
+            <td class="col-md-2 col-xs-2">
+            	
+		            <p>
+                <%=plan.name.capitalize %>
+		            </p>
+		     
+            </td>
+            <td class="col-md-2 col-xs-2">
+              <p>
+                <%=plan.carrier_profile.abbrev.upcase %>
+              </p>
+            </td>
+            <td class="col-md-2 col-xs-2">
+              <p>
+                <%= plan.plan_type.capitalize %>
+              </p>
+            </td>
+            <td class="col-md-2 col-xs-2">
+              <p>
+                <%=plan.metal_level.capitalize%> <%=elected_plan_choice%>
+              </p>
+            </td>
+            <td class="col-md-2 col-xs-2">
+              <p>
+                <% if elected_plan_choice == "single_carrier" %>
+                All Plans From A Single Carrier
+                <% elsif elected_plan_choice == "metal_level" %>
+                All Plans From A Given Metal Level
+                <% elsif elected_plan_choice == "single_plan" %>
+                A Single Plan
+                <% end %>
+              </p>
+            </td>
+          </tr>
+  </table>
+  <div id="collapse-health" class="collapse" >
+  	<div class="col-xs-1">
+          &nbsp;
+     </div>
 
+  <div class="col-xs-11 package-offering">
+      <div class="col-xs-12">
+        <table class = "employer-health-contribution"> 
+          <tr>
+                <th>Offered</th>
+                <th>Employer Health Contribution</th>
+            </tr>
+        	<% quote.quote_relationship_benefits.each do|rb| %>
+            <tr>
+              <td><%=raw("<i class='fa fa-check-square-o fa-lg'></i>")%><%=rb.relationship.humanize %></td>
+                <td>
+                  <strong><%= number_to_percentage rb.premium_pct, precision: 0 %></strong>
+                </td>
+            </tr>
+          <% end %>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
 <p>Actual costs may vary.</p>
 
 <%= form_tag("/broker_agencies/quotes/publish_quote", method: "post") do %>
-  <%= hidden_field_tag(:id, @quote.id) %>
-  <%= hidden_field_tag(:reference_plan_id, @plan && @plan.id.to_s) %>
-  <%= hidden_field_tag(:plan_option_kind, @elected_plan_choice) %>
+  <%= hidden_field_tag(:id, quote.id) %>
+  <%= hidden_field_tag(:reference_plan_id, plan && plan.id.to_s) %>
+  <%= hidden_field_tag(:plan_option_kind, elected_plan_choice) %>
   <%= submit_tag "Publish Quote", class: 'btn btn-primary' %>
 <% end %>
-
-<h4> Employer Claim Code: &nbsp;<b><%=@quote.claim_code%></b></h4>
+<%= submit_tag "Publish Quote", class: 'btn btn-primary' %>
+<h4> Employer Claim Code: &nbsp;<b><%=quote.claim_code%></b></h4>
 <br>
 
-<p>Your reference plan is highlighted below.</p>
-
-	<table class="quote_publish_table">
-		<th>
-			<tr>
-				<td class="quote_detail_plan_header">Employer Cost</td>
-				<td class="quote_detail_plan_header">Employee Cost</td>
-				<td class="quote_detail_plan_header">Plan Name</td>
-				<td class="quote_detail_plan_header">Metal Level</td>
-			</tr>
-		</th>
-		<tbody>
-        <% @plans_offered.each do |p|  %>
-			<tr <% if p["plan_id"] == @plan.id.to_s %> class="reference_plan_row" <% end %>>
-                <td class="quote_detail_results text-center">$<%= p["employer_cost"] %></td>
-                <td class="quote_detail_results text-center">$<%= p["employee_cost"] %></td>
-                <td class="quote_detail_results text-center"><%= p["plan_name"] %></td>
-                <td class="quote_detail_results text-center"><%=p['metal_level'].capitalize%></td>
-			</tr>
-        <% end %>
-        </tbody>
-    </table>
-
-		</div>
-	</div>
+<%= link_to 'Download PDF' , publish_broker_agencies_quotes_path(:format => :pdf,:quote_id => quote.id) , class: "btn btn-trans" , :target => "_blank " %> <br>
 </div>
