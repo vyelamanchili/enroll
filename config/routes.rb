@@ -221,6 +221,7 @@ Rails.application.routes.draw do
         get 'calc_offered_plan_contributions', on: :collection
         get 'employee_costs', on: :collection
         get 'reference_plan_summary', on: :collection
+        get 'link_from_quote' => 'plan_years#link_from_quote'
 
       end
 
