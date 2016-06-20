@@ -119,9 +119,8 @@
   <%= hidden_field_tag(:plan_option_kind, elected_plan_choice) %>
   <%= submit_tag "Publish Quote", class: 'btn btn-primary' %>
 <% end %>
-<%= submit_tag "Publish Quote", class: 'btn btn-primary' %>
 <h4> Employer Claim Code: &nbsp;<b><%=quote.claim_code%></b></h4>
 <br>
 
-<%= link_to 'Download PDF' , publish_broker_agencies_quotes_path(:format => :pdf,:quote_id => quote.id) , class: "btn btn-trans" , :target => "_blank " %> <br>
+<%= link_to 'Download PDF' , publish_broker_agencies_quotes_path(:format => :pdf,:quote_id => quote.id) , class: "btn btn-primary" , :target => "_blank " %> <br>
 </div>
