@@ -33,6 +33,7 @@ function set_quote_toolbar(summary) {
   $('#quote-dental-plan-name').html(summary['dental_plan_name'])
 }
 function quote_change(quote_id){
+       if(quote_id == 'No quote'){return}
         $.ajax({
           type: 'GET',
           data: {quote: quote_id},
@@ -42,10 +43,12 @@ function quote_change(quote_id){
             window.roster_premiums = response['roster_premiums']
             turn_off_criteria()
             toggle_plans(response['criteria'])
-            set_benefits()
             set_plan_costs()
             inject_quote(quote_id)
+            page_load_listeners()
             set_quote_toolbar(response['summary'])
+            slider_listeners()
+            set_benefits()
         })
     }
 function quote_listeners(){

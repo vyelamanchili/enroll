@@ -3,33 +3,26 @@
       <a role="button">
           <div data-toggle="collapse" data-parent="#accordion" href="#publish-quote"
             aria-expanded="false" aria-controls="publish-quote" style='display: inline; float_left' class='collapsed'>
-              <b>Quote: <u id='quote-name'> <%=@quote_on_page && @quote_on_page.quote_name%> </u></b>
+              <b>Quote: <u id='quote-name'> Create a quote </u></b>
               <span class="glyphicon glyphicon-triangle-right" aria-hidden="true"></span>
               <div style='margin-left: 50px; font-size: 120%; display:inline;'>Status: 
                  <span id='quote-status'> 
-                 	<%= (@quote_on_page && @quote_on_page.aasm_state) || 'None' %>
+                    'None'
                  </span>
               </div>
-          <% if @quote_on_page
-                q = @quote_on_page 
-          	    plan_name = (q.plan && q.plan.name) || 'None'
-          	    dental_plan_name = (q.dental_plan && q.dental_plan.name) || 'None'
-          %>
+
                  <div style='margin-left: 50px; display:inline-block;'> 
                  	Reference Health:<br/>
-                    <span id='quote-plan-name'><%=plan_name %> </span>
+                    <span id='quote-plan-name'> None</span>
                  </div>
                  <div style='margin-left: 50px;  display:inline-block;'>
-                 	Reference Dental: <br/>
-                 	  <span id='quote-dental-plan-name'><%= dental_plan_name%></span> 
+                    Reference Dental: <br/>
+                    <span id='quote-dental-plan-name'> None</span>
                  </div>
-              <% end %>
           </div>
       </a>
-      
     </div>
     <div id="publish-quote" class="panel-collapse collapse " role="tabpanel" aria-labelledby="">
-      <%=render partial: 'broker_agencies/quotes/publish' %>
-       <% #render partial: 'broker_agencies/quotes/publish_standard' %>
+       Please create a quote after comparing health plan costs
     </div>
   </div>
