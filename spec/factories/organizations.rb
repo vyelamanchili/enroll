@@ -62,6 +62,7 @@ FactoryGirl.define do
     before :create do |organization, evaluator|
       organization.broker_agency_profile = FactoryGirl.build :broker_agency_profile, organization: organization
     end
+  end
 
   factory :general_agency, class: Organization do
     legal_name { Forgery(:name).company_name }
