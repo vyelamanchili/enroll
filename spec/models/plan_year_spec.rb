@@ -2193,7 +2193,7 @@ describe PlanYear, :type => :model, :dbclean => :after_each do
       end
   
       after(:all) do
-        referesh_mailbox
+        refresh_mailbox
       end
 
       it 'the plan should be in renewing enrolling' do
