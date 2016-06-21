@@ -315,7 +315,6 @@ Rails.application.routes.draw do
         post :download_employee_roster
         delete :delete_member
         delete :delete_household
-        get :download_published_pdf
       end
     end
   end
