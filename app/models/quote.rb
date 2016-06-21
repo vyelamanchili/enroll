@@ -8,8 +8,8 @@ class Quote
     :employee,
     :spouse,
     :domestic_partner,
-    :child_under_26
-    #:child_26_and_over
+    :child_under_26,
+    :child_26_and_over
   ]
 
   PLAN_OPTION_KINDS = [:single_plan, :single_carrier, :metal_level]

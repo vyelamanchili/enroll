@@ -15,7 +15,6 @@ class Employers::PlanYearsController < ApplicationController
     py.open_enrollment_start_on = TimeKeeper.date_of_record
     py.open_enrollment_end_on = (TimeKeeper.date_of_record + 1.month).beginning_of_month + 9.days
     py.fte_count = q.quote_households.map(&:quote_members).inject(:+).count # get count of quote_members
-        binding.pry
     bg = py.benefit_groups.build
     bg.plan_option_kind =  q.plan_option_kind
     bg.title = "Imported from Quote: " + q.quote_name
@@ -26,11 +25,13 @@ class Employers::PlanYearsController < ApplicationController
     bg.lowest_cost_plan_id = q.published_reference_plan
     bg.reference_plan_id = q.published_reference_plan
     bg.highest_cost_plan_id = q.published_reference_plan
+    bg.elected_plan_ids.push(q.published_reference_plan)
 
-    bg.relationship_benefits = q.quote_relationship_benefits.map{|x| x.attributes.slice(:offered,:relationship, :premium_pct)}
+    bg.relationship_benefits = q.quote_relationship_benefits.map{|x| x.attributes.slice(:offered,:relationship, :premium_pct)} << {"offered"=>false, "relationship"=>"child_offered_26", "premium_pct"=>0.0}
+    binding.pry
 
     @i = 1
-binding.pry
+
 
     # [15] pry(main)> ce1 = CensusEmployee.new("employer_profile_id" => "5766b8133ec0ba6f3400001f", "first_name" => "Dessa", "last_name" => "Schaffert")
     # => #<CensusEmployee _id: 5766bfb13ec0ba7b90000000, created_at: nil, updated_at: nil, first_name: "Dessa", middle_name: nil, last_name: "Schaffert", name_sfx: nil, encrypted_ssn: nil, dob: nil, gender: nil, employee_relationship: "self", employer_assigned_family_id: nil, _type: "CensusEmployee", autocomplete: nil, is_business_owner: false, hired_on: nil, employment_terminated_on: nil, coverage_terminated_on: nil, aasm_state: nil, employer_profile_id: BSON::ObjectId('5766b8133ec0ba6f3400001f'), employee_role_id: nil>
