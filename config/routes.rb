@@ -311,6 +311,7 @@ Rails.application.routes.draw do
         get 'published_quote/:id', to: 'quotes#view_published_quote'
         get :export_to_pdf
         get :download_pdf
+        get :dental_plans_data
       end
       member do
         post :download_employee_roster
