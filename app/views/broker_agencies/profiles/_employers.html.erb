@@ -1,6 +1,6 @@
 <div class="container">
   <div class="row">
-    <div id= 'message_form'></div>
+    <div id= 'message_form'></div_
     <div class="top-pd" id="inbox_provider_form">
       <span class="flash_message"></span>
 
@@ -26,6 +26,9 @@
 
           <tbody>
             <% if @employer_profiles.present?%>
+              <% active_broker = @employer_profiles.first.active_broker %>
+              <% active_broker_full_name = active_broker && active_broker.full_name || 'Undefined' %>
+
               <% @employer_profiles.each do |er| %>
                 <tr id="employer_<%= er.id %>">
                   <% if controller_name == 'profiles' %>
@@ -43,8 +46,8 @@
                   <% if controller_name == 'profiles' %>
                     <% if er.active_broker_agency_account.present? %>
                       <% broker_agency_profile = er.active_broker_agency_account.broker_agency_profile %>
-                      <% edit_path = edit_broker_agencies_profile_applicant_path(broker_agency_profile, er.active_broker) %>
-                        <td><%= link_to er.active_broker.full_name, edit_path, class: "interaction-click-control-broker-show", method: :get %></td>
+                      <% edit_path = edit_broker_agencies_profile_applicant_path(broker_agency_profile, active_broker) %>
+                        <td><%= link_to active_broker_full_name, edit_path, class: "interaction-click-control-broker-show", method: :get %></td>
                     <% else %>
                         <td></td>
                     <% end %>
