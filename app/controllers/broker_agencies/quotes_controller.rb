@@ -33,7 +33,9 @@ class BrokerAgencies::QuotesController < ApplicationController
     active_year = Date.today.year
     @coverage_kind = "health"
     @health_plans = $quote_shop_health_plans
+    
     @dental_plans = $quote_shop_dental_plans
+    @dental_plans_count = @dental_plans.count
 
     @health_selectors = $quote_shop_health_selectors
     @health_plan_quote_criteria  = $quote_shop_health_plan_features.to_json
@@ -49,11 +51,13 @@ class BrokerAgencies::QuotesController < ApplicationController
       quote_on_page.quote_relationship_benefits.each{|bp| @bp_hash[bp.relationship] = bp.premium_pct}
       roster_premiums = quote_on_page.roster_cost_all_plans
       @roster_premiums_json = roster_premiums.to_json
-      @quote_criteria = quote_on_page.criteria_for_ui
+      dental_roster_premiums =  quote_on_page.roster_cost_all_plans('dental')
+      @dental_roster_premiums = dental_roster_premiums.to_json
+      @quote_criteria = quote_on_page.criteria_for_ui if @quote_criteria == "['', '']"
     end
     @benefit_pcts_json = @bp_hash.to_json
-
   end
+  
   def health_cost_comparison
       @q =  Quote.find(params[:quote])
       @quote_results = Hash.new
@@ -221,13 +225,10 @@ class BrokerAgencies::QuotesController < ApplicationController
   def update_benefits
     q = Quote.find(params['id'])
     benefits = params['benefits']
-    q.quote_relationship_benefits.each {|b|
-      b.update_attributes!(premium_pct: benefits[b.relationship])
-    }
+    q.quote_relationship_benefits.each {|b| b.update_attributes!(premium_pct: benefits[b.relationship]) }
     render json: {}
   end
-
-
+  
   def get_quote_info
 
     @bp_hash = {}
@@ -280,6 +281,10 @@ class BrokerAgencies::QuotesController < ApplicationController
            template: 'broker_agencies/quotes/_plan_comparison_export.html.erb', 
            disposition: 'attachment', 
            locals: { qhps: @qhps }
+  end
+  
+  def dental_plans_data
+    set_dental_plans
   end
   
   
@@ -376,7 +381,13 @@ private
     @visit_types = @coverage_kind == "health" ? Products::Qhp::VISIT_TYPES : Products::Qhp::DENTAL_VISIT_TYPES 
   end
   
-  def load_dental_plans
-    
+  def set_dental_plans
+    @dental_plans = Plan.shop_dental_by_active_year(2016)
+    @dental_plans_count = Plan.shop_dental_by_active_year(2016).count
+    @dental_plans = @dental_plans.by_carrier_profile(params[:carrier_id]) if params[:carrier_id].present? && params[:carrier_id] != 'any'
+    @dental_plans = @dental_plans.by_dental_level(params[:dental_level]) if params[:dental_level].present? && params[:dental_level] != 'any'
+    @dental_plans = @dental_plans.by_plan_type(params[:plan_type]) if params[:plan_type].present? && params[:plan_type] != 'any'
+    @dental_plans = @dental_plans.by_dc_network(params[:dc_network]) if params[:dc_network].present? && params[:dc_network] != 'any'
+    @dental_plans = @dental_plans.by_nationwide(params[:nationwide]) if params[:nationwide].present? && params[:nationwide] != 'any'
   end
 end
