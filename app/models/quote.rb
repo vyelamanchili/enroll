@@ -62,10 +62,11 @@ class Quote
     cost.round(2)
   end
 
-  def roster_cost_all_plans
+  def roster_cost_all_plans(quote_type = 'health')
     @plan_costs= {}
     combined_family = flat_roster_for_premiums
-    $quote_shop_health_plans.each {|plan|
+    quote_collection = quote_type == 'health' ? $quote_shop_health_plans : $quote_shop_dental_plans
+    quote_collection.each {|plan|
       @plan_costs[plan.id.to_s] = roster_premium(plan, combined_family)
     }
     @plan_costs
