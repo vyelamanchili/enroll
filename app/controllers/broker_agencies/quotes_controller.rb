@@ -9,10 +9,6 @@ class BrokerAgencies::QuotesController < ApplicationController
 
   end
 
-  def download_published_pdf
-
-  end
-
   def publish_quote
     @params = params.inspect
 
