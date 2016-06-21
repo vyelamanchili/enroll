@@ -106,9 +106,14 @@ class Employers::EmployerProfilesController < Employers::EmployersController
         collect_and_sort_invoices(params[:sort_order])
         @sort_order = params[:sort_order].nil? || params[:sort_order] == "ASC" ? "DESC" : "ASC"
         enrollments = @employer_profile.enrollments_for_billing
-        @premium_amt_total   = enrollments.map(&:total_premium).sum
-        @employee_cost_total = enrollments.map(&:total_employee_cost).sum
-        @employer_contribution_total = enrollments.map(&:total_employer_contribution).sum
+        @premium_amt_total   = 0
+        @employee_cost_total = 0
+        @employer_contribution_total = 0
+        enrollments.each do |enrollment|
+          @premium_amt_total += enrollment.total_premium
+          @employee_cost_total += enrollment.total_employee_cost
+          @employer_contribution_total += enrollment.total_employer_contribution
+        end
 
         set_flash_by_announcement if @tab == 'home'
       end
