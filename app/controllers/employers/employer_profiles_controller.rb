@@ -17,8 +17,6 @@ class Employers::EmployerProfilesController < Employers::EmployersController
     #sample code
     q = Quote.where("claim_code" => "gp33-ewcn").first
 
-    binding.pry
-
     py = @employer_profile.plan_years.build
     py.start_on = (TimeKeeper.date_of_record + 2.months).beginning_of_month
     py.end_on = (py.start_on + 1.year) - 1.day
@@ -36,6 +34,20 @@ class Employers::EmployerProfilesController < Employers::EmployersController
     bg.elected_plan_ids.push(q.published_reference_plan)
 
     bg.relationship_benefits = q.quote_relationship_benefits.map{|x| x.attributes.slice(:offered,:relationship, :premium_pct)} << {"offered"=>false, "relationship"=>"child_offered_26", "premium_pct"=>0.0}
+
+    py.save
+
+    q.quote_households.each do |qhh|
+      if qhh.employee?
+          quote_employee = qhh.employee
+          ce = CensusEmployee.new("employer_profile_id" => @employer_profile.id, "first_name" => quote_employee.first_name, "last_name" => quote_employee.last_name, "dob" => quote_employee.dob, "hired_on" => TimeKeeper.date_of_record)
+
+          ce.find_or_create_benefit_group_assignment(bg)
+
+          ce.save(:validate => false)
+      end
+    end
+
     binding.pry
 
     @i = 1
@@ -55,7 +67,7 @@ class Employers::EmployerProfilesController < Employers::EmployersController
     # => true
     # [21] pry(main)> q1
 
-          redirect_to employers_employer_profile_path(@organization.employer_profile, tab: 'home')
+    redirect_to employers_employer_profile_path(@employer_profile, tab: 'benefits')
   end
 
   def index
