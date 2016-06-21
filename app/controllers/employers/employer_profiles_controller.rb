@@ -1,7 +1,7 @@
 class Employers::EmployerProfilesController < Employers::EmployersController
 
   before_action :find_employer, only: [:show, :show_profile, :destroy, :inbox,
-                                       :bulk_employee_upload, :bulk_employee_upload_form, :download_invoice, :export_census_employees]
+                                       :bulk_employee_upload, :bulk_employee_upload_form, :download_invoice, :export_census_employees,:link_from_quote]
 
   before_action :check_show_permissions, only: [:show, :show_profile, :destroy, :inbox, :bulk_employee_upload, :bulk_employee_upload_form]
   before_action :check_index_permissions, only: [:index]
@@ -10,6 +10,53 @@ class Employers::EmployerProfilesController < Employers::EmployersController
   before_action :check_and_download_invoice, only: [:download_invoice]
   skip_before_action :verify_authenticity_token, only: [:show], if: :check_origin?
   layout "two_column", except: [:new]
+
+
+  def link_from_quote
+
+    #sample code
+    q = Quote.where("claim_code" => "gp33-ewcn").first
+
+    binding.pry
+
+    py = @employer_profile.plan_years.build
+    py.start_on = (TimeKeeper.date_of_record + 2.months).beginning_of_month
+    py.end_on = (py.start_on + 1.year) - 1.day
+    py.open_enrollment_start_on = TimeKeeper.date_of_record
+    py.open_enrollment_end_on = (TimeKeeper.date_of_record + 1.month).beginning_of_month + 9.days
+    py.fte_count = q.quote_households.map(&:quote_members).inject(:+).count # get count of quote_members
+    bg = py.benefit_groups.build
+    bg.plan_option_kind =  q.plan_option_kind
+    bg.title = "Imported from Quote: " + q.quote_name
+    bg.description = "Linked from claim code xxx"
+
+    bg.lowest_cost_plan_id = q.published_reference_plan
+    bg.reference_plan_id = q.published_reference_plan
+    bg.highest_cost_plan_id = q.published_reference_plan
+    bg.elected_plan_ids.push(q.published_reference_plan)
+
+    bg.relationship_benefits = q.quote_relationship_benefits.map{|x| x.attributes.slice(:offered,:relationship, :premium_pct)} << {"offered"=>false, "relationship"=>"child_offered_26", "premium_pct"=>0.0}
+    binding.pry
+
+    @i = 1
+
+
+    # [15] pry(main)> ce1 = CensusEmployee.new("employer_profile_id" => "5766b8133ec0ba6f3400001f", "first_name" => "Dessa", "last_name" => "Schaffert")
+    # => #<CensusEmployee _id: 5766bfb13ec0ba7b90000000, created_at: nil, updated_at: nil, first_name: "Dessa", middle_name: nil, last_name: "Schaffert", name_sfx: nil, encrypted_ssn: nil, dob: nil, gender: nil, employee_relationship: "self", employer_assigned_family_id: nil, _type: "CensusEmployee", autocomplete: nil, is_business_owner: false, hired_on: nil, employment_terminated_on: nil, coverage_terminated_on: nil, aasm_state: nil, employer_profile_id: BSON::ObjectId('5766b8133ec0ba6f3400001f'), employee_role_id: nil>
+    # [16] pry(main)> ce1.save
+    # => false
+    # [17] pry(main)> ce1.save(:validate => false)
+    # => true
+    # [18] pry(main)> ce1.hired_on = Date.new
+    # => Mon, 01 Jan -4712
+    # [19]con pry(main)> ce1.hired_on = Date.new(2016,1,1)
+    # => Fri, 01 Jan 2016
+    # [20] pry(main)> ce1.save(:validate => false)
+    # => true
+    # [21] pry(main)> q1
+
+          redirect_to employers_employer_profile_path(@organization.employer_profile, tab: 'home')
+  end
 
   def index
     if params[:broker_agency_id].blank?
