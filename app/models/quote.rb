@@ -17,7 +17,11 @@ class Quote
   field :plan_year, type: Integer, default: TimeKeeper.date_of_record.year
   field :start_on, type: Date, default: TimeKeeper.date_of_record.beginning_of_year
   field :broker_role_id, type: BSON::ObjectId
+
   field :published_reference_plan, type: BSON::ObjectId
+  field :published_lowest_cost_plan, type: BSON::ObjectId
+  field :published_highest_cost_plan, type: BSON::ObjectId
+
   field :published_dental_reference_plan, type: BSON::ObjectId
 
   field :claim_code, type: String, default: ''
@@ -29,7 +33,10 @@ class Quote
   field :plan_option_kind, type: String, default: "single_carrier"
   field :dental_plan_option_kind, type: String, default: "single_carrier"
 
-  embeds_many :quote_reference_plans, cascade_callbacks: true
+  # NOT NEEDED FOR NOW. We will store plan reference at this level (quote model level)
+  #embeds_many :quote_reference_plans, cascade_callbacks: true
+
+
   embeds_many :quote_households
 
 

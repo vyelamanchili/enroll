@@ -8,19 +8,29 @@ class Employers::PlanYearsController < ApplicationController
 
     #sample code
     q = Quote.where("claim_code" => "gp33-ewcn").first
-    py = PlanYear.find(params[:plan_year_id])
+
+    py = @employer_profile.plan_years.build
+    py.start_on = (TimeKeeper.date_of_record + 2.months).beginning_of_month
+    py.end_on = (py.start_on + 1.year) - 1.day
+    py.open_enrollment_start_on = TimeKeeper.date_of_record
+    py.open_enrollment_end_on = (TimeKeeper.date_of_record + 1.month).beginning_of_month + 9.days
+    py.fte_count = q.quote_households.map(&:quote_members).inject(:+).count # get count of quote_members
+        binding.pry
     bg = py.benefit_groups.build
     bg.plan_option_kind =  q.plan_option_kind
-    bg.title = "Imported from Quote"
-    bg.lowest_cost_plan_id = q.quote_reference_plans.first.lowest_cost_plan_id
-    bg.reference_plan_id = q.quote_reference_plans.first.reference_plan_id
-    bg.highest_cost_plan_id = q.quote_reference_plans.first.highest_cost_plan_id
-    #bg.relationship_benefits = q
+    bg.title = "Imported from Quote: " + q.quote_name
+    # bg.lowest_cost_plan_id = q.quote_reference_plans.first.lowest_cost_plan_id
+    # bg.reference_plan_id = q.quote_reference_plans.first.reference_plan_id
+    # bg.highest_cost_plan_id = q.quote_reference_plans.first.highest_cost_plan_id
+
+    bg.lowest_cost_plan_id = q.published_reference_plan
+    bg.reference_plan_id = q.published_reference_plan
+    bg.highest_cost_plan_id = q.published_reference_plan
+
     bg.relationship_benefits = q.quote_relationship_benefits.map{|x| x.attributes.slice(:offered,:relationship, :premium_pct)}
 
     @i = 1
-
-    binding.pry
+binding.pry
 
     # [15] pry(main)> ce1 = CensusEmployee.new("employer_profile_id" => "5766b8133ec0ba6f3400001f", "first_name" => "Dessa", "last_name" => "Schaffert")
     # => #<CensusEmployee _id: 5766bfb13ec0ba7b90000000, created_at: nil, updated_at: nil, first_name: "Dessa", middle_name: nil, last_name: "Schaffert", name_sfx: nil, encrypted_ssn: nil, dob: nil, gender: nil, employee_relationship: "self", employer_assigned_family_id: nil, _type: "CensusEmployee", autocomplete: nil, is_business_owner: false, hired_on: nil, employment_terminated_on: nil, coverage_terminated_on: nil, aasm_state: nil, employer_profile_id: BSON::ObjectId('5766b8133ec0ba6f3400001f'), employee_role_id: nil>
@@ -30,7 +40,7 @@ class Employers::PlanYearsController < ApplicationController
     # => true
     # [18] pry(main)> ce1.hired_on = Date.new
     # => Mon, 01 Jan -4712
-    # [19] pry(main)> ce1.hired_on = Date.new(2016,1,1)
+    # [19]con pry(main)> ce1.hired_on = Date.new(2016,1,1)
     # => Fri, 01 Jan 2016
     # [20] pry(main)> ce1.save(:validate => false)
     # => true
