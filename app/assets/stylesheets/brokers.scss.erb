@@ -45,6 +45,10 @@ input[type=number]::-webkit-outer-spin-button {
 .module {
   &.broker_quote_tool {
 
+    .quote-est-month {
+      padding: 20px 15px 30px;
+    }
+
     .btn, button {
       &.btn-right {
         padding-right: 0;
@@ -93,6 +97,104 @@ input[type=number]::-webkit-outer-spin-button {
               color: #69A30D;
             }
         }
+    }
+
+    .quote-details {
+      border: solid 1px #b7b7b7;
+
+      background-color: #ffffff;
+      padding: 10px 0 20px;
+      border-bottom: solid 1px #b7b7b7;
+
+    table {
+      width: 96%;
+      padding: 0 2%;
+      margin: auto;
+      table-layout: fixed;
+      tr:first-of-type {
+        border-top: none;
+        th {
+          font-weight: normal;
+          text-transform: uppercase;
+          padding: 10px 0;
+          color: #9b9b9b;
+        }
+      }
+      tr {
+        border-bottom: solid 1px #d5d5d5;
+        td {
+          padding: 15px;
+          font-size: 14px;
+          i {
+            color: #69A30D;
+            margin-right: 10px;
+            cursor: default;
+          }
+        }
+        &:last-of-type {
+          border-bottom: none;
+        }
+      }
+
+    }
+    }
+    .quote-benefitgroup {
+          margin-top: 0;
+          margin-bottom: 0;
+          section {
+            &:last-of-type {
+              a {
+                margin-top: 20px;
+                float: right;
+                span {
+                  display: inline-block;
+                }
+              }
+            }
+
+          }
+          table {
+            tr {
+              td {
+                padding-bottom: 10px;
+                &:last-of-type {
+                  padding-left: 10px;
+                  td {
+                    margin-bottom: 0;
+                  }
+                }
+              }
+            }
+          }
+        }
+    .quote-benefit-package {
+      position: relative;
+      .panel {
+        border: none;
+      }
+      .col-xs-1 {
+
+        .make-default {
+          color: #cccccc;
+          position: relative;
+          padding-top: 120%;
+          margin: 0;
+          display: block;
+          &.active {
+            color: #FFD700;
+          }
+          &:hover {
+            cursor: pointer;
+          }
+        }
+
+      }
+      &:hover {
+        .make-default {
+          display: block;
+
+        }
+      }
     }
     .employer-health-contribution{
       td i{
