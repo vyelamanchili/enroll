@@ -983,6 +983,11 @@ describe Person do
         expect(@result).to be_instance_of String
       end
 
+      it 'has more than one employer_staff_role' do
+        employer_staff_roles 
+        expect(person.employer_staff_roles.count).to eq (employer_staff_roles << employer_staff_role).count
+      end
+
       it 'sets is_active to false for each role' do
         expect(person.employer_staff_roles.each { |role| role.reload.is_active? == false })
       end
