@@ -1,9 +1,30 @@
-$primary-blue: #007bc4;
-$primary-green: #69A30D;
-$primay-active-button-text-color: #ffffff;
-$primary-bold: 600;
-$grayed-out: #b7b7b7;
 .module {
+  &.consumer-broker-widget, &.employee-broker-widget {
+    .panel-heading {
+      background-image: none;
+      background-color: transparent;
+      .panel-title {
+        color: $primary-blue;
+      }
+    }
+    .panel-body {
+      display: table;
+      width: 100%;
+      > * {
+        display: table-cell;
+        vertical-align: middle;
+        &.text-center {
+          width: 25%;
+        }
+        &.text-left {
+          padding-left: 7.5%;
+          .broker-information {
+            word-break: break-all;
+          }
+        }
+      }
+    }
+  }
   &.inbox {
     .fa {
       color: $primary-blue;
@@ -34,9 +55,8 @@ $grayed-out: #b7b7b7;
         font-weight: 600;
       }
     }
-    h4,
-    .fa {
-      color: #007bc4;
+    h4, .fa {
+      color: $primary-blue;
     }
     .col-xs-4 {
       cursor: pointer;
@@ -55,6 +75,9 @@ $grayed-out: #b7b7b7;
       span {
         color: $primary-blue;
       }
+    }
+    span {
+      color: $primary-blue;
     }
   }
   &.hbx-enrollment-panel {
@@ -114,7 +137,7 @@ $grayed-out: #b7b7b7;
     }
     &.waived-coverage {
       .status {
-        color: $grayed-out;
+        color: $primary-gray;
       }
       table {
         width: 100%;
@@ -165,10 +188,8 @@ $grayed-out: #b7b7b7;
 .fa-icon-link {
   padding-top: 4.45%;
 }
-.fa-icon-link,
-.fa-icon-label,
-a {
-  color: #007bc4;
+.fa-icon-link, .fa-icon-label, a {
+  color: $primary-blue;
   cursor: pointer;
   &:hover {
     color: #23527c;
@@ -179,7 +200,6 @@ a {
   color: #595959;
   font-size: 12px;
 }
-
 .benefits-tab, .home-tab, .hbx-enrollment-panel {
   .fa {
     color: $primary-blue;
