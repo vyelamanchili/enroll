@@ -174,7 +174,7 @@
       </div>
       <br>
       <p>Actual costs may vary.</p>
-      <%if !quote.aasm_state == "published" %>
+      <%if quote.aasm_state == "draft" %>
         <%= form_tag("/broker_agencies/quotes/publish_quote", method: "post") do %>
           <%= hidden_field_tag(:id, quote.id) %>
           <%= hidden_field_tag(:reference_plan_id, plan && plan.id.to_s) %>
