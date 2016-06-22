@@ -656,15 +656,14 @@ class Person
     # Returns false if employer staff role not matches
     # Returns true is role was marked inactive
     def deactivate_employer_staff_role(person_id, employer_profile_id)
-
-      begin
+        begin
         person = Person.find(person_id)
       rescue
         return false, 'Person not found'
       end
       if role = person.employer_staff_roles.detect{|role| role.employer_profile_id.to_s == employer_profile_id.to_s}
-        role.update_attributes!(:aasm_state => :is_closed)
-        return true, 'Employee Staff Role is inactive'
+        @update = role.update_attributes!(:aasm_state => :is_closed)
+        return true, 'Employee Staff Role is inactive:::#{@update}'
       else
         return false, 'No matching employer staff role'
       end
