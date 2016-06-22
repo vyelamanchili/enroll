@@ -31,14 +31,18 @@ class Employers::EmployerStaffRolesController < Employers::EmployersController
   def destroy
     employer_profile_id = params[:id]
     employer_profile = EmployerProfile.find(employer_profile_id)
+    
     staff_id = params[:staff_id]
+    
     staff_list =Person.staff_for_employer(employer_profile).map(&:id)
+    
     if staff_list.count == 1 && staff_list.first.to_s == staff_id
       flash[:error] = 'Please add another staff role before deleting this role'
     else
       @status, @result = Person.deactivate_employer_staff_role(staff_id, employer_profile_id)
-      @status ? (flash[:notice] = "Staff role was deleted #{employer_profile_id}:::#{@status}") : (flash[:error] = ('Role was not deactivated because '  + @result))
+      @status ? (flash[:notice] = "Staff role was deleted #{employer_profile_id}:::#{@status}::#{@result}") : (flash[:error] = ('Role was not deactivated because '  + @result))
     end
+    
     redirect_to edit_employers_employer_profile_path(employer_profile.organization)
   end
 
