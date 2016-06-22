@@ -9,5 +9,21 @@ class QuoteHousehold
   field :family_id, type: String
 
   accepts_nested_attributes_for :quote_members
-  
-end	
+
+  def employee?
+    quote_members.where("employee_relationship" => "employee").count == 1 ? true : false
+  end
+
+  def spouse?
+    quote_members.where("employee_relationship" => "spouse").count == 1 ? true : false
+  end
+
+  def children?
+    quote_members.where("employee_relationship" => "child_under_26").count > 1 ? true : false
+  end
+
+  def employee
+    quote_members.where("employee_relationship" => "employee").first
+  end
+
+end

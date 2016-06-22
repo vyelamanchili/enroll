@@ -165,6 +165,13 @@ class Plan
 
   scope :by_active_year,        ->(active_year = TimeKeeper.date_of_record.year) { where(active_year: active_year) }
   scope :by_metal_level,        ->(metal_level) { where(metal_level: metal_level) }
+  scope :by_dental_level,       ->(dental_level) { where(dental_level: dental_level) }
+  scope :by_plan_type,          ->(plan_type) { where(plan_type: plan_type) }
+  scope :by_carrier_profile,    ->(carrier_profile_id) { where(carrier_profile_id: carrier_profile_id) }
+  scope :by_dc_network,         ->(dc_network) { where(dc_in_network: dc_network) }
+  scope :by_nationwide,            ->(nationwide) { where(nationwide: nationwide) }
+  
+  
 
   # Marketplace
   scope :shop_market,           ->{ where(market: "shop") }
@@ -209,14 +216,6 @@ class Plan
           active_year: active_year,
           market: "shop",
           coverage_kind: "health"
-        )
-    }
-
-  scope :shop_dental_by_active_year, ->(active_year) {
-      where(
-          active_year: active_year,
-          market: "shop",
-          coverage_kind: "dental"
         )
     }
 
@@ -266,6 +265,14 @@ class Plan
         ]
     )
   }
+  
+  scope :shop_dental_by_active_year, ->(active_year) {
+      where(
+          active_year: active_year,
+          market: "shop",
+          coverage_kind: "dental"
+        )
+    }
 
   scope :by_health_metal_levels,                ->(metal_levels)    { any_in(metal_level: metal_levels) }
   scope :by_carrier_profile,                    ->(carrier_profile_id) { where(carrier_profile_id: carrier_profile_id) }

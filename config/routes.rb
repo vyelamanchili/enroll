@@ -191,10 +191,12 @@ Rails.application.routes.draw do
       get 'new'
       get 'my_account'
       get 'show_profile'
+      get 'link_from_quote'
       get 'consumer_override'
       get 'export_census_employees'
       get 'bulk_employee_upload_form'
       post 'bulk_employee_upload'
+
       member do
         get "download_invoice"
       end
@@ -221,7 +223,7 @@ Rails.application.routes.draw do
         get 'calc_offered_plan_contributions', on: :collection
         get 'employee_costs', on: :collection
         get 'reference_plan_summary', on: :collection
-        get 'link_from_quote' => 'plan_years#link_from_quote'
+        #get 'link_from_quote' => 'plan_years#link_from_quote'
 
       end
 
@@ -310,6 +312,7 @@ Rails.application.routes.draw do
         get 'published_quote/:id', to: 'quotes#view_published_quote'
         get :export_to_pdf
         get :download_pdf
+        get :dental_plans_data
       end
       member do
         post :download_employee_roster

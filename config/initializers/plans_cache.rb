@@ -15,12 +15,12 @@ def build_plan_selectors market_kind='shop', coverage_kind='health'
   plans = coverage_kind == 'health' ? $quote_shop_health_plans : $quote_shop_dental_plans
   selectors = {}
   if coverage_kind == 'dental'
-    selectors[:dental_levels] =      plans.map{|p| p.dental_level}.uniq.append('any')
+    selectors[:dental_levels] = plans.map{|p| p.dental_level}.uniq.append('any')
   else
-    selectors[:metals] =      plans.map{|p| p.metal_level}.uniq.append('any')
+    selectors[:metals] = plans.map{|p| p.metal_level}.uniq.append('any')
   end
-  selectors[:carriers] =    plans.map{|p|
-    [ p.carrier_profile.legal_name, p.carrier_profile.abbrev ]
+  selectors[:carriers] = plans.map{|p|
+    [ p.carrier_profile.legal_name, p.carrier_profile.abbrev, p.carrier_profile.id ]
     }.uniq.append(['any','any'])
   selectors[:plan_types] =  plans.map{|p| p.plan_type}.uniq.append('any')
   selectors[:dc_network] =  ['true', 'false', 'any']
