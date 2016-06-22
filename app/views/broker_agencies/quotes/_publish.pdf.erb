@@ -1,16 +1,16 @@
-<div class="module container broker_quote_tool published">
-  <div class="row">
-    <div class="col-md-12">
-      <h3>Review: Publish your Quote</h3>
-      <p>Please review the information below before publishing your quote. Once the quote is published, no information can be changed.</p>
+<%= wicked_pdf_stylesheet_link_tag "application", media: "all", "data-turbolinks-track" => true %>
+<div class="module broker_quote_tool">
+  <div class="pdf-body">
+    <div class="row">
+      <div class="col-md-12">
+        <h3>Quote Name: <%=@quote.quote_name %></h3>
 
-      <p>Quote: "<%=@quote.quote_name %>" effective <b><%=@quote.start_on %></b></p>
+        <h4> Employer Claim Code: &nbsp;<b><%=@quote.claim_code%></b></h4>
 
-      <p>Below is your Employer's Plan offering Spectrum. Your offerings are based on<%= @offering_param %> <%= @elected_plan_choice %>.</p>
+        <p>Effective Date is <b><%=@quote.start_on %></b></p>
 
-      <p>Costs are based on the roster associated with this quote of <b><%= @quote.quote_households.count %></b> families:</p>
-      <br>
-      <div class="col-xs-12 table-responsive">
+        <p>Costs are based on the roster associated with this quote of  <b><%= @quote.quote_households.count %></b> families:</p>
+
         <table class="table table-striped table-hover table-sm panel panel-default">
           <thead class="thead-default">
             <tr>
@@ -31,112 +31,51 @@
             <% end %>
           <% end%>
         </table>
-      </div>
-      <div class="quote-benefit-group">
-        <div class="benefit-package">
-          <div class="panel benefitgroup col-xs-12">
-            <div class="col-xs-12">
-              <div class="row">
-                <section class="col-xs-10">
-                  <header class="row">
-                    <h3 class="title no-buffer">
-                      <%= @quote.quote_name %>
-                    </h3>
-                  </header>
-                </section>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-md-2">
-                <p>Coverage Year</p>
-              </div>
-              <div class="col-md-offset-2">
-                <p>
-                 <%= @quote.start_on.strftime("%m/%d/%Y") %> - <%= @quote.start_on.next_year.strftime("%m/%d/%Y") %>
-                </p>
-              </div>
-            </div>
-          </div>
-        <div class="published-quote-table">
-          <table>
-            <tr>
-              <th class="col-md-2 col-xs-2 ">
-                <header>Reference Plan</header>
-              </th>
-              <th class="col-md-2 col-xs-2">
-                <header>Carrier</header>
-              </th>
-              <th class="col-md-2 col-xs-2">
-                <header>Type</header>
-              </th>
-              <th class="col-md-2 col-xs-2">
-                <header>Metal Level</header>
-              </th>
-              <th class="col-md-2 col-xs-2">
-                <header>Plans By</header>
-              </th>
-            </tr>
-            <tr>
-              <td class="col-md-2 col-xs-2">
-                <p>
-                  <%=@plan.name.upcase %>
-                </p>
-              </td>
-              <td class="col-md-2 col-xs-2">
-                <p>
-                  <%=@plan.carrier_profile.abbrev.upcase %>
-                </p>
-              </td>
-              <td class="col-md-2 col-xs-2">
-                <p>
-                  <%= @plan.plan_type.upcase %>
-                </p>
-              </td>
-              <td class="col-md-2 col-xs-2">
-                <p>
-                  <%=@plan.metal_level.capitalize%>
-                </p>
-              </td>
-              <td class="col-md-2 col-xs-2">
-                <p>
-                  <% if @elected_plan_choice == "single_carrier" %>
-                  All Plans From A Single Carrier
-                  <% elsif @elected_plan_choice == "metal_level" %>
-                  All Plans From A Given Metal Level
-                  <% elsif @elected_plan_choice == "single_plan" %>
-                  A Single Plan
-                  <% end %>
-                </p>
-              </td>
-            </tr>
-          </table>
-        </div>
-        <div id="collapse-health" class="collapse" >
-          <div class="col-xs-1">
-            &nbsp;
-          </div>
-          <div class="col-xs-12 quote-details">
-            <div class="col-xs-12">
-              <table class = "employer-health-contribution">
-                <tr>
-                  <th>Offered</th>
-                  <th>Employer Contribution</th>
-                </tr>
-                <% @quote.quote_relationship_benefits.each do|rb| %>
-                  <tr>
-                    <td><%=raw("<i class='fa fa-check-square-o fa-lg'></i>")%><%=rb.relationship.humanize %></td>
-                    <td>
-                      <strong><%= number_to_percentage rb.premium_pct, precision: 0 %></strong>
-                    </td>
-                  </tr>
-                <% end %>
-              </table>
-              <div class="col-xs-12">
-                <div class="col-xs-1">
-                  &nbsp;
-                </div>
-                <div class="quote-est-month col-xs-11">
 
+        <div class="quote-benefit-group">
+          <div class="benefit-package">
+            <p>
+             <b>Coverage Year:</b> <%= @quote.start_on.strftime("%m/%d/%Y") %> - <%= @quote.start_on.next_year.strftime("%m/%d/%Y") %>
+            </p>
+            <table class="table table-striped table-hover table-sm panel panel-default">
+              <thead class="thead-default">
+                <tr>
+                  <th>Reference Plan</th>
+                  <th>Carrier</th>
+                  <th>Type</th>
+                  <th>Metal Level</th>
+                  <th>Plans By</th>
+                </tr>
+              </thead>
+                <tr>
+                  <td><%=@plan.name %></td>
+                  <td><%=@plan.carrier_profile.abbrev.upcase %></td>
+                  <td><%= @plan.plan_type.upcase %></td>
+                  <td><%=@plan.metal_level.capitalize%></td>
+                  <td><%=@elected_plan_choice%></td>
+                </tr>
+              </table>
+            </div>
+            <p>Below is your Employer's Plan offering Spectrum. Your offerings are based on <%= @offering_param %><%= @elected_plan_choice %>.</p>
+            <div class="col-xs-12 quote-details">
+              <div class="col-xs-12">
+                <table class = "employer-health-contribution">
+                  <tr>
+                    <th>Offered</th>
+                    <th>Employer Contribution</th>
+                  </tr>
+                  <% @quote.quote_relationship_benefits.each do|rb| %>
+                    <tr>
+                      <td><%=rb.relationship.humanize %></td>
+                      <td>
+                        <strong><%= number_to_percentage rb.premium_pct, precision: 0 %></strong>
+                      </td>
+                    </tr>
+                  <% end %>
+                </table>
+              </div>
+              <div class="col-xs-12">
+                <div class="quote-est-month col-xs-11">
                   <div class="row">
                     <div class="col-xs-4">
                       <div class="row">
@@ -164,17 +103,9 @@
                 </div>
               </div>
             </div>
-          </div>
         </div>
+        <p>**Actual costs may vary.</p>
       </div>
-      <p>Actual costs may vary.</p>
-      <%= form_tag("/broker_agencies/quotes/publish_quote", method: "post") do %>
-        <%= hidden_field_tag(:id, @quote.id) %>
-        <%= hidden_field_tag(:reference_plan_id, @plan && @plan.id.to_s) %>
-        <%= hidden_field_tag(:plan_option_kind, @elected_plan_choice) %>
-        <%= submit_tag "Publish Quote", class: 'btn btn-primary' %>
-      <% end %>
-      <h4> Employer Claim Code: &nbsp;<b><%=@quote.claim_code%></b></h4>
     </div>
   </div>
 </div>
