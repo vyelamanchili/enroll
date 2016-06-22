@@ -17,6 +17,7 @@ class Employers::EmployerProfilesController < Employers::EmployersController
     #sample code
     q = Quote.where("claim_code" => "gp33-ewcn").first
 
+
     py = @employer_profile.plan_years.build
     py.start_on = (TimeKeeper.date_of_record + 2.months).beginning_of_month
     py.end_on = (py.start_on + 1.year) - 1.day
@@ -48,25 +49,7 @@ class Employers::EmployerProfilesController < Employers::EmployersController
       end
     end
 
-    binding.pry
-
-    @i = 1
-
-
-    # [15] pry(main)> ce1 = CensusEmployee.new("employer_profile_id" => "5766b8133ec0ba6f3400001f", "first_name" => "Dessa", "last_name" => "Schaffert")
-    # => #<CensusEmployee _id: 5766bfb13ec0ba7b90000000, created_at: nil, updated_at: nil, first_name: "Dessa", middle_name: nil, last_name: "Schaffert", name_sfx: nil, encrypted_ssn: nil, dob: nil, gender: nil, employee_relationship: "self", employer_assigned_family_id: nil, _type: "CensusEmployee", autocomplete: nil, is_business_owner: false, hired_on: nil, employment_terminated_on: nil, coverage_terminated_on: nil, aasm_state: nil, employer_profile_id: BSON::ObjectId('5766b8133ec0ba6f3400001f'), employee_role_id: nil>
-    # [16] pry(main)> ce1.save
-    # => false
-    # [17] pry(main)> ce1.save(:validate => false)
-    # => true
-    # [18] pry(main)> ce1.hired_on = Date.new
-    # => Mon, 01 Jan -4712
-    # [19]con pry(main)> ce1.hired_on = Date.new(2016,1,1)
-    # => Fri, 01 Jan 2016
-    # [20] pry(main)> ce1.save(:validate => false)
-    # => true
-    # [21] pry(main)> q1
-
+    flash[:notice] = 'Code claimed with success. Your Plan Year has been created'
     redirect_to employers_employer_profile_path(@employer_profile, tab: 'benefits')
   end
 
