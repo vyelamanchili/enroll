@@ -104,13 +104,7 @@
               </td>
               <td class="col-md-2 col-xs-2">
                 <p>
-                  <% if @elected_plan_choice == "Single Carrier" %>
-                  Single Carrier
-                  <% elsif @elected_plan_choice == "Metal Level" %>
-                  Metal Level
-                  <% elsif @elected_plan_choice == "Single Plan" %>
-                  Single Plan
-                  <% end %>
+                  <%= @elected_plan_choice %>
                 </p>
               </td>
             </tr>

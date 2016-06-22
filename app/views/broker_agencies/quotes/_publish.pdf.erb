@@ -52,15 +52,7 @@
                   <td><%=@plan.carrier_profile.abbrev.upcase %></td>
                   <td><%= @plan.plan_type.upcase %></td>
                   <td><%=@plan.metal_level.capitalize%></td>
-                  <td>
-                  <% if @elected_plan_choice == "Single Carrier" %>
-                  Single Carrier
-                  <% elsif @elected_plan_choice == "Metal Level" %>
-                  Metal Level
-                  <% elsif @elected_plan_choice == "Single Plan" %>
-                  Single Plan
-                  <% end %>
-                  </td>
+                  <td><%=@elected_plan_choice%></td>
                 </tr>
               </table>
             </div>
