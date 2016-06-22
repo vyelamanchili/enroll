@@ -33,7 +33,9 @@ class BrokerAgencies::QuotesController < ApplicationController
     active_year = Date.today.year
     @coverage_kind = "health"
     @health_plans = $quote_shop_health_plans
+    
     @dental_plans = $quote_shop_dental_plans
+    @dental_plans_count = @dental_plans.count
 
     @health_selectors = $quote_shop_health_selectors
     @health_plan_quote_criteria  = $quote_shop_health_plan_features.to_json
@@ -48,6 +50,9 @@ class BrokerAgencies::QuotesController < ApplicationController
       @quote_on_page.quote_relationship_benefits.each{|bp| @bp_hash[bp.relationship] = bp.premium_pct}
       roster_premiums = @quote_on_page.roster_cost_all_plans
       @roster_premiums_json = roster_premiums.to_json
+      dental_roster_premiums =  @quote_on_page.roster_cost_all_plans('dental')
+      @dental_roster_premiums = dental_roster_premiums.to_json
+      #TODOJF
       @quote_criteria = @quote_on_page.criteria_for_ui
     end
     @benefit_pcts_json = @bp_hash.to_json
@@ -59,8 +64,10 @@ class BrokerAgencies::QuotesController < ApplicationController
     else
       @plans_offered =[]
     end
+  
+    @benefit_pcts_json = @bp_hash.to_json
   end
-
+  
   def health_cost_comparison
       @q =  Quote.find(params[:quote])
       @quote_results = Hash.new
@@ -243,9 +250,7 @@ class BrokerAgencies::QuotesController < ApplicationController
   def update_benefits
     q = Quote.find(params['id'])
     benefits = params['benefits']
-    q.quote_relationship_benefits.each {|b|
-      b.update_attributes!(premium_pct: benefits[b.relationship])
-    }
+    q.quote_relationship_benefits.each {|b| b.update_attributes!(premium_pct: benefits[b.relationship]) }
     render json: {}
   end
 
@@ -268,16 +273,23 @@ class BrokerAgencies::QuotesController < ApplicationController
       @elected_plan_choice = ['na', 'Single Plan', 'Single Carrier', 'Metal Level'][params[:elected].to_i]
       @quote.plan = @plan
       @quote.plan_option_kind = @elected_plan_choice
-      @quote.save
+      @roster_elected_plan_bounds = PlanCostDecoratorQuote.elected_plans_cost_bounds($quote_shop_health_plans,
+        @quote.quote_relationship_benefits, @quote.roster_cost_all_plans)
       case @elected_plan_choice
         when 'Single Carrier'
           @offering_param  = @plan.name
+          @quote.published_lowest_cost_plan = @roster_elected_plan_bounds[:carrier_low_plan][@plan.carrier_profile.abbrev]
+          @quote.published_highest_cost_plan = @roster_elected_plan_bounds[:carrier_high_plan][@plan.carrier_profile.abbrev]
         when 'Metal Level'
           @offering_param  = @plan.metal_level.capitalize
+          @quote.published_lowest_cost_plan = @roster_elected_plan_bounds[:metal_low_plan][@plan.metal_level]
+          @quote.published_highest_cost_plan = @roster_elected_plan_bounds[:metal_high_plan][@plan.metal_level]
         else
           @offering_param = ""
+          @quote.published_lowest_cost_plan = @plan
+          @quote.published_highest_cost_plan = @plan
       end
-      @cost = params[:cost]
+      @quote.save
     else 
       @plan = @quote.plan
       @elected_plan_choice = @quote.plan_option_kind
@@ -323,6 +335,10 @@ class BrokerAgencies::QuotesController < ApplicationController
            template: 'broker_agencies/quotes/_plan_comparison_export.html.erb', 
            disposition: 'attachment', 
            locals: { qhps: @qhps }
+  end
+  
+  def dental_plans_data
+    set_dental_plans
   end
   
   
@@ -418,8 +434,14 @@ private
     @coverage_kind = "health"
     @visit_types = @coverage_kind == "health" ? Products::Qhp::VISIT_TYPES : Products::Qhp::DENTAL_VISIT_TYPES 
   end
-  
-def load_dental_plans
-    
+
+  def set_dental_plans
+    @dental_plans = Plan.shop_dental_by_active_year(2016)
+    @dental_plans_count = Plan.shop_dental_by_active_year(2016).count
+    @dental_plans = @dental_plans.by_carrier_profile(params[:carrier_id]) if params[:carrier_id].present? && params[:carrier_id] != 'any'
+    @dental_plans = @dental_plans.by_dental_level(params[:dental_level]) if params[:dental_level].present? && params[:dental_level] != 'any'
+    @dental_plans = @dental_plans.by_plan_type(params[:plan_type]) if params[:plan_type].present? && params[:plan_type] != 'any'
+    @dental_plans = @dental_plans.by_dc_network(params[:dc_network]) if params[:dc_network].present? && params[:dc_network] != 'any'
+    @dental_plans = @dental_plans.by_nationwide(params[:nationwide]) if params[:nationwide].present? && params[:nationwide] != 'any'
   end
 end

@@ -8,8 +8,8 @@ class Quote
     :employee,
     :spouse,
     :domestic_partner,
-    :child_under_26
-    #:child_26_and_over
+    :child_under_26,
+    :child_26_and_over
   ]
 
   PLAN_OPTION_KINDS = [:single_plan, :single_carrier, :metal_level]
@@ -51,6 +51,14 @@ class Quote
 
   field :criteria_for_ui, type: String, default: []
 
+  def published_employee_cost
+    plan && roster_employee_cost(plan.id, plan.id)
+  end
+
+  def published_employer_cost
+    plan && roster_employer_contribution(plan.id, plan.id)
+  end
+
   def roster_employee_cost(plan_id, reference_plan_id)
     p = Plan.find(plan_id)
     reference_plan = Plan.find(reference_plan_id)
@@ -62,10 +70,11 @@ class Quote
     cost.round(2)
   end
 
-  def roster_cost_all_plans
+  def roster_cost_all_plans(quote_type = 'health')
     @plan_costs= {}
     combined_family = flat_roster_for_premiums
-    $quote_shop_health_plans.each {|plan|
+    quote_collection = quote_type == 'health' ? $quote_shop_health_plans : $quote_shop_dental_plans
+    quote_collection.each {|plan|
       @plan_costs[plan.id.to_s] = roster_premium(plan, combined_family)
     }
     @plan_costs
