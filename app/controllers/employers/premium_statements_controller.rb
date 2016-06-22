@@ -6,12 +6,9 @@ class Employers::PremiumStatementsController < ApplicationController
 
 
   def show
-
-
     @employer_profile = EmployerProfile.find(params.require(:id))
     set_billing_date
     @hbx_enrollments = @employer_profile.enrollments_for_billing(@billing_date)
-
     respond_to do |format|
       format.html
       format.js
@@ -23,20 +20,19 @@ class Employers::PremiumStatementsController < ApplicationController
 
   def premium_statements_index_datatable
     dt_query = extract_datatable_parameters
-
     premium_statements = []
     @employer_profile = EmployerProfile.find(params.require(:premium_statement_id))
     set_billing_date
     hbx_enrollments = @employer_profile.enrollments_for_billing(@billing_date)
-
-
     @draw = dt_query.draw
     @total_records = hbx_enrollments.count
     @records_filtered = hbx_enrollments.count
-    @hbx_enrollments = hbx_enrollments.skip(dt_query.skip).limit(dt_query.take) unless hbx_enrollments.count <= 1
-    @hbx_enrollments = hbx_enrollments if hbx_enrollments.count <= 1
-
-
+    if hbx_enrollments.is_a? Array
+      @hbx_enrollments = hbx_enrollments[dt_query.skip..hbx_enrollments.count]
+    else
+      @hbx_enrollments = hbx_enrollments.skip(dt_query.skip).limit(dt_query.take)
+    end
+    @hbx_enrollments = hbx_enrollments
     render "premium_statements_index_datatable"
   end
 
