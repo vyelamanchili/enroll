@@ -6,8 +6,8 @@ module Employers::PremiumStatementHelper
 
   def billing_period_options
     options = []
-
     upcoming_billing_date = TimeKeeper.date_of_record.next_month.beginning_of_month
+
     if @employer_profile.renewing_plan_year.present?
       renewal_billing_date = @employer_profile.renewing_plan_year.start_on
 
@@ -26,4 +26,5 @@ module Employers::PremiumStatementHelper
 
     options
   end
+
 end

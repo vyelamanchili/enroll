@@ -113,6 +113,9 @@ RSpec.describe Insured::EmployeeRolesController, :dbclean => :after_each do
     let(:address) { double("Address") }
     let(:addresses) { [address] }
     let(:employee_role) { double("EmployeeRole", id: double("id"), employer_profile_id: "3928392", :person => person) }
+    let(:general_agency_staff_role) { double("GeneralAgencyStaffRole", id: double("id"), employer_profile_id: "3928392", :person => person) }
+    let(:general_agency_profile) { double "GeneralAgencyProfile", id: double("id")}
+    let(:employer_profile) { double "EmployerProfile", id: double("id")}
     let(:family) { double("Family") }
     let(:email){ double("Email", address: "test@example.com", kind: "home") }
     let(:id){ EmployeeRole.new.id }
@@ -130,6 +133,11 @@ RSpec.describe Insured::EmployeeRolesController, :dbclean => :after_each do
       allow(email).to receive(:address=).and_return("test@example.com")
       allow(controller).to receive(:build_nested_models).and_return(true)
       allow(user).to receive(:has_hbx_staff_role?).and_return(false)
+      allow(person).to receive(:general_agency_staff_roles).and_return([general_agency_staff_role])
+      allow(general_agency_staff_role).to receive(:general_agency_profile).and_return(general_agency_staff_role)
+      allow(general_agency_staff_role).to receive(:employer_clients).and_return([employer_profile])
+      allow(general_agency_profile).to receive(:employer_clients).and_return([employer_profile])
+      allow(employer_profile).to receive(:_id).and_return(employer_profile.id)
       allow(user).to receive(:has_csr_subrole?).and_return(false)
       allow(person).to receive(:employee_roles).and_return([employee_role])
       allow(employee_role).to receive(:bookmark_url=).and_return(true)
@@ -363,7 +371,7 @@ RSpec.describe Insured::EmployeeRolesController, :dbclean => :after_each do
     it 'should log user email and url' do
       expect(subject).to receive(:log) do |msg, severity|
         expect(severity[:severity]).to eq('error')
-        expect(msg[:user]).to eq(user.email)
+        expect(msg[:user]).to eq(user.oim_id)
         expect(msg[:url]).to match /insured\/employee\/888/
       end
       get :show, id: 888

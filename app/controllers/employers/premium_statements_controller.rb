@@ -1,9 +1,9 @@
 require 'csv'
+require 'prawn/table'
 class Employers::PremiumStatementsController < ApplicationController
   layout "two_column", only: [:show]
   include Employers::PremiumStatementHelper
   include DataTablesAdapter
-
 
   def show
     @employer_profile = EmployerProfile.find(params.require(:id))

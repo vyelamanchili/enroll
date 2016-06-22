@@ -10,6 +10,9 @@ class PlanYear
   RENEWING  = %w(renewing_draft renewing_published renewing_enrolling renewing_enrolled)
   RENEWING_PUBLISHED_STATE = %w(renewing_published renewing_enrolling renewing_enrolled)
 
+  INVOICE_VIEW_RENEWING = %w(renewing_published renewing_enrolling renewing_enrolled)
+  INVOICE_VIEW_INITIAL = %w(published enrolling enrolled active suspended)
+
   INELIGIBLE_FOR_EXPORT_STATES = %w(draft publish_pending eligibility_review published_invalid canceled renewing_draft suspended terminated ineligible expired)
 
   # Plan Year time period
@@ -44,6 +47,7 @@ class PlanYear
   validate :open_enrollment_date_checks
 
   # scope :not_yet_active, ->{ any_in(aasm_state: %w(published enrolling enrolled)) }
+
   scope :published,         ->{ any_in(aasm_state: PUBLISHED) }
   scope :renewing_published_state, ->{ any_in(aasm_state: RENEWING_PUBLISHED_STATE) }
   scope :renewing,          ->{ any_in(aasm_state: RENEWING) }
@@ -92,9 +96,10 @@ class PlanYear
 
       coverage_filter = lambda do |enrollments, date|
         enrollments = enrollments.select{|e| e.terminated_on.blank? || e.terminated_on >= date}
-        
+
         if enrollments.size > 1
-          enrollments.detect{|e| HbxEnrollment::ENROLLED_STATUSES.include?(e.aasm_state)}
+          enrollment = enrollments.detect{|e| (HbxEnrollment::ENROLLED_STATUSES + HbxEnrollment::TERMINATED_STATUSES).include?(e.aasm_state.to_s)}
+          enrollment || enrollments.detect{|e| HbxEnrollment::RENEWAL_STATUSES.include?(e.aasm_state.to_s)}
         else
           enrollments.first
         end
@@ -225,7 +230,8 @@ class PlanYear
   end
 
   def is_publish_date_valid?
-    TimeKeeper.datetime_of_record <= due_date_for_publish.end_of_day
+    event_name = aasm.current_event.to_s.gsub(/!/, '')
+    event_name == "force_publish" ? true : (TimeKeeper.datetime_of_record <= due_date_for_publish.end_of_day)
   end
 
   # Check plan year for violations of model integrity relative to publishing
@@ -615,6 +621,14 @@ class PlanYear
     # Plan as submitted failed eligibility check
     event :force_publish, :after => :record_transition do
       transitions from: :publish_pending, to: :published_invalid
+
+      transitions from: :draft, to: :enrolling, :guard => [:is_application_valid?, :is_event_date_valid?], :after => :accept_application
+      transitions from: :draft, to: :published, :guard => :is_application_valid?
+      transitions from: :draft, to: :publish_pending
+
+      transitions from: :renewing_draft, to: :renewing_enrolling, :guard => [:is_application_valid?, :is_event_date_valid?], :after => :accept_application
+      transitions from: :renewing_draft, to: :renewing_published, :guard => :is_application_valid?
+      transitions from: :renewing_draft, to: :renewing_publish_pending
     end
 
     # Employer requests review of invalid application determination
@@ -634,7 +648,7 @@ class PlanYear
 
     # Enrollment processed stopped due to missing binder payment
     event :cancel, :after => :record_transition do
-      transitions from: :enrolled, to: :canceled
+      transitions from: [:enrolled, :active], to: :canceled
     end
 
     # Coverage disabled due to non-payment
@@ -670,7 +684,7 @@ class PlanYear
       transitions from: [:active, :renewing_published, :renewing_enrolling, :renewing_enrolled], to: :renewing_draft
     end
 
-    event :cancel_renewal, :after => :record_transition do 
+    event :cancel_renewal, :after => :record_transition do
       transitions from: [:renewing_draft, :renewing_published, :renewing_enrolling, :renewing_enrolled], to: :renewing_canceled
     end
   end
