@@ -174,11 +174,13 @@
       </div>
       <br>
       <p>Actual costs may vary.</p>
-      <%= form_tag("/broker_agencies/quotes/publish_quote", method: "post") do %>
-        <%= hidden_field_tag(:id, quote.id) %>
-        <%= hidden_field_tag(:reference_plan_id, plan && plan.id.to_s) %>
-        <%= hidden_field_tag(:plan_option_kind, elected_plan_choice) %>
-        <%= submit_tag "Publish Quote", class: 'btn btn-primary' %>
+      <%if !quote.aasm_state == "published" %>
+        <%= form_tag("/broker_agencies/quotes/publish_quote", method: "post") do %>
+          <%= hidden_field_tag(:id, quote.id) %>
+          <%= hidden_field_tag(:reference_plan_id, plan && plan.id.to_s) %>
+          <%= hidden_field_tag(:plan_option_kind, elected_plan_choice) %>
+          <%= submit_tag "Publish Quote", class: 'btn btn-primary' %>
+        <% end %>
       <% end %>
       <h4> Employer Claim Code: &nbsp;<b><%=quote.claim_code%></b></h4>
       <br>
