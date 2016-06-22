@@ -51,6 +51,14 @@ class Quote
 
   field :criteria_for_ui, type: String, default: []
 
+  def published_employee_cost
+    plan && roster_employee_cost(plan.id, plan.id)
+  end
+
+  def published_employer_cost
+    plan && roster_employer_contribution(plan.id, plan.id)
+  end
+
   def roster_employee_cost(plan_id, reference_plan_id)
     p = Plan.find(plan_id)
     reference_plan = Plan.find(reference_plan_id)
