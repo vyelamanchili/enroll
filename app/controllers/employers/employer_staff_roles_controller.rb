@@ -3,7 +3,6 @@ class Employers::EmployerStaffRolesController < Employers::EmployersController
   before_action :check_access_to_employer_profile
 
   def create
-
     dob = DateTime.strptime(params[:dob], '%m/%d/%Y').try(:to_date)
     employer_profile = EmployerProfile.find(params[:id])
     first_name = (params[:first_name] || '').strip
