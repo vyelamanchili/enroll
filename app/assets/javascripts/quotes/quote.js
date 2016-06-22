@@ -61,3 +61,12 @@ function quote_listeners(){
       open_quote()
     })
 }
+function viewDetails($thisObj) {
+  if ( $thisObj.hasClass('view') ) {
+    $thisObj.html('Hide Details <i class="fa fa-chevron-up fa-lg"></i>');
+    $thisObj.removeClass("view");
+  } else {
+    $thisObj.html('View Details <i class="fa fa-chevron-down fa-lg"></i>');
+    $thisObj.addClass("view");
+  }
+}
