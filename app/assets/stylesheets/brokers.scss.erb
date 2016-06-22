@@ -49,6 +49,8 @@ input[type=number]::-webkit-outer-spin-button {
       padding: 20px 15px 30px;
     }
 
+    .referenceplan {
+    }
     .btn, button {
       &.btn-right {
         padding-right: 0;
@@ -138,64 +140,53 @@ input[type=number]::-webkit-outer-spin-button {
 
     }
     }
-    .quote-benefitgroup {
-          margin-top: 0;
-          margin-bottom: 0;
-          section {
-            &:last-of-type {
-              a {
-                margin-top: 20px;
-                float: right;
-                span {
-                  display: inline-block;
-                }
-              }
-            }
-
-          }
-          table {
-            tr {
-              td {
-                padding-bottom: 10px;
-                &:last-of-type {
-                  padding-left: 10px;
-                  td {
-                    margin-bottom: 0;
-                  }
-                }
-              }
-            }
+    .quote-benefit-group {
+      .benefit-package {
+        margin-bottom: 15px;
+        .col-xs-2 {
+          button {
+            margin-top: 12px;
           }
         }
-    .quote-benefit-package {
-      position: relative;
-      .panel {
-        border: none;
+        .benefitgroup:first-of-type {
+          padding-bottom: 0;
+        }
+        .benefitgroup:last-of-type {
+          padding-top: 0;
+          padding-bottom: 35px;
+        }
+        .panel {
+          padding: 15px 15px;
+        }
       }
-      .col-xs-1 {
-
-        .make-default {
-          color: #cccccc;
-          position: relative;
-          padding-top: 120%;
+      .title {
+        text-transform: uppercase;
+        color: $primary-green;
+        font-weight: bold;
+        span {
+          color: #333;
+          font-weight: normal;
+        }
+      }
+      .description {
+        text-transform: none;
+        font-weight: normal;
+        margin-bottom: 15px;
+      }
+      .health {
+        padding-top: 10px;
+        .fa {
           margin: 0;
-          display: block;
-          &.active {
-            color: #FFD700;
-          }
-          &:hover {
-            cursor: pointer;
-          }
         }
-
       }
-      &:hover {
-        .make-default {
-          display: block;
-
+      .dental {
+        padding-top: 15px;
+        .fa {
+          margin: 0;
         }
       }
     }
+
     .employer-health-contribution{
       td i{
             color: #69A30D;
@@ -351,6 +342,9 @@ input[type=number]::-webkit-outer-spin-button {
        font-size: 160%;
        color: white;
        background-color: gray;
+    }
+    .published {
+
     }
   }
 }
