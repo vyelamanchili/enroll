@@ -285,7 +285,7 @@ class BrokerAgencies::QuotesController < ApplicationController
       @plans_offered = []
     end 
     respond_to do |format|
-      format.html {render partial: 'publish' , :locals => { :quote => @quote , :plan => @plan, :plans_offered => @plans_offered, :elected_plan_choice => @elected_plan_choice, :offering_param => @offering_param }}
+      format.html {render partial: 'publish'}
       format.pdf do
           render :pdf => "publised_quote",
                  :template => "/broker_agencies/quotes/_publish.pdf.erb"
