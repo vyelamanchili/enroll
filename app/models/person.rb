@@ -663,7 +663,7 @@ class Person
       end
       if role = person.employer_staff_roles.detect{|role| role.employer_profile_id.to_s == employer_profile_id.to_s}
         @update = role.update_attributes!(:aasm_state => :is_closed)
-        return true, 'Employee Staff Role is inactive:::#{@update}'
+        return true, "Employee Staff Role is inactive:::#{@update}"
       else
         return false, 'No matching employer staff role'
       end
