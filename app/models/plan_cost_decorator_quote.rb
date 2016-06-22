@@ -21,10 +21,16 @@ class PlanCostDecoratorQuote < PlanCostDecorator
   class << self
 
     def elected_plans_cost_bounds plans, relationship_benefits, roster_premiums
-      bounds = {carrier_low: Hash.new{|h,k| h[k] = 999999},
+      bounds = {
+        carrier_low: Hash.new{|h,k| h[k] = 999999},
         carrier_high: Hash.new{|h,k| h[k] = 0},
         metal_low: Hash.new{|h,k| h[k] = 999999},
         metal_high: Hash.new{|h,k| h[k] = 0},
+
+        carrier_low_plan: Hash.new,
+        carrier_high_plan: Hash.new,
+        metal_low_plan: Hash.new,
+        metal_high_plan: Hash.new,
       }
       #employer_premiums={}
       plans.each{|plan|
@@ -36,9 +42,15 @@ class PlanCostDecoratorQuote < PlanCostDecorator
         cost = (cost/100).ceil
         #employer_premiums[plan.id.to_s] = cost
         carrier = plan.carrier_profile.abbrev
+
+        bounds[:carrier_low_plan][carrier] = plan.id if cost < bounds[:carrier_low][carrier]
+        bounds[:carrier_high_plan][carrier] = plan.id if cost > bounds[:carrier_high][carrier]
         bounds[:carrier_low][carrier] = cost if cost < bounds[:carrier_low][carrier]
         bounds[:carrier_high][carrier] = cost if cost > bounds[:carrier_high][carrier]
+
         metal = plan.metal_level
+        bounds[:metal_low_plan][metal] = plan.id if cost < bounds[:metal_low][metal]
+        bounds[:metal_high_plan][metal] = plan.id if cost > bounds[:metal_high][metal]
         bounds[:metal_low][metal] = cost if cost < bounds[:metal_low][metal]
         bounds[:metal_high][metal] = cost if cost > bounds[:metal_high][metal]
       }

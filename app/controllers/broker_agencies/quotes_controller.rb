@@ -265,6 +265,7 @@ class BrokerAgencies::QuotesController < ApplicationController
     q.quote_relationship_benefits.each{|bp| bp_hash[bp.relationship] = bp.premium_pct}
     render json: {'relationship_benefits' => bp_hash, 'roster_premiums' => q.roster_cost_all_plans, 'criteria' => JSON.parse(q.criteria_for_ui), summary: summary}
   end
+
   def publish
     @quote = Quote.find(params[:quote_id])
     if params[:plan_id]
@@ -272,16 +273,23 @@ class BrokerAgencies::QuotesController < ApplicationController
       @elected_plan_choice = ['na', 'Single Plan', 'Single Carrier', 'Metal Level'][params[:elected].to_i]
       @quote.plan = @plan
       @quote.plan_option_kind = @elected_plan_choice
-      @quote.save
+      @roster_elected_plan_bounds = PlanCostDecoratorQuote.elected_plans_cost_bounds($quote_shop_health_plans,
+        @quote.quote_relationship_benefits, @quote.roster_cost_all_plans)
       case @elected_plan_choice
         when 'Single Carrier'
           @offering_param  = @plan.name
+          @quote.published_lowest_cost_plan = @roster_elected_plan_bounds[:carrier_low_plan][@plan.carrier_profile.abbrev]
+          @quote.published_highest_cost_plan = @roster_elected_plan_bounds[:carrier_high_plan][@plan.carrier_profile.abbrev]
         when 'Metal Level'
           @offering_param  = @plan.metal_level.capitalize
+          @quote.published_lowest_cost_plan = @roster_elected_plan_bounds[:metal_low_plan][@plan.metal_level]
+          @quote.published_highest_cost_plan = @roster_elected_plan_bounds[:metal_high_plan][@plan.metal_level]
         else
           @offering_param = ""
+          @quote.published_lowest_cost_plan = @plan
+          @quote.published_highest_cost_plan = @plan
       end
-      @cost = params[:cost]
+      @quote.save
     else 
       @plan = @quote.plan
       @elected_plan_choice = @quote.plan_option_kind
@@ -290,10 +298,8 @@ class BrokerAgencies::QuotesController < ApplicationController
       @plans_offered = @quote.cost_for_plans([@plan], @plan).sort_by { |k| [k["employer_cost"], k["employee_cost"]] }
     else
       @plans_offered = []
-    end 
+    end
     
-
-
     render partial: 'publish'
   end
 
