@@ -58,11 +58,11 @@
                     <td><%=@plan.carrier_profile.abbrev.upcase %></td>
                     <td><%= @plan.plan_type.upcase %></td>
                     <td><%=@plan.metal_level.capitalize%></td>
-                    <td><%=@elected_plan_choice%></td>
+                    <td><%=@elected_plan_choice.titleize%></td>
                   </tr>
               </table>
             </div>
-            <p>Below is your Employer's Plan offering Spectrum. Your offerings are based on <%= @offering_param %><%= @elected_plan_choice %>.</p>
+            <p>Below is your Employer's Plan offering Spectrum. Your offerings are based on <%= @offering_param %><%= @elected_plan_choice.titleize %>.</p>
             <div class="col-xs-12 quote-details">
               <div class="col-xs-12">
                 <table class = "employer-health-contribution">
