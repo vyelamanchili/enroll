@@ -19,6 +19,7 @@ gem 'jquery-rails', '4.0.5'
 gem 'jquery-ui-rails'
 gem 'animate-rails', '~> 1.0.7'
 gem 'maskedinput-rails'
+gem 'react-rails'
 # Turbolinks makes following links in your web application faster. Read more: https://github.com/rails/turbolinks
 gem 'jquery-turbolinks'
 gem 'turbolinks'
