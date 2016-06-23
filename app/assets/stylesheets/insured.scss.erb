@@ -4,8 +4,14 @@ $primary-green: #69A30D;
 $primary-color: #007bc4;
 $primay-active-button-text-color: #ffffff;
 $primary-bold: 600;
+$primary-gray: #b7b7b7;
 
 .module {
+  &.inbox {
+    .fa {
+      color: $primary-blue;
+    }
+  }
   &#qle-details {
     .error-info {
       margin-top: 0;
@@ -147,6 +153,14 @@ $primary-bold: 600;
           }
           .info p {
             margin: 0;
+          }
+        }
+        &.waived-coverage {
+          .status {
+            color: $primary-gray;
+          }
+          table {
+            width: 100%;
           }
         }
   }

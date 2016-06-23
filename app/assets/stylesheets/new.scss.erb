@@ -1046,7 +1046,22 @@
   .home-tab, .employees-tab, .employee-add-tab, .benefits-tab,
   .planyear-add-tab, .brokers-tab, .employer-tab, .employer-edit-tab,
    .documents-tab, #add_employee_action, .benefits-setup-tab, .messages-tab,
-    .waived-coverage, .my-broker {
+    .my-broker {
+    .btn-primary {
+      text-transform: uppercase;
+      padding: 10px 20px;
+      border-radius: 6px;
+      font-size: 16px;
+      letter-spacing: 1px;
+      border-top: none;
+      border-left: none;
+      border-right: none;
+      margin-top: 5px;
+      margin-right: 5px;
+      &.mtz {
+        margin-top: 0;
+      }
+    }
     .starter {
       max-width: 660px;
     }
@@ -1197,13 +1212,11 @@
               }
             }
             td {
-              &:first-of-type {
                 header {
                   text-transform: uppercase;
                   color: #9b9b9b;
                   font-size: 12px;
                 }
-              }
               &:last-of-type {
                 padding-right: 15px;
                 h3 {
@@ -1237,7 +1250,6 @@
                 //border-top: solid 1px #b7b7b7;
                 figure {
                   padding: 0;
-                  height: 78px;
                 }
               }
               figure {
