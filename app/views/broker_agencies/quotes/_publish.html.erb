@@ -5,7 +5,7 @@
 
       <p>Quote: "<%=@quote.quote_name %>" effective <b><%=@quote.start_on %></b></p>
 
-      <p>Below is your Employer's Plan offering Spectrum. Your offerings are based on <%= @offering_param %> <%= @elected_plan_choice %>.</p>
+      <p>Below is your Employer's Plan offering Spectrum. Your offerings are based on <%= @offering_param %> <%= @elected_plan_choice.titleize %>.</p>
 
       <p>Costs are based on the roster associated with this quote of <b><%= @quote.quote_households.count %></b> families:</p>
       <br>
@@ -103,7 +103,7 @@
               </td>
               <td class="col-md-2 col-xs-2">
                 <p>
-                  <%= @elected_plan_choice %>
+                  <%= @elected_plan_choice.titleize %>
                 </p>
               </td>
             </tr>
