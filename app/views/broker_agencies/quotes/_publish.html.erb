@@ -1,8 +1,7 @@
 <div class="module container broker_quote_tool published">
   <div class="row">
     <div class="col-md-12">
-      <h3>Review: Publish your Quote</h3>
-      <p>Please review the information below before publishing your quote. Once the quote is published, no information can be changed.</p>
+      <%= draft_quote_header(@quote.aasm_state)%><br/>
 
       <p>Quote: "<%=@quote.quote_name %>" effective <b><%=@quote.start_on %></b></p>
 
@@ -57,7 +56,7 @@
               </div>
               <div class="col-md-offset-2">
                 <p>
-                 <%= @quote.start_on.strftime("%m/%d/%Y") %> - <%= @quote.start_on.next_year.strftime("%m/%d/%Y") %>
+                 <%= @quote.start_on.strftime("%m/%d/%Y") %> - <%= (@quote.start_on.next_year - 1.day).strftime("%m/%d/%Y") %>
                 </p>
               </div>
             </div>
@@ -168,14 +167,7 @@
       </div>
       <br>
       <p>**Actual costs may vary.</p>
-      <%if @quote.aasm_state == "draft" %>
-        <%= form_tag("/broker_agencies/quotes/publish_quote", method: "post") do %>
-          <%= hidden_field_tag(:id, @quote.id) %>
-          <%= hidden_field_tag(:reference_plan_id, @plan && @plan.id.to_s) %>
-          <%= hidden_field_tag(:plan_option_kind, @elected_plan_choice) %>
-          <%= submit_tag "Publish Quote", class: 'btn btn-primary' %>
-        <% end %>
-      <% end %>
+        <%= render :partial => "quote_publish_button" , :locals => { :quote => @quote, :plan => @plan, :elected_plan_choice => @elected_plan_choice } %>
       <h4> Employer Claim Code: &nbsp;<b><%=@quote.claim_code%></b></h4>
       <br>
       <%= link_to 'Download PDF' , publish_broker_agencies_quotes_path(:format => :pdf,:quote_id => @quote.id) , class: "btn btn-default" , :target => "_blank " %> <br>
