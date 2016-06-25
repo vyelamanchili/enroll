@@ -338,8 +338,9 @@ class PlanYear
 
   # Any employee who selected or waived coverage
   def enrolled
-    return @enrolled_employees if defined? @enrolled_employees
-    @enrolled_employees = eligible_to_enroll.select{ |ce| ce.has_active_health_coverage?(self) }
+    Rails.cache.fetch([self, "enrolled"], expires_in: 24.hour) do
+      eligible_to_enroll.select{ |ce| ce.has_active_health_coverage?(self) }
+    end
   end
 
   def total_enrolled_count
