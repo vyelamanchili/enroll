@@ -33,7 +33,7 @@ Feature: Create Employee Roster
     When the broker clicks on the Save Quote button
     Then the broker should see a successful message
 
-  Scenario: Broker should be able to delete an existing Quote
+  Scenario: Broker should be able to delete an existing Roster
     Given that a broker exists
     And the broker is signed in
     When he visits the Roster Quoting tool
@@ -43,4 +43,4 @@ Feature: Create Employee Roster
     Then the broker should see a successful message
     Then click on QuoteRoster Management
     When the broker clicks on the close button
-    Then the Quote should be deleted
+    Then the Roster should be deleted

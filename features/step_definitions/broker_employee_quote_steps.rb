@@ -25,8 +25,10 @@ And(/^the broker is signed in$/) do
 end
 
 When(/^he visits the Roster Quoting tool$/) do
-  visit broker_agencies_root_path
-  click_link 'Roster Quoting Tool'
+  visit broker_agencies_quotes_root_path
+  # click_link 'Roster Quoting Tool'
+  # binding.pry
+  # find('.interaction-click-control-roster-quoting-tool').trigger 'click'
 end
 
 Then(/^click on QuoteRoster Management$/) do
@@ -61,12 +63,13 @@ When(/^broker clicks on Add member to this family$/) do
 end
 
 When(/^broker enters valid information$/) do
-  select "Employee", :from => "select-relationship"
   find(:css, '.uidatepicker:last-child').set('11/11/1991')
+  select "Employee", :from => "select-relationship"
+  find(:css, '.quote-member').set('Martin')
 end
 
 When(/^the broker clicks on the Save Quote button$/) do
-  find('.interaction-click-control-save-quote').click
+  find('.interaction-click-control-save-quote').trigger 'click'
 end
 
 Then(/^the broker should see a successful message$/) do
@@ -78,6 +81,6 @@ When(/^the broker clicks on the close button$/) do
   find(:xpath, "//table//button[contains(@id, 'close_button')]").click
 end
 
-Then(/^the Quote should be deleted$/) do
+Then(/^the Roster should be deleted$/) do
   page.should have_no_xpath("//table//input[contains(@id, 'family_id')]")
 end
