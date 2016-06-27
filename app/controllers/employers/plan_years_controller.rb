@@ -28,7 +28,6 @@ class Employers::PlanYearsController < ApplicationController
     bg.elected_plan_ids.push(q.published_reference_plan)
 
     bg.relationship_benefits = q.quote_relationship_benefits.map{|x| x.attributes.slice(:offered,:relationship, :premium_pct)} << {"offered"=>false, "relationship"=>"child_offered_26", "premium_pct"=>0.0}
-    binding.pry
 
     @i = 1
 
