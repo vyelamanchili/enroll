@@ -287,6 +287,9 @@ $('#tab_datatables a[data-toggle="tab"]').on("click", function(){
       ivl_shop_Table = $('#sepAdmin').DataTable( {
         destroy: true,
         columnDefs: columnVal,
+         "language": {
+            "info": "Showing _START_ to _END_ of _TOTAL_ families"
+         },
         "processing": true,
         "serverSide": true,
         "order": true,
@@ -307,6 +310,9 @@ $('#tab_datatables a[data-toggle="tab"]').on("click", function(){
       ivlTable = $('#sepAdmin1').DataTable( {
       destroy: true,
       columnDefs: columnVal,
+      "language": {
+          "info": "Showing _START_ to _END_ of _TOTAL_ families"
+      },
       "processing": true,
       "serverSide": true,
       "order": true,
@@ -328,6 +334,9 @@ $('#tab_datatables a[data-toggle="tab"]').on("click", function(){
       shopTable = $('#sepAdmin2').DataTable( {
       destroy: true,
       columnDefs: columnVal,
+      "language": {
+          "info": "Showing _START_ to _END_ of _TOTAL_ families"
+      },
       "processing": true,
       "serverSide": true,
       "order": true,
