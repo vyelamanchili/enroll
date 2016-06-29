@@ -29,7 +29,7 @@
 		  <div class="panel panel-default">
 				<div class="panel-heading" role="tab" id="headingOne">
 					<h4 class="panel-title">
-						<%= qhh.text_field :family_id, class: 'hidden', value: "1" %>
+						<%= qhh.text_field :family_id, value: "1" %>
 						<button type="button" class="btn btn-default" aria-label="Left Align" onclick="addEmployeeRowToFamily('<%=qhh.object.id.to_s%>','<%= qhh.index %>')">
 							<span class="glyphicon glyphicon-user" aria-hidden="true"></span> Add member to this family
 						</button>

@@ -47,7 +47,7 @@ end
 When(/^the broker clicks on the Select File to Upload button$/) do
   within '.upload_csv' do
     attach_file('employee_roster_file', "#{Rails.root}/spec/test_data/employee_roster_import/Employee_Roster_sample.csv")
-    find('html div#modal-wrapper-upload div.employee-upload form.upload_csv label.btn.btn-primary.btn-br').trigger("click")
+    find('html div#modal-wrapper div.employee-upload form.upload_csv label.select.btn.btn-primary.btn-br').trigger("click")
   end
 end
 
