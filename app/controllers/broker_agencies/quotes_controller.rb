@@ -192,12 +192,14 @@ class BrokerAgencies::QuotesController < ApplicationController
   def build_employee_roster
     @employee_roster = parse_employee_roster_file
     @quote= Quote.new
-    if @employee_roster.is_a?(Array)
-      @employee_roster.each do |member|
-        @quote_household = @quote.quote_households.where(:family_id => member[0]).first
-        @quote_household= QuoteHousehold.new(:family_id => member[0]) if @quote_household.nil?
-        @quote_members= QuoteMember.new(:employee_relationship => member[1], :dob => member[2])
-        @quote_household.quote_members << @quote_members
+    if @employee_roster.is_a?(Hash)
+      @employee_roster.each do |family_id , members|
+        @quote_household = @quote.quote_households.where(:family_id => family_id).first
+        @quote_household= QuoteHousehold.new(:family_id => family_id ) if @quote_household.nil?
+        members.each do |member|
+          @quote_members= QuoteMember.new(:employee_relationship => member[0], :dob => member[1], :first_name => member[2])
+          @quote_household.quote_members << @quote_members
+        end
         @quote.quote_households << @quote_household
       end
     end
@@ -392,10 +394,34 @@ private
     @quote = Quote.find(params[:id])
   end
 
+  # def parse_employee_roster_file
+  #   begin
+  #     CSV.parse(params[:employee_roster_file].read) if params[:employee_roster_file].present?
+  #   rescue Exception => e
+  #     flash[:error] = "Unable to parse the csv file"
+  #     #redirect_to :action => "new" and return
+  #   end
+  # end
+
   def parse_employee_roster_file
     begin
-      CSV.parse(params[:employee_roster_file].read) if params[:employee_roster_file].present?
+      roster = Roo::Spreadsheet.open(params[:employee_roster_file])
+      sheet = roster.sheet(0)
+      sheet_header_row = sheet.row(1)
+      column_header_row = sheet.row(2)
+      census_employees = {}
+      (4..sheet.last_row).each_with_index.map do |i, index|
+        row = roster.row(i)
+        if census_employees[row[0].to_i].nil?
+          census_employees[row[0].to_i] = [[row[1],row[8],row[2]]]
+        else
+          census_employees[row[0].to_i] << [row[1],row[8],row[2]]
+        end
+      end
+      # binding.pry
+      census_employees
     rescue Exception => e
+      puts e.message
       flash[:error] = "Unable to parse the csv file"
       #redirect_to :action => "new" and return
     end
