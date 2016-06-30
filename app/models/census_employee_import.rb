@@ -62,6 +62,7 @@ class CensusEmployeeImport
 
   def initialize(attributes = {})
     attributes.each { |name, value| send("#{name}=", value) }
+    
 
     raise ArgumentError, "Must provide an import file" unless defined?(@file)
     raise ArgumentError, "Must provide an EmployerProfile" unless defined?(@employer_profile)
@@ -327,8 +328,11 @@ class CensusEmployeeImport
       if !self.valid?
         return false
       end
-
-      imported_census_employees.each(&:save!)
+      
+      imported_census_employees.each do |imported_census_employee| 
+        imported_census_employee.save!
+        imported_census_employee.send_invite! if imported_census_employee.class == CensusEmployee
+      end
       true
     else
       imported_census_employees.each_with_index do |census_employee, index|
