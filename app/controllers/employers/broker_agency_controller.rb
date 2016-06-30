@@ -47,6 +47,7 @@ class Employers::BrokerAgencyController < ApplicationController
         @employer_profile.hire_general_agency(broker_agency_profile.default_general_agency_profile, broker_agency_profile.primary_broker_role_id)
         send_general_agency_assign_msg(broker_agency_profile.default_general_agency_profile, @employer_profile, broker_agency_profile, 'Hire')
       end
+      send_broker_assigned_msg(@employer_profile, broker_agency_profile)
       @employer_profile.save!(validate: false)
     end
 
@@ -109,10 +110,19 @@ class Employers::BrokerAgencyController < ApplicationController
   end
 
   def send_general_agency_assign_msg(general_agency, employer_profile, broker_agency_profile, status)
-    subject = "You are associated to #{employer_profile.legal_name}- #{general_agency.legal_name} (#{status})"
+    subject = "You are associated to #{broker_agency_profile.organization.legal_name}- #{general_agency.legal_name} (#{status})"
     body = "<br><p>Associated details<br>General Agency : #{general_agency.legal_name}<br>Employer : #{employer_profile.legal_name}<br>Status : #{status}</p>"
     secure_message(broker_agency_profile, general_agency, subject, body)
     secure_message(broker_agency_profile, employer_profile, subject, body)
+  end
+
+  def send_broker_assigned_msg(employer_profile, broker_agency_profile)
+    broker_subject = "#{employer_profile.legal_name} has selected you as the broker on DC Health Link"
+    broker_body = "<br><p>Associated details<br>Employer : #{employer_profile.try(:legal_name)}</p>"
+    employer_subject = "You have selected #{broker_agency_profile.organization.legal_name} as the broker."
+    employer_body = "<br><p>Associated details<br>Broker Agency : #{broker_agency_profile.organization.try(:legal_name)}</p>"
+    secure_message(employer_profile, broker_agency_profile, broker_subject, broker_body)
+    secure_message(broker_agency_profile, employer_profile, employer_subject, employer_body)
   end
 
   def find_employer
