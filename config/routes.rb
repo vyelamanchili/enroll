@@ -223,7 +223,6 @@ Rails.application.routes.draw do
         get 'calc_offered_plan_contributions', on: :collection
         get 'employee_costs', on: :collection
         get 'reference_plan_summary', on: :collection
-        #get 'link_from_quote' => 'plan_years#link_from_quote'
 
       end
 
@@ -299,6 +298,7 @@ Rails.application.routes.draw do
     resources :quotes do
       root 'quotes#index'
       collection do
+        get :my_quotes # soon to be the index view
         get :upload_employee_roster
         post :build_employee_roster
         get :new_household , :format => "js"

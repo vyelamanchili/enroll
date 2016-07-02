@@ -25,6 +25,11 @@ class BrokerAgencies::QuotesController < ApplicationController
 
   end
 
+  # displays index page of quotes
+  def my_quotes
+    @all_quotes = Quote.where("broker_role_id" => current_user.person.broker_role.id)
+  end
+
   def index
     @quotes = Quote.where("broker_role_id" => current_user.person.broker_role.id, "aasm_state" => "draft")
     @all_quotes = Quote.where("broker_role_id" => current_user.person.broker_role.id)
@@ -33,13 +38,13 @@ class BrokerAgencies::QuotesController < ApplicationController
     active_year = Date.today.year
     @coverage_kind = "health"
     @health_plans = $quote_shop_health_plans
-    
+
     @dental_plans = $quote_shop_dental_plans
     @dental_plans_count = @dental_plans.count
 
     @health_selectors = $quote_shop_health_selectors
     @health_plan_quote_criteria  = $quote_shop_health_plan_features.to_json
-    
+
     @dental_selectors = $quote_shop_dental_selectors
     dental_plan_quote_criteria  = $quote_shop_dental_plan_features.to_json
     @bp_hash = {'employee':50, 'spouse': 0, 'domestic_partner': 0, 'child_under_26': 0, 'child_26_and_over': 0}
@@ -64,10 +69,10 @@ class BrokerAgencies::QuotesController < ApplicationController
     else
       @plans_offered =[]
     end
-  
+
     @benefit_pcts_json = @bp_hash.to_json
   end
-  
+
   def health_cost_comparison
       @q =  Quote.find(params[:quote])
       @quote_results = Hash.new
@@ -172,13 +177,13 @@ class BrokerAgencies::QuotesController < ApplicationController
         @standard_plans = []
         plan_keys.split(',').each { |plan_key| @standard_plans << Plan.find(plan_key).hios_id }
         @qhps = []
-        @standard_plans.each { |plan_id| @qhps << Products::QhpCostShareVariance  
+        @standard_plans.each { |plan_id| @qhps << Products::QhpCostShareVariance
                                                               .find_qhp_cost_share_variances([plan_id], active_year, "Health") }
         @qhps.flatten!
       end
-      render pdf: 'plan_comparison_export', 
-            template: 'broker_agencies/quotes/_plan_comparison_export.html.erb', 
-            disposition: 'attachment', 
+      render pdf: 'plan_comparison_export',
+            template: 'broker_agencies/quotes/_plan_comparison_export.html.erb',
+            disposition: 'attachment',
             locals: { qhps: @qhps }
     else
       render partial: 'plan_comparision', layout: false, locals: {qhps: @qhps}
@@ -292,7 +297,7 @@ class BrokerAgencies::QuotesController < ApplicationController
           @quote.published_highest_cost_plan = @plan
       end
       @quote.save
-    else 
+    else
       @plan = @quote.plan
       @elected_plan_choice = @quote.plan_option_kind
     end
@@ -301,7 +306,7 @@ class BrokerAgencies::QuotesController < ApplicationController
       @plans_offered = @quote.cost_for_plans([@plan], @plan).sort_by { |k| [k["employer_cost"], k["employee_cost"]] }
     else
       @plans_offered = []
-    end 
+    end
     respond_to do |format|
       format.html {render partial: 'publish'}
       format.pdf do
@@ -321,29 +326,29 @@ class BrokerAgencies::QuotesController < ApplicationController
       render json: []
     end
   end
-  
+
   def export_to_pdf
     @pdf_url = "/broker_agencies/quotes/download_pdf?"
   end
-  
+
   def download_pdf
     @standard_plans = []
     params[:plan_keys].each { |plan_key| @standard_plans << Plan.find(plan_key).hios_id }
     @qhps = []
-    @standard_plans.each { |plan_id| @qhps << Products::QhpCostShareVariance  
+    @standard_plans.each { |plan_id| @qhps << Products::QhpCostShareVariance
                                                             .find_qhp_cost_share_variances([plan_id], Date.today.year, "Health") }
     @qhps.flatten!
-    render pdf: 'plan_comparison_export', 
-           template: 'broker_agencies/quotes/_plan_comparison_export.html.erb', 
-           disposition: 'attachment', 
+    render pdf: 'plan_comparison_export',
+           template: 'broker_agencies/quotes/_plan_comparison_export.html.erb',
+           disposition: 'attachment',
            locals: { qhps: @qhps }
   end
-  
+
   def dental_plans_data
     set_dental_plans
   end
-  
-  
+
+
 private
 
   def employee_relationship_map
@@ -454,11 +459,11 @@ private
     service_visit = qhp_cost_share_variance.qhp_service_visits.detect{|v| visit_type == v.visit_type }
     cost = dollar_value service_visit.copay_in_network_tier_1
   end
-  
+
   def set_qhp_variables
     @active_year = Date.today.year
     @coverage_kind = "health"
-    @visit_types = @coverage_kind == "health" ? Products::Qhp::VISIT_TYPES : Products::Qhp::DENTAL_VISIT_TYPES 
+    @visit_types = @coverage_kind == "health" ? Products::Qhp::VISIT_TYPES : Products::Qhp::DENTAL_VISIT_TYPES
   end
 
   def set_dental_plans
