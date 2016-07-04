@@ -365,7 +365,7 @@ private
                     :start_on,
                     :broker_role_id,
                     :quote_households_attributes => [ :id, :family_id ,
-                                       :quote_members_attributes => [ :id, :first_name ,:dob,
+                                       :quote_members_attributes => [ :id, :first_name, :last_name ,:dob,
                                                                       :employee_relationship,:_delete ] ] )
  end
 
