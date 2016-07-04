@@ -30,8 +30,8 @@ class Quote
   associated_with_one :plan, :published_reference_plan, "Plan"
   associated_with_one :dental_plan, :published_dental_reference_plan, "Plan"
 
-  field :plan_option_kind, type: String, default: "single_carrier"
-  field :dental_plan_option_kind, type: String, default: "single_carrier"
+  # field :plan_option_kind, type: String, default: "single_carrier"
+  # field :dental_plan_option_kind, type: String, default: "single_carrier"
 
   # Quote should now support multiple benefit groups
   embeds_many :quote_benefit_groups, cascade_callbacks: true
@@ -107,11 +107,6 @@ class Quote
     cost.round(2)
   end
 
-  def relationship_benefits
-    self.quote_relationship_benefits = PERSONAL_RELATIONSHIP_KINDS.map do |relationship|
-       self.quote_relationship_benefits.build(relationship: relationship, offered: true)
-    end
-  end
 
   def cost_by_offerings(plan)
     plan_costs_by_offerings = Hash.new
@@ -156,9 +151,9 @@ class Quote
     end
   end
 
-  def relationship_benefit_for(relationship)
-    quote_relationship_benefits.where(relationship: relationship).first
-  end
+  # def relationship_benefit_for(relationship)
+  #   quote_relationship_benefits.where(relationship: relationship).first
+  # end
 
 
   def calc

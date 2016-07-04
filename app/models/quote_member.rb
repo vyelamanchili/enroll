@@ -19,6 +19,9 @@ class QuoteMember
   field :name_sfx, type: String
   field :gender, type: String
 
+  # Quote Benefit Group ID for this employee on the roster
+  field :quote_benefit_group_id, type: BSON::ObjectId
+
   validates_presence_of :dob
 
   validates :gender, allow_blank: true, inclusion: { in: GENDER_KINDS, message: "must be selected" }

@@ -302,12 +302,12 @@ Rails.application.routes.draw do
         get :upload_employee_roster
         post :build_employee_roster
         get :new_household , :format => "js"
-        post :update_benefits
+        #post :update_benefits
         post :publish_quote
-        get :get_quote_info
+        #get :get_quote_info
         get :publish
-        get :criteria
-        get :plan_comparison
+        #get :criteria
+        #get :plan_comparison
         get :health_cost_comparison
         get :dental_cost_comparison
         get 'published_quote/:id', to: 'quotes#view_published_quote'
@@ -320,6 +320,14 @@ Rails.application.routes.draw do
         delete :delete_member
         delete :delete_household
       end
+
+      resources :quote_benefit_groups do
+        get :criteria
+        get :get_quote_info
+        post :update_benefits
+        get :plan_comparison
+      end
+
     end
   end
 

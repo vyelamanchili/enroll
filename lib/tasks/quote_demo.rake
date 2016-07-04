@@ -1,5 +1,5 @@
 # bundle exec rake quote_demo:gen
-# bundle exec rake quote_demo:clear 
+# bundle exec rake quote_demo:clear
 
 namespace :quote_demo do
   desc "generate demo data"
@@ -67,10 +67,12 @@ namespace :quote_demo do
       q.plan_year = 2016
       q.start_on = Date.new(2016,5,2)
 
-      q.build_relationship_benefits
+      #q.build_relationship_benefits
+      qbg = q.quote_benefit_groups.build
+      qbg.build_relationship_benefits
 
-      q.relationship_benefit_for("employee").premium_pct=(70)
-      q.relationship_benefit_for("child_under_26").premium_pct=(100)
+      qbg.relationship_benefit_for("employee").premium_pct=(70)
+      qbg.relationship_benefit_for("child_under_26").premium_pct=(100)
 
       qh = q.quote_households.build
       qh.family_id = "1"

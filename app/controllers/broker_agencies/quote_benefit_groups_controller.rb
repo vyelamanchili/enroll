@@ -1,6 +1,6 @@
-class BrokerAgencies::QuotesController < ApplicationController
+class BrokerAgencies::QuoteBenefitGroupsController < ApplicationController
 
-  before_action :find_quote , :only => [:destroy ,:show, :delete_member, :delete_household, :publish_quote, :view_published_quote]
+  before_action :find_quote , :only => [:destroy, :delete_member, :delete_household, :publish_quote, :view_published_quote]
   before_action :format_date_params  , :only => [:update,:create]
   before_action :employee_relationship_map
   before_action :set_qhp_variables, :only => [:plan_comparison, :download_pdf]
@@ -196,7 +196,8 @@ class BrokerAgencies::QuotesController < ApplicationController
   end
 
   def show
-    @quote = Quote.find(params[:id])
+    binding.pry
+    @quote = QuoteBenefitGroup.find(params[:id])
   end
 
   def build_employee_roster
