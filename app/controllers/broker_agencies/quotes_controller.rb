@@ -417,13 +417,13 @@ private
       census_employees = {}
       (4..sheet.last_row).each_with_index.map do |i, index|
         row = roster.row(i)
+        row[1]="child_under_26" if row[1].downcase == "child"
         if census_employees[row[0].to_i].nil?
-          census_employees[row[0].to_i] = [[row[1],row[8],row[2]]]
+          census_employees[row[0].to_i] = [[row[1].split.join('_').downcase,row[8],row[2]]]
         else
-          census_employees[row[0].to_i] << [row[1],row[8],row[2]]
+          census_employees[row[0].to_i] << [row[1].split.join('_').downcase,row[8],row[2]]
         end
       end
-      # binding.pry
       census_employees
     rescue Exception => e
       puts e.message
