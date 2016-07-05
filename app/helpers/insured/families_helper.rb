@@ -172,5 +172,4 @@ module Insured::FamiliesHelper
       ['coverage_selected', 'coverage_canceled', 'coverage_terminated'].include?(enrollment.aasm_state.to_s)
     end
   end
-      
 end
