@@ -8,6 +8,13 @@ class QuoteHousehold
 
   field :family_id, type: String
 
+  # Quote Benefit Group ID for this employee on the roster
+  field :quote_benefit_group_id, type: BSON::ObjectId
+
+  validates_uniqueness_of :family_id
+
+  before_save :assign_benefit_group_id
+
   accepts_nested_attributes_for :quote_members
 
   def employee?
@@ -24,6 +31,12 @@ class QuoteHousehold
 
   def employee
     quote_members.where("employee_relationship" => "employee").first
+  end
+
+  def assign_benefit_group_id
+    if quote_benefit_group_id.nil?
+      quote_benefit_group_id = self.quote.quote_benefit_groups.first.id
+    end
   end
 
 end

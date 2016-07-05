@@ -196,7 +196,6 @@ class BrokerAgencies::QuoteBenefitGroupsController < ApplicationController
   end
 
   def show
-    binding.pry
     @quote = QuoteBenefitGroup.find(params[:id])
   end
 

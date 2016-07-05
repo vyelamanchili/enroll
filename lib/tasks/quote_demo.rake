@@ -4,6 +4,16 @@
 namespace :quote_demo do
   desc "generate demo data"
 
+  task :delete_quotes => :environment do
+
+    puts "::: Deleting All Quotes :::"
+
+
+    Quote.all.try(:destroy)
+
+    puts "All Quotes Deleted"
+  end
+
   task :clear => :environment do
 
     puts "::: Clear Existing Demo Data :::"
@@ -49,7 +59,7 @@ namespace :quote_demo do
       broker.save!
       broker.approve!
       broker.broker_agency_accept!
-      broker.person.user = User.create!(email: email, 'password'=>'P@55word', roles: ['broker'])
+      broker.person.user = User.create!(email: email, oim_id: email, password: 'P@55word', roles: ['broker'])
       broker.person.save!
 
 
@@ -63,15 +73,16 @@ namespace :quote_demo do
 
       q.broker_role_id = broker_id
       q.quote_name = "Demo Quote"
-      q.plan_option_kind = "single_carrier"
       q.plan_year = 2016
       q.start_on = Date.new(2016,5,2)
 
       #q.build_relationship_benefits
       qbg = q.quote_benefit_groups.build
+      qbg.plan_option_kind = "single_carrier"
       qbg.build_relationship_benefits
 
       qbg.relationship_benefit_for("employee").premium_pct=(70)
+      qbg.relationship_benefit_for("spouse").premium_pct=(50)
       qbg.relationship_benefit_for("child_under_26").premium_pct=(100)
 
       qh = q.quote_households.build

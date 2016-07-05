@@ -40,6 +40,7 @@ class QuoteBenefitGroup
     end
   end
 
+
   def reference_plan=(new_reference_plan)
     raise ArgumentError.new("expected Plan") unless new_reference_plan.is_a? Plan
     self.reference_plan_id = new_reference_plan._id
