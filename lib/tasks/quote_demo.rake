@@ -79,14 +79,25 @@ namespace :quote_demo do
       #q.build_relationship_benefits
       qbg = q.quote_benefit_groups.build
       qbg.plan_option_kind = "single_carrier"
+      qbg.title = "Office Workers"
       qbg.build_relationship_benefits
 
       qbg.relationship_benefit_for("employee").premium_pct=(70)
       qbg.relationship_benefit_for("spouse").premium_pct=(50)
       qbg.relationship_benefit_for("child_under_26").premium_pct=(100)
 
+      qbg1 = q.quote_benefit_groups.build
+      qbg1.plan_option_kind = "single_carrier"
+      qbg1.title = "Outside Workers"
+      qbg1.build_relationship_benefits
+
+      qbg1.relationship_benefit_for("employee").premium_pct=(80)
+      qbg1.relationship_benefit_for("spouse").premium_pct=(65)
+      qbg1.relationship_benefit_for("child_under_26").premium_pct=(90)
+
       qh = q.quote_households.build
       qh.family_id = "1"
+      qh.quote_benefit_group_id = qbg.id
 
       qm = qh.quote_members.build
 
@@ -135,6 +146,7 @@ namespace :quote_demo do
 
       qh = q.quote_households.build
       qh.family_id = "2"
+      qh.quote_benefit_group_id = qbg1.id
       qm = qh.quote_members.build
 
       qm.first_name = "Dengo"

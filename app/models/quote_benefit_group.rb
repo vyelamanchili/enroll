@@ -30,6 +30,10 @@ class QuoteBenefitGroup
 
   embeds_many :quote_relationship_benefits, cascade_callbacks: true
 
+  def dental_relationship_benefit_for(relationship)
+    quote_relationship_benefits.where(relationship: relationship).first
+  end
+
   def relationship_benefit_for(relationship)
     quote_relationship_benefits.where(relationship: relationship).first
   end
