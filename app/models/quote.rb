@@ -37,7 +37,7 @@ class Quote
   embeds_many :quote_benefit_groups, cascade_callbacks: true
 
 
-  embeds_many :quote_households
+  embeds_many :quote_households, cascade_callbacks: true
 
 
   # accepts_nested_attributes_for :quote_households
