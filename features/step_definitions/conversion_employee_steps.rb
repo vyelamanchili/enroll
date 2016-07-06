@@ -86,7 +86,7 @@ end
 Then(/(.*) should see the receipt page with renewing plan year start date as effective date/) do |named_person|
   expect(page).to have_content('Enrollment Submitted')
   step "#{named_person} should get plan year start date as coverage effective date"
-  
+
   if page.has_link?('CONTINUE')
     click_link "CONTINUE"
   else
@@ -110,11 +110,11 @@ end
 Then(/Employee should see confirmation and clicks continue/) do
   expect(page).to have_content "Based on the information you entered, you may be eligible to enroll now but there is limited time"
   screenshot("valid_qle")
-  find(:xpath, '//*[@id="qle_message"]/div[1]/div[2]/input').click
+  click_button 'Continue'
 end
 
 Then(/Employee should see family members page and clicks continue/) do
-  expect(page).to have_content "Household Info: Family Members" 
+  expect(page).to have_content "Household Info: Family Members"
   within '#dependent_buttons' do
     click_link "Continue"
   end
