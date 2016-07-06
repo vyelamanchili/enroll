@@ -20,6 +20,7 @@ class QuoteMember
   field :gender, type: String
 
   validates_presence_of :dob
+  validate :valid_dob
 
   validates :gender, allow_blank: true, inclusion: { in: GENDER_KINDS, message: "must be selected" }
   validates :employee_relationship, allow_blank: false, inclusion: { in: EMPLOYEE_RELATIONSHIP_KINDS, message: "must be selected" }
@@ -35,5 +36,13 @@ class QuoteMember
       age -= 1 if date.month < dob.month
     end
     age
+  end
+
+  private
+
+  def valid_dob
+    if(dob && dob > TimeKeeper.date_of_record)
+      errors.add(:dob, "Please verify your date of birth.")
+    end
   end
 end

@@ -141,18 +141,20 @@ class BrokerAgencies::QuotesController < ApplicationController
     if (@quote.update_attributes(update_params) && @quote.update_attributes(insert_params))
       redirect_to edit_broker_agencies_quote_path(@quote) ,  :flash => { :notice => "Successfully updated the employee roster" }
     else
-      render "edit" , :flash => {:error => "Unable to update the employee roster" }
+      flash[:error]="Unable to update the employee roster"
+      render "edit"
     end
   end
 
   def create
-    quote = Quote.new(quote_params)
-    quote.build_relationship_benefits
-    quote.broker_role_id= current_user.person(:try).broker_role.id
-    if quote.save
+    @quote = Quote.new(quote_params)
+    @quote.build_relationship_benefits
+    @quote.broker_role_id= current_user.person(:try).broker_role.id
+    if @quote.save
       redirect_to  broker_agencies_quotes_root_path ,  :flash => { :notice => "Successfully saved the employee roster" }
     else
-      render "new" , :flash => {:error => "Unable to save the employee roster" }
+      flash[:error]="Unable to save the employee roster"
+      render "new"
     end
   end
 

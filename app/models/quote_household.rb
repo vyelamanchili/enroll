@@ -8,6 +8,8 @@ class QuoteHousehold
 
   field :family_id, type: String
 
+  validate :uniqueness_of_employee, :uniqueness_of_spouse, :uniqueness_of_domestic_partner
+
   accepts_nested_attributes_for :quote_members
 
   def employee?
@@ -24,6 +26,26 @@ class QuoteHousehold
 
   def employee
     quote_members.where("employee_relationship" => "employee").first
+  end
+
+  private
+
+  def uniqueness_of_spouse
+    if quote_members.where("employee_relationship" => "spouse").count > 1
+      errors.add("Should be unique")
+    end
+  end
+
+  def uniqueness_of_employee
+    if quote_members.where("employee_relationship" => "employee").count > 1
+      errors.add("There should be only one employee per family.")
+    end
+  end
+
+  def uniqueness_of_domestic_partner
+    if quote_members.where("employee_relationship" => "domestic_partner").count > 1
+      errors.add("Should be unique")
+    end
   end
 
 end
