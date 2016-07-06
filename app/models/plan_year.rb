@@ -341,6 +341,8 @@ class PlanYear
     Rails.cache.fetch([self, "enrolled"], expires_in: 24.hour) do
       eligible_to_enroll.select{ |ce| ce.has_active_health_coverage?(self) }
     end
+  rescue => e
+    eligible_to_enroll.select{ |ce| ce.has_active_health_coverage?(self) }
   end
 
   def total_enrolled_count

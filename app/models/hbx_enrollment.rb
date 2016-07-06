@@ -1052,19 +1052,25 @@ class HbxEnrollment
 
   def decorated_hbx_enrollment
     Rails.cache.fetch([self, "decorated_hbx_enrollment"], expires_in: 24.hour) do
-      if plan.present? && benefit_group.present?
-        if benefit_group.is_congress #is_a? BenefitGroupCongress
-          PlanCostDecoratorCongress.new(plan, self, benefit_group)
-        else
-          reference_plan = (coverage_kind == 'dental' ?  benefit_group.dental_reference_plan : benefit_group.reference_plan)
-          PlanCostDecorator.new(plan, self, benefit_group, reference_plan)
-        end
-      elsif plan.present? && consumer_role.present?
-        UnassistedPlanCostDecorator.new(plan, self)
+      decorated_hbx_enrollment_for_cache
+    end
+  rescue => e
+    decorated_hbx_enrollment_for_cache
+  end
+
+  def decorated_hbx_enrollment_for_cache
+    if plan.present? && benefit_group.present?
+      if benefit_group.is_congress #is_a? BenefitGroupCongress
+        PlanCostDecoratorCongress.new(plan, self, benefit_group)
       else
-        log("#3835 hbx_enrollment without benefit_group and consumer_role. hbx_enrollment_id: #{self.id}, plan: #{plan}", {:severity => "error"})
-        OpenStruct.new(:total_premium => 0.00, :total_employer_contribution => 0.00, :total_employee_cost => 0.00)
+        reference_plan = (coverage_kind == 'dental' ?  benefit_group.dental_reference_plan : benefit_group.reference_plan)
+        PlanCostDecorator.new(plan, self, benefit_group, reference_plan)
       end
+    elsif plan.present? && consumer_role.present?
+      UnassistedPlanCostDecorator.new(plan, self)
+    else
+      log("#3835 hbx_enrollment without benefit_group and consumer_role. hbx_enrollment_id: #{self.id}, plan: #{plan}", {:severity => "error"})
+      OpenStruct.new(:total_premium => 0.00, :total_employer_contribution => 0.00, :total_employee_cost => 0.00)
     end
   end
 
