@@ -92,10 +92,10 @@ class Employers::CensusEmployeesController < ApplicationController
         flash[:notice] = "Note: new employee cannot enroll on #{Settings.site.short_name} until they are assigned a benefit group. "
         flash[:notice] += "Census Employee is successfully updated."
       end
-      redirect_to employers_employer_profile_path(@employer_profile, tab: 'employees')
+      redirect_to employers_employer_profile_census_employee_path(@employer_profile.id, @census_employee.id, tab: 'employees')
     else
-      @reload = true
-      render action: "edit"
+      flash[:error] = @census_employee.errors.full_messages
+      redirect_to employers_employer_profile_census_employee_path(@employer_profile.id, @census_employee.id, tab: 'employees')
     end
     #else
       #flash[:error] = "Please select Benefit Group."
@@ -154,9 +154,9 @@ class Employers::CensusEmployeesController < ApplicationController
 
           # for new_census_employee
           new_census_employee.build_address if new_census_employee.address.blank?
-          new_census_employee.add_default_benefit_group_assignment          
+          new_census_employee.add_default_benefit_group_assignment
           new_census_employee.construct_employee_role_for_match_person
-          
+
           @census_employee = new_census_employee
           flash[:notice] = "Successfully rehired Census Employee."
         else
@@ -177,7 +177,11 @@ class Employers::CensusEmployeesController < ApplicationController
       @hbx_enrollments = @benefit_group_assignment.hbx_enrollments
       @benefit_group = @benefit_group_assignment.benefit_group
     end
-
+    @census_employee.build_address unless @census_employee.address.present?
+    @census_employee.build_email unless @census_employee.email.present?
+    @census_employee.benefit_group_assignments.build unless @census_employee.benefit_group_assignments.present?
+    @census_employee.census_dependents.build unless @census_employee.census_dependents.present?
+    @family = @census_employee.employee_role.person.primary_family if @census_employee.employee_role.present?
     # PlanCostDecorator.new(@hbx_enrollment.plan, @hbx_enrollment, @benefit_group, reference_plan) if @hbx_enrollment.present? and @benefit_group.present? and reference_plan.present?
   end
 

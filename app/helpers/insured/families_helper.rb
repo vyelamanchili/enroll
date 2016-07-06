@@ -66,7 +66,7 @@ module Insured::FamiliesHelper
     end
 
     plan_details.inject([]) do |data, element|
-      data << "<label>#{element}</label>"
+      data << "#{element}"
     end.join("&nbsp<label class='separator'></label>").html_safe
   end
 

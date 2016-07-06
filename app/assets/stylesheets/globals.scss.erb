@@ -1,4 +1,12 @@
 .module, .modal {
+  .label {
+    &.inactive, &.canceled {
+      background-color: #b7b7b7;
+    }
+    &.employment_terminated {
+      background-color: #e72b2d;
+    }
+  }
   &.flash {
     .col-xs-12 {
       max-width: 1170px;
@@ -98,6 +106,7 @@
       color: rgb(131, 135, 128);
       text-transform: uppercase;
       text-align: left;
+      line-height: 1.2;
     }
     .selectric-wrapper {
       width:100%;
@@ -108,11 +117,16 @@
   .vertically-aligned-row {
     display: table;
     width: 100%;
-
+    &.auto-width {
+      width: auto !important;
+    }
     >* {
       display: table-cell;
       float: none;
       vertical-align: middle;
+      &.vertical-align-top {
+        vertical-align: top !important;
+      }
     }
   }
 }
