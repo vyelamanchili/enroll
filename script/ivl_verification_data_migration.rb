@@ -14,25 +14,26 @@
     # state :verification_period_ended
 # >> new states
 
-# case #  |  "LPD Status"  | "LPD Auth" | "native" | "has ssn" | "consumer role status" | "lpd status"  | "ssn status"
+# case #  |  "LPD Status"  | "LPD Auth" | "native" | "has ssn" |  count  |  old   |  "consumer role status" | "lpd status"  | "ssn status"
 # -----   |  ------------------------------------------------------------------------------------------------------------
-# case 1  |  "outstanding" | "ssa"      |  "true"  | "true"    | "outstanding"          | "outstanding" | "outstanding"
-# case 2  |  "outstanding" | "ssa"      |  "true"  | "false"   | "outstanding"          | "outstanding" | "outstanding"
-# case 3  |  "outstanding" | "dhs"      |  "false" | "false"   | "outstanding"          | "outstanding" | "outstanding"
-# case 4  |  "pending"     | "ssa"      |  "true"  | "true"    | "pending, retrigger"   | "pending"     | "pending"
-# case 5  |  "pending"     | "dhs"      |  "false" | "false"   | "pending, retrigger"   | "pending"     | "n/a"
-# case 6  |  "valid"       | "ssa"      |  "true"  | "true"    | "valid"                | "valid"       | "valid"
-# case 7  |  "pending"     | "ssa"      |  "true"  | "false"   | "outstanding"          | "outstanding" | "outstanding"
-# case 8  |  "valid"       | "dhs"      |  "false" | "false"   | "valid"                | "valid"       | "n/a"
-# case 9  |  "_"           | "curam"    |  "_"     | "true"    | "valid"                | "valid"       | "valid"
-# case 10 |  "_"           | "curam"    |  "_"     | "false"   | "valid"                | "valid"       | "n/a"
-# case 11 |  "_"           | "dhs"      |  "false" | "true"    | "pending, retrigger"   | "pending"     | "pending"
+# case 1  |  "outstanding" | "ssa"      |  "true"  | "true"    |   380   |     |  "outstanding"          | "outstanding" | "outstanding"
+# case 2  |  "outstanding" | "ssa"      |  "true"  | "false"   |   217   |     |  "outstanding"          | "outstanding" | "outstanding"
+# case 3  |  "outstanding" | "dhs"      |  "false" | "false"   |    62   |     |  "outstanding"          | "outstanding" | "outstanding"
+# case 4  |  "pending"     | "ssa"      |  "true"  | "true"    |     0   |     |  "pending, retrigger"   | "pending"     | "pending"
+# case 5  |  "pending"     | "dhs"      |  "false" | "false"   |     0   |     |  "pending, retrigger"   | "pending"     | "n/a"
+# case 6  |  "valid"       | "ssa"      |  "true"  | "true"    |  4869   |     |  "valid"                | "valid"       | "valid"
+# case 7  |  "pending"     | "ssa"      |  "true"  | "false"   |     0   |     |  "outstanding"          | "outstanding" | "outstanding"
+# case 8  |  "valid"       | "dhs"      |  "false" | "false"   |    84   |     |  "valid"                | "valid"       | "n/a"
+# case 9  |  "_"           | "curam"    |  "_"     | "true"    |  41135  |     |  "valid"                | "valid"       | "valid"
+# case 10 |  "_"           | "curam"    |  "_"     | "false"   |   1727  |     |  "valid"                | "valid"       | "n/a"
+# case 11 |  "_"           | "dhs"      |  "false" | "true"    |    726  |     |  "pending, retrigger"   | "pending"     | "pending"
 
 
 # outstanding, native, ssn  | count: 401
 def get_case_1_people
   Person.where('consumer_role' => {'$exists' => true},
                'consumer_role.lawful_presence_determination.aasm_state' => 'verification_outstanding',
+               'consumer_role.lawful_presence_determination.vlp_authority' => 'ssa',
                'consumer_role.lawful_presence_determination.citizen_status' => 'us_citizen',
                'encrypted_ssn' => {'$exists' => true})
 
@@ -42,6 +43,7 @@ end
 def get_case_2_people
   Person.where('consumer_role' => {'$exists' => true},
                'consumer_role.lawful_presence_determination.aasm_state' => 'verification_outstanding',
+               'consumer_role.lawful_presence_determination.vlp_authority' => 'ssa',
                'consumer_role.lawful_presence_determination.citizen_status' => 'us_citizen',
                'encrypted_ssn' => {'$exists' => false})
 end
@@ -50,6 +52,7 @@ end
 def get_case_3_people
   Person.where('consumer_role' => {'$exists' => true},
                'consumer_role.lawful_presence_determination.aasm_state' => 'verification_outstanding',
+               'consumer_role.lawful_presence_determination.vlp_authority' => 'dhs',
                'consumer_role.lawful_presence_determination.citizen_status' => {'$ne' => 'us_citizen'},
                'encrypted_ssn' => {'$exists' => false})
 end
@@ -58,6 +61,7 @@ end
 def get_case_4_people
   Person.where('consumer_role' => {'$exists' => true},
                'consumer_role.lawful_presence_determination.aasm_state' => 'verification_pending',
+               'consumer_role.lawful_presence_determination.vlp_authority' => 'ssa',
                'consumer_role.lawful_presence_determination.citizen_status' => 'us_citizen',
                'encrypted_ssn' => {'$exists' => true})
 end
@@ -66,6 +70,7 @@ end
 def get_case_5_people
   Person.where('consumer_role' => {'$exists' => true},
                'consumer_role.lawful_presence_determination.aasm_state' => 'verification_pending',
+               'consumer_role.lawful_presence_determination.vlp_authority' => 'dhs',
                'consumer_role.lawful_presence_determination.citizen_status' => {'$ne' => 'us_citizen'},
                'encrypted_ssn' => {'$exists' => false})
 end
@@ -74,6 +79,7 @@ end
 def get_case_6_people
   Person.where('consumer_role' => {'$exists' => true},
                'consumer_role.lawful_presence_determination.aasm_state' => 'verification_successful',
+               'consumer_role.lawful_presence_determination.vlp_authority' => 'ssa',
                'consumer_role.lawful_presence_determination.citizen_status' => 'us_citizen',
                'encrypted_ssn' => {'$exists' => true})
 end
@@ -82,6 +88,7 @@ end
 def get_case_7_people
   Person.where('consumer_role' => {'$exists' => true},
                'consumer_role.lawful_presence_determination.aasm_state' => 'verification_pending',
+               'consumer_role.lawful_presence_determination.vlp_authority' => 'ssa',
                'consumer_role.lawful_presence_determination.citizen_status' => 'us_citizen',
                'encrypted_ssn' => {'$exists' => false})
 end
@@ -90,6 +97,7 @@ end
 def get_case_8_people
   Person.where('consumer_role' => {'$exists' => true},
                'consumer_role.lawful_presence_determination.aasm_state' => 'verification_successful',
+               'consumer_role.lawful_presence_determination.vlp_authority' => 'dhs',
                'consumer_role.lawful_presence_determination.citizen_status' => {'$ne' => 'us_citizen'},
                'encrypted_ssn' => {'$exists' => false})
 end
@@ -111,6 +119,7 @@ end
 #NON native, ssn   | count: 62955
 def get_case_11_people
   Person.where('consumer_role' => {'$exists' => true},
+               'consumer_role.lawful_presence_determination.vlp_authority' => 'dhs',
                'consumer_role.lawful_presence_determination.citizen_status' => {'$ne' => 'us_citizen'},
                'encrypted_ssn' => {'$exists' => true})
 end
