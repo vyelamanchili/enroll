@@ -38,7 +38,7 @@
              <td>
           <%=
             if q.aasm_state == 'draft'
-             link_to "Edit Quote Info & Roster" , "/broker_agencies/quotes/#{q.id}/edit"
+             link_to "Edit Quote Info & Roster" , "/broker_agencies/quote_roster/#{q.id}/edit"
            else
              link_to "View Published Quote", "#", id: q.id, class: 'view-published'
            end
@@ -53,7 +53,7 @@
           <% end %>
         </tbody>
       </table>
-        <%=link_to "New Quote" , new_broker_agencies_quote_path , method: :get, class: "btn btn-trans btn-sm", id: "new_quote"%>
+        <%=link_to "New Quote" , new_broker_agencies_quote_roster_path , method: :get, class: "btn btn-trans btn-sm", id: "new_quote"%>
       <br><br>
     </div>
   </div>

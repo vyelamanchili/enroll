@@ -321,6 +321,19 @@ Rails.application.routes.draw do
         delete :delete_household
       end
     end
+
+    resources :quote_roster do
+      collection do
+        get :upload_employee_roster
+        post :build_employee_roster
+        get :new_household , :format => "js"
+      end
+      member do
+        post :download_employee_roster
+        delete :delete_member
+        delete :delete_household
+      end
+    end
   end
 
   match 'general_agency_registration', to: 'general_agencies/profiles#new_agency', via: [:get]
