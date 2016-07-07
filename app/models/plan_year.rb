@@ -96,7 +96,7 @@ class PlanYear
 
       coverage_filter = lambda do |enrollments, date|
         enrollments = enrollments.select{|e| e.terminated_on.blank? || e.terminated_on >= date}
-        
+
         if enrollments.size > 1
           enrollment = enrollments.detect{|e| (HbxEnrollment::ENROLLED_STATUSES + HbxEnrollment::TERMINATED_STATUSES).include?(e.aasm_state.to_s)}
           enrollment || enrollments.detect{|e| HbxEnrollment::RENEWAL_STATUSES.include?(e.aasm_state.to_s)}
@@ -258,7 +258,7 @@ class PlanYear
       errors.merge!({publish: "You may only have one published plan year at a time"})
     end
 
-    if !is_publish_date_valid? 
+    if !is_publish_date_valid?
       errors.merge!({publish: "Plan year starting on #{start_on.strftime("%m-%d-%Y")} must be published by #{due_date_for_publish.strftime("%m-%d-%Y")}"})
     end
 
@@ -554,7 +554,7 @@ class PlanYear
     state :published,         :after_enter => :accept_application     # Plan is finalized. Employees may view benefits, but not enroll
     state :published_invalid, :after_enter => :decline_application    # Non-compliant plan application was forced-published
 
-    state :enrolling                                      # Published plan has entered open enrollment
+    state :enrolling, :after_enter => :send_employee_invites          # Published plan has entered open enrollment
     state :enrolled, :after_enter => :ratify_enrollment   # Published plan open enrollment has ended and is eligible for coverage,
                                                           #   but effective date is in future
     state :canceled                                       # Published plan open enrollment has ended and is ineligible for coverage
@@ -563,7 +563,7 @@ class PlanYear
 
     state :renewing_draft
     state :renewing_published
-    state :renewing_enrolling, :after_enter => :trigger_passive_renewals
+    state :renewing_enrolling, :after_enter => [:trigger_passive_renewals, :send_employee_invites]
     state :renewing_enrolled
     state :renewing_publish_pending
     state :renewing_canceled
@@ -712,7 +712,6 @@ class PlanYear
   def accept_application
     adjust_open_enrollment_date
     transition_success = employer_profile.application_accepted! if employer_profile.may_application_accepted?
-    send_employee_invites if transition_success
   end
 
   def decline_application
@@ -811,7 +810,7 @@ private
 
   def send_employee_invites
     benefit_groups.each do |bg|
-      bg.census_employees.each do |ce|
+      bg.census_employees.non_terminated.each do |ce|
         Invitation.invite_employee!(ce)
       end
     end
@@ -859,11 +858,11 @@ private
     if open_enrollment_end_on < open_enrollment_start_on
       errors.add(:open_enrollment_end_on, "can't occur before open enrollment start date")
     end
-    
+
 
     if open_enrollment_start_on < (start_on - 2.months)
       errors.add(:open_enrollment_start_on, "can't occur before 60 days before start date")
-    end    
+    end
 
     if (open_enrollment_end_on - open_enrollment_start_on).to_i < (Settings.aca.shop_market.open_enrollment.minimum_length.days - 1)
      errors.add(:open_enrollment_end_on, "open enrollment period is less than minumum: #{Settings.aca.shop_market.open_enrollment.minimum_length.days} days")
