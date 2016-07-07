@@ -150,10 +150,14 @@ class BrokerAgencies::QuotesController < ApplicationController
     @quote = Quote.new(quote_params)
     @quote.build_relationship_benefits
     @quote.broker_role_id= current_user.person(:try).broker_role.id
+    if @format_errors.present?
+      flash[:error]= "#{@format_errors.join(', ')}"
+      render "new"  and return
+    end
     if @quote.save
       redirect_to  broker_agencies_quotes_root_path ,  :flash => { :notice => "Successfully saved the employee roster" }
     else
-      flash[:error]="Unable to save the employee roster"
+      flash[:error]="Unable to save the employee roster : #{@quote.errors.full_messages.join(", ")}"
       render "new"
     end
   end
@@ -372,11 +376,18 @@ private
  end
 
  def format_date_params
+  @format_errors=[]
   params[:quote][:start_on] =  Date.strptime(params[:quote][:start_on],"%m/%d/%Y") if params[:quote][:start_on]
   if params[:quote][:quote_households_attributes]
     params[:quote][:quote_households_attributes].values.each do |household_attribute|
       if household_attribute[:quote_members_attributes].present?
-        household_attribute[:quote_members_attributes].values.map { |m| m[:dob] = Date.strptime(m[:dob],"%m/%d/%Y") unless m[:dob] && m[:dob].blank?}
+        household_attribute[:quote_members_attributes].values.map do |m|
+          begin
+            m[:dob] = Date.strptime(m[:dob],"%m/%d/%Y") unless m[:dob] && m[:dob].blank?
+          rescue Exception => e
+            @format_errors << "Error parsing date #{m[:dob]}"
+          end
+        end
       end
     end
   end
@@ -419,7 +430,7 @@ private
       census_employees = {}
       (4..sheet.last_row).each_with_index.map do |i, index|
         row = roster.row(i)
-        row[1]="child_under_26" if row[1].downcase == "child"
+        row[1]="child_under_26" if row[1].split.join('_').downcase == "disabled_child"|| row[1].downcase == "child"
         if census_employees[row[0].to_i].nil?
           census_employees[row[0].to_i] = [[row[1].split.join('_').downcase,row[8],row[2]]]
         else

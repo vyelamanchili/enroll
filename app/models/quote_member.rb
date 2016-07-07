@@ -41,6 +41,13 @@ class QuoteMember
   private
 
   def valid_dob
+    if (dob)
+      begin
+        Date.strptime(dob,"%m/%d/%Y")
+      rescue Exception => e
+        errors.add(:dob, "Isn't valid date.")
+      end
+    end
     if(dob && dob > TimeKeeper.date_of_record)
       errors.add(:dob, "Please verify your date of birth.")
     end
