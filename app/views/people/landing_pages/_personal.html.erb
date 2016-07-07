@@ -68,10 +68,10 @@
         </div><br>
 
     <% end %>
-
-  <div class="row no-buffer">
-    <button type="submit" class="btn btn-primary btn-br hidden"><i class="fa fa-user-plus"></i> Save</button>
-    <span class='btn btn-lg btn-primary btn-br' onclick='PersonValidations.manageRequiredValidations($(this));'><i class="fa fa-user-plus"></i> Save</span>
-  </div>
-
+  <% if policy_helper(@family).updateable? %>
+    <div class="row no-buffer">
+      <button type="submit" class="btn btn-primary btn-br hidden"><i class="fa fa-user-plus"></i> Save</button>
+      <span class='btn btn-lg btn-primary btn-br' onclick='PersonValidations.manageRequiredValidations($(this));'><i class="fa fa-user-plus"></i> Save</span>
+    </div>
+  <% end %>
 <% end %><br>
