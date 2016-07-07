@@ -580,4 +580,12 @@ module ApplicationHelper
       return "2. You have 0 non-owner employees on your roster"
     end
   end
+
+# Use this in views.   Needed to make rspec work.
+# allow(view).to receive(:policy_helper).and_return(double("PersonPolicy", updateable?: true))
+# https://github.com/elabs/pundit/issues/339
+# https://www.relishapp.com/rspec/rspec-rails/v/3-0/docs/view-specs/view-spec#passing-view-spec-that-stubs-a-helper-method
+  def policy_helper pundit_object
+    policy pundit_object
+  end
 end
