@@ -84,7 +84,7 @@ module Insured::FamiliesHelper
     else
       options.merge!(data: data)
     end
-    link_to qle.title, "javascript:void(0)", options
+    link_to qle.title, "#qle-details", options
   end
 
   def generate_options_for_effective_on_kinds(effective_on_kinds, qle_date)
