@@ -6,7 +6,7 @@ carrier_abbreviations = {
     "CareFirst":"AHI", "Aetna":"GHMSI", "Kaiser":"KFMASI", "United Health Care": "UHIC", "Delta Dental":"DDPA",
   "Dentegra":"DTGA", "Dominion":"DMND", "Guardian":"GARD", "BestLife":"BLHI", "MetLife":"META"}
 
-plan_year = { "start_date":"20160701", "end_date":"20170630" }
+plan_year = { "start_date":"", "end_date":"" }
 
 XML_NS = "http://openhbx.org/api/terms/1.0"
 
@@ -82,11 +82,13 @@ feins.each do |fein|
     end.flat_map(&:benefit_groups).flat_map(&:elected_plans).flat_map(&:carrier_profile).uniq! || []
 
     carriers.each do |carrier|
-      puts "Processing fein #{fein} for #{carrier.legal_name}"
+      #puts "Processing fein #{fein} for #{carrier.legal_name}"
       cv_xml = views_helper.render file: File.join(Rails.root, "/app/views/events/v2/employers/updated.xml.haml"), :locals => {employer: employer_profile}
 
       organizations_hash[carrier.legal_name] = [] if organizations_hash[carrier.legal_name].nil?
-      organizations_hash[carrier.legal_name] << remove_other_carrier_nodes(cv_xml, carrier.legal_name, plan_year[:end_date], plan_year[:start_date])
+      organizations_hash[carrier.legal_name] << remove_other_carrier_nodes(cv_xml, carrier.legal_name,
+                                                                           Date.parse(plan_year[:start_date]) - (1.year + 1.day),
+                                                                           plan_year[:start_date])
     end
 end
 
