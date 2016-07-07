@@ -32,19 +32,19 @@ class QuoteHousehold
 
   def uniqueness_of_spouse
     if quote_members.where("employee_relationship" => "spouse").count > 1
-      errors.add("employee_relationship","Should be unique")
+      errors.add(:employee_relationship,"Should be unique")
     end
   end
 
   def uniqueness_of_employee
     if quote_members.where("employee_relationship" => "employee").count > 1
-      errors.add("employee_relationship","There should be only one employee per family.")
+      errors.add(:employee_relationship,"There should be only one employee per family.")
     end
   end
 
   def uniqueness_of_domestic_partner
     if quote_members.where("employee_relationship" => "domestic_partner").count > 1
-      errors.add("employee_relationship","Should be unique")
+      errors.add(:employee_relationship,"Should be unique")
     end
   end
 
