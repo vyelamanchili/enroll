@@ -1,5 +1,7 @@
 class BrokerAgencies::QuotesController < ApplicationController
 
+  include DataTablesAdapter
+
   before_action :find_quote , :only => [:destroy ,:show, :delete_member, :delete_household, :publish_quote, :view_published_quote]
   before_action :format_date_params  , :only => [:update,:create]
   before_action :employee_relationship_map
@@ -30,11 +32,34 @@ class BrokerAgencies::QuotesController < ApplicationController
     @all_quotes = Quote.where("broker_role_id" => current_user.person.broker_role.id)
   end
 
-  def index
-    @quotes = Quote.where("broker_role_id" => current_user.person.broker_role.id, "aasm_state" => "draft")
-    @all_quotes = Quote.where("broker_role_id" => current_user.person.broker_role.id)
+  def quote_index_datatable
+
+    dt_query = extract_datatable_parameters
+
+    quotes = Quote.where("broker_role_id" => current_user.person.broker_role.id)
+
+    @payload = quotes.map { |q|
+      {
+        :quote_name => q.quote_name,
+        :family_count => q.quote_households.count,
+        :benefit_group_count => q.quote_benefit_groups.count,
+        :quote_state => q.aasm_state
+
+      }
+    }
+
+      @draw = dt_query.draw
+      @total_records = 1
+      @records_filtered = 1
+  end
+
+  def show #index (old index)
+
+    @q = Quote.find(params[:id])
+    @quotes = @q.quote_benefit_groups#Quote.where("broker_role_id" => current_user.person.broker_role.id, "aasm_state" => "draft")
+    @all_quotes = @q.quote_benefit_groups
     #TODO fix this antipattern, make mongo field default, look at hbx_slug pattern?
-    @all_quotes.each{|q|q.update_attributes(claim_code: q.employer_claim_code) if q.claim_code==''}
+    #@all_quotes.each{|q|q.update_attributes(claim_code: q.employer_claim_code) if q.claim_code==''}
     active_year = Date.today.year
     @coverage_kind = "health"
     @health_plans = $quote_shop_health_plans
@@ -48,8 +73,8 @@ class BrokerAgencies::QuotesController < ApplicationController
     @dental_selectors = $quote_shop_dental_selectors
     dental_plan_quote_criteria  = $quote_shop_dental_plan_features.to_json
     @bp_hash = {'employee':50, 'spouse': 0, 'domestic_partner': 0, 'child_under_26': 0, 'child_26_and_over': 0}
-    @q =  Quote.find(params[:quote]) if !params[:quote].nil?
-    @quote_on_page = @q || @quotes.first
+    @q =  Quote.find(params[:quote]).quote_relationship_benefits.first if !params[:quote].nil?
+    @quote_on_page = @q.quote_benefit_groups.first || @all_quotes.first
     @quote_criteria = []
     unless @quote_on_page.nil?
       @quote_on_page.quote_relationship_benefits.each{|bp| @bp_hash[bp.relationship] = bp.premium_pct}
@@ -195,9 +220,9 @@ class BrokerAgencies::QuotesController < ApplicationController
     end
   end
 
-  def show
-    @quote = Quote.find(params[:id])
-  end
+  #def show
+  #  @quote = Quote.find(params[:id])
+  #end
 
   def build_employee_roster
     @employee_roster = parse_employee_roster_file

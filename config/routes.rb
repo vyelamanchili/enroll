@@ -299,15 +299,16 @@ Rails.application.routes.draw do
       root 'quotes#index'
       collection do
         get :my_quotes # soon to be the index view
+        post :quote_index_datatable
         get :upload_employee_roster
         post :build_employee_roster
         get :new_household , :format => "js"
-        #post :update_benefits
+        post :update_benefits
         post :publish_quote
-        #get :get_quote_info
+        get :get_quote_info
         get :publish
-        #get :criteria
-        #get :plan_comparison
+        get :criteria
+        get :plan_comparison
         get :health_cost_comparison
         get :dental_cost_comparison
         get 'published_quote/:id', to: 'quotes#view_published_quote'
