@@ -175,6 +175,8 @@ class HbxEnrollment
     }
 
   before_save :generate_hbx_id, :set_submitted_at
+  before_save :generate_hbx_id
+  after_create :check_created_at
 
   def generate_hbx_signature
     if self.subscriber
@@ -1132,6 +1134,11 @@ class HbxEnrollment
  end
 
   private
+
+  # NOTE - Mongoid::Timestamps does not generate created_at time stamps.
+  def check_created_at
+     self.update_attribute(:created_at, TimeKeeper.datetime_of_record) unless self.created_at.present?
+  end
 
   def benefit_group_assignment_valid?(coverage_effective_date)
     plan_year = employee_role.employer_profile.find_plan_year_by_effective_date(coverage_effective_date)
