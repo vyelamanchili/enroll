@@ -175,7 +175,6 @@ class HbxEnrollment
     }
 
   before_save :generate_hbx_id, :set_submitted_at
-  before_save :generate_hbx_id
   after_create :check_created_at
 
   def generate_hbx_signature
@@ -212,7 +211,7 @@ class HbxEnrollment
       families.each do |family|
         [10, 25, 50, 65].each do |reminder_days|
           enrollment = family.enrollments.order(created_at: :desc).select{|e| e.currently_active? || e.future_active?}.first
-          
+
           if enrollment.special_verification_period.present? && enrollment.special_verification_period.strftime('%m/%d/%Y') == (date_passed + (95 - reminder_days).days).strftime('%m/%d/%Y')
             consumer_role = family.primary_applicant.person.consumer_role
             begin
@@ -315,7 +314,7 @@ class HbxEnrollment
     return false if shopping?
     return false unless (effective_on > TimeKeeper.date_of_record)
     return true if terminated_on.blank?
-    terminated_on >= effective_on   
+    terminated_on >= effective_on
   end
 
   def generate_hbx_id
@@ -1129,7 +1128,7 @@ class HbxEnrollment
 
  def set_submitted_at
    if submitted_at.blank?
-      write_attribute(:submitted_at, TimeKeeper.date_of_record) 
+      write_attribute(:submitted_at, TimeKeeper.date_of_record)
    end
  end
 
