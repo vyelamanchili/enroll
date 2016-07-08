@@ -69,9 +69,9 @@ def previous_plan_year_end_date(employer_profile)
   end[-2]
 
   if previous_plan_year
-    previous_plan_year.end_on
+    previous_plan_year.end_on.strftime("%Y%m%d")
   else
-    Date.new(1970,01,01) # an invalid date which will not match any date on xml
+    "19700101" # an invalid date which will not match any date on xml
   end
 end
 
