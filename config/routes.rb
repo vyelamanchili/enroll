@@ -342,6 +342,11 @@ Rails.application.routes.draw do
           post :plan
         end
       end
+      resources :esi, :only => []  do
+        collection do
+          post :roster
+        end
+      end
     end
   end
 
