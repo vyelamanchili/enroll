@@ -61,6 +61,20 @@ def remove_other_carrier_nodes(xml, trading_partner, p_pye, pys)
   [event, employer_id, doc.to_xml(:save_with => Nokogiri::XML::Node::SaveOptions::NO_DECLARATION)]
 end
 
+# return end_date of previous active plan year
+def previous_plan_year_end_date(employer_profile)
+  #sort by increasing plan year start_on and return the previous active plan year at index -2
+  previous_plan_year = employer_profile.plan_years.select(&:eligible_for_export?).sort_by do |plan_year|
+    plan_year.start_on
+  end[-2]
+
+  if previous_plan_year
+    previous_plan_year.end_on
+  else
+    Date.new(1970,01,01) # an invalid date which will not match any date on xml
+  end
+end
+
 views = Rails::Application::Configuration.new(Rails.root).paths["app/views"]
 views_helper = ActionView::Base.new views
 include EventsHelper
@@ -73,13 +87,17 @@ organizations_hash = {} # key is carrier name, value is the return object of rem
 # 3 using remove_other_carrier_nodes, remove the carrier plans of carriers other then 'carrier'
 # create a hash with key as carrier and value as array [organization_xml, carrier, plan year end date, plan year start date]
 feins.each do |fein|
-    employer_profile = Organization.where(:fein => fein.gsub("-", "")).first.employer_profile
 
-    #carriers = employer_profile.plan_years.select(&:eligible_for_export?).flat_map(&:benefit_groups).flat_map(&:elected_plans).flat_map(&:carrier_profile).uniq! || []
+  begin
+    employer_profile = Organization.where(:fein => fein.gsub("-", "")).first.employer_profile
 
     carriers = employer_profile.plan_years.select(&:eligible_for_export?).select do |py|
       py.start_on == Date.parse(plan_year[:start_date])
     end.flat_map(&:benefit_groups).flat_map(&:elected_plans).flat_map(&:carrier_profile).uniq! || []
+
+    previous_plan_year = employer_profile.plan_years.select(&:eligible_for_export?).sort_by do |plan_year|
+
+    end
 
     carriers.each do |carrier|
       #puts "Processing fein #{fein} for #{carrier.legal_name}"
@@ -87,9 +105,12 @@ feins.each do |fein|
 
       organizations_hash[carrier.legal_name] = [] if organizations_hash[carrier.legal_name].nil?
       organizations_hash[carrier.legal_name] << remove_other_carrier_nodes(cv_xml, carrier.legal_name,
-                                                                           Date.parse(plan_year[:start_date]) - (1.year + 1.day),
+                                                                           previous_plan_year_end_date(employer_profile),
                                                                            plan_year[:start_date])
     end
+  rescue => e
+      puts "Error FEIN #{fein} " + e.message
+  end
 end
 
 # iterate the hash and generate group xml v2 for each carrier, including all employers for that carrier
