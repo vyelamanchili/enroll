@@ -54,6 +54,15 @@ class Organization
 
   scope :all_employers_by_plan_year_start_on,   ->(start_on){ unscoped.where(:"employer_profile.plan_years.start_on" => start_on) }
 
+  scope :with_published_and_renewing_plan_year_statuses, ->{
+    unscoped.where(
+      :"employer_profile.plan_years" => {
+        :$elemMatch => {
+          :"aasm_state".in => PlanYear::PUBLISHED + PlanYear::RENEWING
+        }
+      })
+  }
+
   scope :by_general_agency_profile, -> (general_agency_profile_id) { where(:'employer_profile.general_agency_accounts' => {:$elemMatch => { aasm_state: "active", general_agency_profile_id: general_agency_profile_id } }) }
 
   embeds_many :office_locations, cascade_callbacks: true, validate: true
@@ -187,6 +196,11 @@ class Organization
         {"fein" => search_rex},
       ])
     }
+  end
+
+  def self.retrieve_employers_eligible_for_binder_paid
+    date = TimeKeeper.date_of_record.end_of_month + 1.day
+    all_employers_by_plan_year_start_on(date).with_published_and_renewing_plan_year_statuses
   end
 
   def self.valid_carrier_names
