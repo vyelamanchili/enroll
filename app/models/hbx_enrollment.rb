@@ -130,6 +130,7 @@ class HbxEnrollment
   scope :renewing,            ->{ where(:aasm_state.in => RENEWAL_STATUSES )}
   scope :enrolled_and_renewing, -> { where(:aasm_state.in => (ENROLLED_STATUSES + RENEWAL_STATUSES)) }
   scope :effective_asc,      -> { order(effective_on: :asc) }
+  scope :effective_desc,      ->{ order(effective_on: :desc, submitted_at: :desc, coverage_kind: :desc) }
   scope :waived,              ->{ where(:aasm_state.in => WAIVED_STATUSES )}
   scope :cancel_eligible,     ->{ where(:aasm_state.in => ["coverage_selected","renewing_coverage_selected","coverage_enrolled"] )}
   scope :changing,            ->{ where(changing: true) }
@@ -1125,12 +1126,17 @@ class HbxEnrollment
     !(shopping_plan_year.start_on == effective_on)
   end
 
-
- def set_submitted_at
-   if submitted_at.blank?
+  def set_submitted_at
+    if submitted_at.blank?
       write_attribute(:submitted_at, TimeKeeper.date_of_record)
-   end
- end
+    end
+  end
+
+  def update_coverage_kind_by_plan
+    if plan.present? && coverage_kind != plan.coverage_kind
+      self.update(coverage_kind: plan.coverage_kind)
+    end
+  end
 
   private
 
