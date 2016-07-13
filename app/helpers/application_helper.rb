@@ -604,4 +604,11 @@ module ApplicationHelper
   def primary_member(person_id)
     Person.find(person_id).try(:primary_family).try(:primary_family_member).try(:person) == Person.find(person_id)
   end
+# Use this in views.   Needed to make rspec work.
+# allow(view).to receive(:policy_helper).and_return(double("PersonPolicy", updateable?: true))
+# https://github.com/elabs/pundit/issues/339
+# https://www.relishapp.com/rspec/rspec-rails/v/3-0/docs/view-specs/view-spec#passing-view-spec-that-stubs-a-helper-method
+  def policy_helper pundit_object
+    policy pundit_object
+  end
 end
