@@ -8,13 +8,10 @@ namespace :reports do
     desc "List of IVL submitted terminations yesterday "
     task :terminations_submitted_on => :environment do
 
-      date_of_termination = TimeKeeper.date_of_record.yesterday
-      # find families who terminated their enrollment
-      families = Family.where(:"households.hbx_enrollments" =>
-                                  { :$elemMatch => {
-                                      :"aasm_state" => "coverage_terminated"}
-                                  })
-
+      date_of_termination=Date.yesterday.beginning_of_day..Date.yesterday.end_of_day
+      # find families who terminated their hbx_enrollments
+      families = Family.where(:"households.hbx_enrollments" =>{ :$elemMatch => {:"aasm_state" => "coverage_terminated",
+                                                                                :"updated_at" => date_of_termination}})
       field_names  = %w(
                HBX_ID
                Last_Name
@@ -38,7 +35,7 @@ namespace :reports do
           # reject if doesn't have consumer role
           next unless family.primary_family_member.person.consumer_role
           # find hbx_enrollments who's aasm state=coverage_terminated and updated i.e submitted date == previous day
-          hbx_enrollments = family.households.first.hbx_enrollments.select{|hbx| hbx.aasm_state == "coverage_terminated" && hbx.updated_at.try(:strftime,'%Y-%m-%d') == date_of_termination.strftime('%Y-%m-%d')}
+          hbx_enrollments = [family].flat_map(&:households).flat_map(&:hbx_enrollments).select{|hbx| hbx.aasm_state == "coverage_terminated" && hbx.updated_at.strftime('%Y-%m-%d') == Date.yesterday.strftime('%Y-%m-%d')}
           hbx_enrollments.each do |hbx_enrollment|
             if hbx_enrollment
               csv << [
@@ -57,7 +54,7 @@ namespace :reports do
             processed_count += 1
           end
         end
-        puts "For date #{date_of_termination}, Total IVL termination count #{processed_count} and IVL information output file: #{file_name}"
+        puts "For date #{Date.yesterday}, Total IVL termination count #{processed_count} and IVL information output file: #{file_name}"
       end
     end
   end
