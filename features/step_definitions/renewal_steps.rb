@@ -17,7 +17,7 @@ And(/(.*) has active coverage and passive renewal/) do |named_person|
     benefit_group_assignment_id: ce.active_benefit_group_assignment.id,
     plan_id: benefit_group.elected_plan_ids.first
     )
-
+  
   factory = Factories::FamilyEnrollmentRenewalFactory.new
   factory.family = person_rec.primary_family
   factory.census_employee = ce
@@ -34,7 +34,7 @@ Then(/(.*) should see active and renewing enrollments/) do |named_person|
   effective_date = ce.employer_profile.renewing_plan_year.start_on
 
   expect(page.find_all('.hbx-enrollment-panel').any?{|e| 
-    (e.find('.family-plan-selection').find('.status').find('h4').text() == 'Auto Renewing') && 
+    (e.find('.enrollment-status').find('.label-success').text() == 'Auto Renewing') && 
     (e.find('.enrollment-effective').find('strong').text() == effective_date.strftime('%m/%d/%Y'))
   }).to be_truthy
 
