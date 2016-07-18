@@ -2,7 +2,7 @@
   <div id="new_person_wrapper">
     <div class="row">
       <input type='hidden' name='exit_after_method' value='false' id='exit_after_method'>
-      <div class="col-lg-7 col-md-7 col-sm-8 col-xs-12 bottom-pd">
+      <div class="col-lg-9 col-md-9 col-sm-9 col-xs-12 bottom-pd">
         <h1 class="darkblue">Personal Information</h1>
         <p>Please answer the following questions, provide your address, telephone number and email address. When you're finished, select CONTINUE.</p>
         <p class='memo'>* = required field</p>
@@ -24,7 +24,7 @@
       </div>
 
 
-      <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12 col-md-offset-2 col-sm-offset-1 right-section">
+      <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12 right-section">
         <%= render  partial: 'shared/individual_progress', locals: {step: '1'} %>
         <%= render partial: 'shared/help_me_sign_up' %>
       </div>

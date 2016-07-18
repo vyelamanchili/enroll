@@ -6,7 +6,7 @@
 <div class="container" id="plan_shoppings_show_form">
   <div id="select_plan_wrapper">
     <div class="row">
-      <div class="col-lg-8 col-md-8 col-sm-8 col-xs-12">
+      <div class="col-lg-9 col-md-9 col-sm-9 col-xs-12">
         <div class="ct-1">
           <h1 class="darkblue">Choose Plan</h1>
           <h4 class="switch-header">Find a quality, affordable health insurance plan that's right for you, or for you and your family. Use 'Filter Results', 'Compare' and 'Details' features to narrow your choices. When you find the plan you want, 'Select Plan'.</h4>
@@ -54,7 +54,7 @@
         </div>
       </div>
 
-      <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12 col-md-offset-1 col-sm-offset-1 right-section">
+      <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12 right-section">
         <% if @change_plan.blank? && @market_kind == "individual" %>
           <% if @enrollment_kind.blank? && is_under_open_enrollment? %>
             <%= render  partial: 'shared/individual_progress', locals: {step: '4'} %>
