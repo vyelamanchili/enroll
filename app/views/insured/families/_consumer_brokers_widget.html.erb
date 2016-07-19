@@ -16,7 +16,9 @@
       <i aria-hidden="true" class="fa fa-user fa-3x"></i>
       <% if broker_and_agency_present %>
       <br/>
-      <%=  @person.primary_family.current_broker_agency.broker_agency_profile.legal_name.capitalize %>
+      <span class="word-break">
+        <%=  @person.primary_family.current_broker_agency.broker_agency_profile.legal_name.capitalize %>
+      </span>
       <% else %>
       <br/>
       No Selection
@@ -25,13 +27,18 @@
     <div class="text-left">
       <% if broker_and_agency_present %>
       <div class="broker-information">
-        <%= @person.primary_family.current_broker_agency.writing_agent.person.first_name.capitalize %>
-        <%= @person.primary_family.current_broker_agency.writing_agent.person.last_name.capitalize %>
+        <span class="word-break">
+          <%= @person.primary_family.current_broker_agency.writing_agent.person.first_name.capitalize %>
+          <%= @person.primary_family.current_broker_agency.writing_agent.person.last_name.capitalize %>
+        </span>
         <br/>
         <a href="tel:1-<%= @person.primary_family.current_broker_agency.writing_agent.phone %>">1
           <%= @person.primary_family.current_broker_agency.writing_agent.phone %></a>
         <br/>
-        <%= mail_to @person.primary_family.current_broker_agency.writing_agent.email.address, @person.primary_family.current_broker_agency.writing_agent.email.address %><br>
+        <span class="word-break">
+          <%= mail_to @person.primary_family.current_broker_agency.writing_agent.email.address, @person.primary_family.current_broker_agency.writing_agent.email.address %>
+        </span>
+        <br>
       </div>
       <% else %>
       You can add a broker for free
@@ -44,3 +51,4 @@
       <% end %>
     </div>
   </div>
+</div>
