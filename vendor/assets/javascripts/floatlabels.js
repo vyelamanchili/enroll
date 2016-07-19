@@ -17,7 +17,9 @@
                 transitionDuration              : 0.1,
                 transitionEasing                : 'ease-in-out',
                 labelClass                      : '',
-                typeMatches                     : /text|password|email|number|search|url|tel/
+                typeMatches                     : /text|password|email|number|search|url|tel/,
+                focusColor                      : '#838780',
+                blurColor                       : '#2996cc'
             };
         function Plugin ( element, options ) {
             this.$element       = $(element);
@@ -38,8 +40,10 @@
                     '-ms-transition'                : 'all ' + transDuration + 's ' + transEasing,
                     'transition'                    : 'all ' + transDuration + 's ' + transEasing
                 };
-                if( thisElement.prop('tagName').toUpperCase() !== 'INPUT' ) { return; }
-                if( !settings.typeMatches.test( thisElement.attr('type') ) ) { return; }
+                if( thisElement.prop('tagName').toUpperCase() != 'INPUT' &&
+                    thisElement.prop('tagName').toUpperCase() != 'TEXTAREA') { return; }
+                if( thisElement.prop('tagName').toUpperCase() === 'INPUT' &&
+                    !settings.typeMatches.test( thisElement.attr('type') ) ) { return; }
                 var elementID = thisElement.attr('id');
                 if( !elementID ) {
                     elementID = Math.floor( Math.random() * 100 ) + 1;
@@ -66,7 +70,7 @@
                     'opacity'                       : '0',
                     'font-size'                     : '11px',
                     'font-weight'                   : 'bold',
-                    'color'                         : '#838780'
+                    'color'                         : self.settings.blurColor
                 });
                 if( !settings.slideInput ) {                    
                     thisElement.css({ 'padding-top' : this.inputPaddingTop });
@@ -74,8 +78,8 @@
                 thisElement.on('keyup blur change', function( e ) {
                     self.checkValue( e );
                 });
-                thisElement.on('blur', function() { thisElement.prev('label').css({ 'color' : '#838780' }); });
-                thisElement.on('focus', function() { thisElement.prev('label').css({ 'color' : '#2996cc' }); });
+                thisElement.on('blur', function() { thisElement.prev('label').css({ 'color' : self.settings.blurColor }); });
+                thisElement.on('focus', function() { thisElement.prev('label').css({ 'color' : self.settings.focusColor }); });
                 window.setTimeout( function() {
                     self.$label.css( animationCss );
                     self.$element.css( animationCss );
