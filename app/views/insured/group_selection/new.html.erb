@@ -15,7 +15,7 @@
     <% else %>
 
     <%= form_tag(:insured_group_selections, :id => "group-selection-form") do %>
-      <div class="col-xs-9">
+      <div class="col-xs-8">
         <h1 class="darkblue">Choose Coverage for your Household</h1>
         <h4>Select who needs coverage and the type of coverage needed. When you’re finished, select CONTINUE.</h4>
         <h3>Who Needs Coverage?</h3>
@@ -151,7 +151,7 @@
           <%= link_to "Back to my account", family_account_path, class: 'btn btn-default btn btn-lg' %>
         </div>
 
-        <div class="col-xs-3 right-section pull-right">
+        <div class="col-xs-3 col-sm-offset-1 right-section pull-right">
           <% if @change_plan.blank?  && @market_kind == "individual" %>
             <% if @enrollment_kind.blank? && is_under_open_enrollment? %>
               <%= render  partial: 'shared/individual_progress', locals: {step: '3'} %>
