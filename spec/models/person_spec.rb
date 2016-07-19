@@ -947,7 +947,7 @@ describe Person do
   describe ".deactivate_employer_staff_role" do
     let(:person) {FactoryGirl.create(:person)}
     let(:employer_staff_role) {FactoryGirl.create(:employer_staff_role, person: person)}
-    let(:employer_staff_roles) { FactoryGirl.create_list(:employer_staff_role, 3, person: person) } 
+    let(:employer_staff_roles) { FactoryGirl.create_list(:employer_staff_role, 3, person: person) }
     context 'does not find the person' do
       before {@status, @result = Person.deactivate_employer_staff_role(1, employer_staff_role.employer_profile_id)}
       it 'returns false' do
@@ -984,7 +984,7 @@ describe Person do
       end
 
       it 'has more than one employer_staff_role' do
-        employer_staff_roles 
+        employer_staff_roles
         expect(person.employer_staff_roles.count).to eq (employer_staff_roles << employer_staff_role).count
       end
 
@@ -999,13 +999,16 @@ describe Person do
     let(:employee_role) { FactoryGirl.create(:employee_role, person: person) }
     let(:primary_family) { FactoryGirl.create(:family, :with_primary_family_member) }
 
+
     context 'person_has_an_active_enrollment?' do
       let(:active_enrollment)   { FactoryGirl.create( :hbx_enrollment,
                                            household: primary_family.latest_household,
                                           employee_role_id: employee_role.id,
                                           is_active: true
                                        )}
+
       it 'returns true if person has an active enrollment.' do
+
         allow(person).to receive(:primary_family).and_return(primary_family)
         allow(primary_family).to receive(:enrollments).and_return([active_enrollment])
         expect(Person.person_has_an_active_enrollment?(person)).to be_truthy
@@ -1018,7 +1021,9 @@ describe Person do
                                           employee_role_id: employee_role.id,
                                           is_active: false
                                        )}
+
       it 'returns false if person does not have any active enrollment.' do
+
         allow(person).to receive(:primary_family).and_return(primary_family)
         allow(primary_family).to receive(:enrollments).and_return([inactive_enrollment])
         expect(Person.person_has_an_active_enrollment?(person)).to be_falsey

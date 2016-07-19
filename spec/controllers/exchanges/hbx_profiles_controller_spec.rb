@@ -378,7 +378,6 @@ RSpec.describe Exchanges::HbxProfilesController, dbclean: :after_each do
 
     it "should render the configuration partial" do
       expect(response).to have_http_status(:success)
-      #binding.pry
       expect(response).to render_template(:partial => 'exchanges/hbx_profiles/_configuration_index')
     end
   end
@@ -409,6 +408,70 @@ RSpec.describe Exchanges::HbxProfilesController, dbclean: :after_each do
       post :set_date, :forms_time_keeper => { :date_of_record =>  TimeKeeper.date_of_record.next_day.strftime('%Y-%m-%d') }
       expect(response).to have_http_status(:redirect)
       expect(flash[:error]).to match(/Access not allowed/)
+    end
+  end
+
+  describe "GET edit_dob_ssn" do
+
+    let(:user) { double("user") }
+    let(:person) { FactoryGirl.create(:person, :with_consumer_role, :with_employee_role) }
+    let(:hbx_staff_role) { double("hbx_staff_role")}
+    let(:hbx_profile) { double("hbx_profile")}
+
+    it "should return authorization error for Non-Admin users" do
+      allow(user).to receive(:has_hbx_staff_role?).and_return false
+      sign_in(user)
+      xhr :get, :edit_dob_ssn
+      expect { HbxProfile.update_dob_ssn }.to raise_error(StandardError)
+    end
+
+    it "should render the edit_dob_ssn partial for logged in users with an admin role" do
+      allow(user).to receive(:has_hbx_staff_role?).and_return true
+      sign_in(user)
+      expect(response).to have_http_status(:success)
+      response.content_type == Mime::JS
+      @params = {:id => person.id, :format => 'js'}
+      xhr :get, :edit_dob_ssn, @params
+      expect(response).to render_template('edit_enrollment')
+    end
+
+  end
+
+
+  describe "POST update_dob_ssn" do
+
+    let(:user) { double("user") }
+    let(:person) { FactoryGirl.create(:person, :with_consumer_role, :with_employee_role) }
+    let(:hbx_staff_role) { double("hbx_staff_role")}
+    let(:hbx_profile) { double("hbx_profile")}
+    let(:invalid_ssn) { "234-45-839" }
+    let(:valid_ssn) { "234-45-8390" }
+    let(:valid_dob) { "03/17/1987" }
+
+    it "should render back to edit_enrollment if there is a validation error on save" do
+      allow(user).to receive(:has_hbx_staff_role?).and_return true
+      sign_in(user)
+      expect(response).to have_http_status(:success)
+      @params = {:person=>{:pid => person.id, :ssn => invalid_ssn, :dob => valid_dob},:jq_datepicker_ignore_person=>{:dob=> valid_dob}, :format => 'js'}
+      xhr :get, :update_dob_ssn, @params
+      expect(response).to render_template('edit_enrollment')
+    end
+
+    it "should render update_enrollment if the save is successful" do
+      allow(user).to receive(:has_hbx_staff_role?).and_return true
+      sign_in(user)
+      expect(response).to have_http_status(:success)
+      @params = {:person=>{:pid => person.id, :ssn => valid_ssn, :dob => valid_dob },:jq_datepicker_ignore_person=>{:dob=> valid_dob}, :format => 'js'}
+      xhr :get, :update_dob_ssn, @params
+      expect(response).to render_template('update_enrollment')
+    end
+
+
+    it "should return authorization error for Non-Admin users" do
+      allow(user).to receive(:has_hbx_staff_role?).and_return false
+      sign_in(user)
+      xhr :get, :update_dob_ssn
+      expect { HbxProfile.update_dob_ssn }.to raise_error(StandardError)
     end
   end
 
