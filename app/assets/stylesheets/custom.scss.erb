@@ -563,8 +563,8 @@ a.family{
   border-radius: 0;
   border: none !important;
   font-size: 14px !important;
-  font-weight: 300 !important;
-  padding-bottom: 22px !important;
+  font-weight: 600 !important;
+  padding-bottom: 0px !important;
   padding-left: 10px !important;
   padding-right: 10px !important;
 }
@@ -663,8 +663,9 @@ input {
   font-size: 14px;
 }
 label.label-floatlabel {
-  font-size: 10px !important;
+  font-size: 11px !important;
   left: 10px !important;
+  font-weight: normal !important;
 }
 .row.check{
   margin-left: 0 !important;
@@ -4265,6 +4266,16 @@ table.table.table-message-wrapper tr th.vtop {
   font-weight: bold;
   color: rgb(131, 135, 128);
   transition: all 0.1s ease-in-out 0s;
+}
+
+.floatlabel:not(.active-floatlabel) {
+  padding-top: 0px !important;
+  transition: all 0.1s ease-in-out !important;
+}
+
+.floatlabel.active-floatlabel {
+  padding-top: 16px !important;
+  transition: all 0.1s ease-in-out !important;
 }
 
 .field_value.floatlabel.form-control.active-floatlabel {
