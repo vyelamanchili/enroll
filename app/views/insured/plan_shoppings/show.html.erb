@@ -6,58 +6,60 @@
 <div class="container" id="plan_shoppings_show_form">
     <div id="select_plan_wrapper">
         <div class="row">
-            <div class="col-lg-9 col-md-9 col-sm-9 col-xs-12">
+            <div class="col-lg-10 col-md-10 col-sm-10 col-xs-12">
                 <div class="col-lg-11 col-md-11 col-sm-11 col-xs-12">
-                    <div class="ct-1">
-                        <h1 class="darkblue">Choose Plan</h1>
-                        <h4 class="switch-header">Find a quality, affordable health insurance plan that's right for you, or for you and your family. Use 'Filter Results', 'Compare' and 'Details' features to narrow your choices. When you find the plan you want, 'Select Plan'.</h4>
-                        <div class="row no-buffer">
-                            <%= render "shared/plan_shoppings/more_plan_details" %>
-                            <p class="pull-right">
-                                <a href="javascript:void(0);" style="display: none;" class="btn btn-default compare-selected-plans-link", data-uri="<%= comparison_products_plans_path(market_kind: @market_kind, coverage_kind: @coverage_kind) %>">
-                                    COMPARE PLANS
-                                </a>
-                            </p>
+                    <div class="row">
+                        <div class="ct-1">
+                            <h1 class="darkblue">Choose Plan</h1>
+                            <h4 class="switch-header">Find a quality, affordable health insurance plan that's right for you, or for you and your family. Use 'Filter Results', 'Compare' and 'Details' features to narrow your choices. When you find the plan you want, 'Select Plan'.</h4>
+                            <div class="row no-buffer">
+                                <%= render "shared/plan_shoppings/more_plan_details" %>
+                                <p class="pull-right">
+                                    <a href="javascript:void(0);" style="display: none;" class="btn btn-default compare-selected-plans-link", data-uri="<%= comparison_products_plans_path(market_kind: @market_kind, coverage_kind: @coverage_kind) %>">
+                                        COMPARE PLANS
+                                    </a>
+                                </p>
 
-                        </div>
+                            </div>
 
-                        <div class="">
-                            <div id="plan-summary"></div>
+                            <div class="">
+                                <div id="plan-summary"></div>
 
-                            <div id="all-plans" class="all-filters-row">
-                                <%= render 'plan_filters' %>
+                                <div id="all-plans" class="all-filters-row">
+                                    <%= render 'plan_filters' %>
 
-                                <div class="col-lg-9 col-md-9 co-sm-9 col-xs-12" style="padding-right: 0;">
-                                    <div class="sort-area" style='margin:10px 0;'>
-                                        <span><strong>Sort By</strong></span>
-                                        <div class="btn-group" role="group" id='sort_by'>
-                                            <a href='javascript:void(0)' class="btn btn-default" data-sort-by='plan-name'>Plan Name</a>
-                                            <a href='javascript:void(0)' class="btn btn-default" data-sort-by='plan-metal-premium'>Premium Amount</a>
-                                            <a href='javascript:void(0)' class="btn btn-default" data-sort-by='plan-metal-deductible'>Deductible</a>
-                                            <a href='javascript:void(0)' class="btn btn-default" data-sort-by='plan-carrier'>Carrier</a>
+                                    <div class="col-lg-9 col-md-9 co-sm-9 col-xs-12" style="padding-right: 0;">
+                                        <div class="sort-area" style='margin:10px 0;'>
+                                            <span><strong>Sort By</strong></span>
+                                            <div class="btn-group" role="group" id='sort_by'>
+                                                <a href='javascript:void(0)' class="btn btn-default" data-sort-by='plan-name'>Plan Name</a>
+                                                <a href='javascript:void(0)' class="btn btn-default" data-sort-by='plan-metal-premium'>Premium Amount</a>
+                                                <a href='javascript:void(0)' class="btn btn-default" data-sort-by='plan-metal-deductible'>Deductible</a>
+                                                <a href='javascript:void(0)' class="btn btn-default" data-sort-by='plan-carrier'>Carrier</a>
+                                            </div>
                                         </div>
-                                    </div>
 
-                                    <div id="plans">
-                                        <h3>Loading...</h3>
+                                        <div id="plans">
+                                            <h3>Loading...</h3>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
 
-                        <div class="row no-buffer">
-                            <p class="pull-right">
-                                <a href="javascript:void(0);" style="display: none;" class="btn btn-default compare-selected-plans-link", data-uri="<%= comparison_products_plans_path(market_kind: @market_kind, coverage_kind: @coverage_kind) %>">
-                                    COMPARE PLANS
-                                </a>
-                            </p>
+                            <div class="row no-buffer">
+                                <p class="pull-right">
+                                    <a href="javascript:void(0);" style="display: none;" class="btn btn-default compare-selected-plans-link", data-uri="<%= comparison_products_plans_path(market_kind: @market_kind, coverage_kind: @coverage_kind) %>">
+                                        COMPARE PLANS
+                                    </a>
+                                </p>
+                            </div>
                         </div>
                     </div>
                 </div>
                 <div class="col-lg-1 col-md-1 col-sm-1 col-xs-0"></div>
             </div>
 
-            <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12 right-section">
+            <div class="col-lg-2 col-md-2 col-sm-2 col-xs-12 right-section">
                 <% if @change_plan.blank? && @market_kind == "individual" %>
                   <% if @enrollment_kind.blank? && is_under_open_enrollment? %>
                     <%= render  partial: 'shared/individual_progress', locals: {step: '4'} %>

@@ -4,12 +4,13 @@
   #new_person_wrapper
     .row
       = form_for @person, { :as => :person, :url => match_insured_consumer_role_index_path, :method => :post } do |f|
-        .col-lg-9.col-md-9.col-sm-9.col-xs-12
-        .col-lg-11.col-md-11.col-sm-11.col-xs-12
-          %h1.darkblue Personal Information
-          %h4 First, we need to verify whether you're new to DC Health Link or affiliated with another account. Please enter your personal information. When you're finished, select CONTINUE.
-          %p.memo * = required field
-          = render 'insured/consumer_roles/remote_search_form', f: f
-        .col-lg-1.col-md-1.col-sm-1.col-xs-0
-        .col-lg-3.col-md-3.col-sm-3.col-xs-12.right-section
+        .col-lg-10.col-md-10.col-sm-10.col-xs-12
+          .col-lg-11.col-md-11.col-sm-11.col-xs-12
+            .row
+              %h1.darkblue Personal Information
+              %h4 First, we need to verify whether you're new to DC Health Link or affiliated with another account. Please enter your personal information. When you're finished, select CONTINUE.
+              %p.memo * = required field
+              = render 'insured/consumer_roles/remote_search_form', f: f
+          .col-lg-1.col-md-1.col-sm-1.col-xs-0
+        .col-lg-2.col-md-2.col-sm-2.col-xs-12.right-section
           = render  partial: 'shared/individual_progress', locals: {step: '1'}

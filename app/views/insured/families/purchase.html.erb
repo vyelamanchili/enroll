@@ -1,39 +1,41 @@
 <div class="container bottom-pd">
     <div class="row">
-        <div id="confirm_plan" class="col-lg-9 col-md-9 col-sm-9 col-xs-12">
+        <div id="confirm_plan" class="col-lg-10 col-md-10 col-sm-10 col-xs-12">
             <div class="col-lg-11 col-md-11 col-sm-11 col-xs-12">
-                <h1 class="darkblue">Confirm Your Plan Selection</h1>
-                <% if @terminate.present? %>
-                  <p>Click Terminate Plan button to complete your termination from coverage.</p>
-                  <p>You will remain enrolled in coverage until you terminate your plan selection below.</p>
-                <% else %>
-                  <p>Your current plan selection is displayed below. Click the back button if you want to change your selection. Click Purchase button to complete your enrollment.</p>
-                  <p>Your enrollment is not complete until you purchase your plan selection below.</p>
-                <% end %>
-                <p>
-                    <strong><%= @plan.name %></strong><br>
-                    Starting on : <%= @enrollment.effective_on.strftime("%m/%d/%Y") %>
-                </p>
+                <div class="row">
+                    <h1 class="darkblue">Confirm Your Plan Selection</h1>
+                    <% if @terminate.present? %>
+                      <p>Click Terminate Plan button to complete your termination from coverage.</p>
+                      <p>You will remain enrolled in coverage until you terminate your plan selection below.</p>
+                    <% else %>
+                      <p>Your current plan selection is displayed below. Click the back button if you want to change your selection. Click Purchase button to complete your enrollment.</p>
+                      <p>Your enrollment is not complete until you purchase your plan selection below.</p>
+                    <% end %>
+                    <p>
+                        <strong><%= @plan.name %></strong><br>
+                        Starting on : <%= @enrollment.effective_on.strftime("%m/%d/%Y") %>
+                    </p>
 
-                <br>
+                    <br>
 
-                <% if @enrollment.employee_role.present? %>
-                  <%= render "insured/plan_shoppings/coverage_information" %>
-                <% else %>
-                  <%= render "insured/plan_shoppings/individual_coverage_information" %>
-                <% end %>
-                <br />
+                    <% if @enrollment.employee_role.present? %>
+                      <%= render "insured/plan_shoppings/coverage_information" %>
+                    <% else %>
+                      <%= render "insured/plan_shoppings/individual_coverage_information" %>
+                    <% end %>
+                    <br />
 
-                <% if @terminate.present? %>
-                  <%= link_to("Terminate Plan", terminate_insured_plan_shopping_path(@enrollment.id), {:class => "btn btn-primary pull-right", :method => :post}) %>
-                <% else %>
-                  <%= link_to purchase_or_confirm, checkout_insured_plan_shopping_path(@enrollment.id, :plan_id => @plan.id, change_plan: @change_plan), class: 'btn btn-primary pull-right', method: :post %>
-                  <% end %>
+                    <% if @terminate.present? %>
+                      <%= link_to("Terminate Plan", terminate_insured_plan_shopping_path(@enrollment.id), {:class => "btn btn-primary pull-right", :method => :post}) %>
+                    <% else %>
+                      <%= link_to purchase_or_confirm, checkout_insured_plan_shopping_path(@enrollment.id, :plan_id => @plan.id, change_plan: @change_plan), class: 'btn btn-primary pull-right', method: :post %>
+                      <% end %>
+                  </div>
               </div>
               <div class="col-lg-1 col-md-1 col-sm-1 col-xs-0"></div>
           </div>
 
-          <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12 right-section">
+          <div class="col-lg-2 col-md-2 col-sm-2 col-xs-12 right-section">
               <% if @change_plan == "change_by_qle" %>
                 <%= render partial: 'shared/qle_progress', locals: {step: '3', no_purchase: true} %>
               <% elsif @change_plan == "change_plan" %>
