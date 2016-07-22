@@ -68,10 +68,10 @@
         </div><br>
 
     <% end %>
-  <% if policy_helper(@family).updateable? %>
+  <%= pundit_span Family, :updateable? %>
     <div class="row no-buffer">
       <button type="submit" class="btn btn-primary btn-br hidden"><i class="fa fa-user-plus"></i> Save</button>
-      <span class='btn btn-lg btn-primary btn-br' onclick='PersonValidations.manageRequiredValidations($(this));'><i class="fa fa-user-plus"></i> Save</span>
+      <span class="btn btn-lg btn-primary btn-br  <%= pundit_class Family, :updateable?%>" onclick='PersonValidations.manageRequiredValidations($(this));'><i class="fa fa-user-plus"></i> Save</span>
     </div>
-  <% end %>
+  </span>
 <% end %><br>
