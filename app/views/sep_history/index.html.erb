@@ -1,8 +1,12 @@
+<<<<<<< HEAD
 
+=======
+>>>>>>> hotfix-5338
 <div class="container">
   <h3> <%= @person.full_name + " - SEP HISTORY" %></h3>
     <div class = "table-responsive"> 
       <table class = "table table-striped table-bordered table-history">
+<<<<<<< HEAD
         <div class="row">
         
             <% @family.special_enrollment_periods.to_a.reverse_each do |f| %>
@@ -11,6 +15,13 @@
                 <tr>
                   <th>SEP REASON</th>
                   <th>MARKET KIND</th>
+=======
+        <div class="row">        
+            <% @family.special_enrollment_periods.to_a.reverse_each do |f| %>
+              <thead>              
+                <tr>
+                  <th>SEP REASON</th>
+>>>>>>> hotfix-5338
                   <th>EFFECTIVE DATE RULE</th> 
                   <th>EVENT DATE</th>
                   <th>SEP START DATE</th>
@@ -22,27 +33,41 @@
                   <th>CSL#</th>
                 </tr>
               </thead>
+<<<<<<< HEAD
 
+=======
+>>>>>>> hotfix-5338
               <tbody>
                 <tr>
                   <td><%=f.title %></td>
 
+<<<<<<< HEAD
                   <% if f.market_kind.present? %>
                     <td><%=f.market_kind.upcase%></td>
                   <% else %>
                     <td>N/A</td>
                   <% end %>
 
+=======
+>>>>>>> hotfix-5338
                   <% if f.effective_on_kind.present? %>
                     <td><%=f.effective_on_kind.humanize %></td>
                   <% else %>
                     <td>N/A</td>
                   <% end %>
+<<<<<<< HEAD
 
                   <td><%=f.qle_on%></td>
                   <td><%=f.start_on%></td>
                   <td><%=f.end_on%></td>
 
+=======
+                  
+                  <td><%=f.qle_on%></td>
+                  <td><%=f.start_on%></td>
+                  <td><%=f.end_on%></td>
+                  
+>>>>>>> hotfix-5338
                   <% if f.next_poss_effective_date.present? %>
                     <td><%=f.next_poss_effective_date %></td>
                   <% else %>
@@ -61,7 +86,10 @@
                     <td>N/A</td>
                   <% end %>
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> hotfix-5338
                   <% if f.option3_date.present? %>
                     <td><%=f.option3_date %></td>
                   <% else %>
@@ -73,8 +101,12 @@
                   <% else %>
                     <td>N/A</td>
                   <% end %>
+<<<<<<< HEAD
                 </tr>
             
+=======
+                </tr>            
+>>>>>>> hotfix-5338
                 <tr>
                   <% if f.admin_comment.present? %>
                     <td><%="Admin Comment: " + f.admin_comment %></td>
@@ -83,6 +115,7 @@
                   <% end %>
                 </tr>
             </tbody>
+<<<<<<< HEAD
 
           <% end %>
           
@@ -90,5 +123,14 @@
   
        </table>
       
+=======
+          <% end %>
+          </div>
+       </table>
+      </div>
+    <br/>
+    <div class="col-md-2 col-md-offset-11 col-sm-2 col-xs-12">
+        <%= link_to 'Back', 'javascript:void(0);', :onclick => 'history.go(-1)', :class => 'btn btn-primary' %>
+>>>>>>> hotfix-5338
     </div>
 </div>

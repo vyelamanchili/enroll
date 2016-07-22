@@ -235,9 +235,7 @@ class Exchanges::HbxProfilesController < ApplicationController
   end
 
   def sep_index
-
     setEventKinds
-
     respond_to do |format|
       format.html { render "sep/approval/sep_index" }
       format.js {}
@@ -245,7 +243,6 @@ class Exchanges::HbxProfilesController < ApplicationController
   end
 
   def sep_index_datatable
-
     if Family.exists(special_enrollment_periods: true).present?
       if(params[:q] == 'both')
         includeBothMarkets
@@ -394,7 +391,7 @@ class Exchanges::HbxProfilesController < ApplicationController
     else
       begin
         @person.update_attributes!(dob: Date.strptime(params[:jq_datepicker_ignore_person][:dob], '%m/%d/%Y').to_date, encrypted_ssn: Person.encrypt_ssn(params[:person][:ssn]))
-        CensusEmployee.update_census_employee_records(@person, current_user) 
+        CensusEmployee.update_census_employee_records(@person, current_user)
       rescue Exception => e
         @error_on_save = @person.errors.messages
         @error_on_save[:census_employee] = [e.summary] if @person.errors.messages.blank? && e.present?
@@ -614,5 +611,4 @@ private
     @qualifying_life_events_shop = QualifyingLifeEventKind.shop_market_events
     @qualifying_life_events_individual = QualifyingLifeEventKind.individual_market_events
   end
-
 end
