@@ -5,11 +5,20 @@ def create_directory(path)
   Dir.mkdir path
 end
 
-people_to_check = Person.where("consumer_role.lawful_presence_determination.aasm_state" => "verification_outstanding")
-puts "Candidate People: #{people_to_check.count}"
-
-families = Family.where("family_members.person_id" => {"$in" => people_to_check.map(&:_id)})
-puts "Candidate Families: #{families.count}"
+families = Family.where({
+  "households.hbx_enrollments" => {
+   "$elemMatch" => {
+    "aasm_state" => {
+      "$in" => ["enrolled_contingent", "unverified"]
+      },
+      "kind" => { "$ne" => "employer_sponsored" },
+      "$or" => [
+        {:terminated_on => nil },
+        {:terminated_on.gt => TimeKeeper.date_of_record}
+      ]
+    }  
+  }
+})
 
 mailing_address_missing = []
 coverage_not_found = []
@@ -23,8 +32,8 @@ CSV.open("families_processed_#{TimeKeeper.date_of_record.strftime('%m_%d_%Y')}.c
   csv << [
     'Family Id',
     'Family ECase ID',
-    'Primary Firstname', 
-    'Primary Lastname'
+    'Person name', 
+    'Hbx ID'
   ]
 
   count   = 0
@@ -38,14 +47,21 @@ CSV.open("families_processed_#{TimeKeeper.date_of_record.strftime('%m_%d_%Y')}.c
 
     person = family.primary_applicant.person
 
+    if person.inbox.present? && person.inbox.messages.where(:"subject" => "Documents needed to confirm eligibility for your plan").present?
+      puts "already notified!!"
+      next
+    end
+
     if person.consumer_role.blank?
       count += 1
       next
     end
 
     begin
-      event_kind = ApplicationEventKind.where(:event_name => 'first_verifications_reminder').first
+      # event_kind = ApplicationEventKind.where(:event_name => 'first_verifications_reminder').first
+      event_kind = ApplicationEventKind.where(:event_name => 'verifications_backlog').first
       notice_trigger = event_kind.notice_triggers.first 
+
 
       builder = notice_trigger.notice_builder.camelize.constantize.new(person.consumer_role, {
         template: notice_trigger.notice_template, 
@@ -53,7 +69,7 @@ CSV.open("families_processed_#{TimeKeeper.date_of_record.strftime('%m_%d_%Y')}.c
         mpi_indicator: notice_trigger.mpi_indicator
         }.merge(notice_trigger.notice_trigger_element_group.notice_peferences)).deliver
 
-      csv << [family.id, family.e_case_id, person.full_name]
+      csv << [family.id, family.e_case_id, person.full_name, p.hbx_id]
 
       puts 'processed--' + person.full_name
 
