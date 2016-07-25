@@ -129,7 +129,6 @@ class Organization
         }
       })
   }
-  #scope :invoice_starting,                   ->{ unscoped.where(:"employer_profile.plan_years.start_on".gte => TimeKeeper.date_of_record.next_month.beginning_of_month) }
 
   def generate_hbx_id
     write_attribute(:hbx_id, HbxIdGenerator.generate_organization_id) if hbx_id.blank?
