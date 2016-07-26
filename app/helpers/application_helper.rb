@@ -611,4 +611,8 @@ module ApplicationHelper
   def policy_helper pundit_object
     policy pundit_object
   end
+
+  def find_plan_name(hbx_id)
+    HbxEnrollment.find(hbx_id).try(:plan).try(:name)
+  end
 end
