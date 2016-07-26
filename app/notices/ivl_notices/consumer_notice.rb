@@ -9,88 +9,79 @@ class IvlNotices::ConsumerNotice < IvlNotice
     @secure_message_recipient = consumer_role.person
     @notice = PdfTemplates::ConditionalEligibilityNotice.new
     @market_kind = 'individual'
-
-    # @to = @recipient.home_email.address
-    # @email_notice = args[:email_notice] || true
-    # @paper_notice = args[:paper_notice] || true
   end
 
   def build
     @family = @recipient.primary_family    
     @notice.primary_fullname = @recipient.full_name.titleize
-    # @notice.primary_identifier = @recipient.hbx_id
     if @recipient.mailing_address
       append_address(@recipient.mailing_address)
     else
-      raise 'mailing address not present'
+      # @notice.primary_address = nil
+      raise 'mailing address not present' 
     end
 
     append_unverified_family_members
   end
 
   def append_unverified_family_members
-    enrollments = @family.enrollments.individual_market.select{|e| e.currently_active? || e.future_active?}
+    enrollments = @family.households.flat_map(&:hbx_enrollments).select do |hbx_en|
+      (!hbx_en.is_shop?) && (!["coverage_canceled", "shopping", "inactive"].include?(hbx_en.aasm_state)) &&
+        (
+          hbx_en.terminated_on.blank? ||
+          hbx_en.terminated_on >= TimeKeeper.date_of_record
+        )
+    end
 
-    # this is for inital backlog notices. no longer needed for reminders 
-    # enrollments.each {|e| e.update_attributes(special_verification_period: TimeKeeper.date_of_record + 95.days)}
+    # && ["enrolled_contingent", "unverified"].include?(hbx_en.aasm_state)
+
+    enrollments.reject!{|e| e.effective_on.year != TimeKeeper.date_of_record.year }
+
+    if enrollments.empty?
+      raise 'enrollments not found!'
+    end
   
     family_members = enrollments.inject([]) do |family_members, enrollment|
       family_members += enrollment.hbx_enrollment_members.map(&:family_member)
     end.uniq
 
     people = family_members.map(&:person).uniq
-
-    if people.any?{|p| (p.consumer_role.lawful_presence_determination.vlp_authority == 'dhs' && !p.ssn.blank?) }
-      raise 'needs ssa validation!'
-    end
-
-    people.reject!{|p| p.consumer_role.lawful_presence_determination.aasm_state != 'verification_outstanding'}
+    people.reject!{|p| p.consumer_role.aasm_state != 'verification_outstanding'}
+    people.reject!{|person| !ssn_outstanding?(person) && !lawful_presence_outstanding?(person) }
 
     if people.empty?
       raise 'no family member found with outstanding verification'
     end
 
-    ## Skip families who already uploaded verification documents
+    outstanding_people = []
     people.each do |person|
-      if person.consumer_role.vlp_documents.any? { |vlpd| !vlpd.identifier.blank? }
-        raise 'documents already uploaded'
+      # verification_types = person.consumer_role.outstanding_verification_types
+      # if verification_types.detect{|type| !person.consumer_role.has_docs_for_type?(type) }
+      if person.consumer_role.outstanding_verification_types.present?
+        outstanding_people << person
       end
     end
 
-    # people.reject!{|person| person.consumer_role.vlp_documents.any?{|vlpd| !vlpd.identifier.blank? }}
-    # if people.empty?
-    #   raise 'no family member found without uploaded documents'
-    # end
-
-    if enrollments.map(&:special_verification_period).uniq.size > 1
-      raise 'found multiple enrollments with different due dates'
+    outstanding_people.uniq!
+    if outstanding_people.empty?
+      raise 'no family member found without uploaded documents'
     end
 
-    append_unverified_individuals(people)
+    # enrollments.each {|e| e.update_attributes(special_verification_period: TimeKeeper.date_of_record + 95.days)}
+
+    append_unverified_individuals(outstanding_people)
     @notice.enrollments << enrollments.first
-
-    # Re-enable this condition after done with initial verification notifications
-    # ((enrollment.submitted_at.present? ? enrollment.submitted_at : enrollment.created_at) + 95.days)
-
     @notice.due_date = enrollments.first.special_verification_period.strftime("%m/%d/%Y")
   end
 
-  def verification_type_outstanding?(person, verification_type)
-    verification_pending = false
-    if person.verification_types.include?(verification_type)
-      if person.consumer_role.is_type_outstanding?(verification_type)
-        verification_pending = true
-      end
-    end
-    verification_pending
-  end
-
   def ssn_outstanding?(person)
-    person.consumer_role.ssn_validation == 'outstanding'
+    # person.consumer_role.ssn_validation == 'outstanding'
+    person.consumer_role.outstanding_verification_types.include?("Social Security Number")
   end
 
   def lawful_presence_outstanding?(person)
-    person.consumer_role.lawful_presence_determination.aasm_state == 'verification_outstanding'
+    # person.consumer_role.lawful_presence_determination.aasm_state == 'verification_outstanding'
+    person.consumer_role.outstanding_verification_types.include?('Citizenship') || person.consumer_role.outstanding_verification_types.include?('Immigration status')
   end
 
   def append_unverified_individuals(people)
@@ -126,7 +117,7 @@ class IvlNotices::ConsumerNotice < IvlNotice
       @recipient.hbx_id,
       @recipient.first_name,
       @recipient.last_name,
-      @notice.primary_address.attributes.values.reject{|x| x.blank?}.compact.join(','),
+      @notice.primary_address.present? ? @notice.primary_address.attributes.values.reject{|x| x.blank?}.compact.join(',') : "",
       @notice.due_date,
       (@notice.enrollments.first.submitted_at || @notice.enrollments.first.created_at),
       @notice.enrollments.first.effective_on,
