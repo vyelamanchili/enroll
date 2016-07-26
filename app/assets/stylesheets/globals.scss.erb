@@ -1,5 +1,21 @@
 @import "variables";
 .module, .modal {
+  &.flash {
+    .col-xs-12 {
+      max-width: 1170px;
+      width: 100%;
+      margin: auto;
+      display: block;
+      float: none;
+    }
+  }
+  .no-vertical-padding {
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+  .no-bottom-padding {
+    padding-bottom: 0;
+  }
   .enroll-checkbox {
     input[type=checkbox] {
       display: none;
@@ -64,22 +80,6 @@
       }
     }
   }
-  &.flash {
-    .col-xs-12 {
-      max-width: 1170px;
-      width: 100%;
-      margin: auto;
-      display: block;
-      float: none;
-    }
-  }
-  .no-vertical-padding {
-    padding-top: 0;
-    padding-bottom: 0;
-  }
-  .no-bottom-padding {
-    padding-bottom: 0;
-  }
   .selectric-labeled {
     padding: 0 0 0 10px;
     width: 100%;
@@ -104,6 +104,21 @@
       width:100%;
       max-width: 75%;
       display: inline-block;
+    }
+  }
+  .vertically-aligned-row {
+    display: table;
+    width: 100%;
+    &.auto-width {
+      width: auto !important;
+    }
+    >* {
+      display: table-cell;
+      float: none;
+      vertical-align: middle;
+      &.vertical-align-top {
+        vertical-align: top !important;
+      }
     }
   }
 }
