@@ -1,9 +1,9 @@
 families = Family.where({
   "households.hbx_enrollments" => {
    "$elemMatch" => {
-    "aasm_state" => {
-      "$in" => ["enrolled_contingent", "unverified"]
-      },
+    # "aasm_state" => {
+    #   "$in" => ["enrolled_contingent", "unverified"]
+    #   },
       "kind" => { "$ne" => "employer_sponsored" },
       "$or" => [
         {:terminated_on => nil },
@@ -12,6 +12,12 @@ families = Family.where({
     }  
   }
 })
+
+
+# people_ids = Person.where("consumer_role.aasm_state" => /out/i, "consumer_role.lawful_presence_determination.vlp_authority" => {"$ne" => "curam"}).map(&:id)
+# families = Family.where("family_members.person_id" => {"$in" => people_ids})
+
+# families = [127825,19764117,19771408].map{|hbx_id| Person.where(:hbx_id => hbx_id).first}.map(&:primary_family)
 
 mailing_address_missing = []
 coverage_not_found = []
@@ -42,10 +48,18 @@ CSV.open("verifications_backlog_notice_data_export_1.csv", "w") do |csv|
 
     next if ["564d098469702d174fa10000", "565197e569702d6e52dd0000"].include?(family.id.to_s)
 
+    begin
+
     person = family.primary_applicant.person
-    if person.inbox.present? && person.inbox.messages.where(:"subject" => "Documents needed to confirm eligibility for your plan").present?
-      puts "already notified!!"
-      next
+    #  if (person.inbox.present? && person.inbox.messages.where(:"subject" => "Documents needed to confirm eligibility for your plan").present?)
+    #   puts "already notified!!"
+    #   next
+    # end
+
+    next if person.inbox.blank?
+    next if person.inbox.messages.where(:"subject" => "Documents needed to confirm eligibility for your plan").blank?
+    if secure_message = person.inbox.messages.where(:"subject" => "Documents needed to confirm eligibility for your plan").first
+      next if secure_message.created_at > 15.days.ago
     end
 
     if person.consumer_role.blank?
@@ -53,7 +67,6 @@ CSV.open("verifications_backlog_notice_data_export_1.csv", "w") do |csv|
       next
     end
 
-    begin
       event_kind = ApplicationEventKind.where(:event_name => 'verifications_backlog').first
       notice_trigger = event_kind.notice_triggers.first 
 
