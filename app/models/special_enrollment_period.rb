@@ -55,7 +55,7 @@ class SpecialEnrollmentPeriod
   field :market_kind, type:String
 
   validates :csl_num,
-    length: { minimum: 10, maximum: 10, message: "CSL NUM must be 10 digits" },
+    length: { minimum: 5, maximum: 10, message: "should be a minimum of 5 digits" },
     allow_blank: true,
     numericality: true
 
@@ -65,7 +65,6 @@ class SpecialEnrollmentPeriod
 
   scope :shop_market,         ->{ where(:qualifying_life_event_kind_id.in => QualifyingLifeEventKind.shop_market_events.map(&:id)) }
   scope :individual_market,   ->{ where(:qualifying_life_event_kind_id.in => QualifyingLifeEventKind.individual_market_events.map(&:id)) }
-
 
   after_initialize :set_submitted_at
 

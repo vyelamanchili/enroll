@@ -320,8 +320,12 @@ class Family
                        else
                          latest_shop_sep.qle_on.end_of_month
                        end
-      if enrollment.present? && enrollment.effective_on >= terminate_date
-        terminate_date = TimeKeeper.date_of_record.end_of_month
+      if enrollment.present?
+        if enrollment.effective_on > latest_shop_sep.qle_on
+          terminate_date = enrollment.effective_on
+        elsif enrollment.effective_on >= terminate_date
+          terminate_date = TimeKeeper.date_of_record.end_of_month
+        end
       end
       terminate_date
     else
@@ -578,11 +582,8 @@ class Family
       {"$unwind" => '$households'},
       {"$unwind" => '$households.hbx_enrollments'},
       {"$match" => {"households.hbx_enrollments.aasm_state" => {"$ne" => 'inactive'} }},
-      {"$match" => {
-        "$or" => [
-          {"households.hbx_enrollments.aasm_state" => {"$ne" => "coverage_canceled"}},
-          {"households.hbx_enrollments.external_enrollment" => {"$ne" => true}}
-        ]}},
+      {"$match" => {"households.hbx_enrollments.external_enrollment" => {"$ne" => true}}},
+      {"$match" => {"households.hbx_enrollments.aasm_state" => {"$ne" => "coverage_canceled"}}},
       {"$sort" => {"households.hbx_enrollments.submitted_at" => -1 }},
       {"$group" => {'_id' => {
                   'year' => { "$year" => '$households.hbx_enrollments.effective_on'},
