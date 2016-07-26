@@ -39,6 +39,8 @@
             </div>
           </div>
 
+          <div id="qle_reason">
+          </div>
           <div id="qle_message">
             <div class="success-info hidden">
               <%= hidden_field_tag 'change_plan' %>
@@ -48,6 +50,8 @@
                 <strong id="qle-input-info">Based on the information you entered, you may be eligible to enroll now but there is limited time.</strong><br>
               </div>
               <div class="effective_on_kinds"></div>
+              <div class="spec_reasons">
+              </div>
               <div class="text-center">
                 <%= submit_tag 'Continue', class: 'btn btn-primary' %>
                 <br/>
@@ -72,3 +76,8 @@
     </div>
   </div>
 </div>
+<script>
+$(document).on('ready page:load', function () {
+  QLE.initialize();
+});
+</script>
