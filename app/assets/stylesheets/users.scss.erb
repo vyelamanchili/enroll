@@ -1,0 +1,329 @@
+
+/*      ----- Start of shared.css content------   */
+a:focus.tooltip-txt,
+a:visited.tooltip-txt,
+a.tooltip-txt {
+    text-decoration: none;
+    border-bottom: 1px dashed #007bc4;
+    color: #414141;
+}
+
+
+.btn:hover {
+    text-decoration: underline;
+}
+
+.form-control:focus {
+    background-color: #ffffff;
+}
+.label-floatlabel, input[type="text"], input[type="email"] {
+    color: #414141;
+}
+
+
+.navbar {
+  border-bottom: 3px solid #007bc4;
+  margin-bottom: 0;
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+
+#blue_sub_header {
+    min-height: 60px;
+    background: #007bc4;
+    color: #fff;
+    overflow: hidden;
+}
+
+#blue_sub_header h1 {
+    text-align: center;
+    font-size: 34px;
+    font-weight: 300;
+    margin: 0px;
+    min-height: 44px;
+    margin: 8px 0;
+}
+
+
+.error-block {
+    display:none;
+}
+
+
+/*footer*/
+    .footer_block {
+        padding: 5px 0;
+    }
+    body > footer #row_two .copyright, .footer_block .bottom_nav {
+        padding: 5px 0;
+    }
+    .bottom_nav .nav > li, .footer-right li {
+        line-height: 20px;
+        padding: 0;
+        vertical-align: middle;
+    }
+    .bottom_nav .nav > li > a, .footer-right li a {
+        padding: 0 0 0 25px;
+    }
+    .bottom_nav .nav > li > a span, .footer-right li a span {
+        margin-left: 10px;
+        vertical-align: middle;
+    }
+    .footer_swap {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+    }
+
+
+
+/*      ----- End of shared.css content------   */
+
+/*      ----- Start of forgot-password.css content------   */
+
+.tlp-cls {
+    position: absolute;
+    right: 25px;
+    /*top: 36px;*/
+    margin-top: -24px;
+    width: 26px;
+    cursor: pointer;
+}
+.tooltop-inner {
+    width: 200px;
+}
+.pass-strength {
+    font-size: 14px;
+    line-height: 23px;
+    width: 135px;
+}
+.pass-bar {
+    background-color: #69a30d;
+    vertical-align: middle;
+    display: inline-block;
+    height: 5px;
+    margin-left: 5px;
+    width: 50px;
+}
+.error {
+    display: none;
+}
+.has-error .error {
+    display: block;
+}
+
+.tooltip_box {
+    position:absolute;
+    /*top:-85%;*/
+    margin-top: -172px;
+    /*bottom: -115px\9;*/ /* IE Specific */
+    left: 100%;
+    width:350px;
+    padding:15px;
+    padding-left: 20px;
+    /*background:#fefefe;*/
+    background-color: #002E60;
+    color: #ffffff;
+    font-size:.875em;
+    border-radius:5px;
+    /*box-shadow:0 1px 3px #ccc;
+    border:1px solid #ddd;*/
+    z-index: 1080;
+}
+.tooltip_box h4 {
+    margin:0 0 10px 0;
+    padding:0;
+    font-weight:normal;
+}
+.tooltip_box::before {
+    content: "\25C4";
+    position:absolute;
+    top:47%;
+    left:-11px;
+    font-size:14px;
+    line-height:14px;
+    /*color:#ddd;*/
+    text-shadow:none;
+    display:block;
+    color: #002E60;
+}
+.invalid {
+    background:url('<%= asset_path("icons/false-red.png") %>') no-repeat 0 50%;
+    background-size: 13px;
+    padding-left:22px;
+    line-height:24px;
+    /*color:#ec3f41;*/
+    color: #FFF;
+}
+.valid {
+    background:url('<%= asset_path("icons/checkmark-green.png") %>') no-repeat 0 50%;
+    background-size: 13px;
+    padding-left:22px;
+    line-height:24px;
+    /*color:#3a7d34;*/
+    color: #bef470;
+}
+.tooltip_box {
+    display:none;
+}
+
+.tooltip_box ul {
+    /*padding-left: 15px;*/
+    padding-left: 0;
+    list-style-type: none;
+}
+
+.tooltip_box ul li {
+    /*padding-left: 5px;*/
+    padding-left: 20px;
+    font-size: 13px;
+}
+
+.user_tooltip {
+    margin-top: -90px;
+}
+
+#complexity, #results{
+/*width: 70px;*/
+/*padding: 3px 0;*/
+height: 5px;
+color: #000;
+font-size: 12px;
+text-align: center;
+display: inline-block;
+vertical-align: middle;
+margin-left: 5px;
+}
+
+#results{
+margin: 30px 0 20px 0;
+}
+
+/*.default{background-color: #CCC;}*/
+.weak{background-color: #e72b2d; width: 20px;}
+.strong{background-color: #FAD054; width: 40px;}
+.stronger{background-color: #93C9F4; width: 60px;}
+.strongest{background-color: #69a30d; width: 80px;}
+
+span.value{
+	font-weight:bold;
+	float: right;
+}
+
+.conpass-success {
+    background-image: url('<%= asset_path("icons/checkmark-xs-green.png") %>');
+    background-position: 50px 7px;
+    background-repeat: no-repeat;
+    background-size: 15px auto;
+    /*color: #69a30d;*/
+    color: #414141;
+    font-size: 14px;
+    height: 25px;
+    line-height: 25px;
+    width: 135px;
+}
+
+.conpass-false {
+    background-image: url('<%= asset_path("icons/false-red.png") %>');
+    background-position: 50px 4px;
+    background-repeat: no-repeat;
+    background-size: 17px auto;
+    /*color: #e72b2d;*/
+    color: #414141;
+    font-size: 14px;
+    height: 25px;
+    line-height: 25px;
+    width: 135px;
+}
+
+@media (max-width: 768px) {
+    .tooltip_box {
+        margin-top: -335px;
+        left: 2px;
+        padding: 10px;
+        padding-left: 15px;
+        width: auto;
+    }
+    .tooltip_box::before {
+        left: 47%;
+        bottom: -11px;
+        top: auto;
+        content: "\25BC"
+    }
+    .user_tooltip {
+        margin-top: -160px;
+    }
+}
+
+@media (max-width: 640px) {
+    .user_tooltip {
+        margin-top: -140px;
+    }
+}
+
+@media (max-width: 480px) {
+    
+    .tooltip_box {
+        margin-top: 0;
+        top: -330px;
+        left: 2px;
+        padding: 10px;
+        padding-left: 15px;
+        width: auto;
+    }
+    .tooltip_box::before {
+        left: 47%;
+        bottom: -11px;
+        top: auto;
+        content: "\25BC"
+    }
+}
+
+/*      ----- End of forgot-password.css content------   */
+/*      ----- Start of create-account.php styles------   */
+
+
+@media (min-width: 1200px) {
+        .container {
+            width: 1230px;
+        }
+    }
+
+    .navbar ul.navbar-nav .no-buffer a.portal.header-message {
+      display:none;
+    }
+    .navbar .navbar-header .navbar-brand {
+        border-right: 0;
+    }
+    .cre-acc-block {
+        padding-left:12px; 
+        padding-right:12px;
+    }
+    .navbar .navbar-collapse span.header-text {
+        float: right;
+        text-transform: capitalize;
+    }
+    
+    .module.footer {
+        padding-top: 10px;
+        padding-bottom: 10px;
+    }
+    @media(max-width: 768px) {
+        .footer-left, .footer-right {
+            display: inline-block !important;
+        }
+        .footer-right {
+            margin-top: 10px;
+        }
+        .footer-right ul {
+            float: left !important;
+        }
+        .footer-right ul li {
+            padding-left: 0;
+            padding-right: 10px;
+        }
+    }
+    
+    /*      ----- End of create-account.php styles------   */

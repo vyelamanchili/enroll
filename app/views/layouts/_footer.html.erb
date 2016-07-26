@@ -1,30 +1,35 @@
 <footer class="footer-wrapper module footer">
-  <div class="container">
-      <div class="col-md-6">
-        <div class="row">
-          <%= copyright_notice %>
-        </div>
-      </div>
-      <div class="col-md-6">
-        <div class="row">
-          <ul class="list-unstyled list-inline pull-right">
-            <li>
-              <!-- <a href="#"><%= image_tag 'icons/phone.png' %> &nbsp;(855) 532-5465</a> -->
-            </li>
-            <li>
-              <a class="call-customer-service" href="tel:<%= Settings.contact_center.phone_number %>">
-                <span>
-                  <i class="fa fa-phone fa-lg"></i> &nbsp;<%= Settings.contact_center.phone_number %>
+    <div class="container">
+        <div class="col-xs-12 col-sm-12 col-md-6 footer-left">
+            <div class="row">
+                <span class="copyright" style="vertical-align: middle;">
+                    <span><%= copyright_notice %></span>
                 </span>
-              </a>
-            </li>
-            <li>
-              <i class="fa fa-envelope-o fa-lg" aria-hidden="true"></i> &nbsp;<%= mail_to Settings.contact_center.email_address %>
-            </li>
-            <li>
-              <i class="fa fa-question fa-lg" aria-hidden="true"></i> &nbsp;FAQs
-            </li>
-          </ul>
-      </div>
+            </div>
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-6 footer-right">
+            <div class="row">
+                <ul class="list-unstyled list-inline pull-right">
+                    <li>
+                        <%= link_to "tel:#{Settings.contact_center.phone_number}", class: "call-customer-service" do %>
+                          <%= image_tag 'icons/call_20_white.png' %>
+                          <span><%= Settings.contact_center.phone_number %></span>
+                        <% end %>                        
+                    </li>
+                    <li style="vertical-align: middle;">
+                        <%= mail_to Settings.contact_center.email_address do %>
+                          <%= image_tag 'icons/mail_32_white.png' %>
+                          <span><%= Settings.contact_center.email_address %></span>
+                        <% end %>
+                    </li>
+                    <li style="vertical-align: middle;">
+                        <a href="#" title="faqs">
+                          <%= image_tag 'icons/help_18_white.png' %>
+                          <span>FAQs</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
     </div>
 </footer>

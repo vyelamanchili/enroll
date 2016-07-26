@@ -1,39 +1,82 @@
 <div class="container signin top-pd module">
-  <div class="col-md-3 col-sm-2 col-xs-12"></div>
-    <div class="col-md-6 col-sm-8 col-xs-12">
-      <h1 class="darkblue">Create Account</h1>
-        <%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: {class: 'input-no-pd'}) do |f| %>
-  	      <%= devise_error_messages! %>
-	        <%= f.hidden_field :referer, value: request.env["HTTP_REFERER"] %>
+    <div class="col-md-4 col-sm-3 col-xs-1"></div>
+    <div class="col-md-4 col-sm-6 col-xs-10 cre-acc-block">
+        <div class="row row-margin-top-10 error-block">
+            <div class="col-xs-12">
+                <div class="alert alert-danger text-center row-margin-bottom-5">You must complete the highlighted field(s).</div>
+                 <%= devise_error_messages! %>
+            </div>
+        </div>
+        <h1 class="darkblue" style="font-weight: 300; line-height: 1.6em;">Create Account</h1>
+        <%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: {class: 'input-no-pd'} 
+            #onsubmit="return checkForm(this);"
+              ) do |f| %>
+           
+            <%= f.hidden_field :referer, value: request.env["HTTP_REFERER"] %>
+                <div class="form-group password1">
+                    <%= f.label :username, "Email or Username" %>
+                    <!--<label for="user_username">Email or Username</label>-->
 
-	        <div class="form-group">
-	          <%= f.label :username %>
+                    <!-- Modal -->
+                    <%= f.text_field :email, class: "form-control" %>
+                    <!--<input id="username" type="text" class="form-control" placeholder="" style="font-size:14px !important;">-->
+                  </div>
+                  <div class="tooltip_box user_tooltip">
+                      <p style="margin-bottom:0;">You can create a username or use your email address as your login. Using your email address will make it easier to recover your password if you ever forget it.</p>
+                  </div>
 
-<!-- Modal -->
-	          <%= f.text_field :email, class: "form-control", required: true %>
-	        </div>
+                  <div class="form-group">
+                      <%= f.label :password %>
+                      <span class="pull-right pass-strength">
+                          <span id="pass_strength"></span>
+                          <span id="complexity" class="default"></span>
+                      </span>
+                      <!--<em>(<%= User.validators.select{|v| v.attributes == [:password] && v.options.has_key?(:minimum) }.first.options[:minimum] %> characters minimum)</em>-->
+                      <br />
+                      <%= f.password_field :password, autocomplete: "off", class: "form-control type-pass" %>
+                      <!--<input id="inputPassword" type="password" name="pwd1" class="form-control type-pass">-->
+                      <%= image_tag "icons/eyeball-xs-gray.png", :class =>"tlp-cls" %>
+                    </div>
+                    <div id="pswd_info" class="tooltip_box">
+                        <p>Your password must:</p>
+                        <ul>
+                            <li id="length" class="invalid">Be at least 8 characters</li>
+                            <li id="longer" class="invalid">Not be longer than 20 characters</li>
+                            <li id="lower" class="invalid">Include at least one lowercase letter</li>
+                            <li id="upper" class="invalid">Include at least one uppecase letter</li>
+                            <li id="number" class="invalid">Include at least one number</li>
+                            <li id="spec_char" class="invalid">Include at least one special character ($!@%*&)</li>
+                            <li id="mtt" class="invalid">Not include the same character more than twice</li>
+                            <li id="wh_space" class="invalid">Not include blank spaces</li>
+                            <li id="nm_uid" class="invalid">Not contain your username or email address</li>
+                            <!-- <li id="last_pass" class="invalid">Not be the same as your last 24 passwords</li> -->
+                        </ul>
+                    </div>
 
-	        <div class="form-group">
-	          <%= f.label :password %>
-	          <em>(<%= User.validators.select{|v| v.attributes == [:password] && v.options.has_key?(:minimum) }.first.options[:minimum] %> characters minimum)</em>
-	          <br />
-	          <%= f.password_field :password, autocomplete: "off", class: "form-control", required: true %>
-	        </div>
+                    <div class="form-group">
+                        <%= f.label :password_confirmation, "Password Confirmation" %>
+                        <span class="pull-right con-pass"></span><br>
+                        <%= f.password_field :password_confirmation, autocomplete: "off", class: "form-control" %>
+                        <!--<input id="conf_pass" type="password" name="pwd2" class="form-control type-pass">-->        
+                        <%= image_tag "icons/eyeball-xs-gray.png", :class =>"tlp-cls" %>
+                        <span class="error text-danger" style="display: none;">Confirm password didn't match. Please try again.</span>
+                      </div>
 
-	        <div class="form-group">
-	          <%= f.label :password_confirmation, "Password Confirmation" %><br />
-	          <%= f.password_field :password_confirmation, autocomplete: "off", class: "form-control", required: true %>
-	        </div>
-      		<%= f.hidden_field :invitation_id %>
-          <br/>
-	        <div class="actions text-center">
-  	          <%= f.submit "Create account", class: "btn btn-primary btn-lg " %>
-              <br/>
-              <br/>
-            <span>
-              <%= link_to "Sign In Existing Account", new_user_session_path unless Rails.env.production?%>
-            </span>
+                      <div class="form-group email-block" style="display:none;">
+                          <label for="user_email">Email (optional)</label>
+                          <input type="email" id="email" class="form-control" placeholder="">
+                      </div>
+
+                      <%= f.hidden_field :invitation_id %>
+                      <br/>
+                      <div class="actions text-center">
+                          <%= f.submit "Create account", class: "btn btn-primary btn-lg btn-danger width-100" %>                            
+                            <br>
+                            <br>
+                            <span>
+                                Already have an account? <%= link_to "Login", new_user_session_path unless Rails.env.production?%>
+                            </span>
+                        </div>
+                      <% end %>
+              </div>
           </div>
-		    <% end %>
-      </div>
-    </div>

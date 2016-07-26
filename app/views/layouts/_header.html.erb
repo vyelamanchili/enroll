@@ -27,7 +27,7 @@
             </span>
             <br/>
             <span>
-              <i class="fa fa-phone fa-lg"></i>
+               <%= image_tag 'icons/call_20_blue.png' %>
               <strong>
                 <%= Settings.contact_center.phone_number %>
               </strong>
@@ -58,7 +58,6 @@
       </div><!-- /.navbar-collapse -->
     </div><!-- /.container-fluid -->
   </nav>
-</div>
 
 <% if user_signed_in? %>
   <script>
