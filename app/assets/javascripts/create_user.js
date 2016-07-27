@@ -235,6 +235,14 @@
             $('.alert').removeClass('alert-success').addClass('alert-danger').text('You must complete the highlighted field(s).');
             status = false;
         }
+        else {
+            if(user_val.length < 8) {
+                username.parent('.form-group').addClass('has-error');
+                $('.error-block').show();
+                $('.alert').removeClass('alert-success').addClass('alert-danger').text('Username must be at least 8 characters.');
+                status = false;
+            }
+        }
 
         if(pass1 == ""){
             $('#user_password').parent('.form-group').addClass('has-error');
