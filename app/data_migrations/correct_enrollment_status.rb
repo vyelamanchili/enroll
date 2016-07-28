@@ -23,14 +23,16 @@ class CorrectEnrollmentStatus < MongoidMigrationTask
     return enrollment.move_to_contingent! if members.any?(&:verification_outstanding?) || members.any?(&:verification_period_ended?)
     return enrollment.move_to_pending! if members.any?(&:ssa_pending?) || members.any?(&:dhs_pending?)
     enrollment.move_to_enrolled! if members.all?(&:fully_verified?)
-    enrollment.save!
   end
 
   def migrate
     families = get_families
     families.each do |family|
       enrollments = get_enrollments(family)
-      enrollments.each{|enrollment| fix_enrollment(enrollment)}
+      enrollments.each do |enrollment|
+        fix_enrollment(enrollment)
+        enrollment.save!
+      end
     end
   end
 end
