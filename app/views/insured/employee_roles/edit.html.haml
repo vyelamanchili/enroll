@@ -4,8 +4,10 @@
   #new_person_wrapper
     .row
       = form_for(@person, employee_role_submission_options_for(@person)) do |f|
-        .col-lg-7.col-md-7.col-sm-8.col-xs-12.bottom-pd
-          %h3 Contact Information
-          = render 'person_form', f: f
-        .col-lg-3.col-md-3.col-sm-3.col-xs-12.col-md-offset-2.col-sm-offset-1.right-section
+        .col-lg-10.col-md-10.col-sm-10.col-xs-12.bottom-pd
+          .col-lg-11.col-md-11.col-sm-11.col-xs-12
+            %h3 Contact Information
+            = render 'person_form', f: f
+          .col-lg-1.col-md-1.col-sm-1.col-xs-0
+        .col-lg-2.col-md-2.col-sm-2.col-xs-12.right-section
           = render  partial: 'shared/signup_progress', locals: {step: '3'}

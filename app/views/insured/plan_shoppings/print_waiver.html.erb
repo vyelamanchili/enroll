@@ -1,23 +1,26 @@
 <div class="container" id='printArea'>
-  <div class="employee-welocome">
-    <div class="row">
-      <div class="col-lg-9 col-md-9 col-sm-10 col-xs-12">
-        <div class="col-md-12 col-sm-12 no-pd col-xs-12">
+    <div class="employee-welocome">
+        <div class="row">
+            <div class="col-lg-10 col-md-10 col-sm-10 col-xs-12">
+                <div class="col-lg-11 col-md-11 col-sm-11 col-xs-12">
+                    <div class="col-md-12 col-sm-12 no-pd col-xs-12">
 
-          <h3>Waiver confirmation</h3>
-          <p>You have successfully waived the coverage at <%= @hbx_enrollment.updated_at %>. </p>
-          <p>Waiver Reason : <%= @hbx_enrollment.waiver_reason %>. </p>
-          <p>Please print this page for your records. </p>
+                        <h3>Waiver confirmation</h3>
+                        <p>You have successfully waived the coverage at <%= @hbx_enrollment.updated_at %>. </p>
+                        <p>Waiver Reason : <%= @hbx_enrollment.waiver_reason %>. </p>
+                        <p>Please print this page for your records. </p>
 
-        </div>
+                    </div>
 
-        <%= link_to 'Print', '#', id: 'btnPrint', class: "btn btn-default interaction-click-control-print-waiver-confirmation", style: "float:left;" %>
+                    <%= link_to 'Print', '#', id: 'btnPrint', class: "btn btn-default interaction-click-control-print-waiver-confirmation", style: "float:left;" %>
+                  </div>
+                  <div class="col-lg-1 col-md-1 col-sm-1 col-xs-0"></div>
+              </div>
+
+              <div class="col-lg-2 col-md-2 col-sm-2 col-xs-12 right-section waiver_receipt">
+                  <%= render  partial: 'shared/signup_progress', locals: {step: '7'} %>
+              </div>
+
+          </div>
       </div>
-
-      <div class="col-lg-3 col-md-3 col-sm-3 col-xs-12 right-section waiver_receipt">
-        <%= render  partial: 'shared/signup_progress', locals: {step: '7'} %>
-      </div>
-
-    </div>
-  </div>
-</div><br>
+  </div><br>
