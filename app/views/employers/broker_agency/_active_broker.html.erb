@@ -14,7 +14,7 @@
           </div>
         </div>
         <% active_broker = @broker_agency_accounts[0].writing_agent %>
-        <div class="panel panel-default module broker employer-broker">
+        <div class="panel panel-default module broker employer-broker <%=pundit_class EmployerProfile, :updateable?%>">
           <div class="panel-heading vertically-aligned-row">
             <div>
               <h3 class="panel-title">

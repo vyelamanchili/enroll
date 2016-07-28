@@ -24,6 +24,7 @@ RSpec.describe "insured/families/_shop_for_plans_widget.html.erb" do
       allow(employee_role).to receive(:is_under_open_enrollment?).and_return(true)
       allow(current_user).to receive(:has_employee_role?).and_return(true)
       allow(person).to receive(:active_employee_roles).and_return([employee_role])
+      allow(view).to receive(:policy_helper).and_return(double("Policy", updateable?: true))
       render "insured/families/shop_for_plans_widget"
     end
 
@@ -49,6 +50,7 @@ RSpec.describe "insured/families/_shop_for_plans_widget.html.erb" do
       assign :employee_role, employee_role
       assign :hbx_enrollments, []
       assign :family, family
+      allow(view).to receive(:policy_helper).and_return(double("Policy", updateable?: true))
       sign_in(current_user)
 
       render "insured/families/shop_for_plans_widget"
@@ -68,6 +70,7 @@ RSpec.describe "insured/families/_shop_for_plans_widget.html.erb" do
       assign :employee_role, employee_role
       assign :hbx_enrollments, []
       assign :family, family
+      allow(view).to receive(:policy_helper).and_return(double("Policy", updateable?: true))
       sign_in(current_user)
     end
 

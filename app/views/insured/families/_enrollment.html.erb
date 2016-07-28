@@ -174,7 +174,7 @@
       </a>
     </div>
     <% if !read_only == true %>
-    <div class="col-lg-3">
+    <div class="col-lg-3 <%=pundit_class Family, :updateable?%>">
       <div class="row">
         <span class="<%if disable_make_changes_button?(hbx_enrollment)%>cna<%end%>">
           <% if @family.is_eligible_to_enroll? && !hbx_enrollment.coverage_terminated? %>

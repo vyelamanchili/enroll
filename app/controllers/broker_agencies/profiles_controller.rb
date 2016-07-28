@@ -51,6 +51,7 @@ class BrokerAgencies::ProfilesController < ApplicationController
   end
 
   def update
+    authorize HbxProfile, :modify_admin_tabs?
     sanitize_broker_profile_params
     params.permit!
 
@@ -169,7 +170,7 @@ class BrokerAgencies::ProfilesController < ApplicationController
 
     @renewals_offset_in_months = Settings.aca.shop_market.renewal_application.earliest_start_prior_to_effective_on.months
 
-    @employer_details = @employer_profiles.map do |er| 
+    @employer_details = @employer_profiles.map do |er|
         enrollments = er.enrollments_for_billing
         premium_amt_total   = enrollments.map(&:total_premium).sum
         employee_cost_total = enrollments.map(&:total_employee_cost).sum
@@ -182,7 +183,7 @@ class BrokerAgencies::ProfilesController < ApplicationController
           :employer_contribution => employer_contribution_total,
           :emails => staff.map { |s| s.work_email_or_best } || []
         }
-    end    
+    end
   end
 
 
@@ -217,7 +218,6 @@ class BrokerAgencies::ProfilesController < ApplicationController
   end
 
   def assign
-    authorize HbxProfile, :modify_admin_tabs?
     page_string = params.permit(:employers_page)[:employers_page]
     page_no = page_string.blank? ? nil : page_string.to_i
     if current_user.has_broker_agency_staff_role? || current_user.has_hbx_staff_role?
@@ -280,6 +280,7 @@ class BrokerAgencies::ProfilesController < ApplicationController
   end
 
   def clear_assign_for_employer
+    authorize HbxProfile, :modify_admin_tabs?
     @employer_profile = EmployerProfile.find(params[:employer_id]) rescue nil
     if @employer_profile.present?
       send_general_agency_assign_msg(@employer_profile.general_agency_profile, @employer_profile, 'Terminate')
