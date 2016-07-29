@@ -122,8 +122,6 @@ class Organization
   scope :employer_profile_plan_year_start_on, ->(begin_on){ where(:"employer_profile.plan_years.start_on" => begin_on) if begin_on.present? }
   scope :offset,                              ->(cursor = 0)      {skip(cursor) if cursor.present?}
   scope :limit,                               ->(page_size = 25)  {limit(page_size) if page_size.present?}
-  # scope :order,                               ->{ order("legal_name ASC") }
-
 
 
   def generate_hbx_id
