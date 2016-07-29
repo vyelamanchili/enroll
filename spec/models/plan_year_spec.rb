@@ -2200,7 +2200,8 @@ describe PlanYear, :type => :model, :dbclean => :after_each do
         expect(plan_year.is_renewing?).to be_truthy
         expect(plan_year.aasm_state).to eq('renewing_enrolling')
       end
-
+    end
+  end
 
   describe 'sends employee invitation email when .is_renewal?', focus: true do
     include_context 'MailSpecHelper'
