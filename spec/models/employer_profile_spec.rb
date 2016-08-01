@@ -272,7 +272,7 @@ describe EmployerProfile, dbclean: :after_each do
     }
 
     before do
-      employer_profile.save!
+      employer_profile.save
     end
 
     context 'when upcoming month plan year present' do
