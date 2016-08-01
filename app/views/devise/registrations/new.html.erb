@@ -1,25 +1,26 @@
 <div class="container signin top-pd module">
-    <div class="col-md-4 col-sm-3 col-xs-1"></div>
-    <div class="col-md-4 col-sm-6 col-xs-10 cre-acc-block">
-        <div class="row row-margin-top-10 error-block">
-            <div class="col-xs-12">
-                <div class="alert alert-danger text-center row-margin-bottom-5">You must complete the highlighted field(s).</div>
-                 <%= devise_error_messages! %>
+    <div class="row">
+        <div class="col-md-4 col-sm-3 col-xs-1"></div>
+        <div class="col-md-4 col-sm-6 col-xs-10 cre-acc-block">
+            <div class="row row-margin-top-10 error-block">
+                <div class="col-xs-12">
+                    <div class="alert alert-danger text-center row-margin-bottom-5">You must complete the highlighted field(s).</div>
+                    <%= devise_error_messages! %>
+                </div>
             </div>
-        </div>
-        <h1 class="darkblue" style="font-weight: 300; line-height: 1.6em;">Create Account</h1>
-        <%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: {class: 'input-no-pd'} 
-            #onsubmit="return checkForm(this);"
-              ) do |f| %>
-           
-            <%= f.hidden_field :referer, value: request.env["HTTP_REFERER"] %>
+            <h1 class="darkblue" style="font-weight: 300; line-height: 1.6em;">Create Account</h1>
+            <%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: {class: 'input-no-pd'} 
+              #onsubmit="return checkForm(this);"
+                ) do |f| %>
+
+                <%= f.hidden_field :referer, value: request.env["HTTP_REFERER"] %>
                 <div class="form-group password1">
                     <%= f.label :username, "Email or Username" %>
                     <!--<label for="user_username">Email or Username</label>-->
 
                     <!-- Modal -->
                     <%= f.text_field :email, class: "form-control" %>
-                    <!--<input id="username" type="text" class="form-control" placeholder="" style="font-size:14px !important;">-->
+                      <!--<input id="username" type="text" class="form-control" placeholder="" style="font-size:14px !important;">-->
                   </div>
                   <div class="tooltip_box user_tooltip">
                       <p style="margin-bottom:0;">You can create a username or use your email address as your login. Using your email address will make it easier to recover your password if you ever forget it.</p>
@@ -34,8 +35,8 @@
                       <!--<em>(<%= User.validators.select{|v| v.attributes == [:password] && v.options.has_key?(:minimum) }.first.options[:minimum] %> characters minimum)</em>-->
                       <br />
                       <%= f.password_field :password, autocomplete: "off", class: "form-control type-pass" %>
-                      <!--<input id="inputPassword" type="password" name="pwd1" class="form-control type-pass">-->
-                      <%= image_tag "icons/eyeball-xs-gray.png", :class =>"tlp-cls" %>
+                        <!--<input id="inputPassword" type="password" name="pwd1" class="form-control type-pass">-->
+                        <%= image_tag "icons/eyeball-xs-gray.png", :class =>"tlp-cls" %>
                     </div>
                     <div id="pswd_info" class="tooltip_box">
                         <p>Your password must:</p>
@@ -57,9 +58,9 @@
                         <%= f.label :password_confirmation, "Password Confirmation" %>
                         <span class="pull-right con-pass"></span><br>
                         <%= f.password_field :password_confirmation, autocomplete: "off", class: "form-control" %>
-                        <!--<input id="conf_pass" type="password" name="pwd2" class="form-control type-pass">-->        
-                        <%= image_tag "icons/eyeball-xs-gray.png", :class =>"tlp-cls" %>
-                        <span class="error text-danger" style="display: none;">Confirm password didn't match. Please try again.</span>
+                          <!--<input id="conf_pass" type="password" name="pwd2" class="form-control type-pass">-->        
+                          <%= image_tag "icons/eyeball-xs-gray.png", :class =>"tlp-cls" %>
+                          <span class="error text-danger" style="display: none;">Confirm password didn't match. Please try again.</span>
                       </div>
 
                       <div class="form-group email-block" style="display:none;">
@@ -78,5 +79,7 @@
                             </span>
                         </div>
                       <% end %>
+                  </div>
+                  <div class="col-md-4 col-sm-3 col-xs-1"></div>
               </div>
           </div>
