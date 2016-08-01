@@ -22,7 +22,7 @@
         });
 
         /* tooltip username and check username or email on blur */
-        $('#user_email').keyup(function() {
+        $('.registrations #user_email').keyup(function() {
         }).focus(function() {
             $(this).parent().next().show();
             if($(window).width() <= 480) {
@@ -51,12 +51,12 @@
         
         /* Added this as a workaround for not being able to add onSubmit js 
          * call for the new user create form.*/
-        $('#new_user').submit(function(){
+        $('.registrations #new_user').submit(function(){
             return checkForm(this);
         });
 
         /* check password validation */
-        $('#user_password').keyup(function() {
+        $('.registrations #user_password').keyup(function() {
             onkeycheckForm();
         }).focus(function() {
             onkeycheckForm();
@@ -78,7 +78,7 @@
         });
 
         /* check confirm password validation */
-        $('#user_password_confirmation').keyup(function() {
+        $('.registrations #user_password_confirmation').keyup(function() {
 
             pas = $("#user_password");
             con_pas = $('#user_password_confirmation');
