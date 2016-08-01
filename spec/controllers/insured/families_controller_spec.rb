@@ -607,7 +607,7 @@ RSpec.describe Insured::FamiliesController do
     end
   end
 
-  describe "GET upload_notice" do
+  describe "GET upload_notice", dbclean: :after_each do
 
     let(:person2) { FactoryGirl.create(:person) }
     let(:user2) { FactoryGirl.create(:user, person: person2, roles: ["hbx_staff"]) }
