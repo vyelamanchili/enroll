@@ -1800,6 +1800,7 @@ context "A cancelled external enrollment", :dbclean => :after_each do
 end
 
 context '.process_verification_reminders' do
+
   context "when family exists with pending outstanding verifications" do
 
     let(:consumer_role) { FactoryGirl.create(:consumer_role) }
