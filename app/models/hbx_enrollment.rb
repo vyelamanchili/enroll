@@ -130,10 +130,10 @@ class HbxEnrollment
   scope :with_aptc,           ->{ gt("applied_aptc_amount.cents": 0) }
   scope :enrolled,            ->{ where(:aasm_state.in => ENROLLED_STATUSES ) }
   scope :renewing,            ->{ where(:aasm_state.in => RENEWAL_STATUSES )}
+  scope :enrolled_and_renewal, ->{where(:aasm_state.in => ENROLLED_AND_RENEWAL_STATUSES )}
   scope :enrolled_and_renewing, -> { where(:aasm_state.in => (ENROLLED_STATUSES + RENEWAL_STATUSES)) }
   scope :effective_asc,      -> { order(effective_on: :asc) }
   scope :effective_desc,      ->{ order(effective_on: :desc, submitted_at: :desc, coverage_kind: :desc) }
-  scope :enrolled_and_renewal, ->{where(:aasm_state.in => ENROLLED_AND_RENEWAL_STATUSES )}
   scope :waived,              ->{ where(:aasm_state.in => WAIVED_STATUSES )}
   scope :cancel_eligible,     ->{ where(:aasm_state.in => ["coverage_selected","renewing_coverage_selected","coverage_enrolled"] )}
   scope :changing,            ->{ where(changing: true) }
