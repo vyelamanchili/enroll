@@ -33,6 +33,9 @@ class SpecialEnrollmentPeriod
   # Date Enrollment Period ends
   field :end_on, type: Date
 
+  # QLE Answer to specific question
+  field :qle_answer, type: String
+
   # Next Possible Event Date
   field :next_poss_event_date, type: Date
 
