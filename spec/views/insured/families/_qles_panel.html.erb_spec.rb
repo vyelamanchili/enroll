@@ -55,7 +55,4 @@ RSpec.describe "insured/families/_qles_panel.html.erb" do
         expect(rendered).to have_selector('.blocking')
     end
   end
-
-
-
 end

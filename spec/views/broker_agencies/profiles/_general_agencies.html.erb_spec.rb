@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe "broker_agencies/profiles/_general_agencies.html.erb", dbclean: :after_each do
   let(:general_agency_profile) { FactoryGirl.create(:general_agency_profile) }
   let(:broker_agency_profile) { FactoryGirl.create(:broker_agency_profile) }
-
+  
   context "without default_general_agency_profile" do
     before :each do
       allow(broker_agency_profile).to receive(:default_general_agency_profile).and_return nil
