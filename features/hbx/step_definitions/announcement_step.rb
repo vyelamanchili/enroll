@@ -5,7 +5,7 @@ And /^Hbx admin should see the link of announcements and click$/ do
 end
 
 Then /^Hbx admin should see the page of announcements$/ do
-  expect(page).to have_content("Current Announcements")
+  expect(page).to have_content(/Current Announcements/i)
   expect(page).to have_content("Msg Start Date")
 end
 

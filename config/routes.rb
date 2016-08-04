@@ -53,10 +53,10 @@ Rails.application.routes.draw do
         get :verification_index
         get :binder_index
         post :binder_paid
-        get :verifications_index_datatable
         get :sep_index
         post :sep_index_datatable
         post :add_new_sep
+        post :verifications_index_datatable
       end
 
       member do
