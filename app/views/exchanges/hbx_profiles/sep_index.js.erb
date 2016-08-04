@@ -226,7 +226,7 @@ $('#tab_datatables a[data-toggle="tab"]').on("click", function(){
   }
   switch($(this).attr('data-target')) {
     case '#ivl_shop_Table':
-      ivl_shop_Table = $('#sepAdmin').DataTable( {
+      ivl_shop_Table = $('#sepAdmin').EnrollDataTable( {
         destroy: true,
         columnDefs: columnVal,
          "language": {
@@ -240,6 +240,9 @@ $('#tab_datatables a[data-toggle="tab"]').on("click", function(){
           url: "<%= sep_index_datatable_exchanges_hbx_profiles_path(:format => :json) %>",
           data: {q: 'both'},
           type: "POST"
+        },
+          "initComplete": function(settings, json) {
+            $('.search.hidden').removeClass('hidden');
           }
         } );
 
@@ -248,7 +251,7 @@ $('#tab_datatables a[data-toggle="tab"]').on("click", function(){
         market = 'both';
         break;
     case '#ivlTable':
-      ivlTable = $('#sepAdmin1').DataTable( {
+      ivlTable = $('#sepAdmin1').EnrollDataTable( {
       destroy: true,
       columnDefs: columnVal,
       "language": {
@@ -262,7 +265,10 @@ $('#tab_datatables a[data-toggle="tab"]').on("click", function(){
         url: "<%= sep_index_datatable_exchanges_hbx_profiles_path(:format => :json) %>",
         data: {q: 'ivl'},
         type: "POST"
-        }
+        },
+          "initComplete": function(settings, json) {
+            $('.search.hidden').removeClass('hidden');
+          }
       } );
 
       selectedTable = ivlTable;
@@ -270,7 +276,7 @@ $('#tab_datatables a[data-toggle="tab"]').on("click", function(){
       market = 'ivl';
       break;
     case '#shopTable':
-      shopTable = $('#sepAdmin2').DataTable( {
+      shopTable = $('#sepAdmin2').EnrollDataTable( {
       destroy: true,
       columnDefs: columnVal,
       "language": {
@@ -284,7 +290,10 @@ $('#tab_datatables a[data-toggle="tab"]').on("click", function(){
         url: "<%= sep_index_datatable_exchanges_hbx_profiles_path(:format => :json) %>",
         data: {q: 'shop'},
         type: "POST"
-        }
+        },
+          "initComplete": function(settings, json) {
+            $('.search.hidden').removeClass('hidden');
+          }
       } );
 
       selectedTable = shopTable;
