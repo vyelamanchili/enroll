@@ -13,6 +13,7 @@ When(/Hbx admin enter announcement info$/) do
   fill_in 'announcement[content]', with: 'announcement for current'
   fill_in 'jq_datepicker_ignore_announcement[start_date]', with: (TimeKeeper.date_of_record - 5.days).to_s
   fill_in 'jq_datepicker_ignore_announcement[end_date]', with: (TimeKeeper.date_of_record + 5.days).to_s
+  sleep(1)
   find('#announcement_audiences_ivl').click
   find('.interaction-click-control-create-announcement').click
 end
