@@ -1,103 +1,228 @@
-
-#employers_dataTable_wrapper, #families_dataTable_wrapper, #sepAdmin_wrapper, #sepAdmin1_wrapper, #sepAdmin2_wrapper {
-  .module {
-    .small-6 {
-      width: 50%;
-      &:first-of-type {
-        float:left;
-        .selectric {
-          height: 30px;
-          position: relative;
-          p {
-            position:relative;
-            &.label {
-            top: 4px;
-            height: auto !important;
-            line-height: normal !important;
-          }
-          }
-          .button {
-            top: -6px;
-          }
+.module {
+  .datatable {
+    .datatable-header {
+      &.vertically-aligned-row {
+        h1 {
+          width: 50%;
         }
-        span {
-          position:relative;
-          top: 5px;
-          left: 8px;
-        }
-      }
-      &:last-of-type {
-        float:right;
-        input.form-control {
-          padding-top: 5px !important;
-        }
-        span.search {
-          position:relative;
-          top: 3px;
+        .search {
+          width: 40%;
+          .input-group > input {
+            box-sizing: border-box;
+          }
         }
       }
     }
-  }
-}
-  div.dataTables_length label {
-    font-weight: normal;
-    text-align: left;
-    white-space: nowrap;
-  }
-
-  div.dataTables_length select {
-    width: 75px;
-    display: inline-block;
-  }
-
-  div.dataTables_filter input {
-      height: 30px;
-  }
-
-  div.dataTables_filter {
-      text-align: right;
-  }
-
-  div.dataTables_filter label {
-      font-weight: normal;
-      white-space: nowrap;
-      text-align: left;
-  }
-
-  div.dataTables_filter input {
-      margin-left: 0.5em;
-      display: inline-block;
-      width: auto;
-  }
-
-  div.dataTables_info {
-      padding-top: 8px;
-      white-space: nowrap;
-      text-align: right;
-  }
-
-  div.dataTables_paginate {
-
+    .first-level {
+      margin: 0 0 0.675%;
+    }
+    .btn-group-second {
+      margin: 0 0 0.75%;
+    }
+    .select-all {
+      padding-left: 6px;
+    }
+    .even {
+      background-color: $primary-white;
+    }
+    th,
+    tr {
+      background-color: $primary-white;
+    }
+    .table {
+      margin-top: 0.675%;
+      margin-bottom: 0;
+    }
+    .table-responsive + .footer {
+      margin-top: 1.5%;
+    }
+    .table > tbody > tr {
+      &.odd {
+        &.shown {
+          + tr {
+            background-color: $primary-white;
+            table,
+            table tr {
+              background-color: $primary-white;
+            }
+          }
+          + tr:hover {
+            table,
+            table tr {
+              background-color: $primary-white;
+            }
+          }
+        }
+      }
+      &.even {
+        &.shown {
+          + tr {
+            background-color: #f9f9f9;
+            table,
+            table tr {
+              background-color: #f9f9f9;
+            }
+          }
+          + tr:hover {
+            table,
+            table tr {
+              background-color: #f9f9f9;
+            }
+          }
+        }
+      }
+      &.child-row {
+        background-color: $primary-white;
+      }
+    }
+    .table > tbody > tr > td {
+      vertical-align: middle;
+      &.dt-right {
+        text-align: right;
+      }
+      &.dt-left {
+        text-align: left;
+      }
+      &.dt-center {
+        text-align: center;
+      }
+    }
+    .table > thead > tr > th {
+      vertical-align: middle;
+      text-transform: uppercase;
       text-align: center;
-
-  }
-
-
-.dn-1 {
-  display: block !important;
-  opacity: 100 !important;
-}
-
-#sepAdmin_wrapper, #sepAdmin1_wrapper, #sepAdmin2_wrapper {
-  .header {
-    .small-6:first-of-type {
-      display: none;
+      &:focus {
+        outline-color: transparent;
+        outline-style: none;
+      }
+      .fa-caret-up,
+      .fa-caret-down {
+        color: $primary-gray;
+        display: block;
+      }
+      &.sorting {
+        cursor: pointer;
+        &:hover {
+          .fa {
+            color: $primary-blue;
+          }
+        }
+      }
+      &.sorting_asc {
+        .fa-caret-up {
+          color: $primary-blue;
+        }
+        cursor: pointer;
+      }
+      &.sorting_desc {
+        .fa-caret-down {
+          color: $primary-blue;
+        }
+        cursor: pointer;
+      }
+      &.dt-right {
+        text-align: right;
+      }
+      &.dt-left {
+        text-align: left;
+      }
+      &.dt-center {
+        text-align: center;
+      }
+    }
+    .vertically-aligned-row > .vertically-aligned-row {
+      width: 50%;
+    }
+    .vertically-aligned-row.header {
+      .select-all {
+        width: 25%;
+      }
+      .dropdown {
+        width: 40%;
+      }
+      > .vertically-aligned-row {
+        width: 75%;
+      }
+      .col-xs-2 {
+        width: 10%;
+      }
+    }
+    .table-length,
+    .dataTables_length {
+      display: inline;
+      font-size: 14px;
+      > label {
+        margin-bottom: 0;
+        width: 8.75%;
+        min-width: 60px;
+        padding-left: 1.5%;
+        .selectric {
+          background-color: transparent !important;
+          height: auto;
+          p.label {
+            padding: 0;
+            margin-bottom: 0;
+          }
+          b.button {
+            top: 6px;
+          }
+          p.label,
+          b.button {
+            line-height: 1;
+            height: auto;
+          }
+        }
+      }
+    }
+    .dataTables_length {
+      background-color: $primary-white;
+      margin: 0 2.5%;
+      padding: 0.675%;
+      border-radius: 4px;
+      width: 100%;
+    }
+    .dataTables_filter {
+      input {
+        padding: 0 10px;
+        margin-left: 2.5%;
+        width: 50%;
+      }
+      label {
+        width: 100%;
+        font-size: 14px;
+        font-weight: normal;
+      }
+    }
+    .row-actions {
+      display: table-cell;
+      vertical-align: middle;
+      .fa {
+        color: $primary-blue;
+      }
+      & > * {
+        display: table-cell;
+      }
+    }
+    .footer {
+      margin-top: 1.5%;
+      .combined-length-info.vertically-aligned-row {
+        display: table;
+        width: 100%;
+      }
+      .dataTables_paginate {
+        display: none;
+      }
+      .select-all.vertically-aligned-row {
+        display: table;
+        width: 100%;
+        margin-bottom: 0.675%;
+      }
+      .dataTables_info {
+        text-align: right;
+      }
+      .dataTables_paginate {
+        text-align: center !important;
+      }
     }
   }
-}
-#sepAdmin_length, #sepAdmin1_length, #sepAdmin2_length {
-  display: none;
-}
-#tab_datatables {
-  border-bottom: 0;
 }
