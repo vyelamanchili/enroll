@@ -2194,52 +2194,7 @@ describe PlanYear, :type => :model, :dbclean => :after_each do
 
       after(:all) do
         refresh_mailbox
-      end
-
-      it 'the plan should be in renewing enrolling' do
-        expect(plan_year.is_renewing?).to be_truthy
-        expect(plan_year.aasm_state).to eq('renewing_enrolling')
-      end
-    end
-  end
-
-  describe 'sends employee invitation email when .is_renewal?', focus: true do
-    include_context 'MailSpecHelper'
-
-    context 'publishes renewal draft' do
-      let(:employer_profile) { FactoryGirl.create(:employer_profile) }
-      let(:calender_year) { TimeKeeper.date_of_record.year }
-      let(:plan_year_start_on) { Date.new(calender_year, 6, 1) }
-      let(:plan_year_end_on) { Date.new(calender_year + 1, 5, 31) }
-      let(:open_enrollment_start_on) { Date.new(calender_year, 4, 1) }
-      let(:open_enrollment_end_on) { Date.new(calender_year, 5, 13) }
-      let!(:plan_year) { FactoryGirl.create(:plan_year,
-                                              start_on: plan_year_start_on,
-                                              end_on: plan_year_end_on,
-                                              open_enrollment_start_on: open_enrollment_start_on,
-                                              open_enrollment_end_on: open_enrollment_end_on,
-                                              employer_profile: employer_profile,
-                                              aasm_state: 'renewing_draft'
-                                            )}
-      let!(:benefit_group)            { FactoryGirl.build(:benefit_group,
-                                                            title: 'blue collar',
-                                                            plan_year: plan_year) }
-
-      let!(:benefit_group_assignment) { FactoryGirl.build(:benefit_group_assignment,
-                                                            benefit_group: benefit_group) }
-
-      let!(:census_employee) { FactoryGirl.create(:census_employee,
-                                                    employer_profile: employer_profile,
-                                                    benefit_group_assignments: [benefit_group_assignment]
-                              ) }
-      before do
-        refresh_mailbox
-        TimeKeeper.set_date_of_record_unprotected!(open_enrollment_start_on + 10.days)
-        plan_year.publish!
-      end
-
-      after(:all) do
-        refresh_mailbox
+        TimeKeeper.set_date_of_record_unprotected!(Date.today)
       end
 
       it 'the plan should be in renewing enrolling' do
