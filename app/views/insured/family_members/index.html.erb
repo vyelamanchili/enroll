@@ -28,6 +28,32 @@
                             </div>
                         </div>
 
+        <div class="row no-buffer">
+          <div class="col-md-12 col-sm-12 col-xs-12 no-pd first">
+            <div class="col-md-6 col-sm-6 no-pd form-group-lg no-pd">
+              <label class="static_label label-floatlabel" for="name">NAME</label>
+              <span class="field_value floatlabel form-control active-floatlabel" id="name"><%= "#{@person.first_name} #{@person.middle_name} #{@person.last_name}" %></span>
+            </div>
+            <div class="col-md-6 col-sm-6 no-pd form-group-lg no-pd">
+              <label class="static_label label-floatlabel" for="relation">RELATION</label>
+              <span class="field_value floatlabel form-control active-floatlabel" id="relation">Self</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="row no-buffer <%= pundit_class Family, :updateable?%>">
+          <div class="fail-search add-member <%= 'hidden' if !@family.active_family_members.empty? %>">
+            <div class="col-md-12 col-sm-12 col-xs-12 no-pd">
+              <p class="fail"><span class="bold">Here's your chance to add family members to your plan.</span><br>Add family members by clicking the "Add Member" button. If you don't need to add more members, or when you are done adding members, click continue.</p>
+              <br>
+              <div class="form-inline text-center <%= pundit_class Family, :updateable?%>">
+                <%= link_to "Add Member", new_insured_family_member_path(:family_id => @family.id), :remote => true, :class => "btn btn-default" %>
+                  &nbsp; &nbsp;
+                <a class="text-center btn btn-success">Continue</a>
+              </div>
+            </div>
+          </div>
+        </div>
                         <div class="row no-buffer">
                             <div class="fail-search add-member <%= 'hidden' if !@family.active_family_members.empty? %>">
                                 <div class="col-md-12 col-sm-12 col-xs-12 no-pd">
@@ -51,6 +77,9 @@
                             </ul>
                         </div>
 
+        <div id="dependent_buttons" class="focus_effect personal-info-row <%= 'hidden' if @family.active_family_members.empty? %>">
+          <div class="col-md-12 no-pd col-sm-12 col-xs-12 <%= pundit_class Family, :updateable?%>">
+            <%= link_to 'Add Member'.html_safe, new_insured_family_member_path(:family_id => @family.id), :remote => true, :class => "btn btn-default" %>
                         <div id="dependent_buttons" class="focus_effect personal-info-row <%= 'hidden' if @family.active_family_members.empty? %>">
                             <div class="col-md-12 no-pd col-sm-12 col-xs-12">
                                 <%= link_to 'Add Member'.html_safe, new_insured_family_member_path(:family_id => @family.id), :remote => true, :class => "btn btn-default" %>
@@ -70,6 +99,12 @@
                   <div class="col-lg-1 col-md-1 col-sm-1 col-xs-0"></div>
               </div>
 
+            <% if @change_plan.present? %>
+              <%=
+                link_to '<i class="fa fa-user-plus"></i> Continue'.html_safe, group_selection_url,
+                 class: 'btn btn-primary pull-right' + pundit_class(Family,:updateable?), id: 'btn_household_continue'
+              %>
+            <% end %> 
               <div class="col-lg-2 col-md-2 col-sm-2 col-xs-12 right-section">
                   <% find_sep_url = find_sep_insured_families_path(employee_role_id: @employee_role.try(:id), consumer_role_id: @consumer_role.try(:id), change_plan: @change_plan)%>
                   <% if @change_plan.present? %>
